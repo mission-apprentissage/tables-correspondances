@@ -1,5 +1,5 @@
 const XLSX = require("xlsx");
-const csvToJson = require("convert-csv-to-json");
+const csvToJson = require("convert-csv-to-json-latin");
 const path = require("path");
 
 const readJsonFromCsvFile = (localPath) => {

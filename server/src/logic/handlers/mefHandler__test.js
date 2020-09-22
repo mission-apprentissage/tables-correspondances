@@ -1,4 +1,4 @@
-const { describe, it } = require("mocha");
+// const { describe, it } = require("mocha");
 const assert = require("assert");
 const { getModaliteFromMef10 } = require("./mefHandler");
 
