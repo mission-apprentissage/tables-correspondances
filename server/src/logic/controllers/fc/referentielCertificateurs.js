@@ -13,7 +13,7 @@ module.exports = () => {
       };
     },
     findInfo: (codeRNCP) => {
-      let found = referentielCertificateurs.filter((x) => x.codeRNCP === codeRNCP);
+      let found = referentielCertificateurs.filter((x) => x.CodeRNCP === codeRNCP);
       return found.length > 0 ? found : [];
     },
   };

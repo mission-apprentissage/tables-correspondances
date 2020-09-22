@@ -13,7 +13,7 @@ module.exports = () => {
       };
     },
     findRomes: (codeRNCP) => {
-      let found = referentielRome.filter((x) => x.codeRNCP === codeRNCP);
+      let found = referentielRome.filter((x) => x.CodeRNCP === codeRNCP);
       return found.length > 0 ? found : [];
     },
   };

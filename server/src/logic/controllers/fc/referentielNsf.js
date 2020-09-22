@@ -13,7 +13,7 @@ module.exports = () => {
       };
     },
     findNsf: (codeRNCP) => {
-      let found = referentielNsf.filter((x) => x.codeRNCP === codeRNCP);
+      let found = referentielNsf.filter((x) => x.CodeRNCP === codeRNCP);
       return found.length > 0 ? found : [];
     },
   };

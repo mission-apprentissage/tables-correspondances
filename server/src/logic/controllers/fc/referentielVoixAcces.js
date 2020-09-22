@@ -13,7 +13,7 @@ module.exports = () => {
       };
     },
     findVoix: (codeRNCP) => {
-      let found = referentielVoixAcces.filter((x) => x.codeRNCP === codeRNCP);
+      let found = referentielVoixAcces.filter((x) => x.CodeRNCP === codeRNCP);
       return found.length > 0 ? found : [];
     },
   };

@@ -13,7 +13,7 @@ module.exports = () => {
       };
     },
     findBlocsCompetences: (codeRNCP) => {
-      let found = referentielBlocCompetences.filter((x) => x.codeRNCP === codeRNCP);
+      let found = referentielBlocCompetences.filter((x) => x.CodeRNCP === codeRNCP);
       return found.length > 0 ? found : [];
     },
   };
