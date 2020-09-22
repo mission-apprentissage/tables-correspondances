@@ -1,8 +1,8 @@
 version: "2.4"
 services:
   reverse_proxy:
-    image: template_app_reverse_proxy
-    container_name: template_app_reverse_proxy
+    image: tables_correspondances_reverse_proxy
+    container_name: tables_correspondances_reverse_proxy
     build:
       context: reverse_proxy
     mem_limit: 256m
@@ -10,61 +10,61 @@ services:
     ports:
       - 80:80
     networks:
-      - template_app_network
+      - tables_correspondances_network
     depends_on:
       - server
       - ui
 
   ui:
-    image: template_app_ui
-    container_name: template_app_ui
+    image: tables_correspondances_ui
+    container_name: tables_correspondances_ui
     build:
       context: ui
     mem_limit: 256m
     networks:
-      - template_app_network
+      - tables_correspondances_network
     depends_on:
       - server
 
   server:
-    image: template_app_server
-    container_name: template_app_server
+    image: tables_correspondances_server
+    container_name: tables_correspondances_server
     build:
       context: server
     mem_limit: 1g
     restart: unless-stopped
     networks:
-      - template_app_network
+      - tables_correspondances_network
     depends_on:
       - mongodb
     environment:
-      - TEMPLATE_APP_MONGODB_URI=mongodb://mongodb:27017/template-app?retryWrites=true&w=majority
+      - TABLES_CORRESPONDANES_MONGODB_URI=mongodb://mongodb:27017/tables-correspondances?retryWrites=true&w=majority
 
   mongodb:
     image: mongo:4.2.6-bionic
-    container_name: template_app_mongodb
+    container_name: tables_correspondances_mongodb
     mem_limit: 1g
     restart: unless-stopped
     networks:
-      - template_app_network
+      - tables_correspondances_network
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.1.1
-    container_name: template_app_elasticsearch
+    container_name: tables_correspondances_elasticsearch
     environment:
       ES_JAVA_OPTS: "-Xmx512m -Xms512m"
     mem_limit: 1g
     networks:
-      - template_app_network
+      - tables_correspondances_network
 
   kibana:
     image: docker.elastic.co/kibana/kibana-oss:7.1.1
-    container_name: template_app_kibana
+    container_name: tables_correspondances_kibana
     depends_on:
       - elasticsearch
     networks:
-      - template_app_network
+      - tables_correspondances_network
 
 networks:
-  template_app_network:
-    name: template_app_network
+  tables_correspondances_network:
+    name: tables_correspondances_network

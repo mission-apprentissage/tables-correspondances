@@ -1,8 +1,8 @@
 {
-  "name": "mna-template-app-server",
+  "name": "mna-tables-correspondances-server",
   "version": "0.0.1",
-  "description": "[MNA] App Template",
-  "repository": "https://github.com/mission-apprentissage/template-apprentissage.git",
+  "description": "[MNA] Tables de correspondances",
+  "repository": "https://github.com/mission-apprentissage/tables-correspondances.git",
   "private": false,
   "author": "MNA",
   "license": "MIT",
