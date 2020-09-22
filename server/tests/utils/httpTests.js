@@ -4,6 +4,7 @@ const createComponents = require("../../src/common/components/components");
 const { connectToMongoForTests, cleanAll } = require("./testUtils.js");
 const server = require("../../src/http/server");
 
+// eslint-disable-next-line no-unused-vars
 const startServer = async (options = {}) => {
   const { db } = await connectToMongoForTests();
   const components = await createComponents({ db });
