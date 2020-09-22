@@ -11,6 +11,8 @@ const authMiddleware = require("./middlewares/authMiddleware");
 const permissionsMiddleware = require("./middlewares/permissionsMiddleware");
 const packageJson = require("../../package.json");
 const cfd = require("./routes/cfd");
+const mef = require("./routes/mef");
+const cp = require("./routes/cp");
 const entity = require("./routes/entity");
 const secured = require("./routes/secured");
 const login = require("./routes/login");
@@ -30,6 +32,8 @@ module.exports = async (components) => {
   app.use(logMiddleware());
 
   app.use("/api/cfd", cfd());
+  app.use("/api/mef", mef());
+  app.use("/api/code-postal", cp());
   app.use("/api/entity", entity());
   app.use("/api/secured", apiKeyAuthMiddleware, secured());
   app.use("/api/login", login(components));
