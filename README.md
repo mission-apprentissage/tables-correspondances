@@ -214,13 +214,13 @@ yarn docker:clean
 Aprés avoir créé la stack pour vérifier que les conteneurs sont bien présents vous pouvez lancer la commande suivante depuis le répertoire `/server` :
 
 ```bash
-docker exec -t -i template_app_server /bin/bash
+docker exec -t -i tables_correspondances_server /bin/bash
 ```
 
 De même pour consulter la liste des fichiers dans le docker :
 
 ```bash
-docker exec template_app_server bash -c 'ls'
+docker exec tables_correspondances_server bash -c 'ls'
 ```
 
 ## Linter
