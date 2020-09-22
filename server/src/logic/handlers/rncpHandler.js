@@ -1,7 +1,7 @@
 const fcController = require("../controllers/fc/fcController");
-const bcnController = require("../controllers/bcn/bcnController");
+const bcnController = require("../controllers/bcn/BcnController");
 
-const getDataFromRncp = providedRncp => {
+const getDataFromRncp = (providedRncp) => {
   const rncpData = fcController.getDataFromRncp(providedRncp);
 
   const cfdData = bcnController.getDataFromCfd(rncpData.result.cfd);

@@ -1,6 +1,6 @@
 const entrepriseController = require("../controllers/entrepriseController");
 
-const getDataFromSiret = async providedSiret => {
+const getDataFromSiret = async (providedSiret) => {
   const siretData = await entrepriseController.findDataFromSiret(providedSiret);
 
   return {

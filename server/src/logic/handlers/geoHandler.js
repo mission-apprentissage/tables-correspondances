@@ -1,6 +1,6 @@
 const geoController = require("../controllers/geo/geoController");
 
-const getDataFromCP = async providedCP => {
+const getDataFromCP = async (providedCP) => {
   if (!providedCP || !geoController.isValidCodePostal(providedCP.trim())) {
     return {
       result: {},

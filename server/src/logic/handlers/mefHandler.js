@@ -1,7 +1,7 @@
-const bcnController = require("../controllers/bcn/bcnController");
+const bcnController = require("../controllers/bcn/BcnController");
 const fcController = require("../controllers/fc/fcController");
 
-const getDataFromMef10 = providedMef10 => {
+const getDataFromMef10 = (providedMef10) => {
   const mefData = bcnController.getDataFromMef10(providedMef10);
   const cfdData = bcnController.getDataFromCfd(mefData.result.cfd);
 
