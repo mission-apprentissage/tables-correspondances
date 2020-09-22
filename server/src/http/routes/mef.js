@@ -12,7 +12,7 @@ const requestSchema = Joi.object({
 });
 
 /**
- * Route which returns information about a given CFD
+ * Route which returns information about a given Mef
  */
 module.exports = () => {
   const router = express.Router();

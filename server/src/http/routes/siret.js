@@ -2,17 +2,17 @@ const express = require("express");
 const logger = require("../../common/logger");
 const Joi = require("joi");
 const tryCatch = require("../middlewares/tryCatchMiddleware");
-const { getDataFromCP } = require("../../logic/handlers/geoHandler");
+const { getDataFromSiret } = require("../../logic/handlers/siretHandler");
 
 /**
  * Request body validation
  */
 const requestSchema = Joi.object({
-  codePostal: Joi.string().required(),
+  siret: Joi.string().required(),
 });
 
 /**
- * Route which returns information about a given zipcode
+ * Route which returns information about a given Siret
  */
 module.exports = () => {
   const router = express.Router();
@@ -22,8 +22,8 @@ module.exports = () => {
     tryCatch(async (req, res) => {
       await requestSchema.validateAsync(req.body, { abortEarly: false });
       const item = req.body;
-      logger.info("Looking for data on Zip code: ", item);
-      const result = await getDataFromCP(item.codePostal);
+      logger.info("Looking for data on siret: ", item);
+      const result = await getDataFromSiret(item.siret);
       return res.json(result);
     })
   );

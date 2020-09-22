@@ -2,17 +2,17 @@ const express = require("express");
 const logger = require("../../common/logger");
 const Joi = require("joi");
 const tryCatch = require("../middlewares/tryCatchMiddleware");
-const { getDataFromCP } = require("../../logic/handlers/geoHandler");
+const { getDataFromRncp } = require("../../logic/handlers/rncpHandler");
 
 /**
  * Request body validation
  */
 const requestSchema = Joi.object({
-  codePostal: Joi.string().required(),
+  rncp: Joi.string().required(),
 });
 
 /**
- * Route which returns information about a given zipcode
+ * Route which returns information about a given RNCP
  */
 module.exports = () => {
   const router = express.Router();
@@ -22,8 +22,8 @@ module.exports = () => {
     tryCatch(async (req, res) => {
       await requestSchema.validateAsync(req.body, { abortEarly: false });
       const item = req.body;
-      logger.info("Looking for data on Zip code: ", item);
-      const result = await getDataFromCP(item.codePostal);
+      logger.info("Looking for data on rncp: ", item);
+      const result = await getDataFromRncp(item.rncp);
       return res.json(result);
     })
   );

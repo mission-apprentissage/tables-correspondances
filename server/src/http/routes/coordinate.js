@@ -2,17 +2,21 @@ const express = require("express");
 const logger = require("../../common/logger");
 const Joi = require("joi");
 const tryCatch = require("../middlewares/tryCatchMiddleware");
-const { getDataFromCP } = require("../../logic/handlers/geoHandler");
+const { getCoordaniteFromAdresseData } = require("../../logic/handlers/geoHandler");
 
 /**
  * Request body validation
  */
 const requestSchema = Joi.object({
-  codePostal: Joi.string().required(),
+  numero_voie: Joi.string(),
+  type_voie: Joi.string(),
+  nom_voie: Joi.string().required(),
+  code_postal: Joi.string().required(),
+  localite: Joi.string().required(),
 });
 
 /**
- * Route which returns information about a given zipcode
+ * Route which returns information about a given Adresse
  */
 module.exports = () => {
   const router = express.Router();
@@ -22,8 +26,8 @@ module.exports = () => {
     tryCatch(async (req, res) => {
       await requestSchema.validateAsync(req.body, { abortEarly: false });
       const item = req.body;
-      logger.info("Looking for data on Zip code: ", item);
-      const result = await getDataFromCP(item.codePostal);
+      logger.info("Looking for data on give adresse: ", item);
+      const result = await getCoordaniteFromAdresseData(item);
       return res.json(result);
     })
   );
