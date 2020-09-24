@@ -3,7 +3,7 @@ const axios = require("axios");
 // Cf Documentation : https://doc.entreprise.api.gouv.fr/#param-tres-obligatoires
 const apiEndpoint = "https://entreprise.api.gouv.fr/v2";
 const apiParams = {
-  token: process.env.API_ENTREPRISE_KEY,
+  token: process.env.TABLES_CORRESPONDANCES_API_ENTREPRISE_KEY,
   context: "Catalogue MNA",
   recipient: "12000101100010", // Siret Dinum
   object: "Consolidation des données du Catalogue MNA",
