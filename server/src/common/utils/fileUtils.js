@@ -1,6 +1,8 @@
 const XLSX = require("xlsx");
 const csvToJson = require("convert-csv-to-json-latin");
 const path = require("path");
+const fs = require("fs-extra");
+const axios = require("axios");
 
 const readJsonFromCsvFile = (localPath) => {
   return csvToJson.getJsonFromCsv(localPath);
@@ -54,3 +56,21 @@ const removeLine = (data, regex) => {
     .join("\n");
 };
 module.exports.removeLine = removeLine;
+
+const downloadFile = async (url, to) => {
+  const writer = fs.createWriteStream(to);
+
+  const response = await axios({
+    url,
+    method: "GET",
+    responseType: "stream",
+  });
+
+  response.data.pipe(writer);
+
+  return new Promise((resolve, reject) => {
+    writer.on("finish", resolve);
+    writer.on("error", reject);
+  });
+};
+module.exports.downloadFile = downloadFile;
