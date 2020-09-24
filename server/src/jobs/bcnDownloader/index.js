@@ -10,16 +10,22 @@ const buildUrl = (table) => {
 
 const downloadBcnTable = async (table) => {
   const toFile = path.resolve(__dirname, `../../logic/assets/bcnTables/${table.toLowerCase()}.csv`);
-  await downloadFile(buildUrl(table), toFile);
+  try {
+    await downloadFile(buildUrl(table), toFile);
+    logger.info(`download ${table} Succeed`);
+  } catch (error) {
+    logger.error(`download ${table} failed`);
+    logger.error(error);
+  }
 };
 
 runScript(async () => {
-  logger.info(`Starting BCN tables download`);
+  logger.warn(`[BCN tables] Downloading `);
   await downloadBcnTable("N_FORMATION_DIPLOME");
   await downloadBcnTable("V_FORMATION_DIPLOME");
   await downloadBcnTable("N_NIVEAU_FORMATION_DIPLOME");
   await downloadBcnTable("N_MEF");
   await downloadBcnTable("N_LETTRE_SPECIALITE");
   await downloadBcnTable("N_DISPOSITIF_FORMATION");
-  logger.info(`BCN tables download completed`);
+  logger.warn(`[BCN tables] Download completed`);
 });
