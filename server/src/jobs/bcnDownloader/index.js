@@ -20,7 +20,7 @@ const downloadBcnTable = async (table) => {
 };
 
 runScript(async () => {
-  logger.warn(`[BCN tables] Downloading...`);
+  logger.warn(`[BCN tables] Downloading`);
   await downloadBcnTable("N_FORMATION_DIPLOME");
   await downloadBcnTable("V_FORMATION_DIPLOME");
   await downloadBcnTable("N_NIVEAU_FORMATION_DIPLOME");
