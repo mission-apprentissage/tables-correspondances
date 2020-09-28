@@ -13,13 +13,13 @@ jobs:
         uses: actions/checkout@v2
 
       - shell: bash
-        run: echo '::set-env name=TABLES-CORRESPONDANCES_HEAD_REF::${{ github.head_ref }}'
-        
+        run: echo '::set-env name=TABLES_CORRESPONDANCES_HEAD_REF::${{ github.head_ref }}'
+      
       - shell: bash
-        run: echo '::set-env name=TABLES-CORRESPONDANCES_REF::${{ github.ref }}'
+        run: echo '::set-env name=TABLES_CORRESPONDANCES_REF::${{ github.ref }}'
 
       - name: Check output
-        run: echo ${TABLES-CORRESPONDANCES_HEAD_REF:-${TABLES-CORRESPONDANCES_REF##*/}}
+        run: echo ${TABLES_CORRESPONDANCES_REF:-${TABLES_CORRESPONDANCES_REF##*/}}
 
       - name: Request deployment
         uses: peter-evans/repository-dispatch@v1
