@@ -28,4 +28,4 @@ jobs:
           token: ${{ secrets.DEVOPS_ACCESS_TOKEN }}
           event-type: deploy
           client-payload: '{"envName": "recette", "branchName":"${{ github.head_ref }}"}'
-        if: github.ref == 'ref/head/recette'
+        if: github.ref == 'refs/heads/recette'
