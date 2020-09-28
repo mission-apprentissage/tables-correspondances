@@ -17,7 +17,8 @@
     "docker:clean": "docker-compose kill && docker system prune --force --volumes",
     "seed": "node src/jobs/seed/index.js",
     "clear": "node src/jobs/clear/index.js",
-    "stats": "node src/jobs/stats/index.js"
+    "stats": "node src/jobs/stats/index.js",
+    "bcn:downloader": "node src/jobs/bcnDownloader/index.js"
   },
   "dependencies": {
     "@elastic/elasticsearch": "7.6.1",
