@@ -27,5 +27,5 @@ jobs:
           repository: mission-apprentissage/tables-correspondances-infra
           token: ${{ secrets.DEVOPS_ACCESS_TOKEN }}
           event-type: deploy
-          client-payload: '{"envName": "recette", "branchName":"${{TABLES_CORRESPONDANCES_REF}}"}'
+          client-payload: '{"envName": "recette", "branchName":"${{ github.ref }}"}'
         if: github.ref == 'refs/heads/recette'
