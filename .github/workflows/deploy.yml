@@ -1,9 +1,9 @@
 name: Deploy
 on:
   push:
-    branches: [ master, develop ]
+    branches: [ master, recette ]
   pull_request:
-    branches: [ master, develop ]
+    branches: [ master, recette ]
 
 jobs:
   deploy:
@@ -28,4 +28,4 @@ jobs:
           token: ${{ secrets.DEVOPS_ACCESS_TOKEN }}
           event-type: deploy
           client-payload: '{"envName": "recette", "branchName":"${{ github.head_ref }}"}'
-        if: github.ref == 'ref/head/develop'
+        if: github.ref == 'ref/head/recette'
