@@ -39,7 +39,7 @@ export default () => {
             Le lien est expiré ou invalide, merci de prendre contact avec un administrateur en précisant votre adresse
             mail :
             <br />
-            <a href="mailto:template-app@apprentissage.beta.gouv.fr">template-app@apprentissage.beta.gouv.fr</a>
+            <a href="mailto:tables-correspondances@apprentissage.beta.gouv.fr">tables-correspondances@apprentissage.beta.gouv.fr</a>
           </span>
         ),
       });
