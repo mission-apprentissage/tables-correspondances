@@ -1,10 +1,10 @@
-// const logger = require("../common/logger");
+const logger = require("../common/logger");
 
 const run = async () => {
   try {
-    console.log(`Run Jobs!!`);
+    logger.info(`Run Jobs`);
   } catch (error) {
-    console.log(error);
+    logger.error(error);
   }
 };
 
