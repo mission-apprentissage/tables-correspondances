@@ -4,7 +4,7 @@ const downloadBcnTables = require("./bcnDownloader/index");
 
 runScript(async () => {
   try {
-    logger.info(`Run all jobs`);
+    logger.info(`Start all jobs`);
     await downloadBcnTables();
   } catch (error) {
     logger.error(error);
