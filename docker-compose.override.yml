@@ -21,8 +21,8 @@ services:
       - ./server/config:/app/config
       - tables_correspondances_server_data:/data
     environment:
-      - TABLES_CORRESPONDANES_ENV=dev
-      - TABLES_CORRESPONDANES_LOG_LEVEL=debug
+      - TABLES_CORRESPONDANCES_ENV=dev
+      - TABLES_CORRESPONDANCES_LOG_LEVEL=debug
 
   mongodb:
     ports:
