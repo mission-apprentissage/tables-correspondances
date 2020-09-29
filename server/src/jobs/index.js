@@ -1,11 +1,12 @@
+const { runScript } = require("./scriptWrapper");
 const logger = require("../common/logger");
+const downloadBcnTables = require("./bcnDownloader/index");
 
-const run = async () => {
+runScript(async () => {
   try {
-    logger.info(`Run Jobs`);
+    logger.info(`Run all jobs`);
+    await downloadBcnTables();
   } catch (error) {
     logger.error(error);
   }
-};
-
-run();
+});

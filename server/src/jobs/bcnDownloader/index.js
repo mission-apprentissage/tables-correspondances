@@ -19,7 +19,7 @@ const downloadBcnTable = async (table) => {
   }
 };
 
-runScript(async () => {
+const downloadBcnTables = async () => {
   logger.warn(`[BCN tables] Downloading`);
   await downloadBcnTable("N_FORMATION_DIPLOME");
   await downloadBcnTable("V_FORMATION_DIPLOME");
@@ -28,4 +28,12 @@ runScript(async () => {
   await downloadBcnTable("N_LETTRE_SPECIALITE");
   await downloadBcnTable("N_DISPOSITIF_FORMATION");
   logger.warn(`[BCN tables] Download completed`);
-});
+};
+
+module.exports = downloadBcnTables;
+
+if (process.env.run) {
+  runScript(async () => {
+    await downloadBcnTables();
+  });
+}
