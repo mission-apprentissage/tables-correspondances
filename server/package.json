@@ -19,7 +19,8 @@
     "clear": "node src/jobs/clear/index.js",
     "stats": "node src/jobs/stats/index.js",
     "jobs": "node src/jobs/index.js",
-    "bcn:downloader": "node src/jobs/bcnDownloader/index.js"
+    "bcn:downloader": "run=true node src/jobs/bcnDownloader/index.js",
+    "bcn:importer": "run=true node src/jobs/bcnImporter/index.js"
   },
   "dependencies": {
     "@elastic/elasticsearch": "7.6.1",
