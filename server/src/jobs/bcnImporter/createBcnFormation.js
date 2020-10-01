@@ -1,11 +1,11 @@
 const logger = require("../../common/logger");
-const { NFormationDiplome } = require("../../common/model/index");
+const { BcnFormationDiplome } = require("../../common/model/index");
 
-module.exports = async (db, nFormation) => {
+module.exports = async (db, bcnFormation) => {
   try {
-    const nFormationDiplomeToAdd = new NFormationDiplome(nFormation);
-    await nFormationDiplomeToAdd.save();
-    logger.info(`BCN Formation '${nFormationDiplomeToAdd.id}' successfully added in db ${db.name}`);
+    const bcnFormationDiplomeToAdd = new BcnFormationDiplome(bcnFormation);
+    await bcnFormationDiplomeToAdd.save();
+    logger.info(`BCN Formation '${bcnFormationDiplomeToAdd.id}' successfully added in db ${db.name}`);
   } catch (err) {
     logger.error({ err });
   }

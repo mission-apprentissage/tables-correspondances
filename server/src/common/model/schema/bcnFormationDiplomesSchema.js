@@ -1,4 +1,4 @@
-const nFormationDiplomesSchema = {
+const bcnFormationDiplomesSchema = {
   FORMATION_DIPLOME: {
     type: String,
     default: null,
@@ -290,4 +290,4 @@ const nFormationDiplomesSchema = {
     description: "Date de dernières mise à jour",
   },
 };
-module.exports = nFormationDiplomesSchema;
+module.exports = bcnFormationDiplomesSchema;

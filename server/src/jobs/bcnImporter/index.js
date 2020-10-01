@@ -4,7 +4,7 @@ const { runScript } = require("../scriptWrapper");
 const fileManager = require("./FileManager");
 const createBcnFormation = require("./createBcnFormation");
 const updateBcnFormation = require("./updateBcnFormation");
-const { NFormationDiplome } = require("../../common/model/index");
+const { BcnFormationDiplome } = require("../../common/model/index");
 
 const mergeNformationVformation = (N_FORMATION_DIPLOME, V_FORMATION_DIPLOME) => {
   const bcnFormations = new Map();
@@ -30,7 +30,7 @@ const importBcnTables = async (db) => {
 
   try {
     await asyncForEach(bcnFormations, async (formation) => {
-      const exist = await NFormationDiplome.findOne({ FORMATION_DIPLOME: formation.FORMATION_DIPLOME });
+      const exist = await BcnFormationDiplome.findOne({ FORMATION_DIPLOME: formation.FORMATION_DIPLOME });
       if (exist) {
         await updateBcnFormation(db, exist._id, formation);
       } else {

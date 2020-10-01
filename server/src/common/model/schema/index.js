@@ -1,9 +1,9 @@
 const logSchema = require("./log");
-const nFormationDiplomeSchema = require("./nFormationDiplome");
+const bcnFormationDiplomesSchema = require("./bcnFormationDiplomesSchema");
 const userSchema = require("./user");
 
 module.exports = {
-  nFormationDiplomeSchema,
+  bcnFormationDiplomesSchema,
   logSchema,
   userSchema,
 };
