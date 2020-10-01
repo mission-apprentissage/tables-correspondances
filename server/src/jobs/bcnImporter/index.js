@@ -3,6 +3,8 @@ const { asyncForEach } = require("../../common/utils/asyncUtils");
 const { runScript } = require("../scriptWrapper");
 const fileManager = require("./FileManager");
 const createNformation = require("./createNformation");
+const updateNformation = require("./updateNformation");
+const { NFormationDiplome } = require("../../common/model/index");
 
 const importBcnTables = async (db) => {
   logger.warn(`[BCN tables] Importer`);
@@ -10,7 +12,13 @@ const importBcnTables = async (db) => {
 
   try {
     await asyncForEach(bases.N_FORMATION_DIPLOME, async (nFormation) => {
-      await createNformation(db, nFormation);
+      const exist = await NFormationDiplome.findOne({ FORMATION_DIPLOME: nFormation.FORMATION_DIPLOME });
+      if (exist) {
+        await updateNformation(db, exist._id, nFormation);
+      } else {
+        logger.info(`NFormationDiplome '${nFormation.FORMATION_DIPLOME}' not found`);
+        await createNformation(db, nFormation);
+      }
     });
     logger.info(`Importing N_FORMATION_DIPLOME table Succeed`);
   } catch (error) {

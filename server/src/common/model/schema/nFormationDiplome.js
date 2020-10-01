@@ -279,5 +279,15 @@ const nFormationDiplomesSchema = {
     default: null,
     description: "DESCRIPTION",
   },
+  created_at: {
+    type: Date,
+    default: Date.now,
+    description: "Date d'ajout en base de données",
+  },
+  last_update_at: {
+    type: Date,
+    default: Date.now,
+    description: "Date de dernières mise à jour",
+  },
 };
 module.exports = nFormationDiplomesSchema;
