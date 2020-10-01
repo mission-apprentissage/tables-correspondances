@@ -7,6 +7,6 @@ location /kibana/ {
 
     error_page              401 /401$request_uri;
     proxy_pass              http://kibana:5601;
-    proxy_redirect          http://kibana:5601/bundles http://$host/kibana/bundles;
+    proxy_redirect          http://kibana:5601/bundles https://$host/kibana/bundles;
     rewrite                 /kibana/(.*)$ /$1 break;
 }
