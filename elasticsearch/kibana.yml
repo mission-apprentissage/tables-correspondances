@@ -5,5 +5,5 @@
 server.name: kibana
 server.host: "0"
 server.basePath: "/kibana"
-server.rewriteBasePath: "false"
+#server.rewriteBasePath: "true"
 elasticsearch.hosts: "http://elasticsearch:9200"
