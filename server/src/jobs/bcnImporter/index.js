@@ -2,19 +2,45 @@ const logger = require("../../common/logger");
 const { asyncForEach } = require("../../common/utils/asyncUtils");
 const { runScript } = require("../scriptWrapper");
 const fileManager = require("./FileManager");
-const createNformation = require("./createNformation");
+const createBcnFormation = require("./createBcnFormation");
+const updateBcnFormation = require("./updateBcnFormation");
+const { BcnFormationDiplome } = require("../../common/model/index");
+
+const mergeNformationVformation = (N_FORMATION_DIPLOME, V_FORMATION_DIPLOME) => {
+  const bcnFormations = new Map();
+  for (let ite = 0; ite < N_FORMATION_DIPLOME.length; ite++) {
+    const nFormation = N_FORMATION_DIPLOME[ite];
+    bcnFormations.set(nFormation.FORMATION_DIPLOME, nFormation);
+  }
+  for (let ite = 0; ite < V_FORMATION_DIPLOME.length; ite++) {
+    const vFormation = V_FORMATION_DIPLOME[ite];
+    const existInNFormation = bcnFormations.get(vFormation.FORMATION_DIPLOME);
+    if (!existInNFormation) {
+      bcnFormations.set(vFormation.FORMATION_DIPLOME, vFormation);
+    }
+  }
+  return Array.from(bcnFormations.values());
+};
 
 const importBcnTables = async (db) => {
   logger.warn(`[BCN tables] Importer`);
   const bases = fileManager.loadBases();
 
+  const bcnFormations = mergeNformationVformation(bases.N_FORMATION_DIPLOME, bases.V_FORMATION_DIPLOME);
+
   try {
-    await asyncForEach(bases.N_FORMATION_DIPLOME, async (nFormation) => {
-      await createNformation(db, nFormation);
+    await asyncForEach(bcnFormations, async (formation) => {
+      const exist = await BcnFormationDiplome.findOne({ FORMATION_DIPLOME: formation.FORMATION_DIPLOME });
+      if (exist) {
+        await updateBcnFormation(db, exist._id, formation);
+      } else {
+        logger.info(`BCN Formation '${formation.FORMATION_DIPLOME}' not found`);
+        await createBcnFormation(db, formation);
+      }
     });
-    logger.info(`Importing N_FORMATION_DIPLOME table Succeed`);
+    logger.info(`Importing BCN Formations table Succeed`);
   } catch (error) {
-    logger.error(`Importing N_FORMATION_DIPLOME table Failed`);
+    logger.error(`Importing BCN Formations table Failed`);
   }
 
   // TODO OTHER TABLES
