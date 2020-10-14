@@ -41,7 +41,9 @@ class FcController {
   getDataFromRncp(providedRncp) {
     if (!providedRncp || !/^(RNCP)?[0-9]{2,5}$/g.test(providedRncp.trim())) {
       return {
-        result: {},
+        result: {
+          code_rncp: providedRncp,
+        },
         messages: {
           error: "Le code RNCP doit être définit et au format 5 ou 9 caractères,  RNCP24440 ou 24440",
         },
