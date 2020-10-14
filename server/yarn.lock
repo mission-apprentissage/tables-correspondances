@@ -635,10 +635,10 @@ content-type@~1.0.4:
   resolved "https://registry.yarnpkg.com/content-type/-/content-type-1.0.4.tgz#e138cc75e040c727b1966fe5e5f8c9aee256fe3b"
   integrity sha512-hIP3EEPs8tB9AT1L+NUqtwOAps4mk2Zob89MWXMHjHWg9milF/j4osnnQLXBCBFBk/tvIG/tUc9mOUJiPBhPXA==
 
-convert-csv-to-json-latin@1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/convert-csv-to-json-latin/-/convert-csv-to-json-latin-1.0.2.tgz#3492d152e1057fa63f650fc29511b759ea08bd34"
-  integrity sha512-EjRSXoxE2UX7/XoFnQYf6sslzD2aBq4iyecVQM9yD0BgYhIkN70rQJQzTWHDIpnl/sohPW5IzkWYqA2Sj+LwBA==
+convert-csv-to-json-latin@1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/convert-csv-to-json-latin/-/convert-csv-to-json-latin-1.0.3.tgz#a2e5212015c8ccc347b5fa27e80f911fd4a90582"
+  integrity sha512-qEjhpMJQ2ekK0vL9PeSxMTMTP4L+CGi0o6gu5GqxqAmnJnAtuQb2NfZ1ERPGsgTfwp+3buG3u/4DIwAOEYn5UA==
 
 cookie-signature@1.0.6:
   version "1.0.6"
