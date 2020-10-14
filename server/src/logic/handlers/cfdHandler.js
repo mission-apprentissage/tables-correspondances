@@ -22,8 +22,21 @@ const getDataFromCfd = (providedCfd) => {
   const mefs = bcnController.getMefsFromCfd(bcnData.result.cfd);
   const mef = bcnController.getUniqMefFromMefs(mefs);
 
+  let rncpData = {
+    result: {},
+    messages: {},
+  };
   const codeRncpUpdated = fcController.findRncpFromCfd(bcnData.result.cfd);
-  const rncpData = fcController.getDataFromRncp(codeRncpUpdated.value);
+  if (codeRncpUpdated.value) {
+    rncpData = fcController.getDataFromRncp(codeRncpUpdated.value);
+  } else {
+    rncpData = {
+      result: {},
+      messages: {
+        error: codeRncpUpdated.info,
+      },
+    };
+  }
 
   return {
     result: {
