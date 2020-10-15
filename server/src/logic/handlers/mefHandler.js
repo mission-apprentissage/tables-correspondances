@@ -5,8 +5,21 @@ const getDataFromMef10 = (providedMef10) => {
   const mefData = bcnController.getDataFromMef10(providedMef10);
   const cfdData = bcnController.getDataFromCfd(mefData.result.cfd);
 
+  let rncpData = {
+    result: {},
+    messages: {},
+  };
   const codeRncpUpdated = fcController.findRncpFromCfd(cfdData.result.cfd);
-  const rncpData = fcController.getDataFromRncp(codeRncpUpdated.value);
+  if (codeRncpUpdated.value) {
+    rncpData = fcController.getDataFromRncp(codeRncpUpdated.value);
+  } else {
+    rncpData = {
+      result: {},
+      messages: {
+        error: codeRncpUpdated.info,
+      },
+    };
+  }
 
   return {
     result: {
