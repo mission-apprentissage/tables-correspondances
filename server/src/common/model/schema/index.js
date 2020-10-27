@@ -1,11 +1,11 @@
 const logSchema = require("./log");
 const bcnFormationDiplomesSchema = require("./bcnFormationDiplomes");
-const annuaireEtablissementsSchema = require("./annuaireEtablissements");
+const etablissementsSchema = require("./etablissements");
 const userSchema = require("./user");
 
 module.exports = {
   bcnFormationDiplomesSchema,
-  annuaireEtablissementsSchema,
+  etablissementsSchema,
   logSchema,
   userSchema,
 };

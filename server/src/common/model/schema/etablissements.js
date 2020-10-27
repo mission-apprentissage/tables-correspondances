@@ -1,4 +1,4 @@
-const annuaireEtablissementsSchema = {
+const etablissementsSchema = {
   id_gestionnaire: {
     type: String,
     default: null,
@@ -194,6 +194,13 @@ const annuaireEtablissementsSchema = {
     implicit_type: "geo_point",
     description: "Latitude et longitude de l'établissement",
   },
+
+  source_info: {
+    type: Object,
+    default: {},
+    description: "source et autres informations",
+  },
+
   administratif_siret_siege_social: {
     type: String,
     default: null,
@@ -408,4 +415,4 @@ const annuaireEtablissementsSchema = {
   },
 };
 
-module.exports = annuaireEtablissementsSchema;
+module.exports = etablissementsSchema;
