@@ -55,6 +55,7 @@ const hydrate = async () => {
         } else if (mapping.siret === eta.siret) {
           updateInfo = commonUpdates(eta, mapping);
           // MUST BE VERIFIED BY HAND
+          count++;
 
           // to check
           // if (!eta.uai && mapping.uai) {
@@ -63,6 +64,7 @@ const hydrate = async () => {
         } else if (mapping.uai === eta.uai) {
           updateInfo = commonUpdates(eta, mapping);
           // MUST BE VERIFIED BY HAND
+          count++;
 
           // console.log("here");
           // console.log(mapping, eta);
@@ -71,16 +73,21 @@ const hydrate = async () => {
           // }
         }
       } else if (etablissements.length > 1) {
+        // MUST BE VERIFIED BY HAND
+        count++;
+
         //await asyncForEach(etablissements, async (ea) => {});
         // for (let ite = 0; ite < etablissements.length; ite++) {
         //   const eta = etablissements[ite];
         // }
       } else {
-        // New etablissement
-        count++;
-        //   const newEtablissement = new Etablissement(mapping);
-        //   await newEtablissement.save();
-        //   logger.debug(`L'établissement '${etablissement.siret}' a été ajouté dans l'annuaire`);
+        if (mapping.siret !== "" || mapping.uai !== "") {
+          // New etablissement
+          const newEtablissement = new Etablissement(mapping);
+          console.log(newEtablissement);
+          //   await newEtablissement.save();
+          logger.debug(`L'établissement '${newEtablissement.siret}' a été ajouté dans l'annuaire`);
+        }
       }
     });
     logger.info(count);

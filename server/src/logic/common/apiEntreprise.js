@@ -12,6 +12,16 @@ const apiParams = {
 class ApiEntreprise {
   constructor() {}
 
+  async getUnitesLegalesInfoFromSiren(siren) {
+    try {
+      const response = await axios.get(`${apiSireneV3Endpoint}/unites_legales/${siren}`, { params: apiParams });
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+
   async getEntrepriseInfoFromSiren(siren) {
     try {
       const response = await axios.get(`${apiEndpoint}/entreprises/${siren}`, { params: apiParams });
