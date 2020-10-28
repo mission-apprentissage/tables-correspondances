@@ -195,7 +195,12 @@ const etablissementsSchema = {
     description: "Latitude et longitude de l'établissement",
   },
 
-  source_info: {
+  source_info_refa: {
+    type: Object,
+    default: {},
+    description: "source et autres informations",
+  },
+  source_info_sifa: {
     type: Object,
     default: {},
     description: "source et autres informations",

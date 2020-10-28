@@ -141,9 +141,6 @@ const linker = async () => {
     const etablissements = await Etablissement.find({});
     await asyncForEach(etablissements, async (e) => {
       const etablissement = e.toObject();
-      if (!etablissement.source_info_refa) {
-        console.log(etablissement);
-      }
       const gestionnaireInfo = await updateGestionnaireInfo(etablissement);
       const formateurInfo = await updateFormateurInfo(etablissement);
 

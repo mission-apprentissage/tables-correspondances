@@ -51,6 +51,8 @@ const hydrate = async () => {
       //console.log(etablissements.length);
       if (etablissements.length > 1) {
         console.log(etablissements);
+      } else {
+        console.log(etablissements.length);
       }
       //   const etablissements = await Etablissement.find({ $or: [{ uai: mapping.uai }, { siret: mapping.siret }] });
       //   let updateInfo = null;
