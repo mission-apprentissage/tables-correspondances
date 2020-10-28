@@ -11,7 +11,7 @@ const hydrate = async () => {
   // https://enseignement-agricole.opendatasoft.com/explore/dataset/liste-uai-avec-coordonnees/table/?dataChart=eyJxdWVyaWVzIjpbeyJjaGFydHMiOlt7InR5cGUiOiJsaW5lIiwiZnVuYyI6IkFWRyIsInlBeGlzIjoidWFpX2lkX2NkbiIsInNjaWVudGlmaWNEaXNwbGF5Ijp0cnVlLCJjb2xvciI6IiM2NmMyYTUifV0sInhBeGlzIjoiZGF0ZV9qZXVfZG9ubmVlcyIsIm1heHBvaW50cyI6IiIsInRpbWVzY2FsZSI6InllYXIiLCJzb3J0IjoiIiwiY29uZmlnIjp7ImRhdGFzZXQiOiJsaXN0ZS11YWktYXZlYy1jb29yZG9ubmVlcyIsIm9wdGlvbnMiOnt9fX1dLCJkaXNwbGF5TGVnZW5kIjp0cnVlLCJhbGlnbk1vbnRoIjp0cnVlLCJ0aW1lc2NhbGUiOiIifQ%3D%3D&location=10,48.94505,1.20712
 
   const RefEA = await fs.readJson(path.resolve(__dirname, "./liste-uai-avec-coordonnees.json")); // 27/10/2020
-
+  let created = false;
   try {
     await asyncForEach(RefEA, async (ea) => {
       const etablissement = ea.fields;
@@ -77,13 +77,14 @@ const hydrate = async () => {
 
       const exist = await Etablissement.findOne({ "source_info_refa.uai_codedger": etablissement.uai_codedger });
       if (!exist) {
+        created = true;
         const newEtablissement = new Etablissement(mapping);
         await newEtablissement.save();
         logger.debug(`L'établissement '${etablissement.uai_codedger}' a été ajouté dans l'annuaire`);
       }
     });
 
-    logger.info(`Import RefEA done`);
+    logger.info(`Import RefEA done (New ${created})`);
   } catch (error) {
     logger.error(`Import RefEA failed`, error);
   }
@@ -138,7 +139,7 @@ const updateFormateurInfo = async (etablissement) => {
 const linker = async () => {
   try {
     logger.info(`Link etablissements`);
-    const etablissements = await Etablissement.find({});
+    const etablissements = await Etablissement.find({ "source_info_refa.source": "RefEA" });
     await asyncForEach(etablissements, async (e) => {
       const etablissement = e.toObject();
       const gestionnaireInfo = await updateGestionnaireInfo(etablissement);
