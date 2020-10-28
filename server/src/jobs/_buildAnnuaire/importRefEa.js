@@ -53,7 +53,7 @@ const hydrate = async () => {
         niveau_uai: etablissement.uai_niveau,
         geo_coordonnees: etablissement.insee_geo ? etablissement.insee_geo.join(",") : "",
 
-        source_info_RefA: {
+        source_info_refa: {
           source: "RefEA",
           uai_id_cdn: etablissement.uai_id_cdn,
           uai_codedger: etablissement.uai_codedger,
@@ -75,7 +75,7 @@ const hydrate = async () => {
         },
       };
 
-      const exist = await Etablissement.findOne({ "source_info_RefA.uai_codedger": etablissement.uai_codedger });
+      const exist = await Etablissement.findOne({ "source_info_refa.uai_codedger": etablissement.uai_codedger });
       if (!exist) {
         const newEtablissement = new Etablissement(mapping);
         await newEtablissement.save();
@@ -90,8 +90,8 @@ const hydrate = async () => {
 };
 
 const updateGestionnaireInfo = async (etablissement) => {
-  const codeGestionnaire = etablissement.source_info_RefA.uainiveau1_codedger;
-  const gestionnaire = await Etablissement.findOne({ "source_info_RefA.uai_codedger": codeGestionnaire });
+  const codeGestionnaire = etablissement.source_info_refa.uainiveau1_codedger;
+  const gestionnaire = await Etablissement.findOne({ "source_info_refa.uai_codedger": codeGestionnaire });
   if (gestionnaire) {
     const gestionnaireInfo = {
       id_gestionnaire: gestionnaire._id.toString(),
@@ -112,8 +112,8 @@ const updateGestionnaireInfo = async (etablissement) => {
 };
 
 const updateFormateurInfo = async (etablissement) => {
-  const codeFormateur = etablissement.source_info_RefA.uainiveau2_codedger;
-  const formateur = await Etablissement.findOne({ "source_info_RefA.uai_codedger": codeFormateur });
+  const codeFormateur = etablissement.source_info_refa.uainiveau2_codedger;
+  const formateur = await Etablissement.findOne({ "source_info_refa.uai_codedger": codeFormateur });
   if (formateur) {
     const formateurInfo = {
       id_formateur: formateur._id.toString(),
@@ -141,6 +141,9 @@ const linker = async () => {
     const etablissements = await Etablissement.find({});
     await asyncForEach(etablissements, async (e) => {
       const etablissement = e.toObject();
+      if (!etablissement.source_info_refa) {
+        console.log(etablissement);
+      }
       const gestionnaireInfo = await updateGestionnaireInfo(etablissement);
       const formateurInfo = await updateFormateurInfo(etablissement);
 

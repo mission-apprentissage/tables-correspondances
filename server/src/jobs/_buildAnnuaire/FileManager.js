@@ -2,37 +2,21 @@ const path = require("path");
 const XLSX = require("xlsx");
 
 class FileManager {
-  getXLSXFile() {
-    const filePath = path.join(__dirname, "./ListeCFA_sifa_avecsiret.xlsx");
+  getXLSXFile(xlsxPath, headers) {
+    const filePath = path.join(__dirname, xlsxPath);
 
-    const jsonArray = this.getXLSX(filePath);
+    const jsonArray = this.getXLSX(filePath, headers);
 
     return jsonArray;
   }
 
-  getXLSX(filePath) {
+  getXLSX(filePath, headers) {
     try {
       const { sheet_name_list, workbook } = this.readXLSXFile(filePath);
       const worksheet = workbook.Sheets[sheet_name_list[0]];
 
       const jsonSheetArray = XLSX.utils.sheet_to_json(worksheet, {
-        header: [
-          "code_gestion",
-          "numero_uai",
-          "mel",
-          "denomination_principale_uai",
-          "patronyme_uai",
-          "adresse_uai",
-          "code_postal_uai",
-          "localite_acheminement_uai",
-          "numero_telephone_uai",
-          "mel_uai",
-          "enquete",
-          "nature_uai",
-          "specificite_uai",
-          "nouveau",
-          "numero_siren_siret_uai",
-        ],
+        header: headers,
         range: 1,
         raw: false,
       });
