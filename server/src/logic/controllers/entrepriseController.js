@@ -16,6 +16,7 @@ class EntrepriseApiData {
     let siret = `${providedSiret}`.trim();
 
     const responseEstablishmentApiInfo = await apiEntreprise.getEntrepriseInfoFromSiret(siret);
+
     if (!responseEstablishmentApiInfo) {
       return {
         result: {},
@@ -27,6 +28,9 @@ class EntrepriseApiData {
 
     const siren = siret.substring(0, 9);
     const responseEntrepriseApiInfo = await apiEntreprise.getEntrepriseInfoFromSiren(siren);
+
+    //const { unite_legale: responseUnitesLegaleInfo } = await apiEntreprise.getUnitesLegalesInfoFromSiren(siren);
+    //console.log(responseUnitesLegaleInfo);
 
     if (!responseEntrepriseApiInfo) {
       return {

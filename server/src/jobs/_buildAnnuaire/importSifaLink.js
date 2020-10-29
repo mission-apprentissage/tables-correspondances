@@ -46,13 +46,10 @@ const hydrate = async () => {
     }
   }
   const uais = uniq([...uaiCFA, ...uaiSites]);
-  console.log(uais.length);
+  //console.log(uais.length);
 
   const etablissements = [];
-  //const testEtablissementsLevel1 = [];
-  //const testEtablissementsLevel2 = [];
   const restErrors = new Map();
-  let cc = 0;
   for (let ite = 0; ite < uais.length; ite++) {
     const uai = uais[ite];
     const isInCFA = uaiCFA.includes(uai); // Existe en tant que cfa
@@ -66,7 +63,6 @@ const hydrate = async () => {
         uai_gestionnaire: uai,
         uai_formateur: null,
       });
-      //testEtablissementsLevel1.push(uai);
     } else {
       // 3024
       const cfas = uaiSitesCouple.get(uai);
@@ -84,7 +80,6 @@ const hydrate = async () => {
             uai_gestionnaire: uaiParent,
             uai_formateur: null,
           });
-          //testEtablissementsLevel2.push(uai);
         } else {
           // 154
           if (isParentInCFA && isParentInCFA) {
@@ -106,111 +101,64 @@ const hydrate = async () => {
                 uai_gestionnaire: uaiParent,
                 uai_formateur: null,
               });
-              //testEtablissementsLevel2.push(uai);
             }
           }
         }
       } else if (cfas && cfas.length > 1) {
         // 308
         // Mutiple parent
+        if (!isInCFA && isInSite) {
+          // 305 // TO EXTRACT
+        } else {
+          // 3
+        }
+
         restErrors.set(uai, cfas);
       }
     }
   }
-
-  // let count = 0;
-  // let count2 = 0;
-  // for (let ite = 0; ite < etablissementsPotentialLevel1.length; ite++) {
-  //   const potential = etablissementsPotentialLevel1[ite];
-  //   if (testEtablissementsLevel1.includes(potential.uai)) {
-  //     count++;
-  //   } else if (testEtablissementsLevel2.includes(potential.uai)) {
-  //     count2++;
-  //   }
-  // }
-  // console.log(count);
-  // console.log(count2);
 
   for (let ite = 0; ite < etablissements.length; ite++) {
     const etablissement = etablissements[ite];
     if (etablissement.niveau === 3) {
       const formateur = etablissements.find((e) => e.uai === etablissement.uai_formateur);
       if (formateur) {
-        // 969
+        // 145
         if (formateur.niveau === 2) {
-          // 969
+          // 145
           etablissement.uai_gestionnaire = formateur.uai_gestionnaire;
         }
       } else {
-        // 70
-        //const test = restErrors.get(etablissement.uai_formateur);
-        //console.log(test);
+        // 4 // TO EXTRACT
       }
     }
   }
 
-  console.log(cc);
-
   try {
-    // let unknownUaiCfa = [];
-    // await asyncForEach(sifa, async (e) => {
-    //   const mappingCFA = {
-    //     uai: e.numero_uai_cfa,
-    //     libelle_educnationale: e.denomination_principale_cfa,
-    //     // libelle_communication: e.patronyme_cfa,
-    //     code_departement: e.departement_cfa,
-    //   };
+    // STEP 1 ADD UAI THAT DOES NOT EXIST
+    // todo
 
-    //   const etablissements = await Etablissement.find({ uai: mappingCFA.uai });
-    //   if (etablissements.length > 1) {
-    //     logger.error(`Found mutiple uai cfa`);
-    //   } else if (etablissements.length === 1) {
-    //     // Do nothing
-    //   } else if (etablissements.length === 0) {
-    //     unknownUaiCfa.push(mappingCFA.uai);
-    //   }
-    // });
-    // unknownUaiCfa = uniq(unknownUaiCfa);
-    // logger.info(unknownUaiCfa.length); // 272
+    //STEP 2 FIND IN BDD, CHECK VALIDiTé, update if needed
+    let cc = 0;
+    console.log(etablissements.length);
+    await asyncForEach(etablissements, async (e) => {
+      const mapping = {
+        uai: e.uai,
+        niveau_uai: e.niveau,
+        uai_gestionnaire: e.uai_gestionnaire,
+        uai_formateur: e.uai_formateur,
+      };
 
-    // let unknownUaiSite = [];
-    // let knownUaiSite = [];
-    // let knownUaiCfa_Site = 0;
-    // await asyncForEach(sifa, async (e) => {
-    //   const mappingCFA = {
-    //     uai: e.numero_uai_cfa,
-    //     libelle_educnationale: e.denomination_principale_cfa,
-    //     // libelle_communication: e.patronyme_cfa,
-    //     code_departement: e.departement_cfa,
-    //   };
-    //   const mappingSite = {
-    //     uai: e.numero_uai_site,
-    //     libelle_educnationale: e.denomination_principale_site,
-    //     // libelle_communication: e.patronyme_site,
-    //     code_departement: e.departement_site,
-    //   };
-
-    //   const etablissements = await Etablissement.find({ uai: mappingSite.uai });
-
-    //   if (etablissements.length > 1) {
-    //     logger.error(`Found mutiple uai site`);
-    //   } else if (etablissements.length === 1) {
-    //     // Do nothing
-    //     knownUaiSite.push(mappingSite.uai);
-    //     const etablissementsCFA = await Etablissement.findOne({ uai: mappingCFA.uai });
-    //     if (etablissementsCFA) {
-    //       knownUaiCfa_Site++;
-    //     }
-    //   } else if (etablissements.length === 0) {
-    //     unknownUaiSite.push(mappingSite.uai);
-    //   }
-    // });
-    // knownUaiSite = uniq(knownUaiSite);
-    // unknownUaiSite = uniq(unknownUaiSite);
-    // logger.info(knownUaiSite.length); // 1281
-    // logger.info(knownUaiCfa_Site); // 1322
-    // logger.info(unknownUaiSite.length); // 2748
-
+      const annu = await Etablissement.find({ uai: mapping.uai });
+      //let updateInfo = null;
+      if (annu.length === 1) {
+        cc++;
+        console.log(mapping, annu[0]);
+      } else if (annu.length > 1) {
+      } else {
+      }
+    });
+    console.log(cc);
     logger.info(`Import Sifa link done`);
   } catch (error) {
     logger.error(`Import sifa link failed`, error);
