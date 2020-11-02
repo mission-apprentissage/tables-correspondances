@@ -14,6 +14,83 @@ const commonUpdates = (etablissement, mapping) => {
   return updateInfo;
 };
 
+const compare = (etablissement, data) => {
+  let message = "";
+  if (etablissement.siret === data.siret && etablissement.uai !== data.uai) {
+    if (!etablissement.uai) {
+      message = `L'uai RefEA n'est pas défini. `;
+      if (etablissement.uai_gestionnaire === data.uai) {
+        // L'uai DATA est trouvé sur le gestionnaire
+        message += `L'uai SIFA est trouvé pour le gestionnnaire`;
+      } else if (etablissement.uai_formateur === data.uai) {
+        // L'uai DATA est trouvé sur le formateur
+        message += `L'uai SIFA est trouvé pour le formateur`;
+      } else {
+        // Proposition uai DATA comme UAI
+        message += `L'uai possible pour cette établissement est l'uai sifa ${data.uai}`;
+      }
+    } else {
+      // Les uais ne sont pas les même
+      message = `L'uai RefEA n'est pas le même que celui SIFA. `;
+      if (etablissement.uai_gestionnaire === data.uai) {
+        // L'uai DATA est trouvé sur le gestionnaire
+        message += `L'uai SIFA est trouvé pour le gestionnnaire`;
+      } else if (etablissement.uai_formateur === data.uai) {
+        // L'uai DATA est trouvé sur le formateur
+        message += `L'uai SIFA est trouvé pour le formateur`;
+      } else {
+        //
+        if (data.uai === "" && etablissement.uai !== "") {
+          message += `L'uai possible pour cette établissement est l'uai RefEa ${etablissement.uai}`;
+        }
+      }
+    }
+  } else if (etablissement.siret !== data.siret && etablissement.uai === data.uai) {
+    if (!etablissement.siret) {
+      message = `Le siret RefEA n'est pas défini. `;
+      if (etablissement.siret_gestionnaire === data.siret) {
+        // Le siret DATA est trouvé sur le gestionnaire
+        message += `Le siret SIFA est trouvé pour le gestionnaire`;
+      } else if (etablissement.siret_formateur === data.siret) {
+        // Le siret DATA est trouvé sur le formateur
+        message += `Le siret SIFA est trouvé pour le formateur`;
+      } else {
+        // Proposition siret DATA comme siret
+        message += `Le siret possible pour cette établissement est le siret sifa ${data.siret}`;
+      }
+    } else {
+      // Ne sont pas les mêmes
+      message = `Le siret RefEA n'est pas le même que celui SIFA. `;
+      if (etablissement.siret_gestionnaire === data.siret) {
+        // Le siret DATA est trouvé sur le gestionnaire
+        message += `Le siret SIFA est trouvé pour le gestionnaire`;
+      } else if (etablissement.siret_formateur === data.siret) {
+        // Le siret DATA est trouvé sur le formateur
+        message += `Le siret SIFA est trouvé pour le formateur`;
+      } else {
+        // Proposition siret DATA comme siret
+        message += ``;
+        if (data.siret === "" && etablissement.siret !== "") {
+          message += `Le siret possible pour cette établissement est le siret RefEa ${etablissement.siret}`;
+        }
+      }
+    }
+  }
+
+  return {
+    uaiRefEA: etablissement.uai,
+    siretRefEA: etablissement.siret,
+    uaiGestionnaireRefEA: etablissement.uai_gestionnaire,
+    siretGestionnaireRefEA: etablissement.siret_gestionnaire,
+    uaiFormateurRefEA: etablissement.uai_formateur,
+    siretFormateurRefEA: etablissement.siret_formateur,
+    uaiSifa: data.uai,
+    siretSifa: data.siret,
+    message,
+    id: etablissement._id,
+  };
+};
+
 const hydrate = async () => {
   logger.info(`Import Sifa siret`);
 
@@ -40,6 +117,7 @@ const hydrate = async () => {
 
   let count = 0;
   try {
+    const toCheckManually = [];
     await asyncForEach(sifa, async (e) => {
       const mapping = {
         uai: e.numero_uai,
@@ -66,16 +144,30 @@ const hydrate = async () => {
       let updateInfo = null;
       if (etablissements.length === 1) {
         const eta = etablissements[0].toObject();
+        updateInfo = commonUpdates(eta, mapping);
         if (mapping.siret === eta.siret && mapping.uai === eta.uai) {
-          updateInfo = commonUpdates(eta, mapping);
-        } else if (mapping.siret === eta.siret) {
-          updateInfo = commonUpdates(eta, mapping);
-          // MUST BE VERIFIED BY HAND
-          count++;
-        } else if (mapping.uai === eta.uai) {
-          updateInfo = commonUpdates(eta, mapping);
-          // MUST BE VERIFIED BY HAND
-          count++;
+          // Nothing to do they are equal
+        } else if (mapping.siret === eta.siret && mapping.siret !== "" && mapping.uai !== "") {
+          // 4
+          // Add to manual checking list
+          const result = compare(eta, mapping);
+          toCheckManually.push(result);
+        } else if (mapping.uai === eta.uai && mapping.uai !== "" && mapping.siret !== "") {
+          // 45
+          // Add to manual checking list
+          const result = compare(eta, mapping);
+          toCheckManually.push(result);
+        } else {
+          // 76
+          if (mapping.siret === "" && !eta.siret) {
+            // 22
+            // Nothing to do siret are empty
+          } else {
+            // 54
+            // Add to manual checking list
+            const result = compare(eta, mapping);
+            toCheckManually.push(result);
+          }
         }
 
         if (updateInfo) {
@@ -90,18 +182,35 @@ const hydrate = async () => {
           );
         }
       } else if (etablissements.length > 1) {
-        // MUST BE VERIFIED BY HAND
+        // 166
+        for (let ite = 0; ite < etablissements.length; ite++) {
+          const etablissement = etablissements[ite];
+          console.log({
+            uaiRefEA: etablissement.uai,
+            siretRefEA: etablissement.siret,
+            uaiGestionnaireRefEA: etablissement.uai_gestionnaire,
+            siretGestionnaireRefEA: etablissement.siret_gestionnaire,
+            uaiFormateurRefEA: etablissement.uai_formateur,
+            siretFormateurRefEA: etablissement.siret_formateur,
+            uaiSifa: mapping.uai,
+            siretSifa: mapping.siret,
+            id: etablissement._id,
+          });
+        }
+        console.log("-------------");
+        // MUST BE VERIFIED BY HAND, Multiple found
         count++;
       } else {
         if (mapping.siret !== "" || mapping.uai !== "") {
-          // New etablissement
-          const newEtablissement = new Etablissement(mapping);
-          await newEtablissement.save();
-          logger.debug(`L'établissement '${newEtablissement.siret}' a été ajouté dans l'annuaire`);
+          // Add new etablissement
+          //const newEtablissement = new Etablissement(mapping);
+          //await newEtablissement.save();
+          //logger.debug(`L'établissement '${newEtablissement.siret}' a été ajouté dans l'annuaire`);
         }
       }
     });
     logger.info(count);
+    logger.info(toCheckManually.length);
     logger.info(`Import Sifa siret done`);
   } catch (error) {
     logger.error(`Import sifa siret failed`, error);

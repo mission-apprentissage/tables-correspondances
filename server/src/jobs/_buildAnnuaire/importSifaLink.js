@@ -138,10 +138,11 @@ const hydrate = async () => {
     // STEP 1 ADD UAI THAT DOES NOT EXIST
     // todo
 
-    //STEP 2 FIND IN BDD, CHECK VALIDiTé, update if needed
+    //STEP 2 Lookup in bdd des uais, CHECK VALIDITé, update if needed
     let cc = 0;
     console.log(etablissements.length);
     await asyncForEach(etablissements, async (e) => {
+      //3154
       const mapping = {
         uai: e.uai,
         niveau_uai: e.niveau,
@@ -152,10 +153,13 @@ const hydrate = async () => {
       const annu = await Etablissement.find({ uai: mapping.uai });
       //let updateInfo = null;
       if (annu.length === 1) {
-        cc++;
-        console.log(mapping, annu[0]);
+        //773
+        // Veirfy overlap
+        // console.log(mapping, annu[0]);
       } else if (annu.length > 1) {
+        // 0 => Good
       } else {
+        //2381
       }
     });
     console.log(cc);

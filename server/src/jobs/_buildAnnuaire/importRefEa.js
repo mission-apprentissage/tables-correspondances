@@ -17,6 +17,9 @@ const hydrate = async () => {
       const etablissement = ea.fields;
 
       const mapping = {
+        siret: etablissement.uai_code_siret,
+        uai: etablissement.uai_code_educnationale,
+
         libelle_administratif_gestionnaire: etablissement.uainiveau1_libelle_administratif,
         libelle_administratif_formateur: etablissement.uainiveau2_libelle_administratif,
 
@@ -37,8 +40,7 @@ const hydrate = async () => {
         secteur: etablissement.uai_secteur,
         prive_orgaffiliation: etablissement.uaiprive_orgaffiliation,
         prive_typecontrat: etablissement.uaiprive_typecontrat,
-        siret: etablissement.uai_code_siret,
-        uai: etablissement.uai_code_educnationale,
+
         libelle_educnationale: etablissement.uai_libelle_educnationale,
         eleve: etablissement.uai_eleve === "Oui",
         etudiant: etablissement.uai_etudiant === "Oui",
