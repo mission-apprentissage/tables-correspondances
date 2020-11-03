@@ -84,6 +84,7 @@ const compare = (etablissement, data) => {
     siretGestionnaireRefEA: etablissement.siret_gestionnaire,
     uaiFormateurRefEA: etablissement.uai_formateur,
     siretFormateurRefEA: etablissement.siret_formateur,
+    niveau_uai: etablissement.niveau_uai,
     uaiSifa: data.uai,
     siretSifa: data.siret,
     message,
@@ -115,9 +116,10 @@ const hydrate = async () => {
     "numero_siren_siret_uai",
   ]);
 
-  let count = 0;
   try {
     const toCheckManually = [];
+    //const restNotFound = [];
+    //let cc = 0;
     await asyncForEach(sifa, async (e) => {
       const mapping = {
         uai: e.numero_uai,
@@ -183,34 +185,74 @@ const hydrate = async () => {
         }
       } else if (etablissements.length > 1) {
         // 166
-        for (let ite = 0; ite < etablissements.length; ite++) {
-          const etablissement = etablissements[ite];
-          console.log({
-            uaiRefEA: etablissement.uai,
-            siretRefEA: etablissement.siret,
-            uaiGestionnaireRefEA: etablissement.uai_gestionnaire,
-            siretGestionnaireRefEA: etablissement.siret_gestionnaire,
-            uaiFormateurRefEA: etablissement.uai_formateur,
-            siretFormateurRefEA: etablissement.siret_formateur,
-            uaiSifa: mapping.uai,
-            siretSifa: mapping.siret,
-            id: etablissement._id,
+        const etablissement = await Etablissement.findOne({ uai: mapping.uai }, { siret: mapping.siret });
+        if (etablissement) {
+          // 163
+          // Nothing to do they are equal
+        } else {
+          // 3
+          // MUST BE VERIFIED BY HAND, Multiple found
+          toCheckManually.push({
+            uaiRefEA: "",
+            siretRefEA: "",
+            uaiGestionnaireRefEA: "",
+            siretGestionnaireRefEA: "",
+            uaiFormateurRefEA: "",
+            siretFormateurRefEA: "",
+            niveau_uai: "",
+            uaiSifa: "",
+            siretSifa: "",
+            message: "",
+            id: "",
+          });
+          for (let ite = 0; ite < etablissements.length; ite++) {
+            const etablissement = etablissements[ite];
+            toCheckManually.push({
+              uaiRefEA: etablissement.uai,
+              siretRefEA: etablissement.siret,
+              uaiGestionnaireRefEA: etablissement.uai_gestionnaire,
+              siretGestionnaireRefEA: etablissement.siret_gestionnaire,
+              uaiFormateurRefEA: etablissement.uai_formateur,
+              siretFormateurRefEA: etablissement.siret_formateur,
+              niveau_uai: etablissement.niveau_uai,
+              uaiSifa: mapping.uai,
+              siretSifa: mapping.siret,
+              message: "Multiple possibilité, aucune indication, à vérifier",
+              id: etablissement._id,
+            });
+          }
+          toCheckManually.push({
+            uaiRefEA: "",
+            siretRefEA: "",
+            uaiGestionnaireRefEA: "",
+            siretGestionnaireRefEA: "",
+            uaiFormateurRefEA: "",
+            siretFormateurRefEA: "",
+            niveau_uai: "",
+            uaiSifa: "",
+            siretSifa: "",
+            message: "",
+            id: "",
           });
         }
-        console.log("-------------");
-        // MUST BE VERIFIED BY HAND, Multiple found
-        count++;
       } else {
-        if (mapping.siret !== "" || mapping.uai !== "") {
+        //cc++;
+        if (mapping.siret !== "" && mapping.uai !== "") {
+          //
           // Add new etablissement
-          //const newEtablissement = new Etablissement(mapping);
-          //await newEtablissement.save();
+          const newEtablissement = new Etablissement(mapping);
+          await newEtablissement.save();
           //logger.debug(`L'établissement '${newEtablissement.siret}' a été ajouté dans l'annuaire`);
+        } else if (mapping.siret !== "" || mapping.uai !== "") {
+          //restNotFound.push(mapping);
+          const newEtablissement = new Etablissement(mapping);
+          await newEtablissement.save();
         }
       }
     });
-    logger.info(count);
-    logger.info(toCheckManually.length);
+    //logger.info(cc);
+    //logger.info(restNotFound.length); // 302
+    logger.info(toCheckManually.length); // 115 -> 133 -> 79
     logger.info(`Import Sifa siret done`);
   } catch (error) {
     logger.error(`Import sifa siret failed`, error);

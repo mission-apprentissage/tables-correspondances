@@ -154,7 +154,7 @@ const hydrate = async () => {
       //let updateInfo = null;
       if (annu.length === 1) {
         //773
-        // Veirfy overlap
+        // Verify overlap
         // console.log(mapping, annu[0]);
       } else if (annu.length > 1) {
         // 0 => Good
