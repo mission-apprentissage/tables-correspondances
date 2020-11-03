@@ -118,8 +118,6 @@ const hydrate = async () => {
 
   try {
     const toCheckManually = [];
-    //const restNotFound = [];
-    //let cc = 0;
     await asyncForEach(sifa, async (e) => {
       const mapping = {
         uai: e.numero_uai,
@@ -236,30 +234,21 @@ const hydrate = async () => {
           });
         }
       } else {
-        //cc++;
-        if (mapping.siret !== "" && mapping.uai !== "") {
-          //
-          // Add new etablissement
-          const newEtablissement = new Etablissement(mapping);
-          await newEtablissement.save();
-          //logger.debug(`L'établissement '${newEtablissement.siret}' a été ajouté dans l'annuaire`);
-        } else if (mapping.siret !== "" || mapping.uai !== "") {
-          //restNotFound.push(mapping);
-          const newEtablissement = new Etablissement(mapping);
-          await newEtablissement.save();
-        }
+        // Add new etablissement
+        const newEtablissement = new Etablissement(mapping);
+        await newEtablissement.save();
       }
     });
-    //logger.info(cc);
-    //logger.info(restNotFound.length); // 302
     logger.info(toCheckManually.length); // 115 -> 133 -> 79
     logger.info(`Import Sifa siret done`);
+    return toCheckManually;
   } catch (error) {
     logger.error(`Import sifa siret failed`, error);
   }
 };
 
 const importRef = async () => {
-  await hydrate();
+  const toCheckManually = await hydrate();
+  return toCheckManually;
 };
 module.exports = importRef;

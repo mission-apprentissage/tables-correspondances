@@ -4,7 +4,29 @@ const fileManager = require("./FileManager");
 const { Etablissement } = require("../../common/model/index");
 const { uniq } = require("lodash");
 
-const hydrate = async () => {
+const compare = (etablissement, data, messageParam = "") => {
+  let message = messageParam;
+
+  return {
+    uaiRefEA: etablissement.uai,
+    siretRefEA: etablissement.siret,
+    uaiGestionnaireRefEA: etablissement.uai_gestionnaire,
+    siretGestionnaireRefEA: etablissement.siret_gestionnaire,
+    uaiFormateurRefEA: etablissement.uai_formateur,
+    siretFormateurRefEA: etablissement.siret_formateur,
+    niveau_uai: etablissement.niveau_uai,
+
+    uaiSifa: data.uai,
+    uaiNiveauSifa: data.niveau_uai,
+    uaiGestionnaireSifa: data.uai_gestionnaire,
+    uaiFormateurSifa: data.uai_formateur,
+
+    message,
+    id: etablissement._id,
+  };
+};
+
+const linker = async () => {
   logger.info(`Import Sifa link`);
 
   // Chargement export Sifa link
@@ -89,7 +111,7 @@ const hydrate = async () => {
               etablissements.push({
                 uai,
                 niveau: 3,
-                uai_gestionnaire: null, // TO FIND AFTER
+                uai_gestionnaire: null,
                 uai_formateur: uaiParent,
               });
             } else {
@@ -108,7 +130,7 @@ const hydrate = async () => {
         // 308
         // Mutiple parent
         if (!isInCFA && isInSite) {
-          // 305 // TO EXTRACT
+          // 305 // TO EXTRACT ------------------------------------
         } else {
           // 3
         }
@@ -129,7 +151,7 @@ const hydrate = async () => {
           etablissement.uai_gestionnaire = formateur.uai_gestionnaire;
         }
       } else {
-        // 4 // TO EXTRACT
+        // 4 // TO EXTRACT ------------------------------------
       }
     }
   }
@@ -139,8 +161,9 @@ const hydrate = async () => {
     // todo
 
     //STEP 2 Lookup in bdd des uais, CHECK VALIDITé, update if needed
-    let cc = 0;
-    console.log(etablissements.length);
+    //let cc = 0;
+    //onsole.log(etablissements.length);
+    const toCheckManually = [];
     await asyncForEach(etablissements, async (e) => {
       //3154
       const mapping = {
@@ -153,23 +176,160 @@ const hydrate = async () => {
       const annu = await Etablissement.find({ uai: mapping.uai });
       //let updateInfo = null;
       if (annu.length === 1) {
+        const current = annu[0].toObject();
+        //const gestionnaire = await Etablissement.find({ uai: mapping.uai_gestionnaire });
+        //const formateur = await Etablissement.find({ uai: mapping.uai_formateur });
+
         //773
         // Verify overlap
-        // console.log(mapping, annu[0]);
+
+        if (current.niveau_uai !== mapping.niveau_uai) {
+          // 539
+          if (current.niveau_uai === 0) {
+            // 407
+            // const result = compare(current, mapping);
+            // console.log(result);
+            if (
+              current.uai === mapping.uai &&
+              current.uai_gestionnaire === mapping.uai_gestionnaire &&
+              current.uai_formateur === mapping.uai_formateur
+            ) {
+              // Nothing todo
+              // 0
+            } else if (
+              current.uai === mapping.uai &&
+              current.uai_gestionnaire === mapping.uai_gestionnaire &&
+              !current.uai_formateur &&
+              !mapping.uai_formateur
+            ) {
+              // Nothing todo
+              // 0
+            } else if (
+              current.uai === mapping.uai &&
+              current.uai_gestionnaire === mapping.uai_gestionnaire &&
+              current.uai_formateur !== mapping.uai_formateur &&
+              mapping.uai_formateur
+            ) {
+              // 1 ------------------------------------
+            } else if (
+              current.uai === mapping.uai &&
+              current.uai_gestionnaire !== mapping.uai_gestionnaire &&
+              current.uai_formateur === mapping.uai_formateur &&
+              mapping.uai_formateur
+            ) {
+              // 0
+            } else if (
+              current.uai === mapping.uai &&
+              current.uai_gestionnaire !== mapping.uai_gestionnaire &&
+              current.uai_formateur === mapping.uai_formateur &&
+              mapping.uai_gestionnaire &&
+              !mapping.uai_formateur
+            ) {
+              // 404
+              const result = compare(
+                current,
+                mapping,
+                `L'uai gestionnaire est probablement ${mapping.uai_gestionnaire}, le niveau uai est probablement ${mapping.niveau_uai}`
+              );
+              toCheckManually.push(result);
+            } else if (
+              current.uai === mapping.uai &&
+              current.uai_gestionnaire !== mapping.uai_gestionnaire &&
+              current.uai_formateur !== mapping.uai_formateur &&
+              !current.uai_gestionnaire &&
+              !current.uai_formateur
+            ) {
+              // 2 ------------------------------------
+            }
+          } else {
+            // 132 ------------------------------------
+          }
+        } else {
+          if (
+            current.uai === mapping.uai &&
+            current.uai_gestionnaire === mapping.uai_gestionnaire &&
+            current.uai_formateur === mapping.uai_formateur
+          ) {
+            // Nothing todo
+            // 5
+          } else if (
+            current.uai === mapping.uai &&
+            current.uai_gestionnaire === mapping.uai_gestionnaire &&
+            !current.uai_formateur &&
+            !mapping.uai_formateur
+          ) {
+            // Nothing todo
+            // 0
+          } else if (
+            current.uai === mapping.uai &&
+            current.uai_gestionnaire === mapping.uai_gestionnaire &&
+            current.uai_formateur !== mapping.uai_formateur &&
+            mapping.uai_formateur
+          ) {
+            // 2
+            // Compare
+            const result = compare(current, mapping, `L'uai formateur est probablement ${mapping.uai_formateur}`);
+            toCheckManually.push(result);
+          } else if (
+            current.uai === mapping.uai &&
+            current.uai_gestionnaire !== mapping.uai_gestionnaire &&
+            current.uai_formateur === mapping.uai_formateur &&
+            mapping.uai_formateur
+          ) {
+            // Aucun cas
+          } else if (
+            current.uai === mapping.uai &&
+            current.uai_gestionnaire !== mapping.uai_gestionnaire &&
+            current.uai_formateur === mapping.uai_formateur &&
+            mapping.uai_gestionnaire &&
+            !mapping.uai_formateur
+          ) {
+            // 213
+            // Compare
+            const result = compare(current, mapping, `L'uai gestionnaire est probablement ${mapping.uai_gestionnaire}`);
+            toCheckManually.push(result);
+          } else if (
+            current.uai === mapping.uai &&
+            current.uai_gestionnaire !== mapping.uai_gestionnaire &&
+            current.uai_formateur === mapping.uai_formateur &&
+            !mapping.uai_gestionnaire &&
+            !mapping.uai_formateur
+          ) {
+            // Aucun cas
+          } else if (
+            current.uai === mapping.uai &&
+            current.uai_gestionnaire !== mapping.uai_gestionnaire &&
+            current.uai_formateur !== mapping.uai_formateur &&
+            !current.uai_gestionnaire &&
+            !current.uai_formateur
+          ) {
+            const result = compare(
+              current,
+              mapping,
+              `L'uai gestionnaire est probablement ${mapping.uai_gestionnaire}, L'uai formateur est probablement ${mapping.uai_formateur}`
+            );
+            toCheckManually.push(result);
+          } else {
+            // 0
+          }
+        }
       } else if (annu.length > 1) {
         // 0 => Good
       } else {
-        //2381
+        //2381   ------------------------------------
       }
     });
-    console.log(cc);
+    //console.log(cc);
+    logger.info(toCheckManually.length);
     logger.info(`Import Sifa link done`);
+    return toCheckManually;
   } catch (error) {
     logger.error(`Import sifa link failed`, error);
   }
 };
 
 const importRef = async () => {
-  await hydrate();
+  const toCheckManually = await linker();
+  return toCheckManually;
 };
 module.exports = importRef;
