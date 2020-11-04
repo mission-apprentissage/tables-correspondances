@@ -107,7 +107,5 @@ module.exports = async () => {
     }
   } catch (err) {
     logger.error(err);
-  } finally {
-    process.exit();
   }
 };
