@@ -1,10 +1,10 @@
 const logSchema = require("./log");
-const sampleSchema = require("./sample");
+const bcnFormationDiplomesSchema = require("./bcnFormationDiplomesSchema");
 const userSchema = require("./user");
 const domainesMetiersSchema = require("./domainesmetiers");
 
 module.exports = {
-  sampleSchema,
+  bcnFormationDiplomesSchema,
   logSchema,
   userSchema,
   domainesMetiersSchema,

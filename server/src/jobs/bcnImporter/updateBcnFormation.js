@@ -1,0 +1,15 @@
+const logger = require("../../common/logger");
+const { BcnFormationDiplome } = require("../../common/model/index");
+
+module.exports = async (db, id, bcnFormation) => {
+  try {
+    await BcnFormationDiplome.findOneAndUpdate(
+      { _id: id },
+      { ...bcnFormation, last_update_at: Date.now() },
+      { new: true }
+    );
+    logger.info(`BCN Formation '${bcnFormation.FORMATION_DIPLOME}' successfully updated in db ${db.name}`);
+  } catch (err) {
+    logger.error({ err });
+  }
+};
