@@ -10,6 +10,7 @@ module.exports.connectToMongo = (mongoUri = config.mongodb.uri) => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,
+      useCreateIndex: true,
     });
 
     // Get Mongoose to use the global promise library
@@ -29,4 +30,5 @@ module.exports.connectToMongo = (mongoUri = config.mongodb.uri) => {
   });
 };
 
+module.exports.mongooseInstance = mongoose;
 module.exports.closeMongoConnection = (mongooseInst = mongoose) => mongooseInst.disconnect();
