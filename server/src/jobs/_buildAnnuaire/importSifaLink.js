@@ -22,7 +22,7 @@ const compare = (etablissement, data, messageParam = "") => {
     uaiFormateurSifa: data.uai_formateur,
 
     message,
-    id: etablissement._id,
+    id: etablissement._id.toString(),
   };
 };
 

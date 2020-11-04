@@ -6,21 +6,21 @@ class Exporter {
 
   async toXlsx(jsonData, fileName) {
     const WS = XLSX.utils.json_to_sheet(jsonData, {
-      header: [
-        "uaiRefEA",
-        "siretRefEA",
-        "uaiGestionnaireRefEA",
-        "siretGestionnaireRefEA",
-        "uaiFormateurRefEA",
-        "siretFormateurRefEA",
-        "niveau_uai",
-        "uaiSifa",
-        "uaiNiveauSifa",
-        "uaiGestionnaireSifa",
-        "uaiFormateurSifa",
-        "message,",
-        "id",
-      ],
+      //   header: [
+      //     "uaiRefEA",
+      //     "siretRefEA",
+      //     "uaiGestionnaireRefEA",
+      //     "siretGestionnaireRefEA",
+      //     "uaiFormateurRefEA",
+      //     "siretFormateurRefEA",
+      //     "niveau_uai",
+      //     "uaiSifa",
+      //     "uaiNiveauSifa",
+      //     "uaiGestionnaireSifa",
+      //     "uaiFormateurSifa",
+      //     "message",
+      //     "id",
+      //   ],
     });
 
     const workbook = XLSX.utils.book_new(); // Create a new blank workbook
