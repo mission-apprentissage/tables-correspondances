@@ -3,6 +3,7 @@ const csvToJson = require("convert-csv-to-json-latin");
 const path = require("path");
 const fs = require("fs-extra");
 const axios = require("axios");
+const AWS = require("aws-sdk");
 
 const readJsonFromCsvFile = (localPath) => {
   return csvToJson.getJsonFromCsv(localPath);
@@ -74,3 +75,9 @@ const downloadFile = async (url, to) => {
   });
 };
 module.exports.downloadFile = downloadFile;
+
+const getFileFromS3 = (key) => {
+  const s3 = new AWS.S3();
+  return s3.getObject({ Bucket: "mna-bucket", Key: key }).createReadStream();
+};
+module.exports.getFileFromS3 = getFileFromS3;

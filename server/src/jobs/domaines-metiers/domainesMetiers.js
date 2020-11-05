@@ -3,6 +3,7 @@ const { DomainesMetiers } = require("../../common/model");
 const logger = require("../../common/logger");
 const XLSX = require("xlsx");
 const path = require("path");
+const { getFileFromS3 } = require("../../common/utils/fileUtils");
 
 const emptyMongo = async () => {
   logger.info(`Clearing domainesmetiers db...`);
@@ -21,6 +22,7 @@ const clearIndex = async () => {
 
 const createIndex = async () => {
   let requireAsciiFolding = true;
+  logger.info(`Creating domainesmetiers index...`);
   await DomainesMetiers.createMapping(requireAsciiFolding);
 };
 
@@ -37,6 +39,8 @@ module.exports = async () => {
       return { sheet_name_list: workbook.SheetNames, workbook };
     };
 
+    // TODO : write downloaded file from S3 in assets folder.
+    // const fichierDomainesMetiers = getFileFromS3("mna-services/features/domainesMetiers/TABLE_CUSTOM_1510.xlsx");
     const fichierDomainesMetiers = path.join(__dirname, "./assets/domainesMetiers.xlsx");
     const workbookDomainesMetiers = readXLSXFile(fichierDomainesMetiers);
 
