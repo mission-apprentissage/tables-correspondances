@@ -51,13 +51,14 @@ function getMapping(schema, requireAsciiFolding = false) {
     } else
       switch (mongooseType) {
         case "ObjectID":
-        case "String":
+        case "String": {
           properties[key] = {
             type: "text",
             fields: { keyword: { type: "keyword", ignore_above: 256 } },
             ...asciiFoldingParameters,
           };
           break;
+        }
         case "Date":
           properties[key] = { type: "date" };
           break;
