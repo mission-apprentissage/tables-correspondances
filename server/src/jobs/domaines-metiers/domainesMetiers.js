@@ -1,9 +1,10 @@
-const { getElasticInstance } = require("../../common/esClient");
-const { DomainesMetiers } = require("../../common/model");
-const logger = require("../../common/logger");
-const XLSX = require("xlsx");
 const path = require("path");
-const { getFileFromS3 } = require("../../common/utils/fileUtils");
+const fs = require("fs");
+const XLSX = require("xlsx");
+const logger = require("../../common/logger");
+const { DomainesMetiers } = require("../../common/model");
+const { getElasticInstance } = require("../../common/esClient");
+const { getFileFromS3 } = require("../../common/utils/awsUtils");
 
 const emptyMongo = async () => {
   logger.info(`Clearing domainesmetiers db...`);
@@ -26,6 +27,23 @@ const createIndex = async () => {
   await DomainesMetiers.createMapping(requireAsciiFolding);
 };
 
+const downloadAndSaveFile = async () => {
+  const filePath = `${__dirname}/assets/domainesMetiers_S3.xlsx`;
+
+  logger.info(`Downloading and save file from S3 Bucket...`);
+
+  await getFileFromS3("/mna-services/features/domainesMetiers/TABLE_CUSTOM_1510.xlsx").pipe(
+    fs.createWriteStream(filePath)
+  );
+
+  return filePath;
+};
+
+const readXLSXFile = (filePath) => {
+  const workbook = XLSX.readFile(filePath, { codepage: 65001 });
+  return { sheet_name_list: workbook.SheetNames, workbook };
+};
+
 module.exports = async () => {
   try {
     logger.info(" -- Start of DomainesMetiers initializer -- ");
@@ -33,16 +51,12 @@ module.exports = async () => {
     await emptyMongo();
     await clearIndex();
     await createIndex();
-
-    const readXLSXFile = (localPath) => {
-      const workbook = XLSX.readFile(localPath, { codepage: 65001 });
-      return { sheet_name_list: workbook.SheetNames, workbook };
-    };
+    const filePath = await downloadAndSaveFile();
 
     // TODO : write downloaded file from S3 in assets folder.
     // const fichierDomainesMetiers = getFileFromS3("mna-services/features/domainesMetiers/TABLE_CUSTOM_1510.xlsx");
-    const fichierDomainesMetiers = path.join(__dirname, "./assets/domainesMetiers.xlsx");
-    const workbookDomainesMetiers = readXLSXFile(fichierDomainesMetiers);
+    // const fichierDomainesMetiers = path.join(__dirname, "./assets/domainesMetiers.xlsx");
+    const workbookDomainesMetiers = readXLSXFile(filePath);
 
     let domaines, familles, codesROMEs, intitulesROMEs, couplesROMEsIntitules;
 
