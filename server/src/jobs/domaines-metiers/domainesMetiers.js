@@ -53,9 +53,6 @@ module.exports = async () => {
     await createIndex();
     const filePath = await downloadAndSaveFile();
 
-    // TODO : write downloaded file from S3 in assets folder.
-    // const fichierDomainesMetiers = getFileFromS3("mna-services/features/domainesMetiers/TABLE_CUSTOM_1510.xlsx");
-    // const fichierDomainesMetiers = path.join(__dirname, "./assets/domainesMetiers.xlsx");
     const workbookDomainesMetiers = readXLSXFile(filePath);
 
     let domaines, familles, codesROMEs, intitulesROMEs, couplesROMEsIntitules;
