@@ -6,6 +6,10 @@
     "uri": "mongodb://127.0.0.1:27017/tables-correspondances?retryWrites=true&w=majority"
   },
   "apiKey": "12345",
+  "aws": {
+    "accessKeyId": "",
+    "secretAccessKey": ""
+  },
   "auth": {
     "passwordHashRounds": 1001,
     "user": {
