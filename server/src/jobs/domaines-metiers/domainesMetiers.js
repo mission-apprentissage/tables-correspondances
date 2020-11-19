@@ -1,10 +1,12 @@
-// const path = require("path");
+const path = require("path");
 const fs = require("fs");
 const XLSX = require("xlsx");
 const logger = require("../../common/logger");
 const { DomainesMetiers } = require("../../common/model");
 const { getElasticInstance } = require("../../common/esClient");
 const { getFileFromS3 } = require("../../common/utils/awsUtils");
+
+const FILE_LOCAL_PATH = path.join(__dirname, "./assets/domainesMetiers_S3.xlsx");
 
 const emptyMongo = async () => {
   logger.info(`Clearing domainesmetiers db...`);
@@ -27,16 +29,16 @@ const createIndex = async () => {
   await DomainesMetiers.createMapping(requireAsciiFolding);
 };
 
-const downloadAndSaveFile = async () => {
-  const filePath = `${__dirname}/assets/domainesMetiers_S3.xlsx`;
-
+const downloadAndSaveFile = () => {
   logger.info(`Downloading and save file from S3 Bucket...`);
 
-  await getFileFromS3("/mna-services/features/domainesMetiers/TABLE_CUSTOM_1510.xlsx").pipe(
-    fs.createWriteStream(filePath)
-  );
-
-  return filePath;
+  return new Promise((r) => {
+    getFileFromS3("mna-services/features/domainesMetiers/TABLE_CUSTOM_1510.xlsx")
+      .pipe(fs.createWriteStream(FILE_LOCAL_PATH))
+      .on("close", () => {
+        r();
+      });
+  });
 };
 
 const readXLSXFile = (filePath) => {
@@ -51,9 +53,10 @@ module.exports = async () => {
     await emptyMongo();
     await clearIndex();
     await createIndex();
-    const filePath = await downloadAndSaveFile();
 
-    const workbookDomainesMetiers = readXLSXFile(filePath);
+    await downloadAndSaveFile();
+
+    const workbookDomainesMetiers = readXLSXFile(FILE_LOCAL_PATH);
 
     let domaines, familles, codesROMEs, intitulesROMEs, couplesROMEsIntitules;
 

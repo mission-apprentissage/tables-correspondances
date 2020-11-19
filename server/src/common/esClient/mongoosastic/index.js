@@ -101,7 +101,8 @@ function Mongoosastic(schema, options) {
     try {
       const exists = await esClient.indices.exists({ index: indexName });
 
-      let includeTypeNameParameters = isMappingNeedingGeoPoint ? { include_type_name: true } : {};
+      let includeTypeNameParameters =
+        isMappingNeedingGeoPoint || requireAsciiFolding ? { include_type_name: true } : {};
 
       let asciiFoldingParameters = requireAsciiFolding
         ? {

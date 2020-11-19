@@ -7,8 +7,8 @@
   },
   "apiKey": "12345",
   "aws": {
-    "accessKeyId": "",
-    "secretAccessKey": ""
+    "accessKeyId": "TABLES_CORRESPONDANCE_ACCESS_KEY_ID",
+    "secretAccessKey": "TABLES_CORRESPONDANCE_SECRET_ACCESS_KEY"
   },
   "auth": {
     "passwordHashRounds": 1001,
