@@ -30,5 +30,6 @@
     "level": "info"
   },
   "slackWebhookUrl": null,
-  "outputDir": ".local/output"
+  "outputDir": ".local/output",
+  "onisep": "TABLES_CORRESPONDANCE_ONISEP_FILE"
 }

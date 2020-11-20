@@ -19,6 +19,7 @@
     "clear": "node src/jobs/clear/index.js",
     "stats": "node src/jobs/stats/index.js",
     "jobs": "node src/jobs/index.js",
+    "cfdHander": "run=true dotenv node src/logic/handlers/cfdHandler.js",
     "domainesMetiers": "dotenv node src/jobs/domaines-metiers/index.js",
     "bcn:downloader": "run=true node src/jobs/bcnDownloader/index.js",
     "bcn:importer": "run=true node src/jobs/bcnImporter/index.js"
@@ -37,9 +38,9 @@
     "config": "3.3.1",
     "convert-csv-to-json-latin": "1.0.6",
     "csv": "5.3.2",
+    "csv-parse": "4.14.1",
     "dotenv": "8.2.0",
     "elasticsearch-scroll-stream": "1.2.1",
-    "env-var": "6.1.1",
     "express": "4.17.1",
     "fs-extra": "9.0.0",
     "iconv-lite": "0.5.1",
