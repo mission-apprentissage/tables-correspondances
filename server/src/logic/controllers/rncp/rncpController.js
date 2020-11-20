@@ -31,10 +31,8 @@ class RncpController {
   }
 
   async findRncpFromCfd(educ_nat_code) {
-    const result = await FicheRncp.findOne({ cfd: educ_nat_code });
-    console.log(result);
-    const { rncp_code } = result;
-    return { info: !rncp_code ? "Erreur: Non trouvé" : "Ok", value: rncp_code };
+    const { code_rncp } = await FicheRncp.findOne({ cfd: educ_nat_code });
+    return { info: !code_rncp ? "Erreur: Non trouvé" : "Ok", value: code_rncp };
   }
 }
 
