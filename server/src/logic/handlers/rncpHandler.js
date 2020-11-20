@@ -4,6 +4,21 @@ const bcnController = require("../controllers/bcn/BcnController");
 const getDataFromRncp = (providedRncp) => {
   const rncpData = fcController.getDataFromRncp(providedRncp);
 
+  if (!rncpData.result.cfd) {
+    return {
+      result: {
+        ...rncpData.result,
+        cfd: {},
+        mefs: {},
+      },
+      messages: {
+        ...rncpData.messages,
+        cfd: {},
+        mefs: {},
+      },
+    };
+  }
+
   const cfdData = bcnController.getDataFromCfd(rncpData.result.cfd);
   const mefs = bcnController.getMefsFromCfd(cfdData.result.cfd);
   const mef = bcnController.getUniqMefFromMefs(mefs);

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { mongooseInstance } = require("../mongodb");
 const { mongoosastic, getElasticInstance } = require("../esClient");
-const { sampleSchema, userSchema } = require("../model/schema");
+const { bcnFormationDiplomesSchema, userSchema, domainesMetiersSchema } = require("../model/schema");
 
 const getMongoostaticModel = (modelName, schema, instanceMongoose = mongooseInstance) => {
   const Schema = new instanceMongoose.Schema(schema);
@@ -21,9 +21,9 @@ const getModel = (modelName, schema, instanceMongoose = mongooseInstance) => {
   return getMongooseModel(modelName);
 };
 
-let s = null;
-if (!s) {
-  s = getModel("sample", sampleSchema);
+let bcnFormationDiplomesModel = null;
+if (!bcnFormationDiplomesModel) {
+  bcnFormationDiplomesModel = getModel("bcnformationdiplome", bcnFormationDiplomesSchema);
 }
 
 let u = null;
@@ -36,8 +36,14 @@ if (!l) {
   l = getMongooseModel("log");
 }
 
+let d = null;
+if (!d) {
+  d = getModel("domainesmetiers", domainesMetiersSchema);
+}
+
 module.exports = {
-  Sample: s,
+  BcnFormationDiplome: bcnFormationDiplomesModel,
   User: u,
   Log: l,
+  DomainesMetiers: d,
 };

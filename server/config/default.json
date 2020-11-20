@@ -6,6 +6,10 @@
     "uri": "mongodb://127.0.0.1:27017/tables-correspondances?retryWrites=true&w=majority"
   },
   "apiKey": "12345",
+  "aws": {
+    "accessKeyId": "TABLES_CORRESPONDANCE_ACCESS_KEY_ID",
+    "secretAccessKey": "TABLES_CORRESPONDANCE_SECRET_ACCESS_KEY"
+  },
   "auth": {
     "passwordHashRounds": 1001,
     "user": {
@@ -26,5 +30,6 @@
     "level": "info"
   },
   "slackWebhookUrl": null,
-  "outputDir": ".local/output"
+  "outputDir": ".local/output",
+  "onisep": "TABLES_CORRESPONDANCE_ONISEP_FILE"
 }

@@ -23,6 +23,9 @@ const authentified = require("./routes/authentified");
 const admin = require("./routes/admin");
 const password = require("./routes/password");
 const stats = require("./routes/stats");
+const esSearch = require("./routes/esSearch");
+const esMultiSearchNoIndex = require("./routes/esMultiSearchNoIndex");
+const domainesMetiers = require("./routes/domainesMetiers");
 
 module.exports = async (components) => {
   const { db } = components;
@@ -34,6 +37,9 @@ module.exports = async (components) => {
   app.use(corsMiddleware());
   app.use(logMiddleware());
 
+  app.use("/api/domainesMetiers", domainesMetiers());
+  app.use("/api/es/search", esSearch());
+  app.use("/api/search", esMultiSearchNoIndex());
   app.use("/api/cfd", cfd());
   app.use("/api/mef", mef());
   app.use("/api/code-postal", cp());

@@ -41,7 +41,9 @@ class FcController {
   getDataFromRncp(providedRncp) {
     if (!providedRncp || !/^(RNCP)?[0-9]{2,5}$/g.test(providedRncp.trim())) {
       return {
-        result: {},
+        result: {
+          code_rncp: providedRncp,
+        },
         messages: {
           error: "Le code RNCP doit être définit et au format 5 ou 9 caractères,  RNCP24440 ou 24440",
         },
@@ -94,14 +96,14 @@ class FcController {
 
   findCfdFromRncp(rncp_code) {
     const educ_nat_code = this.referentielCodesDiplomesRncp.findCodeEn(rncp_code);
-    return { info: !educ_nat_code ? "Non trouvé" : "Ok", value: educ_nat_code };
+    return { info: !educ_nat_code ? "Erreur:  Non trouvé" : "Ok", value: educ_nat_code };
   }
 
   findInfoFromRncp(rncp_code) {
     const info = this.referentielRNCP.findInfo(rncp_code);
     if (info.length === 0) {
       return {
-        info: "Non trouvé",
+        info: "Erreur: Non trouvé",
         value: {
           intituleDiplome: null,
           date_fin_validite_enregistrement: null,
@@ -118,7 +120,7 @@ class FcController {
     }
     if (info.length > 1) {
       return {
-        info: "Code Rncp trouvé plusieurs fois",
+        info: "Erreur: Code Rncp trouvé plusieurs fois",
         value: {
           intituleDiplome: null,
           date_fin_validite_enregistrement: null,
@@ -139,10 +141,10 @@ class FcController {
   findNsfFromRncp(rncp_code) {
     const info = this.referentielNsf.findNsf(rncp_code);
     if (info.length === 0) {
-      return { info: "Non trouvé", value: { code: null, Libelle: null } };
+      return { info: "Erreur: Non trouvé", value: { code: null, Libelle: null } };
     }
     if (info.length > 1) {
-      return { info: "Code Rncp trouvé plusieurs fois", value: { code: null, Libelle: null } };
+      return { info: "Erreur: Code Rncp trouvé plusieurs fois", value: { code: null, Libelle: null } };
     }
     return { info: "Ok", value: info[0] };
   }
@@ -150,7 +152,7 @@ class FcController {
   findRomesFromRncp(rncp_code) {
     let info = this.referentielRome.findRomes(rncp_code);
     if (info.length === 0) {
-      return { info: "Non trouvé", value: null };
+      return { info: "Erreur: Non trouvé", value: null };
     }
     info = info.map((m) => ({
       etat_fiche: m.EtatFiche,
@@ -164,7 +166,7 @@ class FcController {
   findBlocCompetencesFromRncp(rncp_code) {
     let info = this.referentielBlocCompetences.findBlocsCompetences(rncp_code);
     if (info.length === 0) {
-      return { info: "Non trouvé", value: null };
+      return { info: "Erreur:  Non trouvé", value: null };
     }
 
     info = info.map((m) => ({
@@ -178,7 +180,7 @@ class FcController {
   findCertificateursFromRncp(rncp_code) {
     let info = this.referentielCertificateursRncp.findInfo(rncp_code);
     if (info.length === 0) {
-      return { info: "Non trouvé", value: [] };
+      return { info: "Erreur: Non trouvé", value: [] };
     }
     if (info.length > 1) {
       info = info.map((m) => ({
@@ -202,7 +204,7 @@ class FcController {
   findVoixAccesFromRncp(rncp_code) {
     let info = this.referentielVoixAcces.findVoix(rncp_code);
     if (info.length === 0) {
-      return { info: "Non trouvé", value: [] };
+      return { info: "Erreur: Non trouvé", value: [] };
     }
 
     if (info.length > 1) {
@@ -226,7 +228,7 @@ class FcController {
 
   findRncpFromCfd(educ_nat_code) {
     const rncp_code = this.referentielCodesDiplomesRncp.findCodeRNCP(educ_nat_code);
-    return { info: !rncp_code ? "Non trouvé" : "Ok", value: rncp_code };
+    return { info: !rncp_code ? "Erreur: Non trouvé" : "Ok", value: rncp_code };
   }
 }
 
