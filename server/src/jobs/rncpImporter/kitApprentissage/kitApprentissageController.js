@@ -7,33 +7,33 @@ const createReferentielBlocCompetences = require("./referentielBlocsCompetences"
 const createReferentielVoixAcces = require("./referentielVoixAcces");
 const path = require("path");
 
-class FcController {
+class KitApprentissageController {
   constructor() {
-    const codeDiplomesFile = path.join(__dirname, "../../assets", "codes_diplomes.v1.2.csv");
+    const codeDiplomesFile = path.join(__dirname, "../assets", "codes_diplomes.v1.2.csv");
     this.referentielCodesDiplomesRncp = createReferentielCodesDiplomesRncp();
     this.referentielCodesDiplomesRncp.load(codeDiplomesFile);
 
-    const infoFile = path.join(__dirname, "../../assets", "rncp_info.v1.2.csv");
+    const infoFile = path.join(__dirname, "../assets", "rncp_info.v1.2.csv");
     this.referentielRNCP = createReferentielRncp();
     this.referentielRNCP.load(infoFile);
 
-    const certificateursFile = path.join(__dirname, "../../assets", "rncp_certificateurs.v1.2.csv");
+    const certificateursFile = path.join(__dirname, "../assets", "rncp_certificateurs.v1.2.csv");
     this.referentielCertificateursRncp = createReferentielCertificateurs();
     this.referentielCertificateursRncp.load(certificateursFile);
 
-    const nsfFile = path.join(__dirname, "../../assets", "rncp_nsf.v1.2.csv");
+    const nsfFile = path.join(__dirname, "../assets", "rncp_nsf.v1.2.csv");
     this.referentielNsf = createReferentielNsf();
     this.referentielNsf.load(nsfFile);
 
-    const romeFile = path.join(__dirname, "../../assets", "rncp_rome.v1.2.csv");
+    const romeFile = path.join(__dirname, "../assets", "rncp_rome.v1.2.csv");
     this.referentielRome = createReferentielRome();
     this.referentielRome.load(romeFile);
 
-    const blocCompetencesFile = path.join(__dirname, "../../assets", "rncp_blocs_competences.v1.2.csv");
+    const blocCompetencesFile = path.join(__dirname, "../assets", "rncp_blocs_competences.v1.2.csv");
     this.referentielBlocCompetences = createReferentielBlocCompetences();
     this.referentielBlocCompetences.load(blocCompetencesFile);
 
-    const voixAccesFile = path.join(__dirname, "../../assets", "rncp_voix_acces.v1.2.csv");
+    const voixAccesFile = path.join(__dirname, "../assets", "rncp_voix_acces.v1.2.csv");
     this.referentielVoixAcces = createReferentielVoixAcces();
     this.referentielVoixAcces.load(voixAccesFile);
   }
@@ -53,44 +53,33 @@ class FcController {
     let rncp = `${providedRncp}`.trim();
     if (rncp.length === 5) rncp = `RNCP${rncp}`;
 
-    const cfdUpdated = fcController.findCfdFromRncp(rncp);
-    const infoRncpUpdated = fcController.findInfoFromRncp(rncp);
-    const infoRncpCertificateurs = fcController.findCertificateursFromRncp(rncp);
-    const nsfUpdated = fcController.findNsfFromRncp(rncp);
-    const romesUpdated = fcController.findRomesFromRncp(rncp);
-    const blocUpdated = fcController.findBlocCompetencesFromRncp(rncp);
-    const voixAccesUpdated = fcController.findVoixAccesFromRncp(rncp);
+    const cfdUpdated = this.findCfdFromRncp(rncp);
+    const infoRncpUpdated = this.findInfoFromRncp(rncp);
+    const infoRncpCertificateurs = this.findCertificateursFromRncp(rncp);
+    const nsfUpdated = this.findNsfFromRncp(rncp);
+    const romesUpdated = this.findRomesFromRncp(rncp);
+    const blocUpdated = this.findBlocCompetencesFromRncp(rncp);
+    const voixAccesUpdated = this.findVoixAccesFromRncp(rncp);
 
     return {
-      result: {
-        code_rncp: rncp,
-        intitule_diplome: infoRncpUpdated.value.intituleDiplome,
-        date_fin_validite_enregistrement: infoRncpUpdated.value.date_fin_validite_enregistrement,
-        active_inactive: infoRncpUpdated.value.ActiveInactive,
-        etat_fiche_rncp: infoRncpUpdated.value.EtatFiche,
-        niveau_europe: infoRncpUpdated.value.NiveauEurope,
-        code_type_certif: infoRncpUpdated.value.CodeTypeCertif,
-        type_certif: infoRncpUpdated.value.TypeCertif,
-        ancienne_fiche: infoRncpUpdated.value.AncienneFiche,
-        nouvelle_fiche: infoRncpUpdated.value.NouvelleFiche,
-        demande: infoRncpUpdated.value.Demande,
-        certificateurs: infoRncpCertificateurs.value,
-        nsf_code: nsfUpdated.value.code,
-        nsf_libelle: nsfUpdated.value.Libelle,
-        romes: romesUpdated.value,
-        blocs_competences: blocUpdated.value,
-        voix_acces: voixAccesUpdated.value,
-        cfd: cfdUpdated.value,
-      },
-      messages: {
-        code_rncp: cfdUpdated.info,
-        rncp_info: infoRncpUpdated.info,
-        certificateurs: infoRncpCertificateurs.info,
-        nsf: nsfUpdated.info,
-        romes: romesUpdated.info,
-        blocs_competences: blocUpdated.info,
-        voix_acces: voixAccesUpdated.info,
-      },
+      code_rncp: rncp,
+      intitule_diplome: infoRncpUpdated.value.intituleDiplome,
+      date_fin_validite_enregistrement: infoRncpUpdated.value.date_fin_validite_enregistrement,
+      active_inactive: infoRncpUpdated.value.ActiveInactive,
+      etat_fiche_rncp: infoRncpUpdated.value.EtatFiche,
+      niveau_europe: infoRncpUpdated.value.NiveauEurope,
+      code_type_certif: infoRncpUpdated.value.CodeTypeCertif,
+      type_certif: infoRncpUpdated.value.TypeCertif,
+      ancienne_fiche: infoRncpUpdated.value.AncienneFiche,
+      nouvelle_fiche: infoRncpUpdated.value.NouvelleFiche,
+      demande: infoRncpUpdated.value.Demande,
+      certificateurs: infoRncpCertificateurs.value,
+      nsf_code: nsfUpdated.value.code,
+      nsf_libelle: nsfUpdated.value.Libelle,
+      romes: romesUpdated.value,
+      blocs_competences: blocUpdated.value,
+      voix_acces: voixAccesUpdated.value,
+      cfd: cfdUpdated.value,
     };
   }
 
@@ -232,5 +221,5 @@ class FcController {
   }
 }
 
-const fcController = new FcController();
-module.exports = fcController;
+const kitApprentissageController = new KitApprentissageController();
+module.exports = kitApprentissageController;
