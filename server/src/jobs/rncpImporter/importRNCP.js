@@ -74,7 +74,6 @@ module.exports = async (ficheInputStream) => {
   logger.info("Loading RNCP referentiel (Fiches + Code Diplômes)...");
   const fichesRncp = await loadXmlFile(ficheInputStream);
 
-  console.log(fichesRncp[0]);
   logger.info("Add fiches...");
 
   try {

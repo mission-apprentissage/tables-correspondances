@@ -1,7 +1,7 @@
 const bcnController = require("../controllers/bcn/BcnController");
-const fcController = require("../controllers/fc/fcController");
+const fcController = require("../controllers/rncp/rncpController");
 
-const getDataFromMef10 = (providedMef10) => {
+const getDataFromMef10 = async (providedMef10) => {
   const mefData = bcnController.getDataFromMef10(providedMef10);
   const cfdData = bcnController.getDataFromCfd(mefData.result.cfd);
 
@@ -9,9 +9,9 @@ const getDataFromMef10 = (providedMef10) => {
     result: {},
     messages: {},
   };
-  const codeRncpUpdated = fcController.findRncpFromCfd(cfdData.result.cfd);
+  const codeRncpUpdated = await fcController.findRncpFromCfd(cfdData.result.cfd);
   if (codeRncpUpdated.value) {
-    rncpData = fcController.getDataFromRncp(codeRncpUpdated.value);
+    rncpData = await fcController.getDataFromRncp(codeRncpUpdated.value);
   } else {
     rncpData = {
       result: {},

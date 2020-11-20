@@ -1,6 +1,6 @@
 const { runScript } = require("../../jobs/scriptWrapper");
 const bcnController = require("../controllers/bcn/BcnController");
-const fcController = require("../controllers/fc/fcController");
+const fcController = require("../controllers/rncp/rncpController");
 const onisepController = require("../controllers/onisep/onisepController");
 
 const getDataFromCfd = async (providedCfd) => {
@@ -31,9 +31,9 @@ const getDataFromCfd = async (providedCfd) => {
     result: {},
     messages: {},
   };
-  const codeRncpUpdated = fcController.findRncpFromCfd(bcnData.result.cfd);
+  const codeRncpUpdated = await fcController.findRncpFromCfd(bcnData.result.cfd);
   if (codeRncpUpdated.value) {
-    rncpData = fcController.getDataFromRncp(codeRncpUpdated.value);
+    rncpData = await fcController.getDataFromRncp(codeRncpUpdated.value);
   } else {
     rncpData = {
       result: {},
