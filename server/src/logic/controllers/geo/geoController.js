@@ -80,6 +80,45 @@ class GeoController {
     };
   }
 
+  async findAcademie(code_dept) {
+    const response = await apiEsSup.getInfoFromNumDepartement(code_dept);
+
+    let numAcademie;
+    let numAcademieData;
+    if (response && response.aca_code) {
+      numAcademie = Number.parseInt(response.aca_code);
+      numAcademieData = {
+        info: "Ok",
+        value: numAcademie,
+      };
+    } else {
+      numAcademieData = {
+        info: `Impossible de retrouver le numéro d'academie du département: ${code_dept}`,
+        value: null,
+      };
+    }
+
+    let nomAcademie;
+    let nomAcademieData;
+    if (response && response.aca_nom) {
+      nomAcademie = response.aca_nom;
+      nomAcademieData = {
+        info: "Ok",
+        value: nomAcademie,
+      };
+    } else {
+      nomAcademieData = {
+        info: `Impossible de retrouver le nom d'academie du département: ${code_dept}`,
+        value: null,
+      };
+    }
+
+    return {
+      nomAcademie: nomAcademieData,
+      numAcademie: numAcademieData,
+    };
+  }
+
   async findGeoCoordinateFromAdresse({ numero_voie, type_voie, nom_voie, code_postal, localite }) {
     const { geo_coordonnees } = await geoAdresseData.getGeoCoordinateFromAdresse({
       numero_voie,
