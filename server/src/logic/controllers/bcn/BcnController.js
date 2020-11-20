@@ -68,6 +68,7 @@ class BcnController {
           diplome: null,
         },
         messages: {
+          error: infoCfd,
           cfd: infoCfd,
           specialite: "Erreur",
           niveau: "Erreur",

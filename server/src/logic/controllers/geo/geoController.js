@@ -28,7 +28,7 @@ class GeoController {
       const { records } = await this.searchDataSoft(code);
       if (records.length === 0) {
         return {
-          info: "Non trouvé",
+          info: "Erreur: Non trouvé",
           value: null,
         };
       }
@@ -39,7 +39,7 @@ class GeoController {
 
       if (insee_com === code) {
         return {
-          info: `Le code ${code} est un code commune insee`,
+          info: `Update: Le code ${code} est un code commune insee`,
           value,
         };
       }

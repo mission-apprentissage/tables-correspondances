@@ -1,7 +1,9 @@
+const { runScript } = require("../../jobs/scriptWrapper");
 const bcnController = require("../controllers/bcn/BcnController");
 const fcController = require("../controllers/fc/fcController");
+const onisepController = require("../controllers/onisep/onisepController");
 
-const getDataFromCfd = (providedCfd) => {
+const getDataFromCfd = async (providedCfd) => {
   const bcnData = bcnController.getDataFromCfd(providedCfd);
 
   if (!bcnData.result.cfd) {
@@ -21,6 +23,9 @@ const getDataFromCfd = (providedCfd) => {
 
   const mefs = bcnController.getMefsFromCfd(bcnData.result.cfd);
   const mef = bcnController.getUniqMefFromMefs(mefs);
+
+  await onisepController.load();
+  const onisep_url = await onisepController.findUrl(bcnData.result.cfd);
 
   let rncpData = {
     result: {},
@@ -46,6 +51,9 @@ const getDataFromCfd = (providedCfd) => {
         ...mefs.result,
         ...mef.result,
       },
+      onisep: {
+        ...onisep_url.result,
+      },
     },
     messages: {
       ...bcnData.messages,
@@ -55,7 +63,17 @@ const getDataFromCfd = (providedCfd) => {
         ...mefs.messages,
         ...mef.messages,
       },
+      onisep: {
+        ...onisep_url.messages,
+      },
     },
   };
 };
 module.exports.getDataFromCfd = getDataFromCfd;
+
+if (process.env.run) {
+  runScript(async () => {
+    const result = await getDataFromCfd(process.argv[2]);
+    console.log(result);
+  });
+}
