@@ -25,8 +25,9 @@ const getDataFromCP = async (providedCP) => {
 
   const { nom_dept, nom_region, insee_com, code_dept, postal_code, nom_comm } = value;
 
-  const nomAcademieUpdated = await geoController.findNomAcademie(code_dept);
-  const numAcademieUpdated = await geoController.findNumAcademie(code_dept);
+  const { nomAcademie: nomAcademieUpdated, numAcademie: numAcademieUpdated } = await geoController.findAcademie(
+    code_dept
+  );
 
   return {
     result: {
