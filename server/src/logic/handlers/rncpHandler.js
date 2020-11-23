@@ -1,8 +1,8 @@
-const fcController = require("../controllers/rncp/rncpController");
+const rncpController = require("../controllers/rncp/rncpController");
 const bcnController = require("../controllers/bcn/BcnController");
 
 const getDataFromRncp = async (providedRncp) => {
-  const rncpData = await fcController.getDataFromRncp(providedRncp);
+  const rncpData = await rncpController.getDataFromRncp(providedRncp);
 
   if (!rncpData.result.cfd) {
     return {
