@@ -23,9 +23,9 @@ const getDataFromCP = async (providedCP) => {
     };
   }
 
-  const { nom_dept, nom_region, insee_com, code_dept, postal_code, nom_comm } = value;
+  const { insee_com, code_dept, postal_code, nom_comm } = value;
 
-  const { nomAcademie: nomAcademieUpdated, numAcademie: numAcademieUpdated } = await geoController.findAcademie(
+  const { nom_dept, nom_region, code_region, nom_academie, num_academie } = geoController.findDataByDepartementNum(
     code_dept
   );
 
@@ -37,13 +37,12 @@ const getDataFromCP = async (providedCP) => {
       num_departement: code_dept,
       nom_departement: nom_dept,
       region: nom_region,
-      nom_academie: nomAcademieUpdated.value,
-      num_academie: numAcademieUpdated.value,
+      num_region: code_region,
+      nom_academie: nom_academie,
+      num_academie: num_academie,
     },
     messages: {
       cp: info,
-      nom_academie: nomAcademieUpdated.info,
-      num_academie: numAcademieUpdated.info,
     },
   };
 };
