@@ -1,8 +1,11 @@
 const axios = require("axios");
 const apiEsSup = require("../../common/apiEsSup");
 const geoAdresseData = require("./geoAdresseData");
+const fs = require("fs-extra");
 
 const opendataApiKey = "19b8028585be8b5c2ebc456a6363756a48b680d8447a1ebfb8a1d10f";
+
+const departements = fs.readJsonSync("../../assets/dataDepartements.json");
 
 class GeoController {
   constructor() {
@@ -12,7 +15,7 @@ class GeoController {
   async searchDataSoft(code) {
     try {
       const response = await axios.get(
-        `https://data.opendatasoft.com/api/records/1.0/search/?dataset=correspondance-code-insee-code-postal%40public&rows=1&fields=nom_dept,nom_region,insee_com,code_dept,postal_code,nom_comm&q=(insee_com:${code} OR postal_code:${code})`,
+        `https://data.opendatasoft.com/api/records/1.0/search/?dataset=correspondance-code-insee-code-postal%40public&rows=1&fields=insee_com,code_dept,postal_code,nom_comm&q=(insee_com:${code} OR postal_code:${code})`,
         {
           Authorization: `Apikey ${opendataApiKey}`,
         }
@@ -33,9 +36,9 @@ class GeoController {
         };
       }
       const {
-        fields: { nom_dept, nom_region, insee_com, code_dept, postal_code, nom_comm },
+        fields: { insee_com, code_dept, postal_code, nom_comm },
       } = records[0];
-      const value = { nom_dept, nom_region, insee_com, code_dept, postal_code, nom_comm };
+      const value = { insee_com, code_dept, postal_code, nom_comm };
 
       if (insee_com === code) {
         return {
@@ -50,6 +53,16 @@ class GeoController {
     } catch (error) {
       return error;
     }
+  }
+
+  findDataByDepartementNum(code_dept) {
+    const data = departements[code_dept];
+    if (!data) {
+      return { nom_dept: null, nom_region: null, code_region: null, nom_academie: null, num_academie: null };
+    }
+
+    const { nom_dept, nom_region, code_region, nom_academie, num_academie } = data;
+    return { nom_dept, nom_region, code_region, nom_academie, num_academie };
   }
 
   async findNomAcademie(code_dept) {
