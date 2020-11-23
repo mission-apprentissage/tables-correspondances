@@ -61,7 +61,7 @@ const loadXmlFile = async (ficheInputStream) => {
       ...result,
       certificateurs,
       eligible_apprentissage: isEligibleApprentissage(f),
-      type_enregistrement: f.TYPE_ENREGISTREMENT || null,
+      type_enregistrement: result.type_enregistrement || f.TYPE_ENREGISTREMENT || null,
       partenaires: f.PARTENAIRES || [],
       si_jury_ca: f.SI_JURY_CA === "Oui",
     };

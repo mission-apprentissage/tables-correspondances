@@ -1,4 +1,4 @@
-Numero_Fiche;Intitule;Date_Fin_Enregistrement;Actif;Etat_Fiche;Nomenclature_Europe_Intitule;Abrege_Code;Abrege_Intitule;Ancienne_Certification;Nouvelle_Certification;Type_Enregistrement
+CodeRNCP;intituleDiplome;date_fin_validite_enregistrement;ActiveInactive;EtatFiche;NiveauEurope;CodeTypeCertif;TypeCertif;AncienneFiche;NouvelleFiche;TypeEnregistrement
 RNCP1000;Métiers de la pierre;1/1/24;ACTIVE;Publiée;niveau4;BP;Brevet professionnel;;;Enregistrement de droit
 RNCP10000;"ARTS, LETTRES, LANGUES à finalité recherche et professionnelle Mention LANGUES, LITTÉRATURES ET CIVILISATIONS ÉTRANGÈRES ET RÉGIONALES Spécialité CHINOIS ENSEIGNEMENT
 ";;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
@@ -371,9 +371,7 @@ Spécialité : Industrialisation et Mise en Œuvre des matériaux Composites (IMOC)
 ";;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
 RNCP10309;"Domaine : Sciences Technologies Santé 
 Mention : Production industrielle 
-Spécialité : Design Matériaux et Modélisation (D2M)
-
-";;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
+Spécialité : Design Matériaux et Modélisation (D2M)";;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
 RNCP10310;"Domaine : Sciences Technologies Santé 
 Mention : Production Industrielle 
 Spécialité : Electrohydraulique mobile et automatismes associés
@@ -946,8 +944,7 @@ RNCP10724;"Master Sciences, Technologie, Santé.
 mention Informatique, Télécommunications 
 ";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP10727;"Master Sciences, Technologie, Santé - mention Sciences de la Terre, de l'Univers et de l'Environnement
-Spécialité  3 « Master National Argiles »
-";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
+Spécialité  3 « Master National Argiles »";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP10728;"Master Sciences, Technologie, Santé - mention Sciences de la Terre, de l'Univers et de l'Environnement
 Spécialité Paléontologie, Paléobiologie, Phylogénie (PPP)
 ";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
@@ -969,8 +966,7 @@ RNCP10735;"Master Sciences, Technologies, Santé, Mention Chimie, Spécialité Chim
 RNCP10738;Master Sciences et technologies, santé, mention Mathématiques;1/31/20;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP1074;Industries papetières option : transformation des papiers et cartons;1/1/24;ACTIVE;Publiée;niveau5;BTS;Brevet de technicien supérieur;;;Enregistrement de droit
 RNCP10740;"Master Sciences et Technologies, Santé - mention Biologie santé
-Spécialité Biologie, Physiologie, Pathologie Moléculaires et Cellulaires (BP2MC)                 
-";;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
+Spécialité Biologie, Physiologie, Pathologie Moléculaires et Cellulaires (BP2MC)";;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP10742;"Master Sciences et Technologies, Santé - mention Biologie, Santé, Ecologie
 Spécialité Biologie Végétale Intégrative (BVI)                 
 ";;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
@@ -1504,8 +1500,7 @@ spécialité Gestion des Habitats et des Bassins Versants
 (GHBV)";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP11332;"Sciences technologie santé, 
 mention sciences de la terre et environnement,
-spécialité HYDRO3 : Hydrogéologie, Hydrobiogéochimie, hydropédologie
-";;INACTIVE;Publiée;niveau7;MASTER;Master;;RNCP30967;Enregistrement de droit
+spécialité HYDRO3 : Hydrogéologie, Hydrobiogéochimie, hydropédologie";;INACTIVE;Publiée;niveau7;MASTER;Master;;RNCP30967;Enregistrement de droit
 RNCP11333;Logistique, spécialité : conception et pilotage de la chaîne logistique globale;;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
 RNCP11334;"Sciences, technologie, santé
 mention mathématiques et applications 
@@ -1852,8 +1847,7 @@ Mention Management des Organisations,
 Spécialité Management et Entrepreneuriat dans l’Espace Européen.";;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
 RNCP11578;"Sciences, technologie, santé, 
 mention écologie environnement,
-spécialité HYDRO3 : Hydrogéologie, Hydrobiogéochimie, Hydropédologie
-";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
+spécialité HYDRO3 : Hydrogéologie, Hydrobiogéochimie, Hydropédologie";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP11579;"Droit, économie, gestion,
 mention santé publique,
 spécialité Modélisation en Pharmacologie Clinique et Epidémiologie (MPCE)
@@ -2620,12 +2614,10 @@ RNCP12434;Arts, Lettres, Langues mention Langues, Littératures et Civilisations 
 RNCP12440;INGENIEUR DIPLOME DE L’ISTOM;1/1/24;ACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;;;Enregistrement de droit
 RNCP1245;Tuyauteur(se) industriel(le);4/8/20;INACTIVE;Publiée;niveau3;TP;Titre professionnel;;RNCP34612;Enregistrement de droit
 RNCP12452;Arts, Lettres, Langues mention Sciences du Langage;;INACTIVE;Publiée;niveau6;LICENCE;Licence;;;Enregistrement de droit
-RNCP12453;"
-MASTER 2 PROFESSIONNEL
+RNCP12453;"MASTER 2 PROFESSIONNEL
 DOMAINE : DROIT ECONOMIE GESTION
 MENTION : MANAGEMENT ENTREPRENEURIAT ET STRATEGIE
-SPECIALITE : ACCOMPAGNEMENT ENTREPRENEURIAL
-";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
+SPECIALITE : ACCOMPAGNEMENT ENTREPRENEURIAL";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP12454;"
 MENTION MANAGEMENT DES ORGANISATIONS
 SPECIALITE : ENTREPRENEURIAT DES METIERS 
@@ -2634,8 +2626,7 @@ DE L’ARTISANAT
 RNCP12455;"MASTER 2 PROFESSIONNEL
 DOMAINE : DROIT ECONOMIE GESTION
 MENTION : MANAGEMENT ENTREPRENEURIAT ET STRATEGIE
-SPECIALITE : MANAGEMENT DES PME
-";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
+SPECIALITE : MANAGEMENT DES PME";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP12456;"Domaine : DROIT ECONOMIE GESTION
 Mention : ADMINISTRATION ECONOMIQUE ET SOCIALE
 ";;INACTIVE;Publiée;niveau6;LICENCE;Licence;;;Enregistrement de droit
@@ -2664,8 +2655,7 @@ Spécialité Histoire du droit
 RNCP12476;"MASTER 2 Professionnel
 Domaine : Droit Economie Gestion
 Mention : Droit public
-Spécialité : Droit des Finances Publiques et Fiscalité
-";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
+Spécialité : Droit des Finances Publiques et Fiscalité";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP1248;Technicien(ne) d’études en chaudronnerie et tuyauterie industrielle;7/7/19;INACTIVE;Publiée;niveau4;TP;Titre professionnel;;RNCP34144;Enregistrement de droit
 RNCP12485;Electronicien(ne) de tests et développement;6/7/21;ACTIVE;Publiée;niveau5;TP;Titre professionnel;RNCP295;;Enregistrement de droit
 RNCP12486;Technicien(ne) d'intervention en froid et équipements de cuisines professionnelles;2/27/21;ACTIVE;Publiée;niveau4;TP;Titre professionnel;RNCP250;;Enregistrement de droit
@@ -4442,9 +4432,7 @@ RNCP14512;Développeur d'enseigne de la distribution;4/14/17;INACTIVE;Publiée;niv
 RNCP14513;Chef de projet multimédia;4/14/15;INACTIVE;Publiée;niveau6;;;RNCP7437;RNCP16932;Enregistrement sur demande
 RNCP14514;"Licence professionnelle Domaine Sciences Technologies Santé
 Mention Mécanique 
-Spécialité Innovations Produits Process  (I2P)
-
-";;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
+Spécialité Innovations Produits Process  (I2P)";;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
 RNCP14515;Sciences, Technologies, Santé / Lettres, Langues, Arts - Mention : Sciences et langues;;INACTIVE;Publiée;niveau6;LICENCE;Licence;;;Enregistrement de droit
 RNCP14516;Scripte;4/14/17;INACTIVE;Publiée;niveau6;;;RNCP1512;RNCP16928;Enregistrement sur demande
 RNCP14517;Sciences, Technologies, Santé - Mention Sciences de la Matière;;INACTIVE;Publiée;niveau6;LICENCE;Licence;RNCP10965;;Enregistrement de droit
@@ -5561,8 +5549,7 @@ RNCP15974;"Gestion
 Mention Management des organisation
 Spécialité Marketing et pratiques commerciales";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP1598;Technicien supérieur du commerce;12/31/05;INACTIVE;Publiée;niveau5;;;;;Enregistrement sur demande
-RNCP15981;"Domaine : Culture et communication (co-habilité Paris 8 - Paris 13) ; Mention : Création, innovation et information numériques ; Spécialité : Création et Édition Numérique
-";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
+RNCP15981;"Domaine : Culture et communication (co-habilité Paris 8 - Paris 13) ; Mention : Création, innovation et information numériques ; Spécialité : Création et Édition Numérique";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP15984;"Domaine : Sciences humaines et sociales ; Mention : Géopolitique ; Spécialité : Géopolitique : enjeux territoriaux des rivalités de pouvoir
 ";;INACTIVE;Publiée;niveau7;MASTER;Master;;RNCP29457;Enregistrement de droit
 RNCP15985;"Domaine : Sciences humaines et sociales ; Mention : Géopolitique ; Spécialité : Géopolitique locale : aménagement, gestion et enjeux de territoires
@@ -5877,8 +5864,7 @@ RNCP16379;"Sciences Humaines et Sociales Mention Histoire, Histoire de l’Art Spé
 ";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP1638;Responsable commercial en agrofourniture;4/12/16;INACTIVE;Publiée;niveau6;;;;;Enregistrement sur demande
 RNCP16380;"Sciences Humaines et Sociales Mention Histoire
-Spécialité : Histoire des économies et des sociétés industrielles en Europe, 1750-2000  
-";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
+Spécialité : Histoire des économies et des sociétés industrielles en Europe, 1750-2000";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP16381;"Sciences Humaines et Sociales Mention Histoire
 Spécialité: Histoire sociale, politique et culturelle de l’Antiquité à nos jours
 ";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
@@ -6324,8 +6310,7 @@ RNCP1709;Diplôme de fin d'études de l'Ecole de Danse de l'Opéra National de Pari
 RNCP17090;Ingénieur diplômé de l’Institut supérieur des sciences agronomiques, agroalimentaires, horticoles et du paysage (AGROCAMPUS OUEST) spécialité agroalimentaire par l'apprentissage en partenariat avec l'IFRIA de Bretagne;1/1/24;ACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;;;Enregistrement de droit
 RNCP17091;Journalisme professionnel;10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP17095;"Ingénieur diplômé de l’Institut polytechnique de Grenoble, Ecole nationale supérieure de
-l’énergie, de l’eau et de l’environnement (Ense3)
-";1/1/24;ACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;;;Enregistrement de droit
+l’énergie, de l’eau et de l’environnement (Ense3)";1/1/24;ACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;;;Enregistrement de droit
 RNCP1710;Technicien de maintenance en équipements de génie climatique;1/14/12;INACTIVE;Publiée;niveau4;;;;RNCP13641;Enregistrement sur demande
 RNCP17108;Services informatiques aux organisations;1/1/24;ACTIVE;Publiée;niveau5;BTS;Brevet de technicien supérieur;RNCP1075;;Enregistrement de droit
 RNCP1711;Modéliste;12/31/06;INACTIVE;Publiée;niveau5;;;;;Enregistrement sur demande
@@ -8666,8 +8651,7 @@ Spécialité : Master professionnel Culture et médiation des Arts du spectacle.
 ";;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP20235;"Licence Professionnelle Gestion des Ressources Humaines
 Option : Développement des compétences et formation professionnelle";;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
-RNCP20236;"Ingénieur diplômé de l’Ecole spéciale des travaux publics, du bâtiment et de l'industrie, spécialité énergétique de la construction, en partenariat avec Ingénieurs 2000
-";1/1/24;ACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;;;Enregistrement de droit
+RNCP20236;Ingénieur diplômé de l’Ecole spéciale des travaux publics, du bâtiment et de l'industrie, spécialité énergétique de la construction, en partenariat avec Ingénieurs 2000;1/1/24;ACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;;;Enregistrement de droit
 RNCP20237;"""Médiation scientifique et éducation à l'environnement""";;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
 RNCP20238;"Licence Professionnelle Métiers du numérique : conception, rédaction et réalisation web
 ";;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
@@ -10350,8 +10334,7 @@ RNCP2237;Chef d'équipe travaux publics routes, voirie et réseaux divers;3/3/08;I
 RNCP22373;Ingénieur diplômé de l'Ecole polytechnique universitaire de Lille de l'Université de Lille (Polytech Lille) spécialité Génie Electrique et Informatique Industrielle;1/1/24;ACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;RNCP4776;;Enregistrement de droit
 RNCP22374;Brevet de second mécanicien 8000 kW;;INACTIVE;Publiée;niveau6;Autre;Autre certification professionnelle de droit;;RNCP25962;Enregistrement de droit
 RNCP2238;Infographiste, chaîne graphique / multimédia;8/22/17;INACTIVE;Publiée;niveau5;;;;RNCP30370;Enregistrement sur demande
-RNCP22381;"diplômé de l'Ecole polytechnique universitaire de Lille de l'Université Lille 1, spécialité Mécanique 
-";1/1/24;ACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;RNCP4775;;Enregistrement de droit
+RNCP22381;diplômé de l'Ecole polytechnique universitaire de Lille de l'Université Lille 1, spécialité Mécanique;1/1/24;ACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;RNCP4775;;Enregistrement de droit
 RNCP22382;"Domaine : DROIT, ÉCONOMIE ET GESTION
 Mention : ASSURANCE, BANQUE, FINANCE : CHARGE  DE CLIENTÈLE
 ";;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
@@ -10680,15 +10663,12 @@ RNCP22738;Diplôme de Sciences Po Rennes -Management Stratégique et Organisationn
 RNCP22739;Diplôme pour dirigeant en administration des affaires;8/31/19;INACTIVE;Publiée;niveau7;DipViGrM;Diplôme visé grade de master;;;Enregistrement de droit
 RNCP2274;option Education et travail des jeunes équidés;1/1/24;ACTIVE;Publiée;niveau4;CS;Certificat de spécialisation;;;Enregistrement de droit
 RNCP22741;Diplôme de Sciences Po Rennes - Management Stratégique et Organisationnel Spécialisation Management des Organisations et des Projets;1/1/24;ACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
-RNCP22743;"diplômé de l'Ecole polytechnique universitaire de Lille de l'Université Lille 1 , spécialité agroalimentaire 
-";1/1/24;ACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;RNCP4782;;Enregistrement de droit
+RNCP22743;diplômé de l'Ecole polytechnique universitaire de Lille de l'Université Lille 1 , spécialité agroalimentaire;1/1/24;ACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;RNCP4782;;Enregistrement de droit
 RNCP22745;Sciences Technologies Santé, mention Méthodes Informatiques Appliquées à la Gestion des Entreprises spécialité Systèmes d'information des métiers du social et de l'assurance;10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP22746;Sciences Technologies Santé, mention Sciences biologiques spécialité Biochimie-biologie moléculaire et biotechnologie;;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
-RNCP22749;"Ingénieur diplômé de l'Ecole polytechnique universitaire de Lille de l'Université Lille 1, spécialité Instrumentation scientifique. 
-";1/1/24;ACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;;;Enregistrement de droit
+RNCP22749;Ingénieur diplômé de l'Ecole polytechnique universitaire de Lille de l'Université Lille 1, spécialité Instrumentation scientifique.;1/1/24;ACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;;;Enregistrement de droit
 RNCP2275;option Fromagerie Internationale;6/23/20;INACTIVE;Publiée;niveau5;CS;Certificat de spécialisation;;;Enregistrement de droit
-RNCP22750;"Ingénieur diplômé de l'Ecole polytechnique universitaire de Lille de l'Université Lille 1,  en partenariat avec l'ITII Nord-Pas-de-Calais, spécialité Production 
-";1/1/24;ACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;RNCP4774;;Enregistrement de droit
+RNCP22750;Ingénieur diplômé de l'Ecole polytechnique universitaire de Lille de l'Université Lille 1,  en partenariat avec l'ITII Nord-Pas-de-Calais, spécialité Production;1/1/24;ACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;RNCP4774;;Enregistrement de droit
 RNCP22756;Sciences Technologies Santé, mention Énergie et matériaux spécialité Milieux et Matériaux en Conditions Extrèmes;10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP22757;Métiers de la santé : Prévention et éducation à la santé;;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
 RNCP22758;Master Droit public et science politique spécialité Droit public internet et international;;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
@@ -11528,8 +11508,7 @@ RNCP2408;option Chef d’exploitation ou OHQ en Viticulture;;INACTIVE;Publiée;nive
 RNCP24087;SCIENCES, TECHNOLOGIES, SANTÉ, Protection de l’environnement , gestion et traitement des déchets;10/31/19;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
 RNCP2409;et Maritime, option productions aquacoles;6/24/20;INACTIVE;Publiée;niveau3;BPA;Brevet professionnel agricole;;;Enregistrement de droit
 RNCP24090;Mention Management et commerce international -;10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
-RNCP24092;"diplômé de l'Ecole polytechnique universitaire de Lille de l'Université Lille 1 (Polytech Lille), spécialité Génie civil 
-";1/1/24;ACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;RNCP4779;;Enregistrement de droit
+RNCP24092;diplômé de l'Ecole polytechnique universitaire de Lille de l'Université Lille 1 (Polytech Lille), spécialité Génie civil;1/1/24;ACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;RNCP4779;;Enregistrement de droit
 RNCP24093;Domaine: Sciences Technologies Santé, Mention: Production et valorisation des agro-ressources, Spécialité: Production des agro-ressources et développement durable;10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP24096;Domaine: Sciences Technologies Santé, Mention: Production et valorisation des agro-ressources, Spécialité: Agro-molécules;10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP24099;MENTION DROIT PUBLIC;10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
@@ -11542,8 +11521,7 @@ RNCP24104;Domaine: Droit Economie Gestion, Mention: Management des organisations
 RNCP24105;Master intégré franco-allemand en droit de l’entreprise;8/31/20;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP24106;Domaine: Droit Economie Gestion, Mention: Activités juridiques, Spécialité: Droit social et syndical;;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
 RNCP24107;Domaine: Droit Economie Gestion, Mention: Gestion des ressources humaines, Spécialité: Gestion des emplois et des rémunérations;;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
-RNCP24108;"diplômé de l'Ecole polytechnique universitaire de Lille de l'Université Lille 1 (Polytech Lille), spécialité Génie informatique et statistique. 
-";1/1/24;ACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;RNCP4780;;Enregistrement de droit
+RNCP24108;diplômé de l'Ecole polytechnique universitaire de Lille de l'Université Lille 1 (Polytech Lille), spécialité Génie informatique et statistique.;1/1/24;ACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;RNCP4780;;Enregistrement de droit
 RNCP2411;Responsable système et qualité en production animale (RSQPA);10/10/09;INACTIVE;Publiée;niveau6;;;;;Enregistrement sur demande
 RNCP24111;Domaine: Droit Economie Gestion, Mention: Logistique, Spécialité: Management de la logistique;;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
 RNCP24112;Mention Comptabilité Contrôle Audit;;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
@@ -11740,7 +11718,7 @@ RNCP2450;Ingénieur des techniques de l'agriculture, diplômé du Conservatoire nat
 RNCP24504;à finalité Recherche - Droit, Economie, Gestion - Mention : Finance Internationale et Economie de la Mondialisation (FIEM) - Spécialité : Economie et Finance Internationales;;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP24505;à finalité Professionnelle - Droit, Economie, Gestion - Mention : Droit public - Spécialité : Sécurité intérieure;10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP24506;à finalité Professionnelle - Droit, Economie, Gestion - Mention : Droit public - Spécialité : Santé des populations;10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
-RNCP24507;"Mention Industries? pharmaceutiques,? cosmétologiques ?et? de ?santé? : ?gestion,? production? et? valorisation";;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
+RNCP24507;Mention Industries? pharmaceutiques,? cosmétologiques ?et? de ?santé? : ?gestion,? production? et? valorisation;;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
 RNCP24508;Langues, littératures et civilisations étrangères et régionales (LLCER) (fiche nationale);1/1/24;ACTIVE;Publiée;niveau6;LICENCE;Licence;RNCP22525;;Enregistrement de droit
 RNCP24511;Métiers de l'Enseignement de l'Education et de la Formation (MEEF) pour l'Enseignement Agricole - Mention enseignant du second degré;1/1/24;ACTIVE;Publiée;niveau7;MASTER;Master;RNCP12288;;Enregistrement de droit
 RNCP24513;"Lettres, langues (fiche nationale)
@@ -12852,9 +12830,7 @@ RNCP25957;Brevet de capitaine;1/1/24;ACTIVE;Publiée;niveau7;Autre;Autre certific
 RNCP25958;Brevet d'officier chef de quart passerelle;1/1/24;ACTIVE;Publiée;niveau6;Autre;Autre certification professionnelle de droit;RNCP23731;;Enregistrement de droit
 RNCP25959;Brevet de second capitaine 3 000;1/1/24;ACTIVE;Publiée;niveau6;Autre;Autre certification professionnelle de droit;RNCP23734;;Enregistrement de droit
 RNCP2596;Diplôme d'économiste du Conservatoire national des arts et métiers (fiche incomplète);;INACTIVE;Publiée;niveau6;Autre;Autre certification professionnelle de droit;;;Enregistrement de droit
-RNCP25960;"Brevet de second mécanicien 3 000 kW 
-
-";1/1/24;ACTIVE;Publiée;niveau6;Autre;Autre certification professionnelle de droit;RNCP23735;;Enregistrement de droit
+RNCP25960;Brevet de second mécanicien 3 000 kW;1/1/24;ACTIVE;Publiée;niveau6;Autre;Autre certification professionnelle de droit;RNCP23735;;Enregistrement de droit
 RNCP25961;Brevet de chef mécanicien 3 000 kW;1/1/24;ACTIVE;Publiée;niveau6;Autre;Autre certification professionnelle de droit;RNCP18919;;Enregistrement de droit
 RNCP25962;Brevet de second mécanicien 8 000 kW;1/1/24;ACTIVE;Publiée;niveau6;Autre;Autre certification professionnelle de droit;RNCP22374;;Enregistrement de droit
 RNCP25963;Certificat d'aptitude au commandement à la petite pêche;1/1/24;ACTIVE;Publiée;niveau3;Autre;Autre certification professionnelle de droit;RNCP21071;;Enregistrement de droit
@@ -13362,8 +13338,7 @@ RNCP26606;Agent de maintenance en chauffage, ventilation et climatisation;7/31/1
 RNCP26607;"Sciences humaines et sociales
 Mention : Histoire de l'art
 ";1/1/24;ACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
-RNCP26608;"Mention Biochimie, Cellules, Cibles Thérapeutiques (BC2T) Spécialité Génome et Différenciation Cellulaire (GDC)
-";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
+RNCP26608;Mention Biochimie, Cellules, Cibles Thérapeutiques (BC2T) Spécialité Génome et Différenciation Cellulaire (GDC);10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP26609;"Mention In Silico Drug Design (Conception de Médicament Assistée par Ordinateur), 
 Spécialité Développement In Silico Des Molécules Bioactives";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;RNCP11867;;Enregistrement de droit
 RNCP26610;"Métiers du BTP: Génie civil et construction
@@ -14221,8 +14196,7 @@ RNCP27869;Manager humanitaire;3/3/20;INACTIVE;Publiée;niveau7;;;;;Enregistrement
 RNCP2787;deuxième degré option Tir sportif;;INACTIVE;Publiée;niveau6;BEES;Brevet d'état d'éducateur sportif;;;Enregistrement de droit
 RNCP27873;Sécurité des biens et des personnes;;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;RNCP11121;;Enregistrement de droit
 RNCP27874;"Mention Biologie Cellulaire, Physiologie, Pathologies (BCPP),
-Spécialité Biologie, Physiologie, Pharmacologie de la Respiration et du Sommeil (B2PRS)  
-";;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
+Spécialité Biologie, Physiologie, Pharmacologie de la Respiration et du Sommeil (B2PRS)";;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP2788;Brevet d'Etat d'Alpinisme - diplôme Guide de haute montagne;1/1/24;ACTIVE;Publiée;niveau6;Autre;Autre certification professionnelle de droit;;RNCP24666;Enregistrement de droit
 RNCP27880;Mention Management et Administration des Entreprises;10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;RNCP15955;;Enregistrement de droit
 RNCP27884;Métiers de la GRH : assistant;;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;RNCP11101;;Enregistrement de droit
@@ -14281,11 +14255,9 @@ RNCP2803;deuxième degré option Gymnastique Rythmique et Sportive;;INACTIVE;Publi
 RNCP28032;Lecteur-correcteur en communication écrite;8/22/17;INACTIVE;Publiée;niveau5;;;RNCP27500;RNCP28752;Enregistrement sur demande
 RNCP28038;Administration et Echanges Internationaux;8/31/20;INACTIVE;Publiée;niveau6;LICENCE;Licence;;;Enregistrement de droit
 RNCP2804;Technicien supérieur de maintenance de systèmes énergie propulsion (fiche incomplète);12/31/06;INACTIVE;Publiée;niveau5;;;;RNCP4805;Enregistrement sur demande
-RNCP28040;"Mention Biochimie, Cellules, Cibles Thérapeutiques (BC2T) Spécialité Biomolécules et Thérapeutiques (BT)
-";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
+RNCP28040;Mention Biochimie, Cellules, Cibles Thérapeutiques (BC2T) Spécialité Biomolécules et Thérapeutiques (BT);10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP28041;Mention Biochimie, Cellules, Cibles Thérapeutiques (BC2T) Spécialité Inflammation et Maladies Inflammatoires (IMI);10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
-RNCP28042;"Mention Biochimie, Cellules, Cibles Thérapeutiques (BC2T) Spécialité Biotechnologie Pharmaceutique et Thérapie Innovantes (BPTI)
-";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
+RNCP28042;Mention Biochimie, Cellules, Cibles Thérapeutiques (BC2T) Spécialité Biotechnologie Pharmaceutique et Thérapie Innovantes (BPTI);10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP28043;Urbanisme et aménagement;;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP28044;Gestion des ressources humaines;10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP28046;Technicien en économie de la construction et étude de prix;4/15/20;INACTIVE;Publiée;niveau4;TP;Titre professionnel;;;Enregistrement de droit
@@ -16030,8 +16002,7 @@ RNCP30704;mention Management;10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;E
 RNCP30705;Technicien de l'information médicale (DU);5/24/21;ACTIVE;Publiée;niveau5;;;;;Enregistrement sur demande
 RNCP30706;Designer - créateur textile;5/24/21;ACTIVE;Publiée;niveau6;;;RNCP28760;;Enregistrement sur demande
 RNCP30707;"Responsable exploitation et maintenance 
-sur navire de moins de 2.500 tonnes
-";5/24/23;ACTIVE;Publiée;niveau6;;;;;Enregistrement sur demande
+sur navire de moins de 2.500 tonnes";5/24/23;ACTIVE;Publiée;niveau6;;;;;Enregistrement sur demande
 RNCP3071;Technicien supérieur en secrétariat option gestion des ressources humaines (fiche incomplète);12/31/06;INACTIVE;Publiée;niveau5;;;;;Enregistrement sur demande
 RNCP30713;"Sciences, technologie, santé
 mention mathématiques et applications 
@@ -17104,8 +17075,7 @@ RNCP32317;Un des meilleurs ouvriers de France (diplôme national) Groupe V Métier
 RNCP3232;Conception et fabrication de structures;;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
 RNCP32320;Un des meilleurs ouvriers de France (diplôme national) Groupe V Métiers du bois et de l'ameublement - Classe 11: Vannerie;1/1/24;ACTIVE;Publiée;niveau5;Autre;Autre certification professionnelle de droit;;;Enregistrement de droit
 RNCP32321;Un des meilleurs ouvriers de France (diplôme national) Groupe V Métiers du bois et de l'ameublement - Classe 13: Laque traditionnelle;1/1/24;ACTIVE;Publiée;niveau5;Autre;Autre certification professionnelle de droit;;;Enregistrement de droit
-RNCP32322;"Un des meilleurs ouvriers de France (diplôme national)  Groupe VI Métiers des métaux      Classe 1: Fonderie d'art    
-";1/1/24;ACTIVE;Publiée;niveau5;Autre;Autre certification professionnelle de droit;;;Enregistrement de droit
+RNCP32322;Un des meilleurs ouvriers de France (diplôme national)  Groupe VI Métiers des métaux      Classe 1: Fonderie d'art;1/1/24;ACTIVE;Publiée;niveau5;Autre;Autre certification professionnelle de droit;;;Enregistrement de droit
 RNCP32323;Un des meilleurs ouvriers de France (diplôme national) Groupe VI Métiers des métaux Classe 2: Bronze ornement;1/1/24;ACTIVE;Publiée;niveau5;Autre;Autre certification professionnelle de droit;;;Enregistrement de droit
 RNCP32324;Un des meilleurs ouvriers de France (diplôme national) Groupe VI Métiers des métaux Classe 4: Dinanderie;1/1/24;ACTIVE;Publiée;niveau5;Autre;Autre certification professionnelle de droit;;;Enregistrement de droit
 RNCP32326;Un des meilleurs ouvriers de France (diplôme national) Groupe XVII: Métiers de l'hôtellerie, du commerce et des services - Classe 4: Technico-commercial - commerciale conseil en solutions d'efficacité énergétique;1/1/24;ACTIVE;Publiée;niveau5;Autre;Autre certification professionnelle de droit;;;Enregistrement de droit
@@ -17116,10 +17086,8 @@ RNCP32340;Manager d'équipe relation client à distance;5/12/24;ACTIVE;Publiée;niv
 RNCP32341;Un des meilleurs ouvriers de France (diplôme national) GroupeXI Métiers du bois et de l'ameublement - Classe 8: Classe 8 – Encadreur, doreur sur bois, restaurateur, rentoileur.;1/1/24;ACTIVE;Publiée;niveau5;Autre;Autre certification professionnelle de droit;;;Enregistrement de droit
 RNCP32342;Employé d'étage en hôtellerie;5/25/24;ACTIVE;Publiée;niveau3;TP;Titre professionnel;RNCP1942;;Enregistrement de droit
 RNCP32343;Un des meilleurs ouvriers de France (diplôme national) GroupeXI Métiers du bois et de l'ameublement - Classe 9: Marqueterie - Paille;1/1/24;ACTIVE;Publiée;niveau5;Autre;Autre certification professionnelle de droit;;;Enregistrement de droit
-RNCP32344;"Un des meilleurs ouvriers de France (diplôme national)  Groupe XV Métiers liés à la musique Classe 1: Lutherie-archèterie
-";1/1/24;ACTIVE;Publiée;niveau5;Autre;Autre certification professionnelle de droit;;;Enregistrement de droit
-RNCP32345;"Un des meilleurs ouvriers de France (diplôme national)  Groupe XV Métiers liés à la musique Classe 3: Instruments traditionnels
-";1/1/24;ACTIVE;Publiée;niveau5;Autre;Autre certification professionnelle de droit;;;Enregistrement de droit
+RNCP32344;Un des meilleurs ouvriers de France (diplôme national)  Groupe XV Métiers liés à la musique Classe 1: Lutherie-archèterie;1/1/24;ACTIVE;Publiée;niveau5;Autre;Autre certification professionnelle de droit;;;Enregistrement de droit
+RNCP32345;Un des meilleurs ouvriers de France (diplôme national)  Groupe XV Métiers liés à la musique Classe 3: Instruments traditionnels;1/1/24;ACTIVE;Publiée;niveau5;Autre;Autre certification professionnelle de droit;;;Enregistrement de droit
 RNCP32349;Chef de cuisine en restauration collective;5/25/24;ACTIVE;Publiée;niveau4;TP;Titre professionnel;RNCP1892;;Enregistrement de droit
 RNCP3235;Commerce, spécialité transformation et commercialisation des produits de la mer;;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
 RNCP32350;Animateur loisir tourisme;5/29/24;ACTIVE;Publiée;niveau4;TP;Titre professionnel;RNCP17792;;Enregistrement de droit
@@ -19799,8 +19767,7 @@ RNCP4781;"Ingénieur diplômé de l'Ecole polytechnique universitaire de Lille de l
 RNCP4782;"Ingénieur diplômé de l'Ecole polytechnique universitaire de Lille de l'Université de Lille  (Polytech Lille) spécialité  Agroalimentaire
 ";;INACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;;RNCP22743;Enregistrement de droit
 RNCP4783;Protection de l'environnement option gestion et traitement des eaux, boues et déchets;;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
-RNCP4784;"Ingénieur diplômé de l'Ecole polytechnique universitaire de Lille de l'Université Lille 1 (Polytech' Lille), spécialité Production 
-";;INACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;;;Enregistrement de droit
+RNCP4784;Ingénieur diplômé de l'Ecole polytechnique universitaire de Lille de l'Université Lille 1 (Polytech' Lille), spécialité Production;;INACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;;;Enregistrement de droit
 RNCP4785;"Ingénieur diplômé de l'Ecole polytechnique de l'Université d'Orléans (Polytech' Orléans), spécialité Mécanique et énergétique 
 ";1/1/24;ACTIVE;Publiée;niveau7;Titre ingénieur;Titre ingénieur;;;Enregistrement de droit
 RNCP4786;Assurance, banque, finance spécialité Gestion du patrimoine immobilier;;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
@@ -20021,8 +19988,7 @@ RNCP4982;Industries chimiques et pharmaceutiques spécialité Contrôle, conduite e
 RNCP4983;Développement et protection du patrimoine culturel spécialité Guide interprète national;10/31/19;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
 RNCP4984;Notariat;1/1/24;ACTIVE;Publiée;niveau5;BTS;Brevet de technicien supérieur;;;Enregistrement de droit
 RNCP4985;Santé spécialité Cadres fonctionnels des établissements sociaux et médico-sociaux;10/31/19;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
-RNCP4991;"Un des meilleurs ouvriers de France (diplôme national)  Groupe II:  Métiers de l'alimentation - Classe 1 : pâtisserie-confiserie    
-";1/1/24;ACTIVE;Publiée;niveau5;Autre;Autre certification professionnelle de droit;;;Enregistrement de droit
+RNCP4991;Un des meilleurs ouvriers de France (diplôme national)  Groupe II:  Métiers de l'alimentation - Classe 1 : pâtisserie-confiserie;1/1/24;ACTIVE;Publiée;niveau5;Autre;Autre certification professionnelle de droit;;;Enregistrement de droit
 RNCP4993;Un des meilleurs ouvriers de France (diplôme national) Groupe II: Métiers de l'alimentation - Classe 2: boucherie, étal;1/1/24;ACTIVE;Publiée;niveau5;Autre;Autre certification professionnelle de droit;;;Enregistrement de droit
 RNCP4994;Un des meilleurs ouvriers de France (diplôme national) Groupe II: Métiers de l'alimentation - Classe 3: Charcutier -traiteur, Traiteur, Charcutière - traiteure, Traiteur;1/1/24;ACTIVE;Publiée;niveau5;Autre;Autre certification professionnelle de droit;;;Enregistrement de droit
 RNCP4995;Un des meilleurs ouvriers de France (diplôme national)  Groupe I Métiers de la restauration - Classe 1: Cuisine, gastronomie;1/1/24;ACTIVE;Publiée;niveau5;Autre;Autre certification professionnelle de droit;;;Enregistrement de droit
@@ -20489,8 +20455,7 @@ RNCP5289;"Brevet des métiers d'art de la Dentelle, option Dentelle à l'aiguille
 RNCP5290;de la Dentelle, option Dentelle aux fuseaux;1/1/24;ACTIVE;Publiée;niveau4;BMA;Brevet des métiers d'art;;;Enregistrement de droit
 RNCP5291;"Décor architectural, option Arts du verre et du cristal    
 ";1/1/24;ACTIVE;Publiée;niveau5;DMA;Diplôme des métiers d'art;;;Enregistrement de droit
-RNCP5292;"Logistique spécialités : 1/3 Organisation des transports, 2/3 Gestion des flux et des stocks, 3/3 Gestion des entrepôts 
-";10/31/19;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
+RNCP5292;Logistique spécialités : 1/3 Organisation des transports, 2/3 Gestion des flux et des stocks, 3/3 Gestion des entrepôts;10/31/19;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
 RNCP5293;"Habitat option Restauration de mobilier    
 ";1/1/24;ACTIVE;Publiée;niveau5;DMA;Diplôme des métiers d'art;;;Enregistrement de droit
 RNCP5294;Automatique et Informatique Industrielle spécialité Systèmes embarqués;10/31/19;INACTIVE;Publiée;niveau6;Licence Professionnelle;Licence professionnelle;;;Enregistrement de droit
@@ -21253,8 +21218,7 @@ RNCP6201;"mention : Aménagement, Urbanisme et Développement des Territoires (AUD
 ";;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP6202;"Sciences et Technologies mention Aménagement, Urbanisme et Développement des Territoires (AUDT)     spécialité : Ville et Projets    
 ";;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
-RNCP6203;"Sciences et technologies Mention Automatique et Systèmes Électriques   Spécialité  'Gestion des réseaux d'énergie électrique' (GR2E)    
-";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
+RNCP6203;Sciences et technologies Mention Automatique et Systèmes Électriques   Spécialité  'Gestion des réseaux d'énergie électrique' (GR2E);10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP6205;"Sciences et Technologies Mention Automatique et Systèmes Électriques Spécialité  Energie Electrique et Développement Durable    
 ";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP6206;"Sciences et Technologies Mention Biologie et Biotechnologies     spécialité Biologie-Santé    
@@ -22003,10 +21967,8 @@ RNCP7129;"Master Professionnel Domaine : Sciences, Technologie, Santé     Mentio
 ";;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP7131;"Master Domaine : Sciences, Technologie, Santé     Mention : Informatique     Spécialité : Mathématiques Appliquées aux Télécommunications, l'Image, la Commande et les Signaux (MATICS)     (Master Recherche et Professionnel     
 ";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
-RNCP7132;"Master Domaine : Sciences, Technologies, Santé      Mention : Ingénierie du Système de Santé  (I2S),     Spécialité : Qualité, Sécurité, Risque et Ingénierie du Management  (QSRIM)     
-";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
-RNCP7133;"Master Domaine : Sciences, Technologies, Santé      Mention : Ingénierie du Système de Santé  (I2S)     Spécialité :  Qualité, Sécurité, Risque et Ingénierie de la Décision  (QSRID)     
-";10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
+RNCP7132;Master Domaine : Sciences, Technologies, Santé      Mention : Ingénierie du Système de Santé  (I2S),     Spécialité : Qualité, Sécurité, Risque et Ingénierie du Management  (QSRIM);10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
+RNCP7133;Master Domaine : Sciences, Technologies, Santé      Mention : Ingénierie du Système de Santé  (I2S)     Spécialité :  Qualité, Sécurité, Risque et Ingénierie de la Décision  (QSRID);10/31/19;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP7134;"Arts Lettres Langue à finalité Professionnelle Mention Arts du spectacle et musique     Spécialité Production Cinéma et Audiovisuel    
 ";;INACTIVE;Publiée;niveau7;MASTER;Master;;;Enregistrement de droit
 RNCP7135;Boucher charcutier;1/1/24;ACTIVE;Publiée;niveau3;BEP;Brevet d'études professionnelles;RNCP686;;Enregistrement de droit

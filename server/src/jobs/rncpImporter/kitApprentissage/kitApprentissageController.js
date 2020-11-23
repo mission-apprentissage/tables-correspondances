@@ -9,31 +9,31 @@ const path = require("path");
 
 class KitApprentissageController {
   constructor() {
-    const codeDiplomesFile = path.join(__dirname, "../assets", "codes_diplomes.v1.2.csv");
+    const codeDiplomesFile = path.join(__dirname, "../assets", "codes_diplomes.v1.3.csv");
     this.referentielCodesDiplomesRncp = createReferentielCodesDiplomesRncp();
     this.referentielCodesDiplomesRncp.load(codeDiplomesFile);
 
-    const infoFile = path.join(__dirname, "../assets", "rncp_info.v1.2.csv");
+    const infoFile = path.join(__dirname, "../assets", "rncp_info.v1.3.csv");
     this.referentielRNCP = createReferentielRncp();
     this.referentielRNCP.load(infoFile);
 
-    const certificateursFile = path.join(__dirname, "../assets", "rncp_certificateurs.v1.2.csv");
+    const certificateursFile = path.join(__dirname, "../assets", "rncp_certificateurs.v1.3.csv");
     this.referentielCertificateursRncp = createReferentielCertificateurs();
     this.referentielCertificateursRncp.load(certificateursFile);
 
-    const nsfFile = path.join(__dirname, "../assets", "rncp_nsf.v1.2.csv");
+    const nsfFile = path.join(__dirname, "../assets", "rncp_nsf.v1.3.csv");
     this.referentielNsf = createReferentielNsf();
     this.referentielNsf.load(nsfFile);
 
-    const romeFile = path.join(__dirname, "../assets", "rncp_rome.v1.2.csv");
+    const romeFile = path.join(__dirname, "../assets", "rncp_rome.v1.3.csv");
     this.referentielRome = createReferentielRome();
     this.referentielRome.load(romeFile);
 
-    const blocCompetencesFile = path.join(__dirname, "../assets", "rncp_blocs_competences.v1.2.csv");
+    const blocCompetencesFile = path.join(__dirname, "../assets", "rncp_blocs_competences.v1.3.csv");
     this.referentielBlocCompetences = createReferentielBlocCompetences();
     this.referentielBlocCompetences.load(blocCompetencesFile);
 
-    const voixAccesFile = path.join(__dirname, "../assets", "rncp_voix_acces.v1.2.csv");
+    const voixAccesFile = path.join(__dirname, "../assets", "rncp_voix_acces.v1.3.csv");
     this.referentielVoixAcces = createReferentielVoixAcces();
     this.referentielVoixAcces.load(voixAccesFile);
   }
@@ -72,7 +72,7 @@ class KitApprentissageController {
       type_certif: infoRncpUpdated.value.TypeCertif,
       ancienne_fiche: infoRncpUpdated.value.AncienneFiche,
       nouvelle_fiche: infoRncpUpdated.value.NouvelleFiche,
-      demande: infoRncpUpdated.value.Demande,
+      type_enregistrement: infoRncpUpdated.value.TypeEnregistrement,
       certificateurs: infoRncpCertificateurs.value,
       nsf_code: nsfUpdated.value.code,
       nsf_libelle: nsfUpdated.value.Libelle,
@@ -103,7 +103,7 @@ class KitApprentissageController {
           TypeCertif: null,
           AncienneFiche: null,
           NouvelleFiche: null,
-          Demande: null,
+          TypeEnregistrement: null,
         },
       };
     }
@@ -120,7 +120,7 @@ class KitApprentissageController {
           TypeCertif: null,
           AncienneFiche: null,
           NouvelleFiche: null,
-          Demande: null,
+          TypeEnregistrement: null,
         },
       };
     }
