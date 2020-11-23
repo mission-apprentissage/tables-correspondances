@@ -41,7 +41,7 @@ const lookupDiffAndMerge = (fiches) => {
       notFound.push({ ...rest, NUMERO_FICHE: CodeRNCP });
     }
   }
-  return [fiches, ...notFound];
+  return [...fiches, ...notFound];
 };
 
 const loadXmlFile = async (ficheInputStream) => {
