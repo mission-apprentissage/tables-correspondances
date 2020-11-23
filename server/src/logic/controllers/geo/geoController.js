@@ -2,10 +2,11 @@ const axios = require("axios");
 const apiEsSup = require("../../common/apiEsSup");
 const geoAdresseData = require("./geoAdresseData");
 const fs = require("fs-extra");
+const path = require("path");
 
 const opendataApiKey = "19b8028585be8b5c2ebc456a6363756a48b680d8447a1ebfb8a1d10f";
 
-const departements = fs.readJsonSync("../../assets/dataDepartements.json");
+const departements = fs.readJsonSync(path.resolve(__dirname, "../../assets/dataDepartements.json"));
 
 class GeoController {
   constructor() {
