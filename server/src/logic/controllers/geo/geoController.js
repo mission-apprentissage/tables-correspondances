@@ -12,7 +12,7 @@ class GeoController {
   async searchDataSoft(code) {
     try {
       const response = await axios.get(
-        `https://data.opendatasoft.com/api/records/1.0/search/?dataset=correspondance-code-insee-code-postal%40public&rows=1&q=(insee_com:${code} OR postal_code:${code})`,
+        `https://data.opendatasoft.com/api/records/1.0/search/?dataset=correspondance-code-insee-code-postal%40public&rows=1&fields=nom_dept,nom_region,insee_com,code_dept,postal_code,nom_comm&q=(insee_com:${code} OR postal_code:${code})`,
         {
           Authorization: `Apikey ${opendataApiKey}`,
         }
