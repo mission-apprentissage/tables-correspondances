@@ -8,7 +8,6 @@ class OnisepController {
   }
 
   async load() {
-    console.log(config.onisep);
     const inputStream = getFileFromS3(config.onisep);
     await this.catalogue.loadCsvFile(inputStream);
   }

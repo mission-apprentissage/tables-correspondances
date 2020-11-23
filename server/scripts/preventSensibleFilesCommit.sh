@@ -3,7 +3,7 @@
 # A hook script to verify that we don't commit files that could contain sensible data or credentials like json, csv, xls(x) or .env
 
 sensible_files_pattern="\.(csv|xls|xls(x?)|json|env)$"
-exception="(package.json|default.json|custom-environment-variables.json)$"
+exception="(dataDepartements.json|package.json|default.json|custom-environment-variables.json|codes_diplomes.v1.2.csv|rncp_blocs_competences.v1.2.csv|rncp_certificateurs.v1.2.csv|rncp_info.v1.2.csv|rncp_nsf.v1.2.csv|rncp_rome.v1.2.csv|rncp_voix_acces.v1.2.csv|rncp_blocs_competences.v1.2.csv|rncp_certificateurs.v1.2.csv)$"
 
 files=$(git diff --cached --name-only | grep -v -E "$exception" | grep -E "$sensible_files_pattern")
 if [ -z "$files" ]; then

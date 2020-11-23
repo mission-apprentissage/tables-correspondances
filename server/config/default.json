@@ -31,5 +31,8 @@
   },
   "slackWebhookUrl": null,
   "outputDir": ".local/output",
-  "onisep": "TABLES_CORRESPONDANCE_ONISEP_FILE"
+  "onisep": "TABLES_CORRESPONDANCE_ONISEP_FILE",
+  "rncp": {
+    "xml_path": "TABLES_CORRESPONDANCE_RNCP_XML_FILE"
+  }
 }
