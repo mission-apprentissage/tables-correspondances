@@ -1,7 +1,16 @@
 const mongoose = require("mongoose");
 const { mongooseInstance } = require("../mongodb");
 const { mongoosastic, getElasticInstance } = require("../esClient");
-const { bcnFormationDiplomesSchema, userSchema, domainesMetiersSchema, ficheRncpSchema } = require("../model/schema");
+const {
+  bcnFormationDiplomesSchema,
+  userSchema,
+  domainesMetiersSchema,
+  ficheRncpSchema,
+  bcnLettreSpecialiteSchema,
+  bcnNNiveauFormationDiplomeSchema,
+  bcnNMefSchema,
+  bcnNDispositifFormationSchema,
+} = require("../model/schema");
 
 const getMongoostaticModel = (modelName, schema, instanceMongoose = mongooseInstance) => {
   const Schema = new instanceMongoose.Schema(schema);
@@ -26,6 +35,26 @@ if (!bcnFormationDiplomesModel) {
   bcnFormationDiplomesModel = getModel("bcnformationdiplome", bcnFormationDiplomesSchema);
 }
 
+let bcnLettreSpecialiteModel = null;
+if (!bcnLettreSpecialiteModel) {
+  bcnLettreSpecialiteModel = getModel("bcnlettrespecialite", bcnLettreSpecialiteSchema);
+}
+
+let bcnNNiveauFormationDiplomeModel = null;
+if (!bcnNNiveauFormationDiplomeModel) {
+  bcnNNiveauFormationDiplomeModel = getModel("bcnnniveauformationdiplome", bcnNNiveauFormationDiplomeSchema);
+}
+
+let bcnNMefModel = null;
+if (!bcnNMefModel) {
+  bcnNMefModel = getModel("bcnnmef", bcnNMefSchema);
+}
+
+let bcnNDispositifFormationModel = null;
+if (!bcnNDispositifFormationModel) {
+  bcnNDispositifFormationModel = getModel("bcnndispositifformation", bcnNDispositifFormationSchema);
+}
+
 let u = null;
 if (!u) {
   u = getModel("user", userSchema);
@@ -48,6 +77,10 @@ if (!f) {
 
 module.exports = {
   BcnFormationDiplome: bcnFormationDiplomesModel,
+  BcnLettreSpecialite: bcnLettreSpecialiteModel,
+  BcnNNiveauFormationDiplome: bcnNNiveauFormationDiplomeModel,
+  BcnNMef: bcnNMefModel,
+  BcnNDispositifFormation: bcnNDispositifFormationModel,
   User: u,
   Log: l,
   DomainesMetiers: d,
