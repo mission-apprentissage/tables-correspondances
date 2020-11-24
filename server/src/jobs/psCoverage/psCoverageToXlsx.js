@@ -1,6 +1,7 @@
 const { asyncForEach } = require("../../common/utils/asyncUtils");
 const { PsCoverage } = require("../../common/model");
 const { createXlsx, writeXlsxFile } = require("../../common/utils/fileUtils");
+const logger = require("../../common/logger");
 
 module.exports = async (catalogue) => {
   const matchingType = "3";
@@ -25,7 +26,7 @@ module.exports = async (catalogue) => {
 
       if (resuai.length > 0) {
         logger.info("getEtablissements by UAI");
-        buffer.etablissement.push({ data: resformateur, matched_uai: "UAI_FORMATION" });
+        buffer.etablissement.push({ data: resuai, matched_uai: "UAI_FORMATION" });
       }
     }
 

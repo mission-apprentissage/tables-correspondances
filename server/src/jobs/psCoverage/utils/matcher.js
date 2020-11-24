@@ -26,6 +26,8 @@ const generateMatching = (mode, matchType, ligne, catalogue) => {
 
   const mef = (catalogue) => catalogue.mef_10_code === ligne.code_mef_10;
 
+  const dept = (catalogue) => catalogue.num_departement === ligne.code_postal.substring(0, 2);
+
   // const duo2 =
   //   catalogue.educ_nat_code === ligne.CODECFD2 && catalogue.num_departement === ligne.code_postal.substring(0, 2);
 
@@ -37,22 +39,16 @@ const generateMatching = (mode, matchType, ligne, catalogue) => {
     switch (matchType) {
       case "1":
         return filter(uai);
-        break;
       case "2":
         return filter((i) => uai(i) && duo1(i));
-        break;
       case "3":
         return filter((i) => uai(i) && cfd(i) && insee(i));
-        break;
       case "4":
         return filter((i) => uai(i) && cfd(i) && insee(i) && cp(i));
-        break;
       case "5":
         return filter((i) => uai(i) && cfd(i) && insee(i) && cp(i) && academie(i));
-        break;
       case "6":
         return filter((i) => uai(i) && cfd(i) && insee(i) && cp(i) && academie(i) && mef(i));
-        break;
       default:
         break;
     }
@@ -60,22 +56,16 @@ const generateMatching = (mode, matchType, ligne, catalogue) => {
     switch (matchType) {
       case "1":
         return filter(cfd);
-        break;
       case "2":
         return filter((i) => cfd(i) && dept(i));
-        break;
       case "3":
         return filter((i) => cfd(i) && insee(i));
-        break;
       case "4":
         return filter((i) => cfd(i) && insee(i) && cp(i));
-        break;
       case "5":
         return filter((i) => cfd(i) && insee(i) && cp(i) && academie(i));
-        break;
       case "6":
         return filter((i) => cfd(i) && insee(i) && cp(i) && academie(i) && mef(i));
-        break;
       default:
         break;
     }

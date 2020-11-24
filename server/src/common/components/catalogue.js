@@ -1,4 +1,5 @@
 const axios = require("axios");
+const logger = require("../logger");
 const endpoint = "https://c7a5ujgw35.execute-api.eu-west-3.amazonaws.com/prod";
 
 module.exports = async () => {
@@ -15,7 +16,7 @@ module.exports = async () => {
         allEtablissements = allEtablissements.concat(etablissements); // Should be properly exploded, function should be pure
 
         if (page < pagination.nombre_de_page) {
-          return getEtablissements({ page: page + 1, allEtablissements, limit });
+          return this.getEtablissements({ page: page + 1, allEtablissements, limit });
         } else {
           return allEtablissements;
         }
@@ -37,7 +38,7 @@ module.exports = async () => {
 
         if (page < pagination.nombre_de_page) {
           // if (page < 2) {
-          return getFormations({ page: page + 1, allFormations });
+          return this.getFormations({ page: page + 1, allFormations });
         } else {
           return allFormations;
         }

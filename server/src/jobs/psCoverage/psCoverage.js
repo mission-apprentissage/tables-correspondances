@@ -1,4 +1,5 @@
 const { asyncForEach } = require("../../common/utils/asyncUtils");
+const logger = require("../../common/logger");
 const { PsCoverage } = require("../../common/model");
 const matcher = require("./utils/matcher");
 
@@ -51,7 +52,7 @@ async function updateDB(formation, matching) {
 
 module.exports = async (catalogue) => {
   const formations = await PsCoverage.find().lean();
-  const catalogue = await catalogue.getEtablissements();
+  const etablissements = await catalogue.getEtablissements();
 
   await asyncForEach(formations, async (formation, index) => {
     logger.info(
@@ -60,7 +61,7 @@ module.exports = async (catalogue) => {
       }/${formation.code_cfd}`
     );
 
-    const result = matcher(formation, catalogue);
+    const result = matcher(formation, etablissements);
 
     await formatAndUpdate(result);
   });
