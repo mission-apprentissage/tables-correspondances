@@ -57,7 +57,7 @@ class FileManager {
     }
 
     try {
-      result.PATH_N_DISPOSITIF_FORMATION = this.readJsonFromCsvFile(PATH_N_DISPOSITIF_FORMATION);
+      result.N_DISPOSITIF_FORMATION = this.readJsonFromCsvFile(PATH_N_DISPOSITIF_FORMATION);
     } catch (err) {
       logger.error(`FileManager Error ${PATH_N_DISPOSITIF_FORMATION}`);
     }

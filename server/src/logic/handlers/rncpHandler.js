@@ -1,8 +1,8 @@
-const fcController = require("../controllers/rncp/rncpController");
+const rncpController = require("../controllers/rncp/rncpController");
 const bcnController = require("../controllers/bcn/BcnController");
 
 const getDataFromRncp = async (providedRncp) => {
-  const rncpData = await fcController.getDataFromRncp(providedRncp);
+  const rncpData = await rncpController.getDataFromRncp(providedRncp);
 
   if (!rncpData.result.cfd) {
     return {
@@ -19,9 +19,9 @@ const getDataFromRncp = async (providedRncp) => {
     };
   }
 
-  const cfdData = bcnController.getDataFromCfd(rncpData.result.cfd);
-  const mefs = bcnController.getMefsFromCfd(cfdData.result.cfd);
-  const mef = bcnController.getUniqMefFromMefs(mefs);
+  const cfdData = await bcnController.getDataFromCfd(rncpData.result.cfd);
+  const mefs = await bcnController.getMefsFromCfd(cfdData.result.cfd);
+  const mef = await bcnController.getUniqMefFromMefs(mefs);
 
   return {
     result: {

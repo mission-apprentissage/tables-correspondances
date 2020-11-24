@@ -6,11 +6,10 @@ const path = require("path");
 
 const opendataApiKey = "19b8028585be8b5c2ebc456a6363756a48b680d8447a1ebfb8a1d10f";
 
-const departements = fs.readJsonSync(path.resolve(__dirname, "../../assets/dataDepartements.json"));
-
 class GeoController {
   constructor() {
     this.baseCodePostaux = [];
+    this.departements = fs.readJsonSync(path.resolve(__dirname, "../../assets/dataDepartements.json"));
   }
 
   async searchDataSoft(code) {
@@ -57,7 +56,7 @@ class GeoController {
   }
 
   findDataByDepartementNum(code_dept) {
-    const data = departements[code_dept];
+    const data = this.departements[code_dept];
     if (!data) {
       return { nom_dept: null, nom_region: null, code_region: null, nom_academie: null, num_academie: null };
     }

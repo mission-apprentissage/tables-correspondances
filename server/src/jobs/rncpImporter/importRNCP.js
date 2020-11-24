@@ -22,8 +22,33 @@ const isEligibleApprentissage = (fiche) => {
   return false;
 };
 
+const lookupDiffAndMerge = (fiches) => {
+  const refsKitApprentissage = kitApprentissageController.referentielRNCP.get();
+  const notFound = [];
+  for (let ite = 0; ite < refsKitApprentissage.length; ite++) {
+    const ref = refsKitApprentissage[ite];
+    let here = false;
+    for (let jte = 0; jte < fiches.length; jte++) {
+      const fiche = fiches[jte];
+      if (ref.CodeRNCP === fiche.NUMERO_FICHE) {
+        here = true;
+        break;
+      }
+    }
+    if (!here && !ref.CodeRNCP.includes("RS")) {
+      // eslint-disable-next-line no-unused-vars
+      const { CodeRNCP, ...rest } = ref;
+      notFound.push({ ...rest, NUMERO_FICHE: CodeRNCP });
+    }
+  }
+  return [...fiches, ...notFound];
+};
+
 const loadXmlFile = async (ficheInputStream) => {
-  let { fiches } = await parseFichesFile(ficheInputStream);
+  let { fiches: refFiches } = await parseFichesFile(ficheInputStream);
+
+  // Vérification si le kit est plus "à jour" que le xml
+  const fiches = lookupDiffAndMerge(refFiches);
 
   const referentiel = fiches.map((f) => {
     const result = kitApprentissageController.getDataFromRncp(f.NUMERO_FICHE);
@@ -61,7 +86,7 @@ const loadXmlFile = async (ficheInputStream) => {
       ...result,
       certificateurs,
       eligible_apprentissage: isEligibleApprentissage(f),
-      type_enregistrement: f.TYPE_ENREGISTREMENT || null,
+      type_enregistrement: result.type_enregistrement || f.TYPE_ENREGISTREMENT || null,
       partenaires: f.PARTENAIRES || [],
       si_jury_ca: f.SI_JURY_CA === "Oui",
     };
