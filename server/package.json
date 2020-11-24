@@ -23,6 +23,7 @@
     "domainesMetiers": "dotenv node src/jobs/domaines-metiers/index.js",
     "bcn:downloader": "run=true node src/jobs/bcnDownloader/index.js",
     "bcn:importer": "run=true node src/jobs/bcnImporter/index.js",
+    "bcn:importer:local": "run=true dotenv node src/jobs/bcnImporter/index.js",
     "rncp:importer": "run=true node src/jobs/rncpImporter/index.js",
     "rncp:importer:local": "run=true dotenv node src/jobs/rncpImporter/index.js"
   },

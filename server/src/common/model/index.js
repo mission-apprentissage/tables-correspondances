@@ -7,6 +7,10 @@ const {
   domainesMetiersSchema,
   ficheRncpSchema,
   psCoverageSchema,
+  bcnLettreSpecialiteSchema,
+  bcnNNiveauFormationDiplomeSchema,
+  bcnNMefSchema,
+  bcnNDispositifFormationSchema,
 } = require("../model/schema");
 
 const getMongoostaticModel = (modelName, schema, instanceMongoose = mongooseInstance) => {
@@ -30,6 +34,26 @@ const getModel = (modelName, schema, instanceMongoose = mongooseInstance) => {
 let bcnFormationDiplomesModel = null;
 if (!bcnFormationDiplomesModel) {
   bcnFormationDiplomesModel = getModel("bcnformationdiplome", bcnFormationDiplomesSchema);
+}
+
+let bcnLettreSpecialiteModel = null;
+if (!bcnLettreSpecialiteModel) {
+  bcnLettreSpecialiteModel = getModel("bcnlettrespecialite", bcnLettreSpecialiteSchema);
+}
+
+let bcnNNiveauFormationDiplomeModel = null;
+if (!bcnNNiveauFormationDiplomeModel) {
+  bcnNNiveauFormationDiplomeModel = getModel("bcnnniveauformationdiplome", bcnNNiveauFormationDiplomeSchema);
+}
+
+let bcnNMefModel = null;
+if (!bcnNMefModel) {
+  bcnNMefModel = getModel("bcnnmef", bcnNMefSchema);
+}
+
+let bcnNDispositifFormationModel = null;
+if (!bcnNDispositifFormationModel) {
+  bcnNDispositifFormationModel = getModel("bcnndispositifformation", bcnNDispositifFormationSchema);
 }
 
 let u = null;
@@ -59,6 +83,10 @@ if (!p) {
 
 module.exports = {
   BcnFormationDiplome: bcnFormationDiplomesModel,
+  BcnLettreSpecialite: bcnLettreSpecialiteModel,
+  BcnNNiveauFormationDiplome: bcnNNiveauFormationDiplomeModel,
+  BcnNMef: bcnNMefModel,
+  BcnNDispositifFormation: bcnNDispositifFormationModel,
   User: u,
   Log: l,
   DomainesMetiers: d,

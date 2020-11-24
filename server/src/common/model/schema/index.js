@@ -5,8 +5,17 @@ const domainesMetiersSchema = require("./domainesmetiers");
 const ficheRncpSchema = require("./ficheRncp");
 const psCoverageSchema = require("./psCoverage");
 
+const bcnLettreSpecialiteSchema = require("./bcnLettreSpecialite");
+const bcnNNiveauFormationDiplomeSchema = require("./bcnNNiveauFormationDiplome");
+const bcnNMefSchema = require("./bcnNMef");
+const bcnNDispositifFormationSchema = require("./bcnNDispositifFormation");
+
 module.exports = {
   bcnFormationDiplomesSchema,
+  bcnLettreSpecialiteSchema,
+  bcnNNiveauFormationDiplomeSchema,
+  bcnNMefSchema,
+  bcnNDispositifFormationSchema,
   logSchema,
   userSchema,
   domainesMetiersSchema,

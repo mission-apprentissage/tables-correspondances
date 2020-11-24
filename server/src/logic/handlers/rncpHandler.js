@@ -19,9 +19,9 @@ const getDataFromRncp = async (providedRncp) => {
     };
   }
 
-  const cfdData = bcnController.getDataFromCfd(rncpData.result.cfd);
-  const mefs = bcnController.getMefsFromCfd(cfdData.result.cfd);
-  const mef = bcnController.getUniqMefFromMefs(mefs);
+  const cfdData = await bcnController.getDataFromCfd(rncpData.result.cfd);
+  const mefs = await bcnController.getMefsFromCfd(cfdData.result.cfd);
+  const mef = await bcnController.getUniqMefFromMefs(mefs);
 
   return {
     result: {

@@ -1,39 +1,25 @@
-const config = require("config");
-const { getFileFromS3 } = require("../../../common/utils/awsUtils");
-const createCatalogue = require("./onisepFileParser");
+const catalogue = require("./assets/onisepUrls.json");
 
-class OnisepController {
-  constructor() {
-    this.catalogue = createCatalogue();
-  }
-
-  async load() {
-    const inputStream = getFileFromS3(config.onisep);
-    await this.catalogue.loadCsvFile(inputStream);
-  }
-
-  async findUrl(cfd) {
-    const onisep_url = await this.catalogue.getUrl(cfd);
-    if (!onisep_url) {
-      return {
-        result: {
-          url: null,
-        },
-        messages: {
-          url: "Non trouvé",
-        },
-      };
-    }
+const findUrl = (cfd) => {
+  const onisep_url = catalogue[cfd];
+  if (!onisep_url) {
     return {
       result: {
-        url: onisep_url,
+        url: null,
       },
       messages: {
-        url: "Ok",
+        url: "Non trouvé",
       },
     };
   }
-}
+  return {
+    result: {
+      url: onisep_url,
+    },
+    messages: {
+      url: "Ok",
+    },
+  };
+};
 
-const onisepController = new OnisepController();
-module.exports = onisepController;
+module.exports = { findUrl };

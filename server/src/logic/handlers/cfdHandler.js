@@ -1,10 +1,10 @@
 const { runScript } = require("../../jobs/scriptWrapper");
 const bcnController = require("../controllers/bcn/BcnController");
 const fcController = require("../controllers/rncp/rncpController");
-const onisepController = require("../controllers/onisep/onisepController");
+const { findUrl } = require("../controllers/onisep/onisepController");
 
 const getDataFromCfd = async (providedCfd) => {
-  const bcnData = bcnController.getDataFromCfd(providedCfd);
+  const bcnData = await bcnController.getDataFromCfd(providedCfd);
 
   if (!bcnData.result.cfd) {
     return {
@@ -21,11 +21,10 @@ const getDataFromCfd = async (providedCfd) => {
     };
   }
 
-  const mefs = bcnController.getMefsFromCfd(bcnData.result.cfd);
-  const mef = bcnController.getUniqMefFromMefs(mefs);
+  const mefs = await bcnController.getMefsFromCfd(bcnData.result.cfd);
+  const mef = await bcnController.getUniqMefFromMefs(mefs);
 
-  await onisepController.load();
-  const onisep_url = await onisepController.findUrl(bcnData.result.cfd);
+  const onisep_url = await findUrl(bcnData.result.cfd);
 
   let rncpData = {
     result: {},

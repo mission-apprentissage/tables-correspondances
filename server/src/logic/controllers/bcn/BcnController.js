@@ -1,35 +1,24 @@
 // #region Imports
 
 const { infosCodes, niveaux, mappingNiveauCodeEn, computeCodes } = require("./Constants");
-const { find, filter, uniq } = require("lodash");
+const { find, uniq } = require("lodash");
 const moment = require("moment");
-const fileManager = require("./FileManager");
 const logger = require("../../../common/logger");
+const {
+  BcnFormationDiplome,
+  BcnLettreSpecialite,
+  BcnNNiveauFormationDiplome,
+  BcnNMef,
+} = require("../../../common/model/index");
 
 // #endregion
 
 class BcnController {
   constructor() {
-    this.bases = {
-      N_FORMATION_DIPLOME: null,
-      V_FORMATION_DIPLOME: null,
-      N_LETTRE_SPECIALITE: null,
-      N_NIVEAU_FORMATION_DIPLOME: null,
-      N_MEF: null,
-      N_DISPOSITIF_FORMATION: null,
-    };
-    this.basesLoaded = false;
     this.validLimiteDate = moment("31/08/2020", "DD/MM/YYYY");
   }
 
-  load() {
-    if (!this.basesLoaded) {
-      this.bases = fileManager.loadBases();
-      this.basesLoaded = true;
-    }
-  }
-
-  getDataFromCfd(providedCfd) {
+  async getDataFromCfd(providedCfd) {
     if (!providedCfd || !/^[0-9A-Z]{8}[A-Z]?$/g.test(providedCfd.trim())) {
       return {
         result: {},
@@ -44,15 +33,15 @@ class BcnController {
 
     const specialiteUpdated =
       providedCfd.length === 9
-        ? this.getSpeciality(providedCfd.substring(8, 9))
+        ? await this.getSpeciality(providedCfd.substring(8, 9))
         : { info: infosCodes.specialite.NotProvided, value: null };
 
     // Si  non trouvé dans la table N_FORMATION_DIPLOME on recherche dans la base V_FORMATION_DIPLOME
     let lookupBase = "N";
-    let cfdUpdated = this.findCfd_nformation(cfd);
+    let cfdUpdated = await this.findCfd_nformation(cfd);
     let infoCfd = `${computeCodes.cfd[cfdUpdated.info]} base N_FORMATION_DIPLOME`;
     if (cfdUpdated.value === null) {
-      cfdUpdated = this.findCfd_vformation(cfd);
+      cfdUpdated = await this.findCfd_vformation(cfd);
       lookupBase = "V";
       infoCfd += `, ${computeCodes.cfd[cfdUpdated.info]} base V_FORMATION_DIPLOME`;
     }
@@ -80,9 +69,9 @@ class BcnController {
     }
 
     const niveauUpdated = this.findNiveau(cfdUpdated.value);
-    const intituleLongUpdated = this.findIntituleLong(cfdUpdated.value, lookupBase);
-    const intituleCourtUpdated = this.findIntituleCourt(cfdUpdated.value, lookupBase);
-    const diplomeUpdated = this.findDiplome(cfdUpdated.value);
+    const intituleLongUpdated = await this.findIntituleLong(cfdUpdated.value, lookupBase);
+    const intituleCourtUpdated = await this.findIntituleCourt(cfdUpdated.value, lookupBase);
+    const diplomeUpdated = await this.findDiplome(cfdUpdated.value);
 
     return {
       result: {
@@ -104,7 +93,7 @@ class BcnController {
     };
   }
 
-  getDataFromMef10(providedMef10) {
+  async getDataFromMef10(providedMef10) {
     if (!providedMef10 || !/^[0-9]{10}$/g.test(providedMef10.trim())) {
       return {
         result: {},
@@ -114,7 +103,7 @@ class BcnController {
       };
     }
     let mef10 = `${providedMef10}`.trim();
-    const cfdUpdated = this.findCfdFromMef10(mef10);
+    const cfdUpdated = await this.findCfdFromMef10(mef10);
 
     const modalite = this.getModalities(mef10);
 
@@ -131,8 +120,8 @@ class BcnController {
     };
   }
 
-  getMefsFromCfd(codeEducNat) {
-    const Mefs10List = this.findMefsFromCfd(codeEducNat);
+  async getMefsFromCfd(codeEducNat) {
+    const Mefs10List = await this.findMefsFromCfd(codeEducNat);
 
     const MefsUpdated = [];
     for (let i = 0; i < Mefs10List.value.length; i++) {
@@ -146,14 +135,14 @@ class BcnController {
 
     const MefsAproximation = { info: "", value: [] };
     if (MefsUpdated.length === 0) {
-      const Mefs11List = this.findMefs11(codeEducNat);
+      const Mefs11List = await this.findMefs11(codeEducNat);
       for (let i = 0; i < Mefs11List.value.length; i++) {
         const mef11 = Mefs11List.value[i];
-        const mefTmp = this.findMefFromMef11(mef11);
+        const mefTmp = await this.findMefFromMef11(mef11);
         const modalite = this.getModalities(mefTmp.value);
-        const cfd = this.findCfdFromMef10(mefTmp.value);
+        const cfd = await this.findCfdFromMef10(mefTmp.value);
         const niveau = this.findNiveau(cfd.value);
-        const intitule_long = this.findIntituleLong(cfd.value);
+        const intitule_long = await this.findIntituleLong(cfd.value);
 
         const match = find(MefsAproximation.value, { cfd: cfd.value });
         if (!match) {
@@ -169,7 +158,7 @@ class BcnController {
       MefsAproximation.info = "Codes Mef trouvés les plus proches du code CFD fournit";
     }
 
-    const Mefs8Updated = this.findMefs8(codeEducNat);
+    const Mefs8Updated = await this.findMefs8(codeEducNat);
 
     return {
       result: {
@@ -185,20 +174,18 @@ class BcnController {
     };
   }
 
-  getUniqMefFromMefs(mefs) {
+  async getUniqMefFromMefs(mefs) {
     let mef10Data = { result: {}, messages: {} };
     if (mefs.result.mefs10.length === 1) {
-      mef10Data = bcnController.getDataFromMef10(mefs.result.mefs10[0].mef10);
+      mef10Data = await this.getDataFromMef10(mefs.result.mefs10[0].mef10);
       delete mef10Data.result.cfd;
     }
     return mef10Data;
   }
 
-  findCfd_nformation(codeEducNat, previousInfo = null) {
-    this.load();
+  async findCfd_nformation(codeEducNat, previousInfo = null) {
     try {
-      const match = find(this.bases.N_FORMATION_DIPLOME, { FORMATION_DIPLOME: codeEducNat });
-
+      const match = await BcnFormationDiplome.findOne({ FORMATION_DIPLOME: codeEducNat });
       if (!match) {
         return { info: infosCodes.cfd.NotFound, value: null };
       }
@@ -216,25 +203,25 @@ class BcnController {
       }
 
       if (match.NOUVEAU_DIPLOME_7 !== "") {
-        return this.findCfd_nformation(match.NOUVEAU_DIPLOME_7, infosCodes.cfd.Updated);
+        return await this.findCfd_nformation(match.NOUVEAU_DIPLOME_7, infosCodes.cfd.Updated);
       }
       if (match.NOUVEAU_DIPLOME_6 !== "") {
-        return this.findCfd_nformation(match.NOUVEAU_DIPLOME_6, infosCodes.cfd.Updated);
+        return await this.findCfd_nformation(match.NOUVEAU_DIPLOME_6, infosCodes.cfd.Updated);
       }
       if (match.NOUVEAU_DIPLOME_5 !== "") {
-        return this.findCfd_nformation(match.NOUVEAU_DIPLOME_5, infosCodes.cfd.Updated);
+        return await this.findCfd_nformation(match.NOUVEAU_DIPLOME_5, infosCodes.cfd.Updated);
       }
       if (match.NOUVEAU_DIPLOME_4 !== "") {
-        return this.findCfd_nformation(match.NOUVEAU_DIPLOME_4, infosCodes.cfd.Updated);
+        return await this.findCfd_nformation(match.NOUVEAU_DIPLOME_4, infosCodes.cfd.Updated);
       }
       if (match.NOUVEAU_DIPLOME_3 !== "") {
-        return this.findCfd_nformation(match.NOUVEAU_DIPLOME_3, infosCodes.cfd.Updated);
+        return await this.findCfd_nformation(match.NOUVEAU_DIPLOME_3, infosCodes.cfd.Updated);
       }
       if (match.NOUVEAU_DIPLOME_2 !== "") {
-        return this.findCfd_nformation(match.NOUVEAU_DIPLOME_2, infosCodes.cfd.Updated);
+        return await this.findCfd_nformation(match.NOUVEAU_DIPLOME_2, infosCodes.cfd.Updated);
       }
       if (match.NOUVEAU_DIPLOME_1 !== "") {
-        return this.findCfd_nformation(match.NOUVEAU_DIPLOME_1, infosCodes.cfd.Updated);
+        return await this.findCfd_nformation(match.NOUVEAU_DIPLOME_1, infosCodes.cfd.Updated);
       }
 
       return { info: infosCodes.cfd.OutDated, value: codeEducNat };
@@ -244,9 +231,9 @@ class BcnController {
     }
   }
 
-  findCfd_vformation(codeEducNat) {
+  async findCfd_vformation(codeEducNat) {
     try {
-      const match = find(this.bases.V_FORMATION_DIPLOME, { FORMATION_DIPLOME: codeEducNat });
+      const match = await BcnFormationDiplome.findOne({ FORMATION_DIPLOME: codeEducNat });
       if (!match) {
         return { info: infosCodes.cfd.NotFound, value: null };
       }
@@ -282,12 +269,8 @@ class BcnController {
     }
   }
 
-  findIntituleLong(codeEducNat, lookupBase = "N") {
-    this.load();
-    const match = find(lookupBase === "N" ? this.bases.N_FORMATION_DIPLOME : this.bases.V_FORMATION_DIPLOME, {
-      FORMATION_DIPLOME: codeEducNat,
-    });
-
+  async findIntituleLong(codeEducNat) {
+    const match = await BcnFormationDiplome.findOne({ FORMATION_DIPLOME: codeEducNat });
     if (!match) {
       return { info: infosCodes.intitule.Error, value: null };
     }
@@ -295,12 +278,8 @@ class BcnController {
     return { info: infosCodes.intitule.NothingDoTo, value: match.LIBELLE_LONG_200 };
   }
 
-  findIntituleCourt(codeEducNat, lookupBase = "N") {
-    this.load();
-    const match = find(lookupBase === "N" ? this.bases.N_FORMATION_DIPLOME : this.bases.V_FORMATION_DIPLOME, {
-      FORMATION_DIPLOME: codeEducNat,
-    });
-
+  async findIntituleCourt(codeEducNat) {
+    const match = await BcnFormationDiplome.findOne({ FORMATION_DIPLOME: codeEducNat });
     if (!match) {
       return { info: infosCodes.intitule.Error, value: null };
     }
@@ -308,10 +287,9 @@ class BcnController {
     return { info: infosCodes.intitule.NothingDoTo, value: match.LIBELLE_STAT_33 };
   }
 
-  findDiplome(codeEducNat) {
+  async findDiplome(codeEducNat) {
     const tronc = codeEducNat.substring(0, 3);
-    const match = find(this.bases.N_NIVEAU_FORMATION_DIPLOME, { NIVEAU_FORMATION_DIPLOME: tronc });
-
+    const match = await BcnNNiveauFormationDiplome.findOne({ NIVEAU_FORMATION_DIPLOME: tronc });
     if (!match) {
       return { info: infosCodes.diplome.Error, value: null };
     }
@@ -319,9 +297,8 @@ class BcnController {
     return { info: infosCodes.diplome.NothingDoTo, value: match.LIBELLE_100 };
   }
 
-  findCfdFromMef10(mef10) {
-    this.load();
-    const match = filter(this.bases.N_MEF, { MEF: mef10 });
+  async findCfdFromMef10(mef10) {
+    const match = await BcnNMef.find({ MEF: mef10 });
     if (!match.length) {
       return { info: infosCodes.mef.NotFound, value: null };
     }
@@ -333,41 +310,33 @@ class BcnController {
     return { info: infosCodes.mef.NothingDoTo, value: result[0] };
   }
 
-  findMefsFromCfd(codeEducNat) {
-    this.load();
-    const match = filter(this.bases.N_MEF, { FORMATION_DIPLOME: codeEducNat });
+  async findMefsFromCfd(codeEducNat) {
+    const match = await BcnNMef.find({ FORMATION_DIPLOME: codeEducNat });
     if (!match.length) {
       return { info: infosCodes.mef.NotFound, value: [] };
     }
     return { info: infosCodes.mef.NothingDoTo, value: match.map((m) => `${m.MEF}`) };
   }
 
-  findMefFromMef11(mef11) {
-    this.load();
-    const match = find(this.bases.N_MEF, { MEF_STAT_11: mef11 });
+  async findMefFromMef11(mef11) {
+    const match = await BcnNMef.findOne({ MEF_STAT_11: mef11 });
     if (!match) {
       return { info: infosCodes.mef.NotFound, value: null };
     }
     return { info: infosCodes.mef.NothingDoTo, value: match.MEF };
   }
 
-  findMefs11(codeEducNat) {
-    this.load();
-
+  async findMefs11(codeEducNat) {
     const tronc = codeEducNat.substring(3, 8);
-    const regex = new RegExp(`${tronc}$`, "g");
-    const match = filter(this.bases.N_MEF, (o) => regex.test(o.MEF_STAT_11));
-
+    const match = await BcnNMef.find({ MEF_STAT_11: { $regex: `${tronc}$` } });
     if (!match.length) {
       return { info: infosCodes.mef.NotFound, value: [] };
     }
     return { info: infosCodes.mef.NothingDoTo, value: match.map((m) => `${m.MEF_STAT_11}`) };
   }
 
-  findMefs8(codeEducNat) {
-    this.load();
-    const match = filter(this.bases.N_MEF, { FORMATION_DIPLOME: codeEducNat });
-
+  async findMefs8(codeEducNat) {
+    const match = await BcnNMef.find({ FORMATION_DIPLOME: codeEducNat });
     if (!match.length) {
       return { info: infosCodes.mef.NotFound, value: [] };
     }
@@ -385,12 +354,9 @@ class BcnController {
     };
   }
 
-  getSpeciality(specialityLetter) {
-    this.load();
+  async getSpeciality(specialityLetter) {
     try {
-      const specialityData = this.bases.N_LETTRE_SPECIALITE.find(
-        (item) => item.LETTRE_SPECIALITE.trim() === specialityLetter
-      );
+      const specialityData = await BcnLettreSpecialite.findOne({ LETTRE_SPECIALITE: specialityLetter });
       return {
         info: infosCodes.specialite.NothingDoTo,
         value: {
