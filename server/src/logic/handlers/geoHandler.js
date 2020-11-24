@@ -5,7 +5,7 @@ const getDataFromCP = async (providedCP) => {
     return {
       result: {},
       messages: {
-        error: "Erreur: Le code  postal fourni doit être définit et au format 5 caractères",
+        error: `Erreur: Le code postal fourni doit être définit et au format 5 caractères ${providedCP}`,
       },
     };
   }
@@ -18,7 +18,7 @@ const getDataFromCP = async (providedCP) => {
     return {
       result: {},
       messages: {
-        error: "Erreur: Le code  postal fourni est introuvable",
+        error: `Erreur: Le code postal fourni est introuvable ${providedCP}`,
       },
     };
   }

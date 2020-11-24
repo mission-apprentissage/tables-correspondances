@@ -22,7 +22,7 @@ describe(__filename, () => {
     assert.deepStrictEqual(await getDataFromCP("aswe23"), {
       result: {},
       messages: {
-        error: "Le code  postal fourni doit être définit et au format 5 caractères",
+        error: "Erreur: Le code postal fourni doit être définit et au format 5 caractères aswe23",
       },
     });
   });
@@ -31,7 +31,7 @@ describe(__filename, () => {
     assert.deepStrictEqual(await getDataFromCP("89900"), {
       result: {},
       messages: {
-        error: "Le code  postal fourni est introuvable",
+        error: "Erreur: Le code postal fourni est introuvable 89900",
       },
     });
   });
