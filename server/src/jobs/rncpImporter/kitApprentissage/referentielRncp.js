@@ -4,6 +4,7 @@ module.exports = () => {
   let referentielRncp = [];
 
   return {
+    get: () => referentielRncp,
     load: (referentielRncpFile) => {
       referentielRncp = csvToJson.getJsonFromCsv(referentielRncpFile);
 

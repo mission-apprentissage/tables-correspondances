@@ -4,7 +4,13 @@ const { runScript } = require("../scriptWrapper");
 const fileManager = require("./FileManager");
 const createBcnFormation = require("./createBcnFormation");
 const updateBcnFormation = require("./updateBcnFormation");
-const { BcnFormationDiplome } = require("../../common/model/index");
+const {
+  BcnFormationDiplome,
+  BcnLettreSpecialite,
+  BcnNNiveauFormationDiplome,
+  BcnNMef,
+  BcnNDispositifFormation,
+} = require("../../common/model/index");
 
 const mergeNformationVformation = (N_FORMATION_DIPLOME, V_FORMATION_DIPLOME) => {
   const bcnFormations = new Map();
@@ -20,6 +26,26 @@ const mergeNformationVformation = (N_FORMATION_DIPLOME, V_FORMATION_DIPLOME) => 
     }
   }
   return Array.from(bcnFormations.values());
+};
+
+const dbOperations = async (base, db, Entity, description = "") => {
+  try {
+    await asyncForEach(base, async (item) => {
+      const exist = await Entity.findOne({ ID: item.ID });
+      if (exist) {
+        await Entity.findOneAndUpdate({ _id: item._id }, { ...item, last_update_at: Date.now() }, { new: true });
+        logger.info(`BCN ${description} '${item.ID}' successfully updated in db ${db.name}`);
+      } else {
+        logger.info(`BCN ${description}  '${item.ID}' not found`);
+        const bcnToAdd = new Entity(item);
+        await bcnToAdd.save();
+        logger.info(`BCN ${description} '${bcnToAdd._id}' successfully added in db ${db.name}`);
+      }
+    });
+    logger.info(`Importing BCN ${description}  table Succeed`);
+  } catch (error) {
+    logger.error(`Importing BCN ${description}  table Failed`);
+  }
 };
 
 const importBcnTables = async (db) => {
@@ -43,7 +69,17 @@ const importBcnTables = async (db) => {
     logger.error(`Importing BCN Formations table Failed`);
   }
 
-  // TODO OTHER TABLES
+  // N_LETTRE_SPECIALITE
+  await dbOperations(bases.N_LETTRE_SPECIALITE, db, BcnLettreSpecialite, "Lettre specialite");
+
+  // N_NIVEAU_FORMATION_DIPLOME
+  await dbOperations(bases.N_NIVEAU_FORMATION_DIPLOME, db, BcnNNiveauFormationDiplome, "N Niveau formation");
+
+  // N_MEF
+  await dbOperations(bases.N_MEF, db, BcnNMef, "N Mef");
+
+  // N_DISPOSITIF_FORMATION
+  await dbOperations(bases.N_DISPOSITIF_FORMATION, db, BcnNDispositifFormation, "N Dispositif");
 
   logger.warn(`[BCN tables] Importer completed`);
 };
