@@ -1,10 +1,16 @@
 const { pipeline, writeObject } = require("../../../common/utils/streamUtils");
 const parseCSV = require("csv-parse");
+const { runScript } = require("../../scriptWrapper");
+const { getFileFromS3 } = require("../../../common/utils/awsUtils");
+const config = require("config");
 
-module.exports = () => {
-  let catalogue = [];
+const createParser = () => {
+  let catalogue = {};
 
   return {
+    getData() {
+      return catalogue;
+    },
     loadCsvFile: async (inputStream) => {
       await pipeline(
         inputStream,
@@ -47,13 +53,26 @@ module.exports = () => {
           ],
         }),
         writeObject((line) => {
-          catalogue.push({ codeDiplome: line["Code_diplome_EN"], url: line["URL_redirection_formation"] });
+          if (line["Code_diplome_EN"] && line["URL_redirection_formation"]) {
+            catalogue[line["Code_diplome_EN"]] = line["URL_redirection_formation"];
+          }
         })
       );
     },
     getUrl: (codeDiplome) => {
-      let res = catalogue.find((d) => d.codeDiplome === codeDiplome);
+      let res = catalogue[codeDiplome];
       return res ? res.url : null;
     },
   };
 };
+
+if (process.env.run) {
+  runScript(async () => {
+    const parser = await createParser();
+
+    const inputStream = getFileFromS3(config.onisep);
+    await parser.loadCsvFile(inputStream);
+    const data = parser.getData();
+    console.log(`found ${Object.keys(data).length} data`, data);
+  });
+}
