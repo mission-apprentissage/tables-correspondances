@@ -25,6 +25,21 @@ class ApiGeoAdresse {
       return null;
     }
   }
+
+  async searchMunicipalityByCode(code, isCityCode = false) {
+    try {
+      const { data } = await axios.get(`${apiEndpoint}/search/`, {
+        params: {
+          limit: 1,
+          q: `${isCityCode ? "citycode=" : ""}${code}&type=municipality`,
+        },
+      });
+      return data;
+    } catch (e) {
+      console.error("geo search municipality error", e);
+      return e;
+    }
+  }
 }
 
 const apiGeoAdresse = new ApiGeoAdresse();
