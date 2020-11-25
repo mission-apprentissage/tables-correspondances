@@ -31,7 +31,7 @@ class GeoController {
 
   async findCode(code) {
     try {
-      const { records } = await this.searchDataSoft(code);
+      const { records = [] } = await geoAdresseData.getMunicipality(code);
       if (records.length === 0) {
         return {
           info: "Erreur: Non trouvé",
