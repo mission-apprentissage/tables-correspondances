@@ -90,6 +90,47 @@ class GeoAdresseData {
       geo_coordonnees: `${geojson.features[0].geometry.coordinates[1]},${geojson.features[0].geometry.coordinates[0]}`, // format "lat,long"
     };
   }
+
+  /**
+   * Format the results of apiGeoAdresse.searchMunicipalityByCode calls
+   */
+  async formatMunicipalityResponse(data) {
+    const records = data.features.map(({ properties }) => {
+      return {
+        fields: {
+          insee_com: properties.citycode,
+          postal_code: properties.postcode,
+          nom_comm: properties.city,
+          code_dept: properties.context.split(",")[0],
+        },
+      };
+    });
+
+    return {
+      records,
+    };
+  }
+
+  /**
+   * Retrieve a municipality by postal code or insee code
+   */
+  async getMunicipality(code) {
+    const refinedCode = this.refinePostcode(code);
+
+    // try to find results by postal code
+    let data = await apiGeoAdresse.searchMunicipalityByCode(refinedCode);
+    if (data && data.features && data.features.length > 0) {
+      return this.formatMunicipalityResponse(data);
+    }
+
+    // try to find results by citycode (insee)
+    data = await apiGeoAdresse.searchMunicipalityByCode(refinedCode, true);
+    if (data && data.features && data.features.length > 0) {
+      return this.formatMunicipalityResponse(data);
+    }
+
+    return {};
+  }
 }
 
 const geoAdresseData = new GeoAdresseData();
