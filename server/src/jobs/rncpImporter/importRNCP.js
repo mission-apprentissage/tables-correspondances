@@ -116,6 +116,7 @@ module.exports = async (ficheInputStream) => {
     });
     logger.info(`Importing BCN Formations table Succeed`);
   } catch (error) {
+    logger.error(error);
     logger.error(`Importing BCN Formations table Failed`);
   }
 };

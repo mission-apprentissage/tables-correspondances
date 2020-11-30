@@ -14,8 +14,8 @@ module.exports = () => {
     },
 
     findCodeEn: (codeRNCP) => {
-      let found = referentielCodesDiplomesRncp.find((x) => x.CodeRNCP === codeRNCP);
-      return found ? found.CodeDiplome : null;
+      let found = referentielCodesDiplomesRncp.filter((x) => x.CodeRNCP === codeRNCP);
+      return found.length > 0 ? found.map((f) => f.CodeDiplome) : [];
     },
     findNiveau: (codeRNCP) => {
       let found = referentielCodesDiplomesRncp.find((x) => x.CodeRNCP === codeRNCP);

@@ -5,6 +5,7 @@ const createReferentielNsf = require("./referentielNsf");
 const createReferentielRome = require("./referentielRome");
 const createReferentielBlocCompetences = require("./referentielBlocsCompetences");
 const createReferentielVoixAcces = require("./referentielVoixAcces");
+const { uniq, compact } = require("lodash");
 const path = require("path");
 
 class KitApprentissageController {
@@ -53,7 +54,7 @@ class KitApprentissageController {
     let rncp = `${providedRncp}`.trim();
     if (rncp.length === 5) rncp = `RNCP${rncp}`;
 
-    const cfdUpdated = this.findCfdFromRncp(rncp);
+    const cfdsUpdated = this.findCfdFromRncp(rncp);
     const infoRncpUpdated = this.findInfoFromRncp(rncp);
     const infoRncpCertificateurs = this.findCertificateursFromRncp(rncp);
     const nsfUpdated = this.findNsfFromRncp(rncp);
@@ -79,13 +80,13 @@ class KitApprentissageController {
       romes: romesUpdated.value,
       blocs_competences: blocUpdated.value,
       voix_acces: voixAccesUpdated.value,
-      cfd: cfdUpdated.value,
+      cfds: cfdsUpdated.value,
     };
   }
 
   findCfdFromRncp(rncp_code) {
-    const educ_nat_code = this.referentielCodesDiplomesRncp.findCodeEn(rncp_code);
-    return { info: !educ_nat_code ? "Erreur:  Non trouvé" : "Ok", value: educ_nat_code };
+    const cfds = this.referentielCodesDiplomesRncp.findCodeEn(rncp_code);
+    return { info: !cfds ? "Erreur:  Non trouvé" : "Ok", value: cfds };
   }
 
   findInfoFromRncp(rncp_code) {
@@ -101,30 +102,68 @@ class KitApprentissageController {
           NiveauEurope: null,
           CodeTypeCertif: null,
           TypeCertif: null,
-          AncienneFiche: null,
-          NouvelleFiche: null,
+          AncienneFiche: [],
+          NouvelleFiche: [],
           TypeEnregistrement: null,
         },
       };
     }
     if (info.length > 1) {
+      const mergedFiche = {
+        ...info[0],
+        AncienneFiche: [info[0].AncienneFiche],
+        NouvelleFiche: [info[0].NouvelleFiche],
+      };
+      let issues = false;
+      for (let ite = 1; ite < info.length; ite++) {
+        const fiche = info[ite];
+        if (
+          mergedFiche.intituleDiplome !== fiche.intituleDiplome ||
+          mergedFiche.date_fin_validite_enregistrement !== fiche.date_fin_validite_enregistrement ||
+          mergedFiche.ActiveInactive !== fiche.ActiveInactive ||
+          mergedFiche.EtatFiche !== fiche.EtatFiche ||
+          mergedFiche.NiveauEurope !== fiche.NiveauEurope ||
+          mergedFiche.CodeTypeCertif !== fiche.CodeTypeCertif ||
+          mergedFiche.TypeCertif !== fiche.TypeCertif ||
+          mergedFiche.TypeEnregistrement !== fiche.TypeEnregistrement
+        ) {
+          issues = true;
+          break;
+        } else {
+          mergedFiche.AncienneFiche = compact(uniq([...mergedFiche.AncienneFiche, fiche.AncienneFiche]));
+          mergedFiche.NouvelleFiche = compact(uniq([...mergedFiche.NouvelleFiche, fiche.NouvelleFiche]));
+        }
+      }
+      if (issues) {
+        return {
+          info: "Erreur: Plusieurs fiche trouvées mais non cohérentes entre elles",
+          value: {
+            intituleDiplome: null,
+            date_fin_validite_enregistrement: null,
+            ActiveInactive: null,
+            EtatFiche: null,
+            NiveauEurope: null,
+            CodeTypeCertif: null,
+            TypeCertif: null,
+            AncienneFiche: [],
+            NouvelleFiche: [],
+            TypeEnregistrement: null,
+          },
+        };
+      }
       return {
-        info: "Erreur: Code Rncp trouvé plusieurs fois",
-        value: {
-          intituleDiplome: null,
-          date_fin_validite_enregistrement: null,
-          ActiveInactive: null,
-          EtatFiche: null,
-          NiveauEurope: null,
-          CodeTypeCertif: null,
-          TypeCertif: null,
-          AncienneFiche: null,
-          NouvelleFiche: null,
-          TypeEnregistrement: null,
-        },
+        info: "ok",
+        value: mergedFiche,
       };
     }
-    return { info: "Ok", value: info[0] };
+    return {
+      info: "Ok",
+      value: {
+        ...info[0],
+        AncienneFiche: compact([info[0].AncienneFiche]),
+        NouvelleFiche: compact([info[0].NouvelleFiche]),
+      },
+    };
   }
 
   findNsfFromRncp(rncp_code) {
