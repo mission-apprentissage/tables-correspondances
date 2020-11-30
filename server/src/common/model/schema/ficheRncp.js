@@ -1,8 +1,8 @@
 const ficheRncpSchema = {
-  cfd: {
-    type: String,
+  cfds: {
+    type: [String],
     default: null,
-    description: "Code formation dilpôme",
+    description: "Codes formation dilpôme",
   },
   code_rncp: {
     type: String,
@@ -45,12 +45,12 @@ const ficheRncpSchema = {
     description: "Type de certification (ex: diplome d'etat)",
   },
   ancienne_fiche: {
-    type: String,
+    type: [String],
     default: null,
     description: "Code rncp de l'ancienne fiche",
   },
   nouvelle_fiche: {
-    type: String,
+    type: [String],
     default: null,
     description: "Code rncp de la nouvelle fiche",
   },

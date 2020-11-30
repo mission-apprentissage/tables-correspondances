@@ -4,7 +4,7 @@ const bcnController = require("../controllers/bcn/BcnController");
 const getDataFromRncp = async (providedRncp) => {
   const rncpData = await rncpController.getDataFromRncp(providedRncp);
 
-  if (!rncpData.result.cfd) {
+  if (!rncpData.result.cfds) {
     return {
       result: {
         ...rncpData.result,
@@ -19,13 +19,14 @@ const getDataFromRncp = async (providedRncp) => {
     };
   }
 
-  const cfdData = await bcnController.getDataFromCfd(rncpData.result.cfd);
-  const mefs = await bcnController.getMefsFromCfd(cfdData.result.cfd);
-  const mef = await bcnController.getUniqMefFromMefs(mefs);
-
-  return {
-    result: {
-      ...rncpData.result,
+  const cfdsDataResult = [];
+  const cfdsDataMessage = [];
+  for (let ite = 0; ite < rncpData.result.cfds.length; ite++) {
+    const cfd = rncpData.result.cfds[ite];
+    const cfdData = await bcnController.getDataFromCfd(cfd);
+    const mefs = await bcnController.getMefsFromCfd(cfdData.result.cfd);
+    const mef = await bcnController.getUniqMefFromMefs(mefs);
+    cfdsDataResult.push({
       cfd: {
         ...cfdData.result,
       },
@@ -33,9 +34,8 @@ const getDataFromRncp = async (providedRncp) => {
         ...mefs.result,
         ...mef.result,
       },
-    },
-    messages: {
-      ...rncpData.messages,
+    });
+    cfdsDataMessage.push({
       cfd: {
         ...cfdData.messages,
       },
@@ -43,6 +43,17 @@ const getDataFromRncp = async (providedRncp) => {
         ...mefs.messages,
         ...mef.messages,
       },
+    });
+  }
+
+  return {
+    result: {
+      ...rncpData.result,
+      releated: cfdsDataResult,
+    },
+    messages: {
+      ...rncpData.messages,
+      releated: cfdsDataMessage,
     },
   };
 };
