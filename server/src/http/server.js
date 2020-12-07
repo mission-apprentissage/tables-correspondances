@@ -27,6 +27,9 @@ const esSearch = require("./routes/esSearch");
 const esMultiSearchNoIndex = require("./routes/esMultiSearchNoIndex");
 const domainesMetiers = require("./routes/domainesMetiers");
 
+const etablissement = require("./routes/etablissement");
+const etablissementSecure = require("./routes/etablissementSecure");
+
 module.exports = async (components) => {
   const { db } = components;
   const app = express();
@@ -36,6 +39,9 @@ module.exports = async (components) => {
   app.use(bodyParser.json());
   app.use(corsMiddleware());
   app.use(logMiddleware());
+
+  app.use("/api/entity", etablissement());
+  app.use("/api/entity", checkJwtToken, etablissementSecure());
 
   app.use("/api/domainesMetiers", domainesMetiers());
   app.use("/api/es/search", esSearch());
