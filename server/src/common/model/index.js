@@ -10,6 +10,7 @@ const {
   bcnNNiveauFormationDiplomeSchema,
   bcnNMefSchema,
   bcnNDispositifFormationSchema,
+  etablissementSchema,
 } = require("../model/schema");
 
 const getMongoostaticModel = (modelName, schema, instanceMongoose = mongooseInstance) => {
@@ -55,6 +56,11 @@ if (!bcnNDispositifFormationModel) {
   bcnNDispositifFormationModel = getModel("bcnndispositifformation", bcnNDispositifFormationSchema);
 }
 
+let etablissementModel = null;
+if (!etablissementModel) {
+  etablissementModel = getModel("etablissements", etablissementSchema);
+}
+
 let u = null;
 if (!u) {
   u = getModel("user", userSchema);
@@ -85,4 +91,5 @@ module.exports = {
   Log: l,
   DomainesMetiers: d,
   FicheRncp: f,
+  Etablissement: etablissementModel,
 };
