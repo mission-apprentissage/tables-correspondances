@@ -9,6 +9,7 @@ const bcnNNiveauFormationDiplomeSchema = require("./bcnNNiveauFormationDiplome")
 const bcnNMefSchema = require("./bcnNMef");
 const bcnNDispositifFormationSchema = require("./bcnNDispositifFormation");
 const etablissementSchema = require("./etablissement");
+const conventionFileSchema = require("./conventionFile");
 
 module.exports = {
   bcnFormationDiplomesSchema,
@@ -21,4 +22,5 @@ module.exports = {
   domainesMetiersSchema,
   ficheRncpSchema,
   etablissementSchema,
+  conventionFileSchema,
 };

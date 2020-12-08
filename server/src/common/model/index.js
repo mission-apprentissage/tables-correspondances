@@ -11,6 +11,7 @@ const {
   bcnNMefSchema,
   bcnNDispositifFormationSchema,
   etablissementSchema,
+  conventionFileSchema,
 } = require("../model/schema");
 
 const getMongoostaticModel = (modelName, schema, instanceMongoose = mongooseInstance) => {
@@ -61,6 +62,11 @@ if (!etablissementModel) {
   etablissementModel = getModel("etablissements", etablissementSchema);
 }
 
+let conventionFileModel = null;
+if (!conventionFileModel) {
+  conventionFileModel = getModel("conventionfiles", conventionFileSchema);
+}
+
 let u = null;
 if (!u) {
   u = getModel("user", userSchema);
@@ -92,4 +98,5 @@ module.exports = {
   DomainesMetiers: d,
   FicheRncp: f,
   Etablissement: etablissementModel,
+  ConventionFile: conventionFileModel,
 };
