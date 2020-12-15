@@ -2,6 +2,8 @@ const logger = require("../../common/logger");
 const Joi = require("joi");
 const { getDataFromSiret } = require("../handlers/siretHandler");
 const { getDataFromCP } = require("../handlers/geoHandler");
+// eslint-disable-next-line no-unused-vars
+const conventionController = require("../controllers/ConventionController");
 // const { etablissementsMapper } = require("../mappers/etablissementsMapper");
 // const { diffFormation } = require("../common/utils/diffUtils");
 
@@ -29,8 +31,8 @@ const parseErrors = (messages) => {
     .reduce((acc, [key, value]) => `${acc}${acc ? " " : ""}${key}: ${value}.`, "");
 };
 
-const etablissementUpdater = async (etablissement) => {
-  // const etablissementUpdater = async (etablissement, { withHistoryUpdate = true } = {}) => {
+// eslint-disable-next-line no-unused-vars
+const etablissementUpdater = async (etablissement, { withHistoryUpdate = true } = {}) => {
   try {
     await etablissementSchema.validateAsync(etablissement, { abortEarly: false });
 
@@ -41,7 +43,6 @@ const etablissementUpdater = async (etablissement) => {
       return { updates: null, etablissement, error };
     }
 
-    // siretMapping
     const { result: cpMapping, messages: cpMessages } = await getDataFromCP(siretMapping.code_postal);
     error = parseErrors(cpMessages);
     if (error) {
@@ -49,16 +50,20 @@ const etablissementUpdater = async (etablissement) => {
     }
 
     // TODO FORMATIONS DATA
+
     // TODO CONVENTIONNEMENNT DATA
+    // conventionController.getConventionData(siretMapping.siret, etablissement.uai, siretMapping.siege_social)
+
     // TODO GEO LOC
 
+    // Copied from other script
     // const cachedCpResult = { [formation.code_postal]: { result: cpMapping, messages: cpMessages } };
     // const { result: etablissementsMapping, messages: etablissementsMessages } = await etablissementsMapper(
     //   formation.etablissement_gestionnaire_siret,
     //   formation.etablissement_formateur_siret,
     //   cachedCpResult
     // );
-
+    // Copied from other script
     // error = parseErrors(etablissementsMessages);
     // if (error) {
     //   return { updates: null, formation, error };
@@ -80,6 +85,7 @@ const etablissementUpdater = async (etablissement) => {
 
     updatedEtablissement.published = published;
 
+    // Copied from other script
     // const { updates, keys } = diffFormation(formation, updatedFormation);
     // if (updates) {
     //   if (withHistoryUpdate) {

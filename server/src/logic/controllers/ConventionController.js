@@ -217,8 +217,7 @@ class ConventionController {
 
   async findInfoDataGouv(siret) {
     const siren = siret.substring(0, 9);
-    const num_etablissement = siret.substring(9, 14);
-    const result = await ConventionFile.find({ type: "DATAGOUV", siren, num_etablissement, cfa: "Oui" });
+    const result = await ConventionFile.find({ type: "DATAGOUV", siren, cfa: "Oui" });
     if (!result) {
       return { info: "Erreur: DataGouv Non trouvé", value: infosCodes.infoDATAGOUV.NotFound };
     }
