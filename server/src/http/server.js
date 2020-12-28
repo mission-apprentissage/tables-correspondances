@@ -26,6 +26,7 @@ const stats = require("./routes/stats");
 const esSearch = require("./routes/esSearch");
 const esMultiSearchNoIndex = require("./routes/esMultiSearchNoIndex");
 const domainesMetiers = require("./routes/domainesMetiers");
+const opco = require("./routes/opco");
 
 module.exports = async (components) => {
   const { db } = components;
@@ -37,6 +38,7 @@ module.exports = async (components) => {
   app.use(corsMiddleware());
   app.use(logMiddleware());
 
+  app.use("/api/opco", opco());
   app.use("/api/domainesMetiers", domainesMetiers());
   app.use("/api/es/search", esSearch());
   app.use("/api/search", esMultiSearchNoIndex());
