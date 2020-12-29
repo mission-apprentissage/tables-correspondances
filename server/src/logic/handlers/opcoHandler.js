@@ -2,13 +2,13 @@ const { uniqBy } = require("lodash/array");
 const { CodeIdccOpco, CodeEnCodesIdcc } = require("../../common/model/index");
 
 const findOpcosFromIdccs = async (idccs = []) => {
-  return await CodeIdccOpco.find({ IDCC: { $in: idccs } });
+  return await CodeIdccOpco.find({ IDCC: { $in: idccs } }, { _id: 0, __v: 0 }).lean();
 };
 
 const findIdccsFromCfd = async (cfd) => {
   let result = [];
 
-  const found = await CodeEnCodesIdcc.find({ cfd: cfd, statut: "CPNE" });
+  const found = await CodeEnCodesIdcc.find({ cfd: cfd, statut: "CPNE" }, { _id: 0, __v: 0 }).lean();
   if (found.length > 0) {
     // Joining all idccs in one list without empty spaces
     const allIdccs = found
