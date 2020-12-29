@@ -10,6 +10,8 @@ const {
   bcnNNiveauFormationDiplomeSchema,
   bcnNMefSchema,
   bcnNDispositifFormationSchema,
+  codeIdccOpcoSchema,
+  codeEnCodesIdccSchema,
 } = require("../model/schema");
 
 const getMongoostaticModel = (modelName, schema, instanceMongoose = mongooseInstance) => {
@@ -75,6 +77,16 @@ if (!f) {
   f = getModel("ficherncp", ficheRncpSchema);
 }
 
+let cio = null;
+if (!cio) {
+  cio = getModel("codeIdccOpco", codeIdccOpcoSchema);
+}
+
+let ceci = null;
+if (!ceci) {
+  ceci = getModel("codeEnCodesIdcc", codeEnCodesIdccSchema);
+}
+
 module.exports = {
   BcnFormationDiplome: bcnFormationDiplomesModel,
   BcnLettreSpecialite: bcnLettreSpecialiteModel,
@@ -85,4 +97,6 @@ module.exports = {
   Log: l,
   DomainesMetiers: d,
   FicheRncp: f,
+  CodeIdccOpco: cio,
+  CodeEnCodesIdcc: ceci,
 };
