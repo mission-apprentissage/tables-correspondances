@@ -72,7 +72,7 @@
     "xml2js": "0.4.23"
   },
   "engines": {
-    "node": ">=12.11.0"
+    "node": ">=14.15.0"
   },
   "prettier": {
     "printWidth": 120,
