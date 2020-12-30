@@ -5,13 +5,6 @@ services:
     volumes:
       - tables_correspondances_nginx_data:/data
 
-  ui:
-    command: yarn start
-    mem_limit: 1g
-    stdin_open: true
-    volumes:
-      - ./ui:/app #Allows source folders to be watched
-
   server:
     command: ["yarn", "debug"]
     ports:
