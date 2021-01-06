@@ -6,6 +6,7 @@ sensible_files_pattern="\.(csv|xls|xls(x?)|json|env)$"
 exception="(dataDepartements.json|package.json|default.json|custom-environment-variables.json"
 exception="$exception|codes_diplomes.v1.2.csv|rncp_blocs_competences.v1.2.csv|rncp_certificateurs.v1.2.csv|rncp_info.v1.2.csv|rncp_nsf.v1.2.csv|rncp_rome.v1.2.csv|rncp_voix_acces.v1.2.csv|rncp_blocs_competences.v1.2.csv|rncp_certificateurs.v1.2.csv"
 exception="$exception|codes_diplomes.v1.3.csv|rncp_blocs_competences.v1.3.csv|rncp_certificateurs.v1.3.csv|rncp_info.v1.3.csv|rncp_nsf.v1.3.csv|rncp_rome.v1.3.csv|rncp_voix_acces.v1.3.csv|rncp_blocs_competences.v1.3.csv|rncp_certificateurs.v1.3.csv"
+exception="$exception|codes_diplomes.v1.4.csv|rncp_blocs_competences.v1.4.csv|rncp_certificateurs.v1.4.csv|rncp_info.v1.4.csv|rncp_nsf.v1.4.csv|rncp_rome.v1.4.csv|rncp_voix_acces.v1.4.csv|rncp_blocs_competences.v1.4.csv|rncp_certificateurs.v1.4.csv"
 exception="$exception)$"
 
 files=$(git diff --cached --name-only | grep -v -E "$exception" | grep -E "$sensible_files_pattern")
