@@ -10,6 +10,8 @@ const {
   bcnNNiveauFormationDiplomeSchema,
   bcnNMefSchema,
   bcnNDispositifFormationSchema,
+  codeIdccOpcoSchema,
+  codeEnCodesIdccSchema,
   etablissementSchema,
   conventionFileSchema,
 } = require("../model/schema");
@@ -87,6 +89,16 @@ if (!f) {
   f = getModel("ficherncp", ficheRncpSchema);
 }
 
+let cio = null;
+if (!cio) {
+  cio = getModel("codeIdccOpco", codeIdccOpcoSchema);
+}
+
+let ceci = null;
+if (!ceci) {
+  ceci = getModel("codeEnCodesIdcc", codeEnCodesIdccSchema);
+}
+
 module.exports = {
   BcnFormationDiplome: bcnFormationDiplomesModel,
   BcnLettreSpecialite: bcnLettreSpecialiteModel,
@@ -99,4 +111,6 @@ module.exports = {
   FicheRncp: f,
   Etablissement: etablissementModel,
   ConventionFile: conventionFileModel,
+  CodeIdccOpco: cio,
+  CodeEnCodesIdcc: ceci,
 };

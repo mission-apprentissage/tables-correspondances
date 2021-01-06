@@ -26,6 +26,7 @@ const stats = require("./routes/stats");
 const esSearch = require("./routes/esSearch");
 const esMultiSearchNoIndex = require("./routes/esMultiSearchNoIndex");
 const domainesMetiers = require("./routes/domainesMetiers");
+const opcos = require("./routes/opcos");
 
 const etablissement = require("./routes/etablissement");
 const etablissementSecure = require("./routes/etablissementSecure");
@@ -43,6 +44,7 @@ module.exports = async (components) => {
   app.use("/api/entity", etablissement());
   app.use("/api/entity", checkJwtToken, etablissementSecure());
 
+  app.use("/api/opcos", opcos());
   app.use("/api/domainesMetiers", domainesMetiers());
   app.use("/api/es/search", esSearch());
   app.use("/api/search", esMultiSearchNoIndex());

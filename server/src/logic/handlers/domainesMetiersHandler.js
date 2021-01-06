@@ -2,20 +2,19 @@ const { getElasticInstance } = require("../../common/esClient");
 const logger = require("../../common/logger");
 const _ = require("lodash");
 
-const getRomesAndLabelsFromTitleQuery = async (query) => {
+const getRomesAndLabelsFromTitleQuery = async (query, _esClient) => {
   if (!query.title) {
     logger.error("query parameter is missing; search cannot proceed");
     return { error: "title_missing" };
   }
 
-  const romes = await getLabelsAndRomes(query.title);
+  const romes = await getLabelsAndRomes(query.title, _esClient);
   return romes;
 };
 
-const getLabelsAndRomes = async (searchKeyword) => {
+const getLabelsAndRomes = async (searchKeyword, _esClient) => {
   try {
-    const esClient = getElasticInstance();
-
+    const esClient = _esClient ?? getElasticInstance();
     const response = await esClient.search({
       index: "domainesmetiers",
       size: 10,

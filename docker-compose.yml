@@ -13,18 +13,6 @@ services:
       - tables_correspondances_network
     depends_on:
       - server
-      - ui
-
-  ui:
-    image: tables_correspondances_ui
-    container_name: tables_correspondances_ui
-    build:
-      context: ui
-    mem_limit: 256m
-    networks:
-      - tables_correspondances_network
-    depends_on:
-      - server
 
   server:
     image: tables_correspondances_server
