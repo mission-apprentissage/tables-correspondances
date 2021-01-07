@@ -160,12 +160,12 @@ module.exports = () => {
         delete e.__v;
         delete e.etablissement_siege_id;
 
-        console.log(e);
+        //console.log(e);
         return e;
       });
 
       return res.json({
-        etablissements: etablissements.docs,
+        etablissements: etablissements,
         pagination: {
           page: results.page,
           resultats_par_page: limit,
