@@ -20,6 +20,7 @@ const getMongoostaticModel = (modelName, schema, instanceMongoose = mongooseInst
   const Schema = new instanceMongoose.Schema(schema);
   Schema.plugin(mongoosastic, { esClient: getElasticInstance(), index: modelName });
   Schema.plugin(require("mongoose-paginate"));
+  if (modelName === "etablissements") Schema.index({ adresse: "text" });
   return mongooseInstance.model(modelName, Schema);
 };
 
