@@ -79,7 +79,7 @@ module.exports = async (components) => {
         });
 
       return res.json({
-        name: `Serveur express MNA - ${config.appName}`,
+        name: `Serveur express tables de co - ${config.appName}`,
         version: packageJson.version,
         env: config.env,
         healthcheck: {
