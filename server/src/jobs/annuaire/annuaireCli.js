@@ -1,35 +1,33 @@
-const path = require("path");
 const { program: cli } = require("commander");
+const { oleoduc, csvStream, jsonStream, stdoutStream } = require("oleoduc");
 const { runScript } = require("../scriptWrapper");
-const { createReadStream } = require("fs");
-const { exportInvalidSiretFromDEPP, exportInvalidSiretFromDGEFP } = require("./anomalies");
+const { createReadStream, createWriteStream } = require("fs");
+const { findDEPPAnomalies, findDGEFPAnomalies } = require("./anomalies");
 
 let anomalies = cli.command("anomalies").description("Commandes permettant de détecter des anomalies");
 anomalies
-  .command("depp [csvFile]")
-  .description("Génère des fichiers d'anomalies pour le fichier csv de la depp")
-  .action((csvFile) => {
+  .command("depp [source] [target]")
+  .description("Génère un fichier d'anomalies pour la DEPP")
+  .option("--type <type>", "Type du fichier généré : json|csv(défaut)", "csv")
+  .action((source, target, { type }) => {
     runScript(async () => {
-      let outputDir = path.join(__dirname, "../../../.local/output");
+      let input = source ? createReadStream(source) : process.stdin;
+      let output = target ? createWriteStream(target) : stdoutStream();
 
-      await exportInvalidSiretFromDEPP(
-        csvFile ? createReadStream(csvFile) : process.stdin,
-        path.join(outputDir, "invalid-siret-depp.csv")
-      );
+      await oleoduc(findDEPPAnomalies(input), type === "csv" ? csvStream() : jsonStream(), output);
     });
   });
 
 anomalies
-  .command("dgefp [csvFile]")
-  .description("Génère des fichiers d'anomalies pour le fichier csv de la dgefp")
-  .action((csvFile) => {
+  .command("dgefp [source] [target]")
+  .description("Génère un fichier d'anomalies pour la DGEFP")
+  .option("--type <type>", "Type du fichier généré : json|csv(défaut)", "csv")
+  .action((source, target, { type }) => {
     runScript(async () => {
-      let outputDir = path.join(__dirname, "../../../.local/output");
+      let input = source ? createReadStream(source) : process.stdin;
+      let output = target ? createWriteStream(target) : stdoutStream();
 
-      await exportInvalidSiretFromDGEFP(
-        csvFile ? createReadStream(csvFile) : process.stdin,
-        path.join(outputDir, "invalid-siret-dgefp.csv")
-      );
+      await oleoduc(findDGEFPAnomalies(input), type === "csv" ? csvStream() : jsonStream(), output);
     });
   });
 

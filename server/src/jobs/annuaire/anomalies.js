@@ -1,9 +1,7 @@
-const { createWriteStream } = require("fs");
 const { oleoduc, filterObject, transformData } = require("oleoduc");
 const csv = require("csv-parser");
 const logger = require("../../common/logger");
 const env = require("env-var");
-const { transformObjectIntoCSV } = require("../../common/utils/streamUtils");
 const validateUAI = require("./validateUAI");
 const { getEtablissement } = require("./entrepriseAPI")(env.get("API_ENTREPRISE_KEY").asString());
 
@@ -27,8 +25,8 @@ const getEtablissementStatus = async (siret) => {
 };
 
 module.exports = {
-  exportInvalidSiretFromDEPP: async (inputStream, outputFile) => {
-    await oleoduc(
+  findDEPPAnomalies: (inputStream) => {
+    return oleoduc(
       inputStream,
       csv({
         separator: "|",
@@ -44,14 +42,12 @@ module.exports = {
           return status !== "actif" ? { uai: uai, status_uai: statusUai, siret, status_siret: status } : null;
         },
         { parallel: 15 }
-      ),
-      transformObjectIntoCSV(),
-      createWriteStream(outputFile)
+      )
     );
   },
 
-  exportInvalidSiretFromDGEFP: async (inputStream, outputFile) => {
-    await oleoduc(
+  findDGEFPAnomalies: (inputStream) => {
+    return oleoduc(
       inputStream,
       csv({
         separator: ";",
@@ -66,9 +62,7 @@ module.exports = {
           return status !== "actif" ? { siret, status_siret: status } : null;
         },
         { parallel: 15 }
-      ),
-      transformObjectIntoCSV(),
-      createWriteStream(outputFile)
+      )
     );
   },
 };
