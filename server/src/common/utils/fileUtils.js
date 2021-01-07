@@ -4,10 +4,10 @@ const path = require("path");
 const fs = require("fs-extra");
 const axios = require("axios");
 
-const readJsonFromCsvFile = (localPath) => {
+const getJsonFromCsvFile = (localPath) => {
   return csvToJson.getJsonFromCsv(localPath);
 };
-module.exports.readJsonFromCsvFile = readJsonFromCsvFile;
+module.exports.getJsonFromCsvFile = getJsonFromCsvFile;
 
 const readXLSXFile = (localPath) => {
   const workbook = XLSX.readFile(localPath, { codepage: 65001 });

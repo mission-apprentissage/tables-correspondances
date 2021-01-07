@@ -12,12 +12,15 @@ const {
   bcnNDispositifFormationSchema,
   codeIdccOpcoSchema,
   codeEnCodesIdccSchema,
+  etablissementSchema,
+  conventionFileSchema,
 } = require("../model/schema");
 
 const getMongoostaticModel = (modelName, schema, instanceMongoose = mongooseInstance) => {
   const Schema = new instanceMongoose.Schema(schema);
   Schema.plugin(mongoosastic, { esClient: getElasticInstance(), index: modelName });
   Schema.plugin(require("mongoose-paginate"));
+  if (modelName === "etablissements") Schema.index({ adresse: "text" });
   return mongooseInstance.model(modelName, Schema);
 };
 
@@ -55,6 +58,16 @@ if (!bcnNMefModel) {
 let bcnNDispositifFormationModel = null;
 if (!bcnNDispositifFormationModel) {
   bcnNDispositifFormationModel = getModel("bcnndispositifformation", bcnNDispositifFormationSchema);
+}
+
+let etablissementModel = null;
+if (!etablissementModel) {
+  etablissementModel = getModel("etablissements", etablissementSchema);
+}
+
+let conventionFileModel = null;
+if (!conventionFileModel) {
+  conventionFileModel = getModel("conventionfiles", conventionFileSchema);
 }
 
 let u = null;
@@ -97,6 +110,8 @@ module.exports = {
   Log: l,
   DomainesMetiers: d,
   FicheRncp: f,
+  Etablissement: etablissementModel,
+  ConventionFile: conventionFileModel,
   CodeIdccOpco: cio,
   CodeEnCodesIdcc: ceci,
 };

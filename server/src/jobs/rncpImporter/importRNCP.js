@@ -106,17 +106,17 @@ module.exports = async (ficheInputStream) => {
       const exist = await FicheRncp.findOne({ code_rncp: fiche.code_rncp });
       if (exist) {
         await FicheRncp.findOneAndUpdate({ _id: exist._id }, { ...fiche, last_update_at: Date.now() }, { new: true });
-        logger.info(`BCN Formation '${fiche.code_rncp}' successfully updated in db`);
+        logger.info(`RNCP fiche '${fiche.code_rncp}' successfully updated in db`);
       } else {
-        logger.info(`BCN Formation '${fiche.code_rncp}' not found`);
+        logger.info(`RNCP fiche '${fiche.code_rncp}' not found`);
         const ficheRncpToAdd = new FicheRncp(fiche);
         await ficheRncpToAdd.save();
         logger.info(`Fiche Rncp '${ficheRncpToAdd.id}' successfully added`);
       }
     });
-    logger.info(`Importing BCN Formations table Succeed`);
+    logger.info(`Importing RNCP fiches table Succeed`);
   } catch (error) {
     logger.error(error);
-    logger.error(`Importing BCN Formations table Failed`);
+    logger.error(`Importing RNCP fiches  table Failed`);
   }
 };
