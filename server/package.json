@@ -33,7 +33,8 @@
     "etablissements:updater": "standalone=true node src/jobs/EtablissementsUpdater/index.js",
     "etablissements:updater:local": "standalone=true dotenv node src/jobs/EtablissementsUpdater/index.js",
     "es:index": "standalone=true node src/jobs/esIndex/index.js",
-    "generate:swaggerschema": "standalone=true node src/jobs/generateSwaggerSchema/index.js"
+    "generate:swaggerschema": "standalone=true node src/jobs/generateSwaggerSchema/index.js",
+    "annuaire": "node src/jobs/annuaire/annuaireCli.js"
   },
   "dependencies": {
     "@azure/storage-blob": "12.3.0",
@@ -47,6 +48,7 @@
     "bunyan-prettystream": "0.1.3",
     "bunyan-slack": "0.0.10",
     "byline": "5.0.0",
+    "commander": "6.2.1",
     "command-line-args": "5.1.1",
     "compose-middleware": "5.0.1",
     "config": "3.3.1",
