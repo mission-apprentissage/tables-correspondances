@@ -159,6 +159,11 @@ module.exports = () => {
         // eslint-disable-next-line no-underscore-dangle
         delete e.__v;
         delete e.etablissement_siege_id;
+        delete e.rco_adresse;
+        delete e.rco_code_insee_localite;
+        delete e.rco_code_postal;
+        delete e.rco_uai;
+        delete e.tags;
 
         //console.log(e);
         return e;
