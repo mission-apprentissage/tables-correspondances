@@ -33,7 +33,7 @@ const downloadAndSaveFile = () => {
   logger.info(`Downloading and save file from S3 Bucket...`);
 
   return new Promise((r) => {
-    getFileFromS3("mna-services/features/domainesMetiers/TABLE_CUSTOM_1510.xlsx")
+    getFileFromS3("mna-services/features/domainesMetiers/TABLE_CUSTOM_0601.xlsx")
       .pipe(fs.createWriteStream(FILE_LOCAL_PATH))
       .on("close", () => {
         r();
