@@ -138,7 +138,7 @@ function Mongoosastic(schema, options) {
     } catch (e) {
       let errorMsg = e.message;
       if (e.meta && e.meta.body) errorMsg = e.meta.body.error;
-      console.log("Error update mapping", errorMsg || e);
+      console.error("Error update mapping", errorMsg || e);
     }
   };
 
@@ -150,8 +150,8 @@ function Mongoosastic(schema, options) {
         _opts.id = this._id.toString();
         await esClient.index(_opts);
       } catch (e) {
-        console.log(e);
-        console.log(`Error index ${this._id.toString()}`, e.message || e);
+        console.error(e);
+        console.error(`Error index ${this._id.toString()}`, e.message || e);
         return reject();
       }
       resolve();
@@ -170,13 +170,13 @@ function Mongoosastic(schema, options) {
             await esClient.delete(_opts);
             return resolve();
           } catch (e) {
-            console.log(e);
+            console.error(e);
             await timeout(500);
             --tries;
           }
         }
       } catch (e) {
-        console.log(`Error delete ${this._id.toString()}`, e.message || e);
+        console.error(`Error delete ${this._id.toString()}`, e.message || e);
         return reject();
       }
       resolve();
@@ -191,7 +191,7 @@ function Mongoosastic(schema, options) {
         await u.index();
         count++;
         if (count % 100 == 0) {
-          console.log(`${count} indexed`);
+          console.error(`${count} indexed`);
         }
       });
   };

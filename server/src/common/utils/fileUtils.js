@@ -38,7 +38,7 @@ const writeXlsxFile = async (workbook, filePath, fileName) => {
     new Promise((resolve) => {
       XLSX.writeFileAsync(path.join(__dirname, `${filePath}/${fileName}`), workbook, (e) => {
         if (e) {
-          console.log(e);
+          console.error(e);
           throw new Error("La génération du fichier excel à échoué : ", e);
         }
         resolve();
