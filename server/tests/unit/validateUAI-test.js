@@ -1,5 +1,5 @@
 const assert = require("assert");
-const validateUAI = require("../../src/jobs/annuaire/validateUAI");
+const validateUAI = require("../../src/jobs/annuaire/utils/validateUAI");
 
 describe(__filename, () => {
   it("permet de valider un UAI", () => {

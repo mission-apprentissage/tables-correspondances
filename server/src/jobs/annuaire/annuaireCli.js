@@ -1,33 +1,39 @@
 const { program: cli } = require("commander");
-const { oleoduc, csvStream, jsonStream, stdoutStream } = require("oleoduc");
+const { stdoutStream } = require("oleoduc");
 const { runScript } = require("../scriptWrapper");
 const { createReadStream, createWriteStream } = require("fs");
-const { findDEPPAnomalies, findDGEFPAnomalies } = require("./anomalies");
+const sources = {
+  depp: require("./depp"),
+  dgefp: require("./dgefp"),
+};
 
-let anomalies = cli.command("anomalies").description("Commandes permettant de détecter des anomalies");
-anomalies
-  .command("depp [source] [target]")
-  .description("Génère un fichier d'anomalies pour la DEPP")
-  .option("--type <type>", "Type du fichier généré : json|csv(défaut)", "csv")
-  .action((source, target, { type }) => {
+cli
+  .command("anomalies <type> [source]")
+  .description("Génère un fichier d'anomalies à partir d'un fichier source")
+  .option("--out <out>", "Fichier cible dans lequel seront stockés les anomalies")
+  .option("--format <format>", "Format des anomalies : json|csv(défaut)", "csv")
+  .action((type, source, { out, format }) => {
     runScript(async () => {
       let input = source ? createReadStream(source) : process.stdin;
-      let output = target ? createWriteStream(target) : stdoutStream();
+      let output = out ? createWriteStream(out) : stdoutStream();
+      let exportAnomalies = sources[type].exportAnomalies;
 
-      await oleoduc(findDEPPAnomalies(input), type === "csv" ? csvStream() : jsonStream(), output);
+      await exportAnomalies(input, output, { format });
     });
   });
 
-anomalies
-  .command("dgefp [source] [target]")
-  .description("Génère un fichier d'anomalies pour la DGEFP")
-  .option("--type <type>", "Type du fichier généré : json|csv(défaut)", "csv")
-  .action((source, target, { type }) => {
+cli
+  .command("doublons <type> [source]")
+  .description("Génère un fichier de doublons à partir d'un fichier source")
+  .option("--out <out>", "Fichier cible dans lequel seront stockés les anomalies")
+  .option("--format <format>", "Format des anomalies : json|csv(défaut)", "csv")
+  .action((type, source, { out, format }) => {
     runScript(async () => {
       let input = source ? createReadStream(source) : process.stdin;
-      let output = target ? createWriteStream(target) : stdoutStream();
+      let output = out ? createWriteStream(out) : stdoutStream();
+      let exportDoublons = sources[type].exportDoublons;
 
-      await oleoduc(findDGEFPAnomalies(input), type === "csv" ? csvStream() : jsonStream(), output);
+      await exportDoublons(input, output, { format });
     });
   });
 
