@@ -9,7 +9,7 @@ httpTests(__filename, ({ startServer }) => {
     const response = await httpClient.get("/api");
 
     assert.strictEqual(response.status, 200);
-    assert.strictEqual(response.data.name, `Serveur express tables de co - ${config.appName}`);
+    assert.strictEqual(response.data.name, `Tables de correspondances - ${config.appName}`);
     assert.strictEqual(response.data.healthcheck.mongodb, true);
     assert.ok(response.data.env);
     assert.ok(response.data.version);

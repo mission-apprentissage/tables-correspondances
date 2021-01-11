@@ -79,7 +79,7 @@ module.exports = async (components) => {
         });
 
       return res.json({
-        name: `Serveur express tables de co - ${config.appName}`,
+        name: `Tables de correspondances - ${config.appName}`,
         version: packageJson.version,
         env: config.env,
         healthcheck: {
