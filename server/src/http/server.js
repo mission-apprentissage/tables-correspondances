@@ -93,7 +93,7 @@ module.exports = async (components) => {
     "/api/config",
     tryCatch(async (req, res) => {
       return res.json({
-        config: config,
+        // config: config,
       });
     })
   );
