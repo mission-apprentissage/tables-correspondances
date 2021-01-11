@@ -14,6 +14,7 @@ const cfd = require("./routes/cfd");
 const mef = require("./routes/mef");
 const cp = require("./routes/cp");
 const rncp = require("./routes/rncp");
+const uai = require("./routes/uai");
 const siret = require("./routes/siret");
 const coordinate = require("./routes/coordinate");
 const entity = require("./routes/entity");
@@ -52,6 +53,7 @@ module.exports = async (components) => {
   app.use("/api/mef", mef());
   app.use("/api/code-postal", cp());
   app.use("/api/rncp", rncp());
+  app.use("/api/uai", uai());
   app.use("/api/siret", siret());
   app.use("/api/coordinate", coordinate());
   app.use("/api/entity", entity());
