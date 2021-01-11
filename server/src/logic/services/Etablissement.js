@@ -32,11 +32,13 @@ const parseErrors = (messages) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const etablissementUpdater = async (etablissement, { withHistoryUpdate = true } = {}) => {
+const etablissementService = async (etablissement, { withHistoryUpdate = true } = {}) => {
   try {
     await etablissementSchema.validateAsync(etablissement, { abortEarly: false });
 
     const { result: siretMapping, messages: siretMessages } = await getDataFromSiret(etablissement.siret);
+
+    console.log({ result: siretMapping, messages: siretMessages });
 
     let error = parseErrors(siretMessages);
     if (error) {
@@ -79,9 +81,9 @@ const etablissementUpdater = async (etablissement, { withHistoryUpdate = true } 
     };
 
     const published =
-      updatedEtablissement.ferme ||
+      !updatedEtablissement.ferme ||
       // !updatedEtablissement.formations_attachees ||
-      !updatedEtablissement.api_entreprise_reference;
+      updatedEtablissement.api_entreprise_reference;
 
     updatedEtablissement.published = published;
 
@@ -95,10 +97,11 @@ const etablissementUpdater = async (etablissement, { withHistoryUpdate = true } 
     // }
 
     // return { updates: null, etablissement };
+    return { updates: null, etablissement: updatedEtablissement };
   } catch (e) {
     logger.error(e);
     return { updates: null, etablissement, error: e.toString() };
   }
 };
 
-module.exports.etablissementUpdater = etablissementUpdater;
+module.exports.etablissementService = etablissementService;

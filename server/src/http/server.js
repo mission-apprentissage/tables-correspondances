@@ -12,6 +12,7 @@ const permissionsMiddleware = require("./middlewares/permissionsMiddleware");
 const packageJson = require("../../package.json");
 const cfd = require("./routes/cfd");
 const mef = require("./routes/mef");
+const services = require("./routes/services");
 const cp = require("./routes/cp");
 const rncp = require("./routes/rncp");
 const siret = require("./routes/siret");
@@ -43,6 +44,8 @@ module.exports = async (components) => {
 
   app.use("/api/entity", etablissement());
   app.use("/api/entity", checkJwtToken, etablissementSecure());
+
+  app.use("/api/services", services());
 
   app.use("/api/opcos", opcos());
   app.use("/api/domainesMetiers", domainesMetiers());
