@@ -1,8 +1,9 @@
 const logger = require("../../common/logger");
 
 module.exports = async (users) => {
+  const args = process.argv.slice(2);
   //await users.createUser("testUser", "password");
-  await users.createUser("ed", "password", { permissions: { isAdmin: true } });
+  await users.createUser(args[1], args[2], { permissions: { isAdmin: true } });
   //logger.info(`User 'testUser' with password 'password' is successfully created `);
   logger.info(`admin is successfully created `);
 };
