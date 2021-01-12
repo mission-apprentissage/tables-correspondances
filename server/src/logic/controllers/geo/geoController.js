@@ -143,7 +143,7 @@ class GeoController {
       code_postal,
       localite,
     });
-    console.log(geo_coordonnees);
+
     return {
       info: `Ok`,
       value: geo_coordonnees,

@@ -1,26 +1,13 @@
 const logger = require("../../common/logger");
 const Joi = require("joi");
 const { getDataFromSiret } = require("../handlers/siretHandler");
-const { getDataFromCP } = require("../handlers/geoHandler");
-// eslint-disable-next-line no-unused-vars
+const { getDataFromCP, getCoordaniteFromAdresseData } = require("../handlers/geoHandler");
 const conventionController = require("../controllers/ConventionController");
-// const { etablissementsMapper } = require("../mappers/etablissementsMapper");
-// const { diffFormation } = require("../common/utils/diffUtils");
 
 const etablissementSchema = Joi.object({
   siret: Joi.string().required(),
+  uai: Joi.string().required(),
 }).unknown();
-
-/*
- * Build updates history
- */
-// const buildUpdatesHistory = (formation, updates, keys) => {
-//   const from = keys.reduce((acc, key) => {
-//     acc[key] = formation[key];
-//     return acc;
-//   }, {});
-//   return [...formation.updates_history, { from, to: { ...updates }, updated_at: Date.now() }];
-// };
 
 const parseErrors = (messages) => {
   if (!messages) {
@@ -36,68 +23,51 @@ const etablissementService = async (etablissement, { withHistoryUpdate = true } 
   try {
     await etablissementSchema.validateAsync(etablissement, { abortEarly: false });
 
+    // ENTREPRISE DATA
     const { result: siretMapping, messages: siretMessages } = await getDataFromSiret(etablissement.siret);
-
-    console.log({ result: siretMapping, messages: siretMessages });
 
     let error = parseErrors(siretMessages);
     if (error) {
       return { updates: null, etablissement, error };
     }
 
+    // CODE POSTAL DATA
     const { result: cpMapping, messages: cpMessages } = await getDataFromCP(siretMapping.code_postal);
     error = parseErrors(cpMessages);
     if (error) {
       return { updates: null, etablissement, error };
     }
 
-    // TODO FORMATIONS DATA
+    // GEOLOC DATA
+    const { result: geoMapping, messages: geoMessages } = await getCoordaniteFromAdresseData({
+      ...siretMapping,
+      ...cpMapping,
+    });
+    error = parseErrors(geoMessages);
 
-    // TODO CONVENTIONNEMENNT DATA
-    // conventionController.getConventionData(siretMapping.siret, etablissement.uai, siretMapping.siege_social)
+    // CONVENTIONNEMENNT DATA
+    const conventionData = await conventionController.getConventionData(
+      siretMapping.siret,
+      etablissement.uai,
+      siretMapping.etablissement_siege_siret
+    );
 
-    // TODO GEO LOC
-
-    // Copied from other script
-    // const cachedCpResult = { [formation.code_postal]: { result: cpMapping, messages: cpMessages } };
-    // const { result: etablissementsMapping, messages: etablissementsMessages } = await etablissementsMapper(
-    //   formation.etablissement_gestionnaire_siret,
-    //   formation.etablissement_formateur_siret,
-    //   cachedCpResult
-    // );
-    // Copied from other script
-    // error = parseErrors(etablissementsMessages);
-    // if (error) {
-    //   return { updates: null, formation, error };
-    // }
+    if (error) {
+      return { updates: null, etablissement, error };
+    }
 
     let updatedEtablissement = {
       ...etablissement,
       ...siretMapping,
       ...cpMapping,
-      // ...etablissementsMapping,
-      // published,
-      // update_error: null,
+      ...geoMapping,
+      ...conventionData,
     };
 
-    const published =
-      !updatedEtablissement.ferme ||
-      // !updatedEtablissement.formations_attachees ||
-      updatedEtablissement.api_entreprise_reference;
-
+    const published = !updatedEtablissement.ferme && updatedEtablissement.api_entreprise_reference;
     updatedEtablissement.published = published;
 
-    // Copied from other script
-    // const { updates, keys } = diffFormation(formation, updatedFormation);
-    // if (updates) {
-    //   if (withHistoryUpdate) {
-    //     updatedFormation.updates_history = buildUpdatesHistory(formation, updates, keys);
-    //   }
-    //   return { updates, etablissement: updatedEtablissement };
-    // }
-
-    // return { updates: null, etablissement };
-    return { updates: null, etablissement: updatedEtablissement };
+    return { ...updatedEtablissement };
   } catch (e) {
     logger.error(e);
     return { updates: null, etablissement, error: e.toString() };
