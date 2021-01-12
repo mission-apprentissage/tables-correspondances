@@ -9,6 +9,7 @@ const { etablissementService } = require("../../logic/services/Etablissement");
  */
 const requestSchema = Joi.object({
   siret: Joi.string().required(),
+  uai: Joi.string().required(),
 }).unknown();
 
 /**
