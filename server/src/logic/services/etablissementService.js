@@ -4,7 +4,6 @@ const { getDataFromSiret } = require("../handlers/siretHandler");
 const { getDataFromCP, getCoordaniteFromAdresseData } = require("../handlers/geoHandler");
 const conventionController = require("../controllers/conventionController");
 const { diffEtablissement } = require("../../common/utils/diffUtils");
-const { wait } = require("../../common/utils/miscUtils");
 
 const etablissementSchema = Joi.object({
   siret: Joi.string().required(),
@@ -37,7 +36,6 @@ const etablissementService = async (etablissement, { withHistoryUpdate = true } 
 
     // ENTREPRISE DATA
     const { result: siretMapping, messages: siretMessages } = await getDataFromSiret(etablissement.siret);
-    await wait(300);
 
     let error = parseErrors(siretMessages);
     if (error) {

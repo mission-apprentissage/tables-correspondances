@@ -1,5 +1,6 @@
 const logger = require("../../../common/logger");
 const { etablissementService } = require("../../../logic/services/etablissementService");
+const { wait } = require("../../../common/utils/miscUtils");
 
 const run = async (model, filter = {}) => {
   await performUpdates(model, filter);
@@ -11,7 +12,7 @@ const performUpdates = async (model, filter = {}) => {
   // const updatedEtablissements = [];
 
   let offset = 0;
-  let limit = 100;
+  let limit = 10;
   let computed = 0;
   let nbEtablissements = 10;
 
@@ -23,7 +24,7 @@ const performUpdates = async (model, filter = {}) => {
       docs.map(async (etablissement) => {
         computed += 1;
         const { updates, etablissement: updatedEtablissement, error } = await etablissementService(etablissement._doc);
-
+        await wait(300);
         if (error) {
           etablissement.update_error = error;
           await model.findOneAndUpdate({ _id: etablissement._id }, etablissement, { new: true });
