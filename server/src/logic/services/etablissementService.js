@@ -7,7 +7,7 @@ const { diffEtablissement } = require("../../common/utils/diffUtils");
 
 const etablissementSchema = Joi.object({
   siret: Joi.string().required(),
-  uai: Joi.string().required(),
+  uai: Joi.string().allow(null).required(),
 }).unknown();
 
 /*
