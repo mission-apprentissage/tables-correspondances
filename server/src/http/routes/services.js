@@ -24,8 +24,8 @@ module.exports = () => {
       await requestSchema.validateAsync(req.body, { abortEarly: false });
       const item = req.body;
       logger.info("Generate all data from", item);
-      const result = await etablissementService(item);
-      return res.json(result);
+      const result = await etablissementService(item, { withHistoryUpdate: false });
+      return res.json({ ...result.etablissement });
     })
   );
 

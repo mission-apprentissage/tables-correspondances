@@ -30,7 +30,6 @@ const parseErrors = (messages) => {
     .reduce((acc, [key, value]) => `${acc}${acc ? " " : ""}${key}: ${value}.`, "");
 };
 
-// eslint-disable-next-line no-unused-vars
 const etablissementService = async (etablissement, { withHistoryUpdate = true } = {}) => {
   try {
     await etablissementSchema.validateAsync(etablissement, { abortEarly: false });
@@ -87,7 +86,6 @@ const etablissementService = async (etablissement, { withHistoryUpdate = true } 
       return { updates, etablissement: updatedEtablissement };
     }
 
-    //return { ...updatedEtablissement };
     return { updates: null, etablissement };
   } catch (e) {
     logger.error(e);
