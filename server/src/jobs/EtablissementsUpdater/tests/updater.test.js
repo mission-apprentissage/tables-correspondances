@@ -30,6 +30,9 @@ describe(__filename, () => {
   it("should have updated data with etablissement service call", async () => {
     await performUpdates(Etablissement, {});
 
+    const etablissement = await Etablissement.findById("5fd2551ee7630d000905875e");
+    // console.log(etablissement);
+    assert.strictEqual(etablissement.published, true);
     const count = await Etablissement.countDocuments({});
     assert.strictEqual(count, 1);
   });

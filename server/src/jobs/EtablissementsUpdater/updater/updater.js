@@ -2,14 +2,13 @@ const logger = require("../../../common/logger");
 const { etablissementService } = require("../../../logic/services/etablissementService");
 
 const run = async (model, filter = {}) => {
-  const result = await performUpdates(model, filter);
-  return result;
+  await performUpdates(model, filter);
 };
 
 const performUpdates = async (model, filter = {}) => {
-  const invalidEtablissements = [];
-  const notUpdatedEtablissements = [];
-  const updatedEtablissements = [];
+  // const invalidEtablissements = [];
+  // const notUpdatedEtablissements = [];
+  // const updatedEtablissements = [];
 
   let offset = 0;
   let limit = 100;
@@ -28,23 +27,23 @@ const performUpdates = async (model, filter = {}) => {
         if (error) {
           etablissement.update_error = error;
           await model.findOneAndUpdate({ _id: etablissement._id }, etablissement, { new: true });
-          invalidEtablissements.push({ id: etablissement._id, cfd: etablissement.cfd, error });
+          // invalidEtablissements.push({ id: etablissement._id, cfd: etablissement.cfd, error });
           return;
         }
 
         if (!updates) {
-          notUpdatedEtablissements.push({ id: etablissement._id, cfd: etablissement.cfd });
+          // notUpdatedEtablissements.push({ id: etablissement._id, cfd: etablissement.cfd });
           return;
         }
 
         try {
           updatedEtablissement.last_update_at = Date.now();
           await model.findOneAndUpdate({ _id: etablissement._id }, updatedEtablissement, { new: true });
-          updatedEtablissements.push({
-            id: etablissement._id,
-            cfd: etablissement.cfd,
-            updates: JSON.stringify(updates),
-          });
+          // updatedEtablissements.push({
+          //   id: etablissement._id,
+          //   cfd: etablissement.cfd,
+          //   updates: JSON.stringify(updates),
+          // });
         } catch (error) {
           logger.error(error);
         }
@@ -56,7 +55,8 @@ const performUpdates = async (model, filter = {}) => {
     logger.info(`progress ${computed}/${total}`);
   }
 
-  return { invalidEtablissements, updatedEtablissements, notUpdatedEtablissements };
+  // return { invalidEtablissements, updatedEtablissements, notUpdatedEtablissements };
+  return true;
 };
 
 module.exports = { run, performUpdates };
