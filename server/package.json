@@ -28,6 +28,7 @@
     "bcn:importer:local": "run=true dotenv node src/jobs/bcnImporter/index.js",
     "rncp:importer": "run=true node src/jobs/rncpImporter/index.js",
     "rncp:importer:local": "run=true dotenv node src/jobs/rncpImporter/index.js",
+    "convention:importer": "run=true node src/jobs/convetionFilesImporter/index.js",
     "convention:importer:local": "run=true dotenv node src/jobs/convetionFilesImporter/index.js"
   },
   "dependencies": {

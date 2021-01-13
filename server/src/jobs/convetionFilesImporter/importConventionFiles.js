@@ -1,7 +1,6 @@
 const logger = require("../../common/logger");
 const { asyncForEach } = require("../../common/utils/asyncUtils");
 const { chunk } = require("lodash");
-// const { ConventionFile } = require("../../common/model");
 
 module.exports = async (db, publicOfsp, datadock, depp, dgefp) => {
   try {

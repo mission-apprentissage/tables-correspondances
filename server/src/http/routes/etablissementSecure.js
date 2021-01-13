@@ -9,7 +9,7 @@ const Boom = require("boom");
  * Schema for validation
  */
 const etablissementSchema = Joi.object({
-  num_academie: Joi.string().required(),
+  num_academie: Joi.number().required(),
 }).unknown();
 
 /**

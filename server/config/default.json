@@ -37,5 +37,6 @@
   },
   "conventionFiles": {
     "path": "TABLES_CORRESPONDANCE_CONVENTION_FILES_PATH"
-  }
+  },
+  "apiEntreprise": "TABLES_CORRESPONDANCES_API_ENTREPRISE_KEY"
 }
