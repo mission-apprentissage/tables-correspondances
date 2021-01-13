@@ -17,13 +17,17 @@ const downloadXlsxAndGetJson = async (filename) => {
 const conventionFilesImporter = async (db) => {
   logger.warn(`[Convention files importer] Starting`);
 
+  logger.info(`[Convention files importer] removing conventionfiles documents`);
+  await db.collection("conventionfiles").deleteMany({});
+  logger.info(`[Convention files importer] Removing successfull`);
+
   // CSV import
   const PUBLIC_OFS_PATH = path.join(__dirname, "./assets/20201207_public_ofs.csv");
   await downloadAndSaveFileFromS3(`${config.conventionFiles.path}/20201207_public_ofs.csv`, PUBLIC_OFS_PATH);
   const publicOfs = getJsonFromCsvFile(PUBLIC_OFS_PATH);
 
   // Xlsx import
-  const datadock = await downloadXlsxAndGetJson("BaseDataDock.xlsx");
+  const datadock = await downloadXlsxAndGetJson("BaseDataDock-20201210.xlsx");
   const depp = await downloadXlsxAndGetJson("CFASousConvRegionale_02122019.xlsx");
   const dgefp = await downloadXlsxAndGetJson("DGEFP - Extraction au 10 01 2020.xlsx");
 

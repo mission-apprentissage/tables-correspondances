@@ -12,8 +12,10 @@ const permissionsMiddleware = require("./middlewares/permissionsMiddleware");
 const packageJson = require("../../package.json");
 const cfd = require("./routes/cfd");
 const mef = require("./routes/mef");
+const services = require("./routes/services");
 const cp = require("./routes/cp");
 const rncp = require("./routes/rncp");
+const uai = require("./routes/uai");
 const siret = require("./routes/siret");
 const coordinate = require("./routes/coordinate");
 const entity = require("./routes/entity");
@@ -44,6 +46,8 @@ module.exports = async (components) => {
   app.use("/api/entity", etablissement());
   app.use("/api/entity", checkJwtToken, etablissementSecure());
 
+  app.use("/api/services", services());
+
   app.use("/api/opcos", opcos());
   app.use("/api/domainesMetiers", domainesMetiers());
   app.use("/api/es/search", esSearch());
@@ -52,6 +56,7 @@ module.exports = async (components) => {
   app.use("/api/mef", mef());
   app.use("/api/code-postal", cp());
   app.use("/api/rncp", rncp());
+  app.use("/api/uai", uai());
   app.use("/api/siret", siret());
   app.use("/api/coordinate", coordinate());
   app.use("/api/entity", entity());
@@ -79,7 +84,7 @@ module.exports = async (components) => {
         });
 
       return res.json({
-        name: `Serveur express tables de co - ${config.appName}`,
+        name: `Tables de correspondances - ${config.appName}`,
         version: packageJson.version,
         env: config.env,
         healthcheck: {

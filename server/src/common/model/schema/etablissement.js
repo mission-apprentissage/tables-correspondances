@@ -171,66 +171,6 @@ const etablissementSchema = {
     default: null,
     description: "UAI de l'établissement",
   },
-  formations_attachees: {
-    type: Boolean,
-    default: false,
-    description: "l'établissement a des formations",
-  },
-  formations_ids: {
-    type: [Object],
-    default: [],
-    description: "Id des formations rattachées",
-  },
-  formations_uais: {
-    type: [String],
-    default: [],
-    description: "UAIs des formations rattachées à l'établissement",
-  },
-  formations_n3: {
-    type: Boolean,
-    default: false,
-    description: "l'établissement a des formations de niveau 3",
-  },
-  formations_n4: {
-    type: Boolean,
-    default: false,
-    description: "l'établissement a des formations de niveau 4",
-  },
-  formations_n5: {
-    type: Boolean,
-    default: false,
-    description: "l'établissement a des formations de niveau 5",
-  },
-  formations_n6: {
-    type: Boolean,
-    default: false,
-    description: "l'établissement a des formations de niveau 6",
-  },
-  formations_n7: {
-    type: Boolean,
-    default: false,
-    description: "l'établissement a des formations de niveau 7",
-  },
-  // formations_responsable_ids: {
-  //   type: [Object],
-  //   default: [],
-  //   description: "Id des formations rattachées où l'établissement est responsable",
-  // },
-  // formations_responsable_uais: {
-  //   type: [String],
-  //   default: [],
-  //   description: "UAIs des formations rattachées où l'établissement est responsable",
-  // },
-  // formations_formateur_ids: {
-  //   type: [Object],
-  //   default: [],
-  //   description: "Id des formations rattachées où l'établissement est formateur",
-  // },
-  // formations_formateur_uais: {
-  //   type: [String],
-  //   default: [],
-  //   description: "UAIs des formations rattachées où l'établissement est formateur",
-  // },
 
   //////////////
   info_depp: {
@@ -253,6 +193,28 @@ const etablissementSchema = {
     default: 0,
     description: "L'établissement est présent ou pas dans le fichier dataDock",
   },
+
+  info_depp_info: {
+    type: String,
+    default: null,
+    description: "L'établissement est présent ou pas dans le fichier DEPP",
+  },
+  info_dgefp_info: {
+    type: String,
+    default: null,
+    description: "L'établissement est présent ou pas dans le fichier DGEFP",
+  },
+  info_datagouv_ofs_info: {
+    type: String,
+    default: null,
+    description: "L'établissement est présent ou pas dans le fichier datagouv",
+  },
+  info_datadock_info: {
+    type: String,
+    default: null,
+    description: "L'établissement est présent ou pas dans le fichier dataDock",
+  },
+
   computed_type: {
     type: String,
     default: null,
@@ -395,8 +357,67 @@ const etablissementSchema = {
     default: {},
     description: "Tranche salarié",
   },
-  ////////////////
-
+  ///////WILL BE REMOVE/////////
+  formations_attachees: {
+    type: Boolean,
+    default: false,
+    description: "l'établissement a des formations",
+  },
+  formations_ids: {
+    type: [Object],
+    default: [],
+    description: "Id des formations rattachées",
+  },
+  formations_uais: {
+    type: [String],
+    default: [],
+    description: "UAIs des formations rattachées à l'établissement",
+  },
+  formations_n3: {
+    type: Boolean,
+    default: false,
+    description: "l'établissement a des formations de niveau 3",
+  },
+  formations_n4: {
+    type: Boolean,
+    default: false,
+    description: "l'établissement a des formations de niveau 4",
+  },
+  formations_n5: {
+    type: Boolean,
+    default: false,
+    description: "l'établissement a des formations de niveau 5",
+  },
+  formations_n6: {
+    type: Boolean,
+    default: false,
+    description: "l'établissement a des formations de niveau 6",
+  },
+  formations_n7: {
+    type: Boolean,
+    default: false,
+    description: "l'établissement a des formations de niveau 7",
+  },
+  // formations_responsable_ids: {
+  //   type: [Object],
+  //   default: [],
+  //   description: "Id des formations rattachées où l'établissement est responsable",
+  // },
+  // formations_responsable_uais: {
+  //   type: [String],
+  //   default: [],
+  //   description: "UAIs des formations rattachées où l'établissement est responsable",
+  // },
+  // formations_formateur_ids: {
+  //   type: [Object],
+  //   default: [],
+  //   description: "Id des formations rattachées où l'établissement est formateur",
+  // },
+  // formations_formateur_uais: {
+  //   type: [String],
+  //   default: [],
+  //   description: "UAIs des formations rattachées où l'établissement est formateur",
+  // },
   ds_id_dossier: {
     type: String,
     default: null,

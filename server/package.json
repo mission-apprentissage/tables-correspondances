@@ -28,13 +28,14 @@
     "bcn:importer:local": "run=true dotenv node src/jobs/bcnImporter/index.js",
     "rncp:importer": "run=true node src/jobs/rncpImporter/index.js",
     "rncp:importer:local": "run=true dotenv node src/jobs/rncpImporter/index.js",
+    "convention:importer": "run=true node src/jobs/convetionFilesImporter/index.js",
     "convention:importer:local": "run=true dotenv node src/jobs/convetionFilesImporter/index.js"
   },
   "dependencies": {
     "@azure/storage-blob": "12.3.0",
     "@elastic/elasticsearch": "7.6.1",
     "aws-sdk": "2.785.0",
-    "axios": "0.20.0",
+    "axios": "0.21.1",
     "body-parser": "1.19.0",
     "boom": "7.3.0",
     "bunyan": "1.8.12",
