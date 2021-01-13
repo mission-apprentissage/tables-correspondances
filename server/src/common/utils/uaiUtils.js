@@ -25,7 +25,7 @@ const ALPHABET_23_LETTERS = [
 ];
 
 module.exports = {
-  validateUAI: (code) => {
+  validateUAI(code) {
     if (!code || code.length !== 8) {
       return false;
     }
