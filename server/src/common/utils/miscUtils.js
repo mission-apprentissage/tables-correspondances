@@ -15,3 +15,6 @@ const getDuplicates = (arr) => {
   return store;
 };
 module.exports.getDuplicates = getDuplicates;
+
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+module.exports.wait = wait;
