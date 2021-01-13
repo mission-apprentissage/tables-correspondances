@@ -1,5 +1,5 @@
 const csvToJson = require("convert-csv-to-json");
-const azureStorage = require("../../../common/azureStorage");
+const azureStorage = require("../../../../common/utils/azureUtils");
 const path = require("path");
 const env = require("env-var");
 const fs = require("fs");
