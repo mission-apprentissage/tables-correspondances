@@ -29,7 +29,9 @@
     "rncp:importer": "run=true node src/jobs/rncpImporter/index.js",
     "rncp:importer:local": "run=true dotenv node src/jobs/rncpImporter/index.js",
     "convention:importer": "run=true node src/jobs/convetionFilesImporter/index.js",
-    "convention:importer:local": "run=true dotenv node src/jobs/convetionFilesImporter/index.js"
+    "convention:importer:local": "run=true dotenv node src/jobs/convetionFilesImporter/index.js",
+    "etablissements:updater": "standalone=true node src/jobs/EtablissementsUpdater/index.js",
+    "etablissements:updater:local": "standalone=true dotenv node src/jobs/EtablissementsUpdater/index.js"
   },
   "dependencies": {
     "@azure/storage-blob": "12.3.0",

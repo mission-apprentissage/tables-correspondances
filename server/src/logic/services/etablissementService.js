@@ -2,12 +2,24 @@ const logger = require("../../common/logger");
 const Joi = require("joi");
 const { getDataFromSiret } = require("../handlers/siretHandler");
 const { getDataFromCP, getCoordaniteFromAdresseData } = require("../handlers/geoHandler");
-const conventionController = require("../controllers/ConventionController");
+const conventionController = require("../controllers/conventionController");
+const { diffEtablissement } = require("../../common/utils/diffUtils");
 
 const etablissementSchema = Joi.object({
   siret: Joi.string().required(),
   uai: Joi.string().required(),
 }).unknown();
+
+/*
+ * Build updates history
+ */
+const buildUpdatesHistory = (etablissement, updates, keys) => {
+  const from = keys.reduce((acc, key) => {
+    acc[key] = etablissement[key];
+    return acc;
+  }, {});
+  return [...etablissement.updates_history, { from, to: { ...updates }, updated_at: Date.now() }];
+};
 
 const parseErrors = (messages) => {
   if (!messages) {
@@ -18,7 +30,6 @@ const parseErrors = (messages) => {
     .reduce((acc, [key, value]) => `${acc}${acc ? " " : ""}${key}: ${value}.`, "");
 };
 
-// eslint-disable-next-line no-unused-vars
 const etablissementService = async (etablissement, { withHistoryUpdate = true } = {}) => {
   try {
     await etablissementSchema.validateAsync(etablissement, { abortEarly: false });
@@ -67,7 +78,15 @@ const etablissementService = async (etablissement, { withHistoryUpdate = true } 
     const published = !updatedEtablissement.ferme && updatedEtablissement.api_entreprise_reference;
     updatedEtablissement.published = published;
 
-    return { ...updatedEtablissement };
+    const { updates, keys } = diffEtablissement(etablissement, updatedEtablissement);
+    if (updates) {
+      if (withHistoryUpdate) {
+        updatedEtablissement.updates_history = buildUpdatesHistory(etablissement, updates, keys);
+      }
+      return { updates, etablissement: updatedEtablissement };
+    }
+
+    return { updates: null, etablissement };
   } catch (e) {
     logger.error(e);
     return { updates: null, etablissement, error: e.toString() };

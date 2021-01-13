@@ -496,6 +496,16 @@ const etablissementSchema = {
     default: Date.now,
     description: "Date de dernières mise à jour",
   },
+  updates_history: {
+    type: [Object],
+    default: [],
+    description: "Historique des mises à jours",
+  },
+  update_error: {
+    type: String,
+    default: null,
+    description: "Erreur lors de la mise à jour de la formation",
+  },
 };
 
 module.exports = etablissementSchema;
