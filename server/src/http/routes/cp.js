@@ -17,6 +17,23 @@ const requestSchema = Joi.object({
 module.exports = () => {
   const router = express.Router();
 
+  /**
+   * @swagger
+   *
+   * /api/code-postal:
+   *   post:
+   *     description: Permet de récupérer les informations relatives à un code postal.
+   *     produces:
+   *       - application/json
+   *     parameters:
+   *       - name: codePostal
+   *         in: path
+   *         required: true
+   *         type: string
+   *     responses:
+   *       200:
+   *         description: Info cp
+   */
   router.post(
     "/",
     tryCatch(async (req, res) => {

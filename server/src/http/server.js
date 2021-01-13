@@ -2,6 +2,8 @@ const express = require("express");
 const config = require("config");
 const logger = require("../common/logger");
 const bodyParser = require("body-parser");
+const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
 const logMiddleware = require("./middlewares/logMiddleware");
 const errorMiddleware = require("./middlewares/errorMiddleware");
 const tryCatch = require("./middlewares/tryCatchMiddleware");
@@ -33,6 +35,18 @@ const opcos = require("./routes/opcos");
 const etablissement = require("./routes/etablissement");
 const etablissementSecure = require("./routes/etablissementSecure");
 
+const options = {
+  swaggerDefinition: {
+    info: {
+      title: "Tables de correspondances",
+      version: "1.0.0",
+    },
+  },
+  apis: ["./src/http/routes/*.js"],
+};
+
+const swaggerSpecification = swaggerJsdoc(options);
+
 module.exports = async (components) => {
   const { db } = components;
   const app = express();
@@ -45,6 +59,8 @@ module.exports = async (components) => {
 
   app.use(corsMiddleware());
   app.use(logMiddleware());
+
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecification));
 
   app.use("/api/entity", etablissement());
   app.use("/api/entity", checkJwtToken, etablissementSecure());
