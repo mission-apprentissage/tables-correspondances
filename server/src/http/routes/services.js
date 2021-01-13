@@ -2,7 +2,7 @@ const express = require("express");
 const logger = require("../../common/logger");
 const Joi = require("joi");
 const tryCatch = require("../middlewares/tryCatchMiddleware");
-const { etablissementService } = require("../../logic/services/Etablissement");
+const { etablissementService } = require("../../logic/services/etablissementService");
 
 /**
  * Request body validation
