@@ -6,6 +6,29 @@ const { validateUAI } = require("../../common/utils/uaiUtils");
 module.exports = () => {
   const router = express.Router();
 
+  /**
+   * @swagger
+   *
+   * /uai/{code}:
+   *   get:
+   *     summary: Permet de validiter le format un code UAI
+   *     tags:
+   *       - Outils
+   *     description: >
+   *       Permet de validiter le format un code UAI.<br/>
+   *     parameters:
+   *       - in: path
+   *         name: code
+   *         required: true
+   *         schema:
+   *           type: string
+   *         example: "0601610Z"
+   *     responses:
+   *       200:
+   *         description: OK
+   *       400:
+   *         description: KO
+   */
   router.get(
     "/:code",
     tryCatch(async (req, res) => {
