@@ -15,8 +15,6 @@ const performUpdates = async (filter = {}) => {
 
   const etablissements = await Etablissement.find(filter);
 
-  console.log(etablissements.length);
-
   await asyncForEach(etablissements, async (etablissement) => {
     try {
       const { updates, etablissement: updatedEtablissement, error } = await etablissementService(etablissement._doc);

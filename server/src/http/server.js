@@ -2,6 +2,8 @@ const express = require("express");
 const config = require("config");
 const logger = require("../common/logger");
 const bodyParser = require("body-parser");
+const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
 const logMiddleware = require("./middlewares/logMiddleware");
 const errorMiddleware = require("./middlewares/errorMiddleware");
 const tryCatch = require("./middlewares/tryCatchMiddleware");
@@ -33,6 +35,33 @@ const opcos = require("./routes/opcos");
 const etablissement = require("./routes/etablissement");
 const etablissementSecure = require("./routes/etablissementSecure");
 
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Tables de correspondances",
+      version: "1.0.0",
+      description: `Cette API est une ressource où vous trouverez un ensemble d'outils tel que Code-Postaux etc...<br/><br/>
+      <h3><strong>${config.publicUrl}/api</strong></h3><br/>
+      Contact:
+      `,
+      contact: {
+        name: "Mission Nationale Apprentissage",
+        url: "https://tables-correspondances.apprentissage.beta.gouv.fr/",
+        email: "catalogue@apprentissage.beta.gouv.fr",
+      },
+    },
+    servers: [
+      {
+        url: `${config.publicUrl}/api`,
+      },
+    ],
+  },
+  apis: ["./src/http/routes/*.js"],
+};
+
+const swaggerSpecification = swaggerJsdoc(options);
+
 module.exports = async (components) => {
   const { db } = components;
   const app = express();
@@ -45,6 +74,8 @@ module.exports = async (components) => {
 
   app.use(corsMiddleware());
   app.use(logMiddleware());
+
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecification));
 
   app.use("/api/entity", etablissement());
   app.use("/api/entity", checkJwtToken, etablissementSecure());
