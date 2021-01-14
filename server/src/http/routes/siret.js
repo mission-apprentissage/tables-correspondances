@@ -12,7 +12,36 @@ const requestSchema = Joi.object({
 });
 
 /**
- * Route which returns information about a given Siret
+ * @swagger
+ *
+ * /siret:
+ *   post:
+ *     summary: Permet de récupérer les informations relatives à un code siret.
+ *     tags:
+ *       - Outils
+ *     description: >
+ *       Cette api vous permet de récupérer les informations relatives à un code siret.<br/>
+ *       Appels sous-jacent API entreprise et API Sirene
+ *     requestBody:
+ *       description: L'objet JSON **doit** contenir la clé siret.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - siret
+ *             properties:
+ *               siret:
+ *                 type: string
+ *                 example: "32922456200234"
+ *           examples:
+ *             siret:
+ *               value: { "siret": "32922456200234" }
+ *               summary: Code siret
+ *     responses:
+ *       200:
+ *         description: OK
  */
 module.exports = () => {
   const router = express.Router();

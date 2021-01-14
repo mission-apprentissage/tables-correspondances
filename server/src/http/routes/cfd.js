@@ -17,6 +17,8 @@ const requestSchema = Joi.object({
  * /cfd:
  *   post:
  *     summary: Permet de récupérer les informations relatives à un code formation diplôme donné. CFD
+ *     tags:
+ *       - Outils
  *     description: >
  *       Cette api vous permet de récupérer les informations relatives à un CFD.<br/>
  *       Appels sous-jacent aux tables BCN V et N formations, MEF

@@ -23,6 +23,8 @@ module.exports = () => {
    * /code-postal:
    *   post:
    *     summary: Récupérer les informations relatives à un code postal.
+   *     tags:
+   *       - Outils
    *     description: >
    *       Cette api vous permet de récupérer les informations relatives à un code postal.<br/>
    *       Si <strong>malencontreusement</strong> vous appelez cette adresse avec un code commune Insee, l'api corrigera l'information
