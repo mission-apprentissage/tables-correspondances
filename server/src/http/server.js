@@ -47,7 +47,7 @@ const options = {
       `,
       contact: {
         name: "Mission Nationale Apprentissage",
-        url: "https://tables-correspondances.apprentissage.beta.gouv.fr/",
+        url: "https://mission-apprentissage.gitbook.io/general/",
         email: "catalogue@apprentissage.beta.gouv.fr",
       },
     },
