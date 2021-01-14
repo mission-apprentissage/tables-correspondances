@@ -22,17 +22,33 @@ module.exports = () => {
    *
    * /api/code-postal:
    *   post:
-   *     description: Permet de récupérer les informations relatives à un code postal.
-   *     produces:
-   *       - application/json
-   *     parameters:
-   *       - name: codePostal
-   *         in: path
-   *         required: true
-   *         type: string
+   *     summary: Récupérer les informations relatives à un code postal.
+   *     description: >
+   *       Cette api vous permet de récupérer les informations relatives à un code postal.<br/>
+   *       Si malencontreusement vous appelez cette adresse avec un code commune Insse Code, l'api corrigera l'information
+   *     requestBody:
+   *       description: L'objet JSON **doit** contenir la clé codePostal.
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - codePostal
+   *             properties:
+   *               codePostal:
+   *                 type: string
+   *                 example: "92600"
+   *           examples:
+   *             cp:
+   *               value: { "codePostal": "92600" }
+   *               summary: Code postal
+   *             cc:
+   *               value: { "codePostal": "92004" }
+   *               summary: Code commune Insee
    *     responses:
    *       200:
-   *         description: Info cp
+   *         description: OK
    */
   router.post(
     "/",

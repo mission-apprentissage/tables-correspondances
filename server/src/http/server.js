@@ -37,6 +37,7 @@ const etablissementSecure = require("./routes/etablissementSecure");
 
 const options = {
   swaggerDefinition: {
+    openapi: "3.0.0",
     info: {
       title: "Tables de correspondances",
       version: "1.0.0",
