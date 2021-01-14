@@ -2,29 +2,32 @@ const logger = require("../../../common/logger");
 const { etablissementService } = require("../../../logic/services/etablissementService");
 // const { wait } = require("../../../common/utils/miscUtils");
 const { asyncForEach } = require("../../../common/utils/asyncUtils");
+const { Etablissement } = require("../../../common/model/index");
 
 const run = async (model, filter = {}) => {
   await performUpdates(model, filter);
 };
 
-const performUpdates = async (model, filter = {}) => {
+const performUpdates = async (filter = {}) => {
   // const invalidEtablissements = [];
   // const notUpdatedEtablissements = [];
   // const updatedEtablissements = [];
 
-  const etablissements = await model.find(filter);
+  const etablissements = await Etablissement.find(filter);
+
+  console.log(etablissements.length);
 
   await asyncForEach(etablissements, async (etablissement) => {
     try {
       const { updates, etablissement: updatedEtablissement, error } = await etablissementService(etablissement._doc);
       if (error) {
         etablissement.update_error = error;
-        await model.findOneAndUpdate({ _id: etablissement._id }, etablissement, { new: true });
+        await Etablissement.findOneAndUpdate({ _id: etablissement._id }, etablissement, { new: true });
       } else if (!updates) {
         // Do noting
       } else {
         updatedEtablissement.last_update_at = Date.now();
-        await model.findOneAndUpdate({ _id: etablissement._id }, updatedEtablissement, { new: true });
+        await Etablissement.findOneAndUpdate({ _id: etablissement._id }, updatedEtablissement, { new: true });
       }
     } catch (error) {
       logger.error(error);
