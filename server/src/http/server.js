@@ -41,7 +41,7 @@ const options = {
     info: {
       title: "Tables de correspondances",
       version: "1.0.0",
-      description: `Cette API est une ressource où vous trouverez un ensemble d'outils tel que Code-Postaux etc...<br/><br/>
+      description: `Vous trouverez ici un ensemble d'outils de travail tel que Code-Postaux etc...<br/><br/>
       <h3><strong>${config.publicUrl}/api</strong></h3><br/>
       Contact:
       `,
