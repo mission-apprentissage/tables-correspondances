@@ -16,7 +16,52 @@ const requestSchema = Joi.object({
 });
 
 /**
- * Route which returns information about a given Adresse
+ * @swagger
+ *
+ * /coordinate:
+ *   post:
+ *     summary: Permet de récupérer les informations relatives à une adresse.
+ *     tags:
+ *       - Outils
+ *     description: >
+ *       Cette api vous permet de récupérer les informations relatives à une adresse.<br/>
+ *       Appels sous-jacent API adresse BAN
+ *     requestBody:
+ *       description: L'objet JSON **doit** contenir toutes les clés décrite ci-dessous.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - numero_voie
+ *               - type_voie
+ *               - nom_voie
+ *               - code_postal
+ *               - localite
+ *             properties:
+ *               numero_voie:
+ *                 type: string
+ *                 example: "76"
+ *               type_voie:
+ *                 type: string
+ *                 example: "avenue"
+ *               nom_voie:
+ *                 type: string
+ *                 example: "de Ségur"
+ *               code_postal:
+ *                 type: string
+ *                 example: "75007"
+ *               localite:
+ *                 type: string
+ *                 example: "Paris"
+ *           examples:
+ *             siret:
+ *               value: { "numero_voie": "76", "type_voie": "avenue", "nom_voie": "de Ségur", "code_postal": "75007", "localite": "Paris" }
+ *               summary: Adresse Beta.gouv
+ *     responses:
+ *       200:
+ *         description: OK
  */
 module.exports = () => {
   const router = express.Router();
