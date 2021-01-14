@@ -20,7 +20,7 @@ module.exports = () => {
   /**
    * @swagger
    *
-   * /api/code-postal:
+   * /code-postal:
    *   post:
    *     summary: Récupérer les informations relatives à un code postal.
    *     description: >

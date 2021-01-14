@@ -36,12 +36,26 @@ const etablissement = require("./routes/etablissement");
 const etablissementSecure = require("./routes/etablissementSecure");
 
 const options = {
-  swaggerDefinition: {
+  definition: {
     openapi: "3.0.0",
     info: {
       title: "Tables de correspondances",
       version: "1.0.0",
+      description: `Cette API est une ressource où vous trouverez un ensemble d'outils tel que Code-Postaux etc...<br/><br/>
+      <h3><strong>${config.publicUrl}/api</strong></h3><br/>
+      Contact:
+      `,
+      contact: {
+        name: "Mission Nationale Apprentissage",
+        url: "https://tables-correspondances.apprentissage.beta.gouv.fr/",
+        email: "catalogue@apprentissage.beta.gouv.fr",
+      },
     },
+    servers: [
+      {
+        url: `${config.publicUrl}/api`,
+      },
+    ],
   },
   apis: ["./src/http/routes/*.js"],
 };
