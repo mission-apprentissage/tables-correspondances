@@ -1,47 +1,43 @@
-const { oleoduc, writeData } = require("oleoduc");
-const depp = require("./types/depp");
-const dgefp = require("./types/dgefp");
+const { oleoduc, transformData, writeData } = require("oleoduc");
+const parsers = require("./parsers/parsers");
 
-const loadDEPP = async (deppStream) => {
+const getEtablissements = async (type, stream) => {
   let etablissements = [];
+  let csvParser = parsers[type]();
 
   await oleoduc(
-    depp.etablissementsStream(deppStream),
-    writeData((etablissement) => etablissements.push({ ...etablissement, sources: ["depp"] }))
+    stream,
+    csvParser,
+    transformData((e) => ({ ...e, sources: [type] })),
+    writeData((e) => etablissements.push(e))
   );
   return etablissements;
 };
 
-const addDGEFP = async (dgefpStream, etablissements) => {
-  let stats = {
-    total: 0,
-    updated: 0,
-    missing: 0,
-  };
-
-  await oleoduc(
-    dgefp.etablissementsStream(dgefpStream),
-    writeData((data) => {
-      stats.total++;
-
-      let index = etablissements.findIndex((e) => e.siret === data.siret);
-      if (index !== -1) {
-        etablissements[index].sources.push("dgefp");
-        stats.updated++;
-      } else {
-        stats.missing++;
-      }
-    })
-  );
-
-  return stats;
-};
-
 module.exports = {
   build: async (deppStream, dgefpStream) => {
-    let etablissements = await loadDEPP(deppStream);
+    let etablissements = await getEtablissements("depp", deppStream);
+    let stats = {
+      total: 0,
+      updated: 0,
+      missing: 0,
+    };
 
-    let stats = await addDGEFP(dgefpStream, etablissements);
+    await oleoduc(
+      dgefpStream,
+      parsers.dgefp(),
+      writeData((data) => {
+        stats.total++;
+
+        let index = etablissements.findIndex((e) => e.siret === data.siret);
+        if (index !== -1) {
+          etablissements[index].sources.push("dgefp");
+          stats.updated++;
+        } else {
+          stats.missing++;
+        }
+      })
+    );
 
     return {
       etablissements,

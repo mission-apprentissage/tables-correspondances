@@ -1,6 +1,12 @@
 const axios = require("axios");
 const logger = require("../../../common/logger");
 
+const errors = {
+  451: "indisponible",
+  404: "inconnu",
+  422: "invalide",
+};
+
 module.exports = (apiEntrepriseKey) => {
   let getEtablissement = async (siret) => {
     logger.debug(`[Entreprise API] Fetching etablissement ${siret}...`);
@@ -26,11 +32,6 @@ module.exports = (apiEntrepriseKey) => {
         return etablissement.etat_administratif.value === "A" ? "actif" : "fermé";
       } catch (e) {
         logger.error(e);
-        let errors = {
-          451: "indisponible",
-          404: "inconnu",
-          422: "invalide",
-        };
         return errors[e.response.status] || "erreur";
       }
     },

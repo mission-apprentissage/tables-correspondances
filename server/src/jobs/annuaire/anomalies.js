@@ -1,11 +1,7 @@
 const { oleoduc, filterData, transformData, writeData } = require("oleoduc");
-const { Readable } = require("stream");
 const { getEtablissementStatus } = require("./utils/entrepriseAPI")(process.env.API_ENTREPRISE_KEY);
 const validateUAI = require("./utils/validateUAI");
-const types = {
-  depp: require("./types/depp"),
-  dgefp: require("./types/dgefp"),
-};
+const parsers = require("./parsers/parsers");
 
 const getUAIStatus = (etablissement) => {
   if (!etablissement.uai) {
@@ -16,11 +12,12 @@ const getUAIStatus = (etablissement) => {
 
 module.exports = {
   invalidSiretsStream: (type, source) => {
-    let stream = types[type].etablissementsStream(source);
     let sirets = [];
+    let csvParser = parsers[type]();
 
     return oleoduc(
-      stream,
+      source,
+      csvParser,
       filterData(({ siret }) => {
         sirets.push(siret);
         return sirets.filter((s) => s === siret).length <= 1;
@@ -38,12 +35,13 @@ module.exports = {
       )
     );
   },
-  doublonsStream: async (type, source) => {
+  getDoublons: async (type, source) => {
     let accumulator = {};
-    let stream = types[type].etablissementsStream(source);
+    let csvParser = parsers[type]();
 
     await oleoduc(
-      stream,
+      source,
+      csvParser,
       writeData(async (etablissement) => {
         let siret = etablissement.siret;
         if (accumulator[siret]) {
@@ -54,7 +52,6 @@ module.exports = {
       })
     );
 
-    let doublons = Object.values(accumulator).filter((d) => d.nombre > 1);
-    return Readable.from(doublons);
+    return Object.values(accumulator).filter((d) => d.nombre > 1);
   },
 };
