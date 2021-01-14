@@ -1,4 +1,4 @@
-const apiEntreprise = require("../common/apiEntreprise");
+const apiEntreprise = require("../../common/apis/apiEntreprise");
 
 class EntrepriseApiData {
   constructor() {}

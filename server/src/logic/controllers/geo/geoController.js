@@ -1,5 +1,5 @@
 const axios = require("axios");
-const apiEsSup = require("../../common/apiEsSup");
+const apiEsSup = require("../../../common/apis/apiEsSup");
 const geoAdresseData = require("./geoAdresseData");
 const fs = require("fs-extra");
 const path = require("path");
@@ -143,7 +143,7 @@ class GeoController {
       code_postal,
       localite,
     });
-    console.log(geo_coordonnees);
+
     return {
       info: `Ok`,
       value: geo_coordonnees,

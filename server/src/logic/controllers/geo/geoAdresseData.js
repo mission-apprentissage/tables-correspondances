@@ -1,4 +1,4 @@
-const apiGeoAdresse = require("../../common/apiGeoAdresse");
+const apiGeoAdresse = require("../../../common/apis/apiGeoAdresse");
 
 class GeoAdresseData {
   constructor() {}

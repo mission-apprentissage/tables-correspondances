@@ -28,13 +28,17 @@
     "bcn:importer:local": "run=true dotenv node src/jobs/bcnImporter/index.js",
     "rncp:importer": "run=true node src/jobs/rncpImporter/index.js",
     "rncp:importer:local": "run=true dotenv node src/jobs/rncpImporter/index.js",
-    "convention:importer:local": "run=true dotenv node src/jobs/convetionFilesImporter/index.js"
+    "convention:importer": "run=true node src/jobs/convetionFilesImporter/index.js",
+    "convention:importer:local": "run=true dotenv node src/jobs/convetionFilesImporter/index.js",
+    "etablissements:updater": "standalone=true node src/jobs/EtablissementsUpdater/index.js",
+    "etablissements:updater:local": "standalone=true dotenv node src/jobs/EtablissementsUpdater/index.js",
+    "es:index": "standalone=true node src/jobs/esIndex/index.js"
   },
   "dependencies": {
     "@azure/storage-blob": "12.3.0",
     "@elastic/elasticsearch": "7.6.1",
     "aws-sdk": "2.785.0",
-    "axios": "0.20.0",
+    "axios": "0.21.1",
     "body-parser": "1.19.0",
     "boom": "7.3.0",
     "bunyan": "1.8.12",
@@ -69,6 +73,8 @@
     "passport-jwt": "4.0.0",
     "passport-local": "1.0.0",
     "sha512crypt-node": "0.1.0",
+    "swagger-jsdoc": "6.0.1",
+    "swagger-ui-express": "4.1.6",
     "title-case": "3.0.2",
     "xlsx": "0.16.1",
     "xml2js": "0.4.23"
