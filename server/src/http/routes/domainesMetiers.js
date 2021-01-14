@@ -6,6 +6,32 @@ const { getRomesAndLabelsFromTitleQuery } = require("../../logic/handlers/domain
 module.exports = () => {
   const router = express.Router();
 
+  /**
+   * @swagger
+   *
+   * /domainesMetiers/romes:
+   *   get:
+   *     summary: Permet de ?
+   *     tags:
+   *       - DomainesMetiers
+   *     description: >
+   *       Permet de ?<br/>
+   *     parameters:
+   *       - in: query
+   *         name: query
+   *         required: true
+   *         schema:
+   *           type: object
+   *           required:
+   *             - title
+   *           properties:
+   *             title:
+   *               type: string
+   *               example: "test"
+   *     responses:
+   *       200:
+   *         description: OK
+   */
   router.get(
     "/romes",
     tryCatch(async (req, res) => {
