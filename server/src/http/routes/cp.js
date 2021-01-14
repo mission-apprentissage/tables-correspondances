@@ -25,7 +25,7 @@ module.exports = () => {
    *     summary: Récupérer les informations relatives à un code postal.
    *     description: >
    *       Cette api vous permet de récupérer les informations relatives à un code postal.<br/>
-   *       Si malencontreusement vous appelez cette adresse avec un code commune Insse Code, l'api corrigera l'information
+   *       Si <strong>malencontreusement</strong> vous appelez cette adresse avec un code commune Insee, l'api corrigera l'information
    *     requestBody:
    *       description: L'objet JSON **doit** contenir la clé codePostal.
    *       required: true
