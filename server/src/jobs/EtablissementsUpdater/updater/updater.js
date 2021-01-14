@@ -1,6 +1,7 @@
 const logger = require("../../../common/logger");
 const { etablissementService } = require("../../../logic/services/etablissementService");
 // const { wait } = require("../../../common/utils/miscUtils");
+const { asyncForEach } = require("../../../common/utils/asyncUtils");
 
 const run = async (model, filter = {}) => {
   await performUpdates(model, filter);
@@ -11,49 +12,68 @@ const performUpdates = async (model, filter = {}) => {
   // const notUpdatedEtablissements = [];
   // const updatedEtablissements = [];
 
-  let offset = 0;
-  let limit = 1;
-  let computed = 0;
-  let nbEtablissements = 10;
+  const etablissements = await model.find(filter);
 
-  while (computed < nbEtablissements) {
-    let { docs, total } = await model.paginate(filter, { offset, limit });
-    nbEtablissements = total;
+  await asyncForEach(etablissements, async (etablissement) => {
+    try {
+      const { updates, etablissement: updatedEtablissement, error } = await etablissementService(etablissement._doc);
+      if (error) {
+        etablissement.update_error = error;
+        await model.findOneAndUpdate({ _id: etablissement._id }, etablissement, { new: true });
+      } else if (!updates) {
+        // Do noting
+      } else {
+        updatedEtablissement.last_update_at = Date.now();
+        await model.findOneAndUpdate({ _id: etablissement._id }, updatedEtablissement, { new: true });
+      }
+    } catch (error) {
+      logger.error(error);
+    }
+  });
 
-    await Promise.all(
-      docs.map(async (etablissement) => {
-        computed += 1;
-        const { updates, etablissement: updatedEtablissement, error } = await etablissementService(etablissement._doc);
-        if (error) {
-          etablissement.update_error = error;
-          await model.findOneAndUpdate({ _id: etablissement._id }, etablissement, { new: true });
-          // invalidEtablissements.push({ id: etablissement._id, cfd: etablissement.cfd, error });
-          return;
-        }
+  // let offset = 0;
+  // let limit = 1;
+  // let computed = 0;
+  // let nbEtablissements = 10;
 
-        if (!updates) {
-          // notUpdatedEtablissements.push({ id: etablissement._id, cfd: etablissement.cfd });
-          return;
-        }
+  // while (computed < nbEtablissements) {
+  //   let { docs, total } = await model.paginate(filter, { offset, limit });
+  //   nbEtablissements = total;
 
-        try {
-          updatedEtablissement.last_update_at = Date.now();
-          await model.findOneAndUpdate({ _id: etablissement._id }, updatedEtablissement, { new: true });
-          // updatedEtablissements.push({
-          //   id: etablissement._id,
-          //   cfd: etablissement.cfd,
-          //   updates: JSON.stringify(updates),
-          // });
-        } catch (error) {
-          logger.error(error);
-        }
-      })
-    );
+  //   await Promise.all(
+  //     docs.map(async (etablissement) => {
+  //       computed += 1;
+  //       const { updates, etablissement: updatedEtablissement, error } = await etablissementService(etablissement._doc);
+  //       if (error) {
+  //         etablissement.update_error = error;
+  //         await model.findOneAndUpdate({ _id: etablissement._id }, etablissement, { new: true });
+  //         // invalidEtablissements.push({ id: etablissement._id, cfd: etablissement.cfd, error });
+  //         return;
+  //       }
 
-    offset += limit;
+  //       if (!updates) {
+  //         // notUpdatedEtablissements.push({ id: etablissement._id, cfd: etablissement.cfd });
+  //         return;
+  //       }
 
-    logger.info(`progress ${computed}/${total}`);
-  }
+  //       try {
+  //         updatedEtablissement.last_update_at = Date.now();
+  //         await model.findOneAndUpdate({ _id: etablissement._id }, updatedEtablissement, { new: true });
+  //         // updatedEtablissements.push({
+  //         //   id: etablissement._id,
+  //         //   cfd: etablissement.cfd,
+  //         //   updates: JSON.stringify(updates),
+  //         // });
+  //       } catch (error) {
+  //         logger.error(error);
+  //       }
+  //     })
+  //   );
+
+  //   offset += limit;
+
+  //   logger.info(`progress ${computed}/${total}`);
+  // }
 
   // return { invalidEtablissements, updatedEtablissements, notUpdatedEtablissements };
   return true;
