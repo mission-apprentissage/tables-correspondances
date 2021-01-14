@@ -22,8 +22,8 @@ const conventionFilesImporter = async (db) => {
   logger.info(`[Convention files importer] Removing successfull`);
 
   // CSV import
-  const PUBLIC_OFS_PATH = path.join(__dirname, "./assets/20201207_public_ofs.csv");
-  await downloadAndSaveFileFromS3(`${config.conventionFiles.path}/20201207_public_ofs.csv`, PUBLIC_OFS_PATH);
+  const PUBLIC_OFS_PATH = path.join(__dirname, "./assets/20210114_public_ofs.csv");
+  await downloadAndSaveFileFromS3(`${config.conventionFiles.path}/20210114_public_ofs.csv`, PUBLIC_OFS_PATH);
   const publicOfs = getJsonFromCsvFile(PUBLIC_OFS_PATH);
 
   // Xlsx import
