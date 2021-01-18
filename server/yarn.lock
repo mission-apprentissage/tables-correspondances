@@ -2663,6 +2663,13 @@ mongoose-paginate@5.0.3:
   dependencies:
     bluebird "3.0.5"
 
+mongoose-schema-jsonschema@1.4.4:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/mongoose-schema-jsonschema/-/mongoose-schema-jsonschema-1.4.4.tgz#125c8ce84167123a534d4ed4f89650a02180405d"
+  integrity sha512-kC56X/tYKSPHJfW84qMbnD0HynmsM9z4CoFBoEzlcUFycxisVWrUylnRIQcqWWVK9A9nRYoTXzkoS4bHNuO+6Q==
+  dependencies:
+    pluralize "^8.0.0"
+
 mongoose@5.10.2:
   version "5.10.2"
   resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.10.2.tgz#3a6770affa8c05c4198515616fd555a5c9bc74d6"
@@ -3061,6 +3068,11 @@ please-upgrade-node@^3.2.0:
   dependencies:
     semver-compare "^1.0.0"
 
+pluralize@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/pluralize/-/pluralize-8.0.0.tgz#1a6fa16a38d12a1901e0320fa017051c539ce3b1"
+  integrity sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==
+
 prelude-ls@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
@@ -3262,6 +3274,11 @@ request@^2.51.0:
     tough-cookie "~2.5.0"
     tunnel-agent "^0.6.0"
     uuid "^3.3.2"
+
+require-all@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/require-all/-/require-all-3.0.0.tgz#473d49704be310115ce124f77383b1ebd8671312"
+  integrity sha1-Rz1JcEvjEBFc4ST3c4Ox69hnExI=
 
 require-directory@^2.1.1:
   version "2.1.1"

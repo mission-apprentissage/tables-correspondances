@@ -20,7 +20,7 @@ const requestSchema = Joi.object({
  *     tags:
  *       - Outils
  *     description: >
- *       Cette api vous permet de récupérer les informations relatives à un MEF 10 caracteres.<br/>
+ *       Cette api vous permet de récupérer les informations relatives à un MEF 10 ou 11 caracteres.<br/>
  *       Appels sous-jacent aux tables BCN V et N formations, MEF
  *     requestBody:
  *       description: L'objet JSON **doit** contenir la clé mef.
@@ -36,9 +36,12 @@ const requestSchema = Joi.object({
  *                 type: string
  *                 example: "4173320611"
  *           examples:
- *             mef:
+ *             mef10:
  *               value: { "mef": "4173320611" }
- *               summary: Code mef
+ *               summary: Code mef 10
+ *             mef11:
+ *               value: { "mef": "23310022319" }
+ *               summary: Code mef 11
  *     responses:
  *       200:
  *         description: OK
