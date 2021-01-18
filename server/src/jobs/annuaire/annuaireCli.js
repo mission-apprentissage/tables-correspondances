@@ -25,14 +25,18 @@ const newCommand = (definition, options = { parent: cli }) => {
   return cmd;
 };
 
-newCommand("build <depp> <dgefp>")
-  .description("Construit l'annuaire des établissement")
-  .action((depp, dgefp, { format, out }) => {
+newCommand("build [depp]")
+  .description("Construit l'annuaire des établissement à partir de fichier source")
+  .option("--onisep <onisep>", "Ficher de l'ONISEP")
+  .action((depp, { onisep, format, out }) => {
     runScript(async () => {
-      let deppStream = createReadStream(depp);
-      let dgefpStream = createReadStream(dgefp);
+      let deppStream = depp ? createReadStream(depp) : process.stdin;
+      let sources = [];
+      if (onisep) {
+        sources.push({ type: "onisep", stream: createReadStream(onisep) });
+      }
 
-      let { etablissements, stats } = await build(deppStream, dgefpStream);
+      let { etablissements, stats } = await build(deppStream, sources);
 
       await oleoduc(Readable.from(etablissements), format, out);
 

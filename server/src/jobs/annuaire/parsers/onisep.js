@@ -5,13 +5,14 @@ module.exports = () => {
   return oleoduc(
     csv({
       delimiter: ";",
+      bom: true,
       columns: true,
     }),
     transformData((data) => {
       return {
-        uai: data.numero_uai,
-        siret: data.numero_siren_siret_uai,
-        nom: data.patronyme_uai,
+        siret: data["n° SIRET"],
+        uai: Object.values(data)[0], //FIXME impossible d'obtenir la valeur avec data['"code UAI"']
+        nom: data["nom"],
       };
     })
   );
