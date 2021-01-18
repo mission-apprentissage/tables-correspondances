@@ -32,7 +32,8 @@
     "convention:importer:local": "run=true dotenv node src/jobs/convetionFilesImporter/index.js",
     "etablissements:updater": "standalone=true node src/jobs/EtablissementsUpdater/index.js",
     "etablissements:updater:local": "standalone=true dotenv node src/jobs/EtablissementsUpdater/index.js",
-    "es:index": "standalone=true node src/jobs/esIndex/index.js"
+    "es:index": "standalone=true node src/jobs/esIndex/index.js",
+    "generate:swaggerschema": "standalone=true node src/jobs/generateSwaggerSchema/index.js"
   },
   "dependencies": {
     "@azure/storage-blob": "12.3.0",
@@ -67,11 +68,13 @@
     "moment": "2.26.0",
     "mongoose": "5.10.2",
     "mongoose-paginate": "5.0.3",
+    "mongoose-schema-jsonschema": "1.4.4",
     "multipipe": "4.0.0",
     "passport": "0.4.1",
     "passport-http": "0.3.0",
     "passport-jwt": "4.0.0",
     "passport-local": "1.0.0",
+    "require-all": "3.0.0",
     "sha512crypt-node": "0.1.0",
     "swagger-jsdoc": "6.0.1",
     "swagger-ui-express": "4.1.6",
