@@ -31,9 +31,12 @@ const esSearch = require("./routes/esSearch");
 const esMultiSearchNoIndex = require("./routes/esMultiSearchNoIndex");
 const domainesMetiers = require("./routes/domainesMetiers");
 const opcos = require("./routes/opcos");
+const bcn = require("./routes/bcn");
 
 const etablissement = require("./routes/etablissement");
 const etablissementSecure = require("./routes/etablissementSecure");
+
+const swaggerSchema = require("../common/model/swaggerSchema");
 
 const options = {
   definition: {
@@ -62,6 +65,10 @@ const options = {
 
 const swaggerSpecification = swaggerJsdoc(options);
 
+swaggerSpecification.components = {
+  schemas: swaggerSchema,
+};
+
 module.exports = async (components) => {
   const { db } = components;
   const app = express();
@@ -81,6 +88,8 @@ module.exports = async (components) => {
   app.use("/api/entity", checkJwtToken, etablissementSecure());
 
   app.use("/api/services", services());
+
+  app.use("/api/bcn", bcn());
 
   app.use("/api/opcos", opcos());
   app.use("/api/domainesMetiers", domainesMetiers());

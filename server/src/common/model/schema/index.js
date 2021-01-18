@@ -1,5 +1,5 @@
 const logSchema = require("./log");
-const bcnFormationDiplomesSchema = require("./bcnFormationDiplomesSchema");
+const bcnFormationDiplomesSchema = require("./bcnFormationDiplomes");
 const userSchema = require("./user");
 const domainesMetiersSchema = require("./domainesmetiers");
 const ficheRncpSchema = require("./ficheRncp");

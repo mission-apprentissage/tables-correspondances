@@ -94,6 +94,24 @@ class BcnController {
     };
   }
 
+  async getDataFromMef1011(providedMef) {
+    if (!providedMef || !/^[0-9]{10,11}$/g.test(providedMef.trim())) {
+      return {
+        result: {},
+        messages: {
+          error: "Le code MEF doit être définit et au format 10 ou 11 caractères",
+        },
+      };
+    }
+    let mef = `${providedMef}`.trim();
+
+    if (/^[0-9]{10}$/g.test(mef)) {
+      return await this.getDataFromMef10(mef);
+    } else {
+      return await this.getDataFromMef11(mef);
+    }
+  }
+
   async getDataFromMef10(providedMef10) {
     if (!providedMef10 || !/^[0-9]{10}$/g.test(providedMef10.trim())) {
       return {
@@ -116,6 +134,33 @@ class BcnController {
       },
       messages: {
         mef10: computeCodes.mef[cfdUpdated.info],
+        cfdUpdated: computeCodes.cfd[cfdUpdated.info],
+      },
+    };
+  }
+
+  async getDataFromMef11(providedMef11) {
+    if (!providedMef11 || !/^[0-9]{11}$/g.test(providedMef11.trim())) {
+      return {
+        result: {},
+        messages: {
+          error: "Le code MEF 11 doit être définit et au format 11 caractères",
+        },
+      };
+    }
+    let mef11 = `${providedMef11}`.trim();
+    const cfdUpdated = await this.findCfdFromMef11(mef11);
+
+    //const modalite = this.getModalities(mef10);
+
+    return {
+      result: {
+        mef11,
+        //modalite,
+        cfd: cfdUpdated.value,
+      },
+      messages: {
+        mef11: computeCodes.mef[cfdUpdated.info],
         cfdUpdated: computeCodes.cfd[cfdUpdated.info],
       },
     };
@@ -317,6 +362,15 @@ class BcnController {
       return { info: infosCodes.mef.NotFound, value: [] };
     }
     return { info: infosCodes.mef.NothingDoTo, value: match.map((m) => `${m.MEF}`) };
+  }
+
+  async findCfdFromMef11(mef11) {
+    const match = await BcnNMef.findOne({ MEF_STAT_11: mef11 });
+    if (!match) {
+      return { info: infosCodes.mef.NotFound, value: null };
+    }
+
+    return { info: infosCodes.mef.NothingDoTo, value: `${match.FORMATION_DIPLOME}` };
   }
 
   async findMefFromMef11(mef11) {
