@@ -3,11 +3,33 @@ const { oleoduc, csvStream, jsonStream, stdoutStream } = require("oleoduc");
 const { Readable } = require("stream");
 const { runScript } = require("../scriptWrapper");
 const { createReadStream, createWriteStream } = require("fs");
-const { build } = require("./annuaire");
+const annuaire = require("./annuaire");
 const { findMissingDEPPInCatalogue, findMissingDGEFPInCatalogue, findMissingCatalogueInDGEFP } = require("./manquants");
 const { invalidSiretsStream, getDoublons } = require("./anomalies");
 
-const newCommand = (definition, options = { parent: cli }) => {
+cli
+  .command("reset [depp]")
+  .description("Réinitialise l'annuaire avec les données de la DEPP")
+  .action((depp) => {
+    runScript(() => {
+      let deppStream = depp ? createReadStream(depp) : process.stdin;
+
+      return annuaire.reset(deppStream);
+    });
+  });
+
+cli
+  .command("addUAIs <type> [source]")
+  .description("Ajout les données de la source dans l'annuaire")
+  .action((type, source) => {
+    runScript(() => {
+      let stream = source ? createReadStream(source) : process.stdin;
+
+      return annuaire.addUAIs(type, stream);
+    });
+  });
+
+const newExportCommand = (definition, options = { parent: cli }) => {
   let cmd = options.parent.command(definition);
   cmd
     .option(
@@ -25,27 +47,8 @@ const newCommand = (definition, options = { parent: cli }) => {
   return cmd;
 };
 
-newCommand("build [depp]")
-  .description("Construit l'annuaire des établissement à partir de fichier source")
-  .option("--onisep <onisep>", "Ficher de l'ONISEP")
-  .action((depp, { onisep, format, out }) => {
-    runScript(async () => {
-      let deppStream = depp ? createReadStream(depp) : process.stdin;
-      let sources = [];
-      if (onisep) {
-        sources.push({ type: "onisep", stream: createReadStream(onisep) });
-      }
-
-      let { etablissements, stats } = await build(deppStream, sources);
-
-      await oleoduc(Readable.from(etablissements), format, out);
-
-      return stats;
-    });
-  });
-
 let manquants = cli.command("manquants").description("Gestion des établissements manquants");
-newCommand("exportDeppInCatalogue [depp]", { parent: manquants })
+newExportCommand("exportDeppInCatalogue [depp]", { parent: manquants })
   .description("Trouve les établissements de le DEPP qui ne sont pas dans le catalogue")
   .action((depp, { format, out }) => {
     runScript(async () => {
@@ -57,7 +60,7 @@ newCommand("exportDeppInCatalogue [depp]", { parent: manquants })
     });
   });
 
-newCommand("exportDgefpInCatalogue [dgefp]", { parent: manquants })
+newExportCommand("exportDgefpInCatalogue [dgefp]", { parent: manquants })
   .description("Trouve les établissements de la DGFEP qui ne sont pas dans le catalogue")
   .action((dgefp, { format, out }) => {
     runScript(async () => {
@@ -71,7 +74,7 @@ newCommand("exportDgefpInCatalogue [dgefp]", { parent: manquants })
 
 let anomalies = cli.command("anomalies").description("Gestion des anomalies dans les fichiers source");
 
-newCommand("exportCatalogueInDGEFP [dgefp]", { parent: manquants })
+newExportCommand("exportCatalogueInDGEFP [dgefp]", { parent: manquants })
   .description("Trouve les établissements du catalogue qui ne sont présents dans le fichier de la DGEFP")
   .action((dgefp, { format, out }) => {
     runScript(async () => {
@@ -82,7 +85,7 @@ newCommand("exportCatalogueInDGEFP [dgefp]", { parent: manquants })
       await oleoduc(Readable.from(missing), format, out);
     });
   });
-newCommand("exportInvalidSirets <type> [input]", { parent: anomalies })
+newExportCommand("exportInvalidSirets <type> [input]", { parent: anomalies })
   .description("Génère un fichier d'anomalies à partir d'un fichier source")
   .action((type, input, { out, format }) => {
     runScript(async () => {
@@ -94,7 +97,7 @@ newCommand("exportInvalidSirets <type> [input]", { parent: anomalies })
     });
   });
 
-newCommand("exportDoublons <type> [input]", { parent: anomalies })
+newExportCommand("exportDoublons <type> [input]", { parent: anomalies })
   .description("Permet d'obtenir la liste des doublons dans un fichier source")
   .action((type, input, { out, format }) => {
     runScript(async () => {

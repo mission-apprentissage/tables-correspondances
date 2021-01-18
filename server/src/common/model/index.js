@@ -17,6 +17,7 @@ const createModel = (modelName, descriptor, options = {}) => {
 module.exports = {
   User: createModel("user", schema.userSchema),
   Log: createModel("log", schema.logSchema),
+  Annuaire: createModel("annuaire", schema.annuaireSchema),
   FicheRncp: createModel("ficherncp", schema.ficheRncpSchema),
   ConventionFile: createModel("conventionfile", schema.conventionFileSchema),
   CodeIdccOpco: createModel("codeIdccOpco", schema.codeIdccOpcoSchema),
