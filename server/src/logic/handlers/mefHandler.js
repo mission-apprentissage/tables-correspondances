@@ -1,8 +1,8 @@
 const bcnController = require("../controllers/bcn/BcnController");
 const fcController = require("../controllers/rncp/rncpController");
 
-const getDataFromMef10 = async (providedMef10) => {
-  const mefData = await bcnController.getDataFromMef10(providedMef10);
+const getDataFromMef10 = async (providedMef) => {
+  const mefData = await bcnController.getDataFromMef1011(providedMef);
   const cfdData = await bcnController.getDataFromCfd(mefData.result.cfd);
 
   let rncpData = {
