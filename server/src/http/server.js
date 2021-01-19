@@ -45,7 +45,7 @@ const options = {
       title: "Tables de correspondances",
       version: "1.0.0",
       description: `Vous trouverez ici un ensemble d'outils de travail tel que Code-Postaux etc...<br/><br/>
-      <h3><strong>${config.publicUrl}/api</strong></h3><br/>
+      <h3><strong>${config.publicUrl}/api/v1</strong></h3><br/>
       Contact:
       `,
       contact: {
@@ -56,7 +56,7 @@ const options = {
     },
     servers: [
       {
-        url: `${config.publicUrl}/api`,
+        url: `${config.publicUrl}/api/v1`,
       },
     ],
   },
@@ -82,15 +82,36 @@ module.exports = async (components) => {
   app.use(corsMiddleware());
   app.use(logMiddleware());
 
-  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecification));
+  app.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecification));
+  app.use("/api/v1/entity", etablissement());
+  app.use("/api/v1/entity", checkJwtToken, etablissementSecure());
+  app.use("/api/v1/services", services());
+  app.use("/api/v1/bcn", bcn());
+  app.use("/api/v1/opcos", opcos());
+  app.use("/api/v1/domainesMetiers", domainesMetiers());
+  app.use("/api/v1/es/search", esSearch());
+  app.use("/api/v1/search", esMultiSearchNoIndex());
+  app.use("/api/v1/cfd", cfd());
+  app.use("/api/v1/mef", mef());
+  app.use("/api/v1/code-postal", cp());
+  app.use("/api/v1/rncp", rncp());
+  app.use("/api/v1/uai", uai());
+  app.use("/api/v1/siret", siret());
+  app.use("/api/v1/coordinate", coordinate());
+  app.use("/api/v1/entity", entity());
+  app.use("/api/v1/secured", apiKeyAuthMiddleware, secured());
+  app.use("/api/v1/login", login(components));
+  app.use("/api/v1/authentified", checkJwtToken, authentified());
+  app.use("/api/v1/admin", checkJwtToken, adminOnly, admin());
+  app.use("/api/v1/password", password(components));
+  app.use("/api/v1/stats", checkJwtToken, adminOnly, stats(components));
 
+  /** DEPRECATED */
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecification));
   app.use("/api/entity", etablissement());
   app.use("/api/entity", checkJwtToken, etablissementSecure());
-
   app.use("/api/services", services());
-
   app.use("/api/bcn", bcn());
-
   app.use("/api/opcos", opcos());
   app.use("/api/domainesMetiers", domainesMetiers());
   app.use("/api/es/search", esSearch());
