@@ -10,8 +10,8 @@ const createUaiElement = (type, uai) => {
 };
 
 module.exports = {
-  reset: async (deppStream) => {
-    await Annuaire.deleteMany({});
+  deleteAll: () => Annuaire.deleteMany({}),
+  initialize: async (deppStream) => {
     let stats = {
       total: 0,
       inserted: 0,
@@ -49,7 +49,7 @@ module.exports = {
 
     return stats;
   },
-  addUAIs: async (type, stream, parser = parsers[type]()) => {
+  collect: async (type, stream, parser = parsers[type]()) => {
     let stats = {
       total: 0,
       updated: 0,
@@ -72,7 +72,7 @@ module.exports = {
             let found = await Annuaire.findOne({
               siret: current.siret,
               uai: { $ne: current.uai },
-              uais: { $nin: element },
+              "uais.uai": { $ne: current.uai },
             });
 
             if (found) {

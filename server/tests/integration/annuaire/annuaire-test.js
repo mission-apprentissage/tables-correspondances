@@ -34,11 +34,10 @@ integrationTests(__filename, () => {
     );
   };
 
-  it("Vérifie qu'on peut réinitialiser un annuaire avec le fichier de la DEPP", async () => {
-    let { reset } = annuaire;
+  it("Vérifie qu'on peut initialiser un annuaire avec le fichier de la DEPP", async () => {
     let stream = createDEPPStream();
 
-    let results = await reset(stream);
+    let results = await annuaire.initialize(stream);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" });
     assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
@@ -61,12 +60,26 @@ integrationTests(__filename, () => {
     });
   });
 
+  it("Vérifie qu'on peut supprimer un annuaire", async () => {
+    await new Annuaire({
+      uai: "0011058V",
+      siret: "11111111111111",
+      nom: "Centre de formation",
+      uais: [],
+    }).save();
+
+    await annuaire.deleteAll();
+
+    let count = await Annuaire.countDocuments();
+    assert.strictEqual(count, 0);
+  });
+
   it("Vérifie qu'on peut ignore un établissement avec un siret vide dans le fichier de la DEPP", async () => {
-    let { reset } = annuaire;
+    let { initialize } = annuaire;
     let stream = createDEPPStream(`"numero_uai";"numero_siren_siret_uai";"patronyme_uai"
 "0011058V";"";"Centre de formation"`);
 
-    let results = await reset(stream);
+    let results = await initialize(stream);
 
     let count = await Annuaire.countDocuments({ siret: "11111111111111" });
     assert.strictEqual(count, 0);
@@ -84,8 +97,8 @@ integrationTests(__filename, () => {
 "0011073L";"11111111111111";"Centre de formation"`
     );
 
-    await annuaire.reset(createDEPPStream());
-    let results = await annuaire.addUAIs("dummy", source, createDummyParser());
+    await annuaire.initialize(createDEPPStream());
+    let results = await annuaire.collect("dummy", source, createDummyParser());
 
     let found = await Annuaire.findOne();
     assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
@@ -118,8 +131,8 @@ integrationTests(__filename, () => {
 "093XXXT";"11111111111111";"Centre de formation"`
     );
 
-    await annuaire.reset(createDEPPStream());
-    let results = await annuaire.addUAIs("dummy", source, createDummyParser());
+    await annuaire.initialize(createDEPPStream());
+    let results = await annuaire.collect("dummy", source, createDummyParser());
 
     let found = await Annuaire.findOne();
     assert.deepStrictEqual(found.toObject().uais[1], {
@@ -140,8 +153,8 @@ integrationTests(__filename, () => {
 "0011058V";"11111111111111";"Centre de formation"`
     );
 
-    await annuaire.reset(createDEPPStream());
-    let stats = await annuaire.addUAIs("dummy", source, createDummyParser());
+    await annuaire.initialize(createDEPPStream());
+    let stats = await annuaire.collect("dummy", source, createDummyParser());
 
     let found = await Annuaire.findOne();
     assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
@@ -186,7 +199,7 @@ integrationTests(__filename, () => {
       ],
     }).save();
 
-    let stats = await annuaire.addUAIs("dummy", source, createDummyParser());
+    let stats = await annuaire.collect("dummy", source, createDummyParser());
 
     let found = await Annuaire.findOne();
     assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
@@ -219,8 +232,8 @@ integrationTests(__filename, () => {
 "";"11111111111111";"Centre de formation"`
     );
 
-    await annuaire.reset(createDEPPStream());
-    let stats = await annuaire.addUAIs("dummy", source, createDummyParser());
+    await annuaire.initialize(createDEPPStream());
+    let stats = await annuaire.collect("dummy", source, createDummyParser());
 
     let found = await Annuaire.findOne();
     assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
@@ -242,14 +255,14 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on peut importer le fichier ONISEP", async () => {
+  it("Vérifie qu'on peut collecter des informations du fichier ONISEP", async () => {
     let source = createStream(
       `"code UAI";"n° SIRET";"nom"
 "0011073L";"11111111111111";"Centre de formation"`
     );
 
-    await annuaire.reset(createDEPPStream());
-    let results = await annuaire.addUAIs("onisep", source);
+    await annuaire.initialize(createDEPPStream());
+    let results = await annuaire.collect("onisep", source);
 
     let found = await Annuaire.findOne();
     assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
@@ -264,6 +277,40 @@ integrationTests(__filename, () => {
         },
         {
           type: "onisep",
+          uai: "0011073L",
+          valid: true,
+        },
+      ],
+    });
+    assert.deepStrictEqual(results, {
+      total: 1,
+      updated: 1,
+      failed: 0,
+    });
+  });
+
+  it("Vérifie qu'on peut collecter des informations du fichier REFEA", async () => {
+    let source = createStream(
+      `uai_code_siret;uai_code_educnationale;uai_libelle_educnationale
+"11111111111111";"0011073L";"Centre de formation"`
+    );
+
+    await annuaire.initialize(createDEPPStream());
+    let results = await annuaire.collect("refea", source);
+
+    let found = await Annuaire.findOne();
+    assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
+      uai: "0011058V",
+      siret: "11111111111111",
+      nom: "Centre de formation",
+      uais: [
+        {
+          type: "depp",
+          uai: "0011058V",
+          valid: true,
+        },
+        {
+          type: "refea",
           uai: "0011073L",
           valid: true,
         },

@@ -7,21 +7,22 @@ cli
   .command("reset [depp]")
   .description("Réinitialise l'annuaire avec les données de la DEPP")
   .action((depp) => {
-    runScript(() => {
+    runScript(async () => {
       let deppStream = depp ? createReadStream(depp) : process.stdin;
 
-      return annuaire.reset(deppStream);
+      await annuaire.deleteAll();
+      return annuaire.initialize(deppStream);
     });
   });
 
 cli
-  .command("addUAIs <type> [source]")
+  .command("collect <type> [source]")
   .description("Ajout les données de la source dans l'annuaire")
   .action((type, source) => {
     runScript(() => {
       let stream = source ? createReadStream(source) : process.stdin;
 
-      return annuaire.addUAIs(type, stream);
+      return annuaire.collect(type, stream);
     });
   });
 
