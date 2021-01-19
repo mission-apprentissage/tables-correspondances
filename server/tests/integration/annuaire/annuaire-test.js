@@ -12,7 +12,7 @@ integrationTests(__filename, () => {
     return createStream(
       content ||
         `"numero_uai";"numero_siren_siret_uai";"patronyme_uai"
-"093111T";"11111111111111";"Centre de formation"`
+"0011058V";"11111111111111";"Centre de formation"`
     );
   };
 
@@ -42,19 +42,38 @@ integrationTests(__filename, () => {
 
     let found = await Annuaire.findOne({ siret: "11111111111111" });
     assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
-      uai: "093111T",
+      uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
       uais: [
         {
           type: "depp",
-          uai: "093111T",
+          uai: "0011058V",
+          valid: true,
         },
       ],
     });
     assert.deepStrictEqual(results, {
       total: 1,
       inserted: 1,
+      invalid: 0,
+      failed: 0,
+    });
+  });
+
+  it("Vérifie qu'on peut ignore un établissement avec un siret vide dans le fichier de la DEPP", async () => {
+    let { reset } = annuaire;
+    let stream = createDEPPStream(`"numero_uai";"numero_siren_siret_uai";"patronyme_uai"
+"0011058V";"";"Centre de formation"`);
+
+    let results = await reset(stream);
+
+    let count = await Annuaire.countDocuments({ siret: "11111111111111" });
+    assert.strictEqual(count, 0);
+    assert.deepStrictEqual(results, {
+      total: 1,
+      inserted: 0,
+      invalid: 1,
       failed: 0,
     });
   });
@@ -62,7 +81,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on ajoute un uai quand il n'existe pas", async () => {
     let source = createStream(
       `uai;siret;nom
-"093222T";"11111111111111";"Centre de formation"`
+"0011073L";"11111111111111";"Centre de formation"`
     );
 
     await annuaire.reset(createDEPPStream());
@@ -70,19 +89,43 @@ integrationTests(__filename, () => {
 
     let found = await Annuaire.findOne();
     assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
-      uai: "093111T",
+      uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
       uais: [
         {
           type: "depp",
-          uai: "093111T",
+          uai: "0011058V",
+          valid: true,
         },
         {
           type: "dummy",
-          uai: "093222T",
+          uai: "0011073L",
+          valid: true,
         },
       ],
+    });
+    assert.deepStrictEqual(results, {
+      total: 1,
+      failed: 0,
+      updated: 1,
+    });
+  });
+
+  it("Vérifie qu'on teste la validaté d'un UAI", async () => {
+    let source = createStream(
+      `uai;siret;nom
+"093XXXT";"11111111111111";"Centre de formation"`
+    );
+
+    await annuaire.reset(createDEPPStream());
+    let results = await annuaire.addUAIs("dummy", source, createDummyParser());
+
+    let found = await Annuaire.findOne();
+    assert.deepStrictEqual(found.toObject().uais[1], {
+      type: "dummy",
+      uai: "093XXXT",
+      valid: false,
     });
     assert.deepStrictEqual(results, {
       total: 1,
@@ -94,7 +137,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on ignore un uai quand il existe en tant qu'uai principal", async () => {
     let source = createStream(
       `uai;siret;nom
-"093111T";"11111111111111";"Centre de formation"`
+"0011058V";"11111111111111";"Centre de formation"`
     );
 
     await annuaire.reset(createDEPPStream());
@@ -102,13 +145,14 @@ integrationTests(__filename, () => {
 
     let found = await Annuaire.findOne();
     assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
-      uai: "093111T",
+      uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
       uais: [
         {
           type: "depp",
-          uai: "093111T",
+          uai: "0011058V",
+          valid: true,
         },
       ],
     });
@@ -122,20 +166,22 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on ignore un uai quand il existe déjà en tant qu'uai secondaire", async () => {
     let source = createStream(
       `uai;siret;nom
-"093222T";"11111111111111";"Centre de formation"`
+"0011073L";"11111111111111";"Centre de formation"`
     );
     new Annuaire({
-      uai: "093111T",
+      uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
       uais: [
         {
           type: "depp",
-          uai: "093111T",
+          uai: "0011058V",
+          valid: true,
         },
         {
           type: "dummy",
-          uai: "093222T",
+          uai: "0011073L",
+          valid: true,
         },
       ],
     }).save();
@@ -144,17 +190,19 @@ integrationTests(__filename, () => {
 
     let found = await Annuaire.findOne();
     assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
-      uai: "093111T",
+      uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
       uais: [
         {
           type: "depp",
-          uai: "093111T",
+          uai: "0011058V",
+          valid: true,
         },
         {
           type: "dummy",
-          uai: "093222T",
+          uai: "0011073L",
+          valid: true,
         },
       ],
     });
@@ -176,13 +224,14 @@ integrationTests(__filename, () => {
 
     let found = await Annuaire.findOne();
     assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
-      uai: "093111T",
+      uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
       uais: [
         {
           type: "depp",
-          uai: "093111T",
+          uai: "0011058V",
+          valid: true,
         },
       ],
     });
@@ -196,7 +245,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut importer le fichier ONISEP", async () => {
     let source = createStream(
       `"code UAI";"n° SIRET";"nom"
-"093222T";"11111111111111";"Centre de formation"`
+"0011073L";"11111111111111";"Centre de formation"`
     );
 
     await annuaire.reset(createDEPPStream());
@@ -204,17 +253,19 @@ integrationTests(__filename, () => {
 
     let found = await Annuaire.findOne();
     assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
-      uai: "093111T",
+      uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
       uais: [
         {
           type: "depp",
-          uai: "093111T",
+          uai: "0011058V",
+          valid: true,
         },
         {
           type: "onisep",
-          uai: "093222T",
+          uai: "0011073L",
+          valid: true,
         },
       ],
     });

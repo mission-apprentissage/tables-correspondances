@@ -1,7 +1,13 @@
 const { oleoduc, transformData, writeData } = require("oleoduc");
+const { isEmpty } = require("lodash");
 const parsers = require("./parsers/parsers");
 const { Annuaire } = require("../../common/model");
+const { validateUAI } = require("../../common/utils/uaiUtils");
 const logger = require("../../common/logger");
+
+const createUaiElement = (type, uai) => {
+  return { type, uai, valid: validateUAI(uai) };
+};
 
 module.exports = {
   reset: async (deppStream) => {
@@ -9,16 +15,22 @@ module.exports = {
     let stats = {
       total: 0,
       inserted: 0,
+      invalid: 0,
       failed: 0,
     };
 
     await oleoduc(
       deppStream,
       parsers["depp"](),
-      transformData((e) => ({ ...e, uais: [{ type: "depp", uai: e.uai }] })),
+      transformData((e) => ({ ...e, uais: [createUaiElement("depp", e.uai)] })),
       writeData(
         async (data) => {
           stats.total++;
+          if (isEmpty(data.siret)) {
+            stats.invalid++;
+            return;
+          }
+
           try {
             let count = await Annuaire.countDocuments({ siret: data.siret });
             if (count === 0) {
@@ -56,15 +68,15 @@ module.exports = {
               return;
             }
 
-            let secondary = { type, uai: current.uai };
+            let element = createUaiElement(type, current.uai);
             let found = await Annuaire.findOne({
               siret: current.siret,
               uai: { $ne: current.uai },
-              uais: { $nin: secondary },
+              uais: { $nin: element },
             });
 
             if (found) {
-              found.uais.push(secondary);
+              found.uais.push(element);
               await found.save();
               stats.updated++;
             }
