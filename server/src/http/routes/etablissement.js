@@ -9,8 +9,69 @@ module.exports = () => {
   const router = express.Router();
 
   /**
-   * Get all etablissements /etablissements GET
-   * */
+   * @swagger
+   *
+   * /entity/etablissements:
+   *   get:
+   *     summary: Permet de récupérer les établissements
+   *     tags:
+   *       - Etablissements
+   *     description: >
+   *       Permet, à l'aide de critères, de rechercher dans la table établissements<br/><br/>
+   *       Le champ Query est une query Mongo stringify<br/><br/>
+   *       **Pour definir vos critères de recherche veuillez regarder le schéma etablissement (en bas de cette page)**
+   *     parameters:
+   *       - in: query
+   *         name: payload
+   *         required: true
+   *         schema:
+   *           type: object
+   *           required:
+   *             - query
+   *           properties:
+   *             query:
+   *               type: string
+   *               example: '"{\"siret\": \"13001727000401\"}"'
+   *             page:
+   *               type: number
+   *               example: 1
+   *             limit:
+   *               type: number
+   *               example: 10
+   *         examples:
+   *           siret:
+   *             value: { query: "{\"siret\": \"13001727000401\"}", page: 1, limit: 10 }
+   *             summary: Recherche par siret
+   *           sireteUAI:
+   *             value: { query: "{\"siret\": \"13001727000401\", \"uai\": \"0781981E\"}" }
+   *             summary: Recherche par siret et Uai
+   *           siretoUai:
+   *             value: { query: "{\"$or\":[{\"siret\":\"13001727000310\"},{\"uai\":\"0781981E\"}]}" }
+   *             summary: Recherche par siret **OU** par Uai
+   *     responses:
+   *       200:
+   *         description: OK
+   *         content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  etablissements:
+   *                    type: array
+   *                    items:
+   *                      $ref: '#/components/schemas/etablissement'
+   *                  pagination:
+   *                    type: object
+   *                    properties:
+   *                      page:
+   *                        type: string
+   *                      resultats_par_page:
+   *                        type: number
+   *                      nombre_de_page:
+   *                        type: number
+   *                      total:
+   *                        type: number
+   */
   router.get(
     "/etablissements",
     tryCatch(async (req, res) => {

@@ -4,7 +4,7 @@ const config = require("config");
 let mongooseInstance = mongoose;
 module.exports.connectToMongo = (mongoUri = config.mongodb.uri, mongooseInst = null) => {
   return new Promise((resolve, reject) => {
-    console.log(`MongoDB: Connection to ${mongoUri}`);
+    console.error(`MongoDB: Connection to ${mongoUri}`);
 
     const mI = mongooseInst || mongooseInstance;
     // Set up default mongoose connection
@@ -26,32 +26,32 @@ module.exports.connectToMongo = (mongoUri = config.mongodb.uri, mongooseInst = n
     });
 
     db.on("close", (e) => {
-      console.log("Error...close");
+      console.error("Error...close");
       reject(e);
     });
     db.on("error", (err) => {
-      console.log("Error...error", err);
+      console.error("Error...error", err);
       reject(err);
     });
     db.on("disconnect", (err) => {
-      console.log("Error...disconnect", err);
+      console.error("Error...disconnect", err);
       reject(err);
     });
     db.on("disconnected", (err) => {
-      console.log("Error...disconnected", err);
+      console.error("Error...disconnected", err);
       reject(err);
     });
     db.on("parseError", (err) => {
-      console.log("Error...parse", err);
+      console.error("Error...parse", err);
       reject(err);
     });
     db.on("timeout", (err) => {
-      console.log("Error...timeout", err);
+      console.error("Error...timeout", err);
       reject(err);
     });
 
     db.once("open", () => {
-      console.log("MongoDB: Connected");
+      console.error("MongoDB: Connected");
       resolve({ db });
     });
   });
