@@ -98,7 +98,7 @@ integrationTests(__filename, () => {
     );
 
     await annuaire.initialize(createDEPPStream());
-    let results = await annuaire.collect("dummy", source, createDummyParser());
+    let results = await annuaire.collect("dummy", source, { parser: createDummyParser() });
 
     let found = await Annuaire.findOne();
     assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
@@ -132,7 +132,7 @@ integrationTests(__filename, () => {
     );
 
     await annuaire.initialize(createDEPPStream());
-    let results = await annuaire.collect("dummy", source, createDummyParser());
+    let results = await annuaire.collect("dummy", source, { parser: createDummyParser() });
 
     let found = await Annuaire.findOne();
     assert.deepStrictEqual(found.toObject().uais[1], {
@@ -154,7 +154,7 @@ integrationTests(__filename, () => {
     );
 
     await annuaire.initialize(createDEPPStream());
-    let stats = await annuaire.collect("dummy", source, createDummyParser());
+    let stats = await annuaire.collect("dummy", source, { parser: createDummyParser() });
 
     let found = await Annuaire.findOne();
     assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
@@ -199,7 +199,7 @@ integrationTests(__filename, () => {
       ],
     }).save();
 
-    let stats = await annuaire.collect("dummy", source, createDummyParser());
+    let stats = await annuaire.collect("dummy", source, { parser: createDummyParser() });
 
     let found = await Annuaire.findOne();
     assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
@@ -233,7 +233,7 @@ integrationTests(__filename, () => {
     );
 
     await annuaire.initialize(createDEPPStream());
-    let stats = await annuaire.collect("dummy", source, createDummyParser());
+    let stats = await annuaire.collect("dummy", source, { parser: createDummyParser() });
 
     let found = await Annuaire.findOne();
     assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {

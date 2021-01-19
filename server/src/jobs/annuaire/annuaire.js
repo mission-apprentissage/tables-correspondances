@@ -49,7 +49,7 @@ module.exports = {
 
     return stats;
   },
-  collect: async (type, stream, parser = parsers[type]()) => {
+  collect: async (type, stream, options = {}) => {
     let stats = {
       total: 0,
       updated: 0,
@@ -58,7 +58,7 @@ module.exports = {
 
     await oleoduc(
       stream,
-      parser,
+      options.parser || parsers[type](),
       writeData(
         async (current) => {
           try {
