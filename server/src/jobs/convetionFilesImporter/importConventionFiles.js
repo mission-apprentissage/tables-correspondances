@@ -25,7 +25,7 @@ module.exports = async (db, publicOfsp, datadock, depp, dgefp) => {
         await db.collection("conventionfiles").insertMany(chunkpart);
         logger.info(`Inserted ${500 * (i + 1)}`);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     });
 
