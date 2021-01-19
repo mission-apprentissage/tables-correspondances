@@ -144,8 +144,72 @@ module.exports = () => {
   );
 
   /**
-   * Get etablissement by siret or uai /etablissements/siret-uai GET
-   * */
+   * @swagger
+   *
+   * /entity/etablissements/siret-uai:
+   *   get:
+   *     summary: Permet de recherche des établissements par siret ou/et uai ou/et adresse
+   *     tags:
+   *       - Etablissements
+   *     description: >
+   *       Permet, à l'aide de critères, de rechercher dans la table établissements<br/><br/>
+   *       Le champ Query est une query Mongo stringify<br/><br/>
+   *       **Pour definir vos critères de recherche veuillez regarder le schéma etablissement (en bas de cette page)**
+   *     parameters:
+   *       - in: query
+   *         name: payload
+   *         required: true
+   *         schema:
+   *           type: object
+   *           required:
+   *             - query
+   *           properties:
+   *             query:
+   *               type: string
+   *               example: '"{\"siret\": \"13001727000401\"}"'
+   *             page:
+   *               type: number
+   *               example: 1
+   *             limit:
+   *               type: number
+   *               example: 10
+   *         examples:
+   *           adresse:
+   *             value: { query: "{\"adresse\":\"2915 RtE DES BarTHES 40180\"}" }
+   *             summary: Recherche par adresse
+   *           siret:
+   *             value: { query: "{\"siret\": \"13001727000401\"}", page: 1, limit: 10 }
+   *             summary: Recherche par siret
+   *           sireteUAI:
+   *             value: { query: "{\"siret\": \"13001727000401\", \"uai\": \"0781981E\"}" }
+   *             summary: Recherche par siret et Uai
+   *           siretoUai:
+   *             value: { query: "{\"$or\":[{\"siret\":\"13001727000310\"},{\"uai\":\"0781981E\"}]}" }
+   *             summary: Recherche par siret **OU** par Uai
+   *     responses:
+   *       200:
+   *         description: OK
+   *         content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  etablissements:
+   *                    type: array
+   *                    items:
+   *                      $ref: '#/components/schemas/etablissement'
+   *                  pagination:
+   *                    type: object
+   *                    properties:
+   *                      page:
+   *                        type: string
+   *                      resultats_par_page:
+   *                        type: number
+   *                      nombre_de_page:
+   *                        type: number
+   *                      total:
+   *                        type: number
+   */
   router.get(
     "/etablissements/siret-uai",
     tryCatch(async (req, res) => {
@@ -153,8 +217,6 @@ module.exports = () => {
       const query = qs && qs.query ? JSON.parse(qs.query) : {};
       const page = qs && qs.page ? qs.page : 1;
       const limit = qs && qs.limit ? parseInt(qs.limit, 3) : 3;
-
-      //const allData = await Etablissement.paginate(query, { page, limit });
 
       let results = { docs: [] };
       if (query.adresse) {
@@ -226,7 +288,6 @@ module.exports = () => {
         delete e.rco_uai;
         delete e.tags;
 
-        //console.log(e);
         return e;
       });
 
