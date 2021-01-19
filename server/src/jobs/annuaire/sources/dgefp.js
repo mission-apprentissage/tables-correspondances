@@ -1,8 +1,9 @@
 const { oleoduc, filterData, transformData } = require("oleoduc");
 const csv = require("csv-parse");
 
-module.exports = () => {
+module.exports = (stream) => {
   return oleoduc(
+    stream,
     csv({
       separator: ";",
       columns: (header) => header.map((column) => column.replace(/ /g, "")),

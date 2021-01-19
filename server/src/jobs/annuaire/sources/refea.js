@@ -1,8 +1,9 @@
 const { oleoduc, transformData } = require("oleoduc");
 const csv = require("csv-parse");
 
-module.exports = () => {
+module.exports = (stream) => {
   return oleoduc(
+    stream,
     csv({
       delimiter: ";",
       bom: true,
@@ -10,9 +11,9 @@ module.exports = () => {
     }),
     transformData((data) => {
       return {
-        siret: data["n° SIRET"],
-        uai: data["code UAI"],
-        nom: data["nom"],
+        siret: data["uai_code_siret"],
+        uai: data["uai_code_educnationale"],
+        nom: data["uai_libelle_educnationale"],
       };
     })
   );

@@ -1,6 +1,6 @@
 const { oleoduc, transformData, writeData } = require("oleoduc");
 const { isEmpty } = require("lodash");
-const parsers = require("./parsers/parsers");
+const { createSource } = require("./sources/sources");
 const { Annuaire } = require("../../common/model");
 const { validateUAI } = require("../../common/utils/uaiUtils");
 const logger = require("../../common/logger");
@@ -11,7 +11,7 @@ const createUaiElement = (type, uai) => {
 
 module.exports = {
   deleteAll: () => Annuaire.deleteMany({}),
-  initialize: async (deppStream) => {
+  initialize: async (stream) => {
     let stats = {
       total: 0,
       inserted: 0,
@@ -20,8 +20,7 @@ module.exports = {
     };
 
     await oleoduc(
-      deppStream,
-      parsers["depp"](),
+      createSource("depp", { stream }),
       transformData((e) => ({ ...e, uais: [createUaiElement("depp", e.uai)] })),
       writeData(
         async (data) => {
@@ -49,7 +48,7 @@ module.exports = {
 
     return stats;
   },
-  collect: async (type, stream, options = {}) => {
+  collect: async (type, source) => {
     let stats = {
       total: 0,
       updated: 0,
@@ -57,8 +56,7 @@ module.exports = {
     };
 
     await oleoduc(
-      stream,
-      options.parser || parsers[type](),
+      source,
       writeData(
         async (current) => {
           try {

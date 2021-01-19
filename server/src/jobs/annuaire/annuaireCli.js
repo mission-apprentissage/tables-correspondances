@@ -2,27 +2,29 @@ const { program: cli } = require("commander");
 const { runScript } = require("../scriptWrapper");
 const { createReadStream } = require("fs");
 const annuaire = require("./annuaire");
+const { createSource } = require("./sources/sources");
 
 cli
   .command("reset [depp]")
   .description("Réinitialise l'annuaire avec les données de la DEPP")
   .action((depp) => {
     runScript(async () => {
-      let deppStream = depp ? createReadStream(depp) : process.stdin;
+      let stream = depp ? createReadStream(depp) : process.stdin;
 
       await annuaire.deleteAll();
-      return annuaire.initialize(deppStream);
+      return annuaire.initialize(stream);
     });
   });
 
 cli
-  .command("collect <type> [source]")
-  .description("Ajout les données de la source dans l'annuaire")
-  .action((type, source) => {
+  .command("collect <type> [input]")
+  .description("Collecte les données contenues dans la source")
+  .action((type, input) => {
     runScript(() => {
-      let stream = source ? createReadStream(source) : process.stdin;
+      let stream = input ? createReadStream(input) : process.stdin;
 
-      return annuaire.collect(type, stream);
+      let source = createSource(type, { stream });
+      return annuaire.collect(type, source);
     });
   });
 
