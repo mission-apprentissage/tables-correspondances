@@ -11,7 +11,7 @@ module.exports = () => {
     transformData((data) => {
       return {
         siret: data["n° SIRET"],
-        uai: Object.values(data)[0], //FIXME impossible d'obtenir la valeur avec data['"code UAI"']
+        uai: data["code UAI"],
         nom: data["nom"],
       };
     })
