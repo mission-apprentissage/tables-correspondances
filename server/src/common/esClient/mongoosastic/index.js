@@ -11,6 +11,7 @@
 "use strict";
 
 const serialize = require("./serialize");
+const { oleoduc, writeData } = require("oleoduc");
 
 // https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/bulk_examples.html
 
@@ -138,7 +139,7 @@ function Mongoosastic(schema, options) {
     } catch (e) {
       let errorMsg = e.message;
       if (e.meta && e.meta.body) errorMsg = e.meta.body.error;
-      console.log("Error update mapping", errorMsg || e);
+      console.error("Error update mapping", errorMsg || e);
     }
   };
 
@@ -150,8 +151,8 @@ function Mongoosastic(schema, options) {
         _opts.id = this._id.toString();
         await esClient.index(_opts);
       } catch (e) {
-        console.log(e);
-        console.log(`Error index ${this._id.toString()}`, e.message || e);
+        console.error(e);
+        console.error(`Error index ${this._id.toString()}`, e.message || e);
         return reject();
       }
       resolve();
@@ -170,13 +171,13 @@ function Mongoosastic(schema, options) {
             await esClient.delete(_opts);
             return resolve();
           } catch (e) {
-            console.log(e);
+            console.error(e);
             await timeout(500);
             --tries;
           }
         }
       } catch (e) {
-        console.log(`Error delete ${this._id.toString()}`, e.message || e);
+        console.error(`Error delete ${this._id.toString()}`, e.message || e);
         return reject();
       }
       resolve();
@@ -185,15 +186,18 @@ function Mongoosastic(schema, options) {
 
   schema.statics.synchronize = async function synchronize() {
     let count = 0;
-    await this.find({})
-      .cursor()
-      .eachAsync(async (u) => {
-        await u.index();
-        count++;
-        if (count % 100 == 0) {
-          console.log(`${count} indexed`);
-        }
-      });
+    await oleoduc(
+      this.find({}).cursor(),
+      writeData(
+        async (doc) => {
+          await doc.index();
+          if (++count % 100 === 0) {
+            console.error(`${count} indexed`);
+          }
+        },
+        { parallel: 100 }
+      )
+    );
   };
 
   schema.statics.unsynchronize = function unsynchronize() {

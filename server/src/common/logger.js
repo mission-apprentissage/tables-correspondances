@@ -18,9 +18,9 @@ const createStreams = () => {
     };
   };
 
-  const consoleStream = () => {
+  const consoleStream = (type) => {
     const pretty = new PrettyStream();
-    pretty.pipe(process.stdout);
+    pretty.pipe(process[type]);
     return {
       name: "console",
       level,
@@ -54,7 +54,7 @@ const createStreams = () => {
         },
       },
       (error) => {
-        console.log("Unable to send log to slack", error);
+        console.error("Unable to send log to slack", error);
       }
     );
 
@@ -65,7 +65,7 @@ const createStreams = () => {
     };
   };
 
-  const streams = [type === "console" ? consoleStream() : jsonStream(), mongoDBStream()];
+  const streams = [type === "json" ? jsonStream() : consoleStream(type), mongoDBStream()];
   if (config.slackWebhookUrl) {
     streams.push(slackStream());
   }
