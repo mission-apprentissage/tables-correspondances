@@ -41,7 +41,6 @@ module.exports = {
     let stats = {
       total: 0,
       updated: 0,
-      missing: 0,
       failed: 0,
     };
 
@@ -52,15 +51,22 @@ module.exports = {
         async (current) => {
           try {
             stats.total++;
-            let found = await Annuaire.findOne({ siret: current.siret });
-            if (!found || !current.uai) {
-              stats.missing++;
-            } else {
-              if (found.uai !== current.uai) {
-                found.uais.push({ type, uai: current.uai });
-                await found.save();
-                stats.updated++;
-              }
+
+            if (!current.uai) {
+              return;
+            }
+
+            let secondary = { type, uai: current.uai };
+            let found = await Annuaire.findOne({
+              siret: current.siret,
+              uai: { $ne: current.uai },
+              uais: { $nin: secondary },
+            });
+
+            if (found) {
+              found.uais.push(secondary);
+              await found.save();
+              stats.updated++;
             }
           } catch (e) {
             stats.failed++;

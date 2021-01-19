@@ -59,7 +59,7 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on ajoute un uai quand il est different de celui de base", async () => {
+  it("Vérifie qu'on ajoute un uai quand il n'existe pas", async () => {
     let source = createStream(
       `uai;siret;nom
 "093222T";"11111111111111";"Centre de formation"`
@@ -86,13 +86,12 @@ integrationTests(__filename, () => {
     });
     assert.deepStrictEqual(results, {
       total: 1,
-      missing: 0,
       failed: 0,
       updated: 1,
     });
   });
 
-  it("Vérifie que quand l'uai est le même alors on n'ajoute pas l'uai", async () => {
+  it("Vérifie qu'on ignore un uai quand il existe en tant qu'uai principal", async () => {
     let source = createStream(
       `uai;siret;nom
 "093111T";"11111111111111";"Centre de formation"`
@@ -117,7 +116,52 @@ integrationTests(__filename, () => {
       total: 1,
       failed: 0,
       updated: 0,
-      missing: 0,
+    });
+  });
+
+  it("Vérifie qu'on ignore un uai quand il existe déjà en tant qu'uai secondaire", async () => {
+    let source = createStream(
+      `uai;siret;nom
+"093222T";"11111111111111";"Centre de formation"`
+    );
+    new Annuaire({
+      uai: "093111T",
+      siret: "11111111111111",
+      nom: "Centre de formation",
+      uais: [
+        {
+          type: "depp",
+          uai: "093111T",
+        },
+        {
+          type: "dummy",
+          uai: "093222T",
+        },
+      ],
+    }).save();
+
+    let stats = await annuaire.addUAIs("dummy", source, createDummyParser());
+
+    let found = await Annuaire.findOne();
+    assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
+      uai: "093111T",
+      siret: "11111111111111",
+      nom: "Centre de formation",
+      uais: [
+        {
+          type: "depp",
+          uai: "093111T",
+        },
+        {
+          type: "dummy",
+          uai: "093222T",
+        },
+      ],
+    });
+    assert.deepStrictEqual(stats, {
+      total: 1,
+      failed: 0,
+      updated: 0,
     });
   });
 
@@ -146,31 +190,6 @@ integrationTests(__filename, () => {
       total: 1,
       failed: 0,
       updated: 0,
-      missing: 1,
-    });
-  });
-
-  it("Vérifie qu'on indique si l'établissement est inconnu", async () => {
-    let source = createStream(
-      `uai;siret;nom
-"093333T";"33333333333333";"Centre de formation"`
-    );
-
-    await annuaire.reset(createDEPPStream());
-    let stats = await annuaire.addUAIs("dummy", source, createDummyParser());
-
-    let found = await Annuaire.findOne();
-    assert.deepStrictEqual(found.toObject().uais, [
-      {
-        type: "depp",
-        uai: "093111T",
-      },
-    ]);
-    assert.deepStrictEqual(stats, {
-      total: 1,
-      failed: 0,
-      updated: 0,
-      missing: 1,
     });
   });
 
@@ -201,9 +220,8 @@ integrationTests(__filename, () => {
     });
     assert.deepStrictEqual(results, {
       total: 1,
-      missing: 0,
-      failed: 0,
       updated: 1,
+      failed: 0,
     });
   });
 });
