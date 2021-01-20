@@ -5,10 +5,6 @@ const { Annuaire } = require("../../common/model");
 const { validateUAI } = require("../../common/utils/uaiUtils");
 const logger = require("../../common/logger");
 
-const createUaiElement = (type, uai) => {
-  return { type, uai, valid: validateUAI(uai) };
-};
-
 module.exports = {
   deleteAll: () => Annuaire.deleteMany({}),
   initialize: async (stream) => {
@@ -21,7 +17,7 @@ module.exports = {
 
     await oleoduc(
       createSource("depp", { stream }),
-      transformData((e) => ({ ...e, uais: [createUaiElement("depp", e.uai)] })),
+      transformData((e) => ({ ...e })),
       writeData(
         async (data) => {
           stats.total++;
@@ -66,15 +62,15 @@ module.exports = {
               return;
             }
 
-            let element = createUaiElement(type, current.uai);
+            let element = { type, uai: current.uai, valid: validateUAI(current.uai) };
             let found = await Annuaire.findOne({
               siret: current.siret,
               uai: { $ne: current.uai },
-              "uais.uai": { $ne: current.uai },
+              "uais_secondaires.uai": { $ne: current.uai },
             });
 
             if (found) {
-              found.uais.push(element);
+              found.uais_secondaires.push(element);
               await found.save();
               stats.updated++;
             }

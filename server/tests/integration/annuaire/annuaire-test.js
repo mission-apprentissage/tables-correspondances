@@ -45,13 +45,7 @@ integrationTests(__filename, () => {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
-      uais: [
-        {
-          type: "depp",
-          uai: "0011058V",
-          valid: true,
-        },
-      ],
+      uais_secondaires: [],
     });
     assert.deepStrictEqual(results, {
       total: 1,
@@ -66,7 +60,7 @@ integrationTests(__filename, () => {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
-      uais: [],
+      uais_secondaires: [],
     }).save();
 
     await annuaire.deleteAll();
@@ -105,12 +99,7 @@ integrationTests(__filename, () => {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
-      uais: [
-        {
-          type: "depp",
-          uai: "0011058V",
-          valid: true,
-        },
+      uais_secondaires: [
         {
           type: "test",
           uai: "0011073L",
@@ -125,7 +114,7 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on teste la validaté d'un UAI", async () => {
+  it("Vérifie qu'on teste la validité d'un UAI", async () => {
     let source = createTestSource(
       `uai;siret;nom
 "093XXXT";"11111111111111";"Centre de formation"`
@@ -135,7 +124,7 @@ integrationTests(__filename, () => {
     let results = await annuaire.collect("test", source);
 
     let found = await Annuaire.findOne();
-    assert.deepStrictEqual(found.toObject().uais[1], {
+    assert.deepStrictEqual(found.toObject().uais_secondaires[0], {
       type: "test",
       uai: "093XXXT",
       valid: false,
@@ -161,13 +150,7 @@ integrationTests(__filename, () => {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
-      uais: [
-        {
-          type: "depp",
-          uai: "0011058V",
-          valid: true,
-        },
-      ],
+      uais_secondaires: [],
     });
     assert.deepStrictEqual(stats, {
       total: 1,
@@ -185,12 +168,7 @@ integrationTests(__filename, () => {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
-      uais: [
-        {
-          type: "depp",
-          uai: "0011058V",
-          valid: true,
-        },
+      uais_secondaires: [
         {
           type: "test",
           uai: "0011073L",
@@ -206,12 +184,7 @@ integrationTests(__filename, () => {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
-      uais: [
-        {
-          type: "depp",
-          uai: "0011058V",
-          valid: true,
-        },
+      uais_secondaires: [
         {
           type: "test",
           uai: "0011073L",
@@ -240,13 +213,7 @@ integrationTests(__filename, () => {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
-      uais: [
-        {
-          type: "depp",
-          uai: "0011058V",
-          valid: true,
-        },
-      ],
+      uais_secondaires: [],
     });
     assert.deepStrictEqual(stats, {
       total: 1,
@@ -271,12 +238,7 @@ integrationTests(__filename, () => {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
-      uais: [
-        {
-          type: "depp",
-          uai: "0011058V",
-          valid: true,
-        },
+      uais_secondaires: [
         {
           type: "onisep",
           uai: "0011073L",
@@ -307,12 +269,7 @@ integrationTests(__filename, () => {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
-      uais: [
-        {
-          type: "depp",
-          uai: "0011058V",
-          valid: true,
-        },
+      uais_secondaires: [
         {
           type: "refea",
           uai: "0011073L",
@@ -344,12 +301,7 @@ integrationTests(__filename, () => {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
-      uais: [
-        {
-          type: "depp",
-          uai: "0011058V",
-          valid: true,
-        },
+      uais_secondaires: [
         {
           type: "catalogue",
           uai: "0011073L",
