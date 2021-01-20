@@ -1,117 +1,48 @@
-const mongoose = require("mongoose");
-const { mongooseInstance } = require("../mongodb");
+const { mongoose } = require("../mongodb");
 const { mongoosastic, getElasticInstance } = require("../esClient");
-const {
-  bcnFormationDiplomesSchema,
-  userSchema,
-  domainesMetiersSchema,
-  ficheRncpSchema,
-  bcnLettreSpecialiteSchema,
-  bcnNNiveauFormationDiplomeSchema,
-  bcnNMefSchema,
-  bcnNDispositifFormationSchema,
-  codeIdccOpcoSchema,
-  codeEnCodesIdccSchema,
-  etablissementSchema,
-  conventionFileSchema,
-} = require("../model/schema");
+const schema = require("../model/schema");
 
-const getMongoostaticModel = (modelName, schema, instanceMongoose = mongooseInstance) => {
-  const Schema = new instanceMongoose.Schema(schema);
-  Schema.plugin(mongoosastic, { esClient: getElasticInstance(), index: modelName });
-  Schema.plugin(require("mongoose-paginate"));
-  if (modelName === "etablissements") Schema.index({ adresse: "text" });
-  return mongooseInstance.model(modelName, Schema);
+const createModel = (modelName, descriptor, options = {}) => {
+  const schema = new mongoose.Schema(descriptor);
+  if (options.esIndexName) {
+    schema.plugin(mongoosastic, { esClient: getElasticInstance(), index: options.esIndexName });
+    schema.plugin(require("mongoose-paginate"));
+  }
+  if (options.createMongoDBIndexes) {
+    options.createMongoDBIndexes(schema);
+  }
+  return mongoose.model(modelName, schema);
 };
-
-const getMongooseModel = (modelName, callback = () => ({})) => {
-  const modelSchema = new mongoose.Schema(require(`./schema/${modelName}`));
-  callback(modelSchema);
-  return mongoose.model(modelName, modelSchema, modelName);
-};
-
-const getModel = (modelName, schema, instanceMongoose = mongooseInstance) => {
-  if (instanceMongoose) return getMongoostaticModel(modelName, schema);
-  return getMongooseModel(modelName);
-};
-
-let bcnFormationDiplomesModel = null;
-if (!bcnFormationDiplomesModel) {
-  bcnFormationDiplomesModel = getModel("bcnformationdiplome", bcnFormationDiplomesSchema);
-}
-
-let bcnLettreSpecialiteModel = null;
-if (!bcnLettreSpecialiteModel) {
-  bcnLettreSpecialiteModel = getModel("bcnlettrespecialite", bcnLettreSpecialiteSchema);
-}
-
-let bcnNNiveauFormationDiplomeModel = null;
-if (!bcnNNiveauFormationDiplomeModel) {
-  bcnNNiveauFormationDiplomeModel = getModel("bcnnniveauformationdiplome", bcnNNiveauFormationDiplomeSchema);
-}
-
-let bcnNMefModel = null;
-if (!bcnNMefModel) {
-  bcnNMefModel = getModel("bcnnmef", bcnNMefSchema);
-}
-
-let bcnNDispositifFormationModel = null;
-if (!bcnNDispositifFormationModel) {
-  bcnNDispositifFormationModel = getModel("bcnndispositifformation", bcnNDispositifFormationSchema);
-}
-
-let etablissementModel = null;
-if (!etablissementModel) {
-  etablissementModel = getModel("etablissements", etablissementSchema);
-}
-
-let conventionFileModel = null;
-if (!conventionFileModel) {
-  conventionFileModel = getModel("conventionfiles", conventionFileSchema);
-}
-
-let u = null;
-if (!u) {
-  u = getModel("user", userSchema);
-}
-
-let l = null;
-if (!l) {
-  l = getMongooseModel("log");
-}
-
-let d = null;
-if (!d) {
-  d = getModel("domainesmetiers", domainesMetiersSchema);
-}
-
-let f = null;
-if (!f) {
-  f = getModel("ficherncp", ficheRncpSchema);
-}
-
-let cio = null;
-if (!cio) {
-  cio = getModel("codeIdccOpco", codeIdccOpcoSchema);
-}
-
-let ceci = null;
-if (!ceci) {
-  ceci = getModel("codeEnCodesIdcc", codeEnCodesIdccSchema);
-}
 
 module.exports = {
-  BcnFormationDiplome: bcnFormationDiplomesModel,
-  BcnLettreSpecialite: bcnLettreSpecialiteModel,
-  BcnNNiveauFormationDiplome: bcnNNiveauFormationDiplomeModel,
-  BcnNMef: bcnNMefModel,
-  BcnNDispositifFormation: bcnNDispositifFormationModel,
-  User: u,
-  Log: l,
-  DomainesMetiers: d,
-  FicheRncp: f,
-  Etablissement: etablissementModel,
-  ConventionFile: conventionFileModel,
-  CodeIdccOpco: cio,
-  CodeEnCodesIdcc: ceci,
+  User: createModel("user", schema.userSchema),
+  Log: createModel("log", schema.logSchema),
+  FicheRncp: createModel("ficherncp", schema.ficheRncpSchema),
+  ConventionFile: createModel("conventionfile", schema.conventionFileSchema),
+  CodeIdccOpco: createModel("codeIdccOpco", schema.codeIdccOpcoSchema),
+  CodeEnCodesIdcc: createModel("codeEnCodesIdcc", schema.codeEnCodesIdccSchema),
+  BcnFormationDiplome: createModel("bcnformationdiplome", schema.bcnFormationDiplomesSchema, {
+    esIndexName: "bcnformationdiplomes",
+  }),
+  BcnLettreSpecialite: createModel("bcnlettrespecialite", schema.bcnLettreSpecialiteSchema, {
+    esIndexName: "bcnlettrespecialites",
+  }),
+  BcnNNiveauFormationDiplome: createModel("bcnnniveauformationdiplome", schema.bcnNNiveauFormationDiplomeSchema, {
+    esIndexName: "bcnnniveauformationdiplomes",
+  }),
+  BcnNMef: createModel("bcnnmef", schema.bcnNMefSchema, {
+    esIndexName: "bcnnmefs",
+  }),
+  BcnNDispositifFormation: createModel("bcnndispositifformation", schema.bcnNDispositifFormationSchema, {
+    esIndexName: "bcnndispositifformations",
+  }),
+  DomainesMetiers: createModel("domainesmetiers", schema.domainesMetiersSchema, {
+    esIndexName: "domainesmetiers",
+  }),
+  Etablissement: createModel("etablissement", schema.etablissementSchema, {
+    esIndexName: "etablissements",
+    createMongoDBIndexes: (schema) => {
+      schema.index({ adresse: "text" });
+    },
+  }),
 };
