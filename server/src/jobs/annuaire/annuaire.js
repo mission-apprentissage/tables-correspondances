@@ -1,4 +1,4 @@
-const { oleoduc, transformData, writeData } = require("oleoduc");
+const { oleoduc, transformData, writeData, csvStream, jsonStream } = require("oleoduc");
 const { isEmpty } = require("lodash");
 const { createSource } = require("./sources/sources");
 const { Annuaire } = require("../../common/model");
@@ -84,5 +84,25 @@ module.exports = {
     );
 
     return stats;
+  },
+  export: (out, options = {}) => {
+    let formatter = options.json
+      ? jsonStream()
+      : csvStream({
+          columns: {
+            uai: (a) => a.uai,
+            siret: (a) => a.siret,
+            nom: (a) => a.nom,
+            "UAIs secondaires disponibles": (a) => (a.uais_secondaires.length > 0 ? "Oui" : "Non"),
+            "UAI secondaires": (a) =>
+              a.uais_secondaires
+                .map(({ uai, type }) => {
+                  return `${uai}_${type}`;
+                })
+                .join("|"),
+          },
+        });
+
+    return oleoduc(Annuaire.find().cursor(), formatter, out);
   },
 };

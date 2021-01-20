@@ -1,4 +1,6 @@
 const { program: cli } = require("commander");
+const { createWriteStream } = require("fs");
+const { stdoutStream } = require("oleoduc");
 const { runScript } = require("../scriptWrapper");
 const { createReadStream } = require("fs");
 const annuaire = require("./annuaire");
@@ -25,6 +27,22 @@ cli
 
       let source = createSource(type, { stream });
       return annuaire.collect(type, source);
+    });
+  });
+
+cli
+  .command("export")
+  .description("Exporte l'annuaire")
+  .option(
+    "--out <out>",
+    "Fichier cible dans lequel sera stocké l'export (defaut: stdout)",
+    (out) => createWriteStream(out),
+    stdoutStream()
+  )
+  .option("--format <format>", "Format : json|csv(défaut)")
+  .action(({ out, format }) => {
+    runScript(() => {
+      return annuaire.export(out, { format });
     });
   });
 
