@@ -1,13 +1,28 @@
 const { rebuildIndex } = require("../../common/utils/esUtils");
-const { Etablissement, DomainesMetiers } = require("../../common/model/index");
+const {
+  Etablissement,
+  DomainesMetiers,
+  BcnNMef,
+  BcnNDispositifFormation,
+  BcnNNiveauFormationDiplome,
+  BcnLettreSpecialite,
+  BcnFormationDiplome,
+} = require("../../common/model/index");
 
 const rebuildEsIndex = async (index, skipNotFound = false) => {
   switch (index) {
     case "etablissements":
-      await rebuildIndex("etablissements", Etablissement, { skipNotFound });
+      await rebuildIndex(Etablissement, { skipNotFound });
       break;
     case "domainesmetiers":
-      await rebuildIndex("domainesmetiers", DomainesMetiers, { skipNotFound });
+      await rebuildIndex(DomainesMetiers, { skipNotFound });
+      break;
+    case "bcn":
+      await rebuildIndex(BcnNMef, { skipNotFound });
+      await rebuildIndex(BcnNDispositifFormation, { skipNotFound });
+      await rebuildIndex(BcnNNiveauFormationDiplome, { skipNotFound });
+      await rebuildIndex(BcnLettreSpecialite, { skipNotFound });
+      await rebuildIndex(BcnFormationDiplome, { skipNotFound });
       break;
     default:
       throw new Error("Index non géré");

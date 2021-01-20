@@ -1,8 +1,9 @@
 const logger = require("../logger");
 const { getElasticInstance } = require("../esClient");
 
-const rebuildIndex = async (index, schema, { skipNotFound } = { skipNotFound: false }) => {
+const rebuildIndex = async (model, { skipNotFound } = { skipNotFound: false }) => {
   let client = getElasticInstance();
+  let index = model.collection.collectionName; // Assume model name = index name
 
   if (!skipNotFound) {
     logger.info(`Removing '${index}' index...`);
@@ -11,10 +12,10 @@ const rebuildIndex = async (index, schema, { skipNotFound } = { skipNotFound: fa
 
   logger.info(`Re-creating '${index}' index with mapping...`);
   let requireAsciiFolding = true;
-  await schema.createMapping(requireAsciiFolding); // this explicit call of createMapping insures that the geo points fields will be treated accordingly during indexing
+  await model.createMapping(requireAsciiFolding); // this explicit call of createMapping insures that the geo points fields will be treated accordingly during indexing
 
-  logger.info(`Synching '${index}' index ...`);
-  await schema.synchronize();
+  logger.info(`Syncing '${index}' index ...`);
+  await model.synchronize();
 };
 
 module.exports.rebuildIndex = rebuildIndex;
