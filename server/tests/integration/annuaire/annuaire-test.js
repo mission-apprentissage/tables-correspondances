@@ -103,7 +103,7 @@ integrationTests(__filename, () => {
         {
           type: "test",
           uai: "0011073L",
-          valid: true,
+          valide: true,
         },
       ],
     });
@@ -127,7 +127,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found.toObject().uais_secondaires[0], {
       type: "test",
       uai: "093XXXT",
-      valid: false,
+      valide: false,
     });
     assert.deepStrictEqual(results, {
       total: 1,
@@ -172,7 +172,7 @@ integrationTests(__filename, () => {
         {
           type: "test",
           uai: "0011073L",
-          valid: true,
+          valide: true,
         },
       ],
     }).save();
@@ -188,7 +188,7 @@ integrationTests(__filename, () => {
         {
           type: "test",
           uai: "0011073L",
-          valid: true,
+          valide: true,
         },
       ],
     });
@@ -242,7 +242,7 @@ integrationTests(__filename, () => {
         {
           type: "onisep",
           uai: "0011073L",
-          valid: true,
+          valide: true,
         },
       ],
     });
@@ -273,7 +273,7 @@ integrationTests(__filename, () => {
         {
           type: "refea",
           uai: "0011073L",
-          valid: true,
+          valide: true,
         },
       ],
     });
@@ -305,7 +305,7 @@ integrationTests(__filename, () => {
         {
           type: "catalogue",
           uai: "0011073L",
-          valid: true,
+          valide: true,
         },
       ],
     });

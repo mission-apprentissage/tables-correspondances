@@ -62,7 +62,7 @@ module.exports = {
               return;
             }
 
-            let element = { type, uai: current.uai, valid: validateUAI(current.uai) };
+            let element = { type, uai: current.uai, valide: validateUAI(current.uai) };
             let found = await Annuaire.findOne({
               siret: current.siret,
               uai: { $ne: current.uai },
