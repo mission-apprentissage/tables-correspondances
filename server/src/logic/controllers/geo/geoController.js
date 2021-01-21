@@ -45,7 +45,8 @@ class GeoController {
 
       if (insee_com === code) {
         return {
-          info: `Update: Le code ${code} est un code commune insee`,
+          info: "Ok",
+          update: `Le code ${code} est un code commune insee`,
           value,
         };
       }
