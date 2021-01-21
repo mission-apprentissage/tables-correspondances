@@ -27,7 +27,7 @@ const conventionFilesImporter = async (db) => {
   const publicOfs = getJsonFromCsvFile(PUBLIC_OFS_PATH);
 
   // Xlsx import
-  const datadock = await downloadXlsxAndGetJson("BaseDataDock-20201210.xlsx");
+  const datadock = await downloadXlsxAndGetJson("BaseDataDock-latest.xlsx");
   const depp = await downloadXlsxAndGetJson("CFASousConvRegionale_02122019.xlsx");
   const dgefp = await downloadXlsxAndGetJson("DGEFP - Extraction au 10 01 2020.xlsx");
 
