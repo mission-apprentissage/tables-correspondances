@@ -148,7 +148,7 @@ module.exports = async (components) => {
         });
 
       return res.json({
-        name: `Tables de correspondances - ${config.appName}`,
+        name: `[Tables de correspondances] - ${config.appName}`,
         version: packageJson.version,
         env: config.env,
         healthcheck: {
