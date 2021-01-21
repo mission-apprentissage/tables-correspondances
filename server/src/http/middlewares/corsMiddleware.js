@@ -6,6 +6,7 @@ module.exports = () => {
       "Access-Control-Allow-Headers",
       "Origin, X-Requested-With, Content-Type, Accept, API-Key, Cache-Control"
     );
+    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,PATCH");
     next();
   };
 };
