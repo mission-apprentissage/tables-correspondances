@@ -6,6 +6,8 @@ const { Etablissement, Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
 const annuaire = require("../../../src/jobs/annuaire/annuaire");
 const { createSource } = require("../../../src/jobs/annuaire/sources/sources");
+const { createAnnuaire } = require("../../utils/fixtures");
+const { raw } = require("../../../src/common/utils/mongooseUtils");
 
 const { createStream } = require("../../utils/testUtils");
 
@@ -41,7 +43,7 @@ integrationTests(__filename, () => {
     let results = await annuaire.initialize(stream);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" });
-    assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
+    assert.deepStrictEqual(omit(raw(found), ["_id"]), {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
@@ -56,7 +58,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut supprimer un annuaire", async () => {
-    await new Annuaire({
+    await createAnnuaire({
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
@@ -95,7 +97,7 @@ integrationTests(__filename, () => {
     let results = await annuaire.collect("test", source);
 
     let found = await Annuaire.findOne();
-    assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
+    assert.deepStrictEqual(omit(raw(found), ["_id"]), {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
@@ -146,7 +148,7 @@ integrationTests(__filename, () => {
     let stats = await annuaire.collect("test", source);
 
     let found = await Annuaire.findOne();
-    assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
+    assert.deepStrictEqual(omit(raw(found), ["_id"]), {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
@@ -164,7 +166,7 @@ integrationTests(__filename, () => {
       `uai;siret;nom
 "0011073L";"11111111111111";"Centre de formation"`
     );
-    new Annuaire({
+    await createAnnuaire({
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
@@ -180,7 +182,7 @@ integrationTests(__filename, () => {
     let stats = await annuaire.collect("test", source);
 
     let found = await Annuaire.findOne();
-    assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
+    assert.deepStrictEqual(omit(raw(found), ["_id"]), {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
@@ -209,7 +211,7 @@ integrationTests(__filename, () => {
     let stats = await annuaire.collect("test", source);
 
     let found = await Annuaire.findOne();
-    assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
+    assert.deepStrictEqual(omit(raw(found), ["_id"]), {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
@@ -234,7 +236,7 @@ integrationTests(__filename, () => {
     let results = await annuaire.collect("onisep", source);
 
     let found = await Annuaire.findOne();
-    assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
+    assert.deepStrictEqual(omit(raw(found), ["_id"]), {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
@@ -296,7 +298,7 @@ integrationTests(__filename, () => {
     let results = await annuaire.collect("refea", source);
 
     let found = await Annuaire.findOne();
-    assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
+    assert.deepStrictEqual(omit(raw(found), ["_id"]), {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
@@ -328,7 +330,7 @@ integrationTests(__filename, () => {
     let results = await annuaire.collect("catalogue", source);
 
     let found = await Annuaire.findOne();
-    assert.deepStrictEqual(omit(found.toObject(), ["__v", "_id"]), {
+    assert.deepStrictEqual(omit(raw(found), ["_id"]), {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
