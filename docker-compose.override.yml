@@ -5,8 +5,17 @@ services:
     volumes:
       - tables_correspondances_nginx_data:/data:z
 
+  ui:
+    command: yarn start
+    mem_limit: 1g
+    stdin_open: true
+    volumes:
+      #Allows source folders to be watched be use node_modules from container
+      - ./ui:/app
+      - /app/node_modules/
+
   server:
-    command: ["yarn", "debug"]
+    command: [ "yarn", "debug" ]
     ports:
       - "127.0.0.1:9229:9229" # Allows remote debugging
     volumes:
