@@ -3,11 +3,13 @@ const annuaireSchema = {
     type: String,
     default: null,
     description: "L'UAI de l'établissement",
+    unique: true,
   },
   siret: {
     type: String,
     default: null,
     description: "Le siret de l'établissement",
+    unique: true,
   },
   nom: {
     type: String,
