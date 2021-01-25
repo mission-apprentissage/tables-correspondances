@@ -8,7 +8,7 @@ const EtablissementsUpdater = async () => {
     logger.info(" -- Start of etablissements updater -- ");
     const args = process.argv.slice(2);
 
-    await updater.run(JSON.parse(args[0]) || {});
+    await updater.run(args[0] ? JSON.parse(args[0]) : {});
 
     logger.info(" -- End of etablissements updater -- ");
   } catch (err) {
