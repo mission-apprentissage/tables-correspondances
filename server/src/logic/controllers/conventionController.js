@@ -135,9 +135,10 @@ class ConventionController {
 
     let siretSiegeSocial = `${providedSiretSiegeSocial}`.trim();
 
-    if (!providedUai || !/^[0-9A-Z]{8}$/g.test(providedUai.trim())) {
-      errors.push("L'Uai doit être définit et au format 8 caractères");
-    }
+    // if(providedUai !=== "")
+    // if (!providedUai || !/^[0-9A-Z]{8}$/g.test(providedUai.trim())) {
+    //   errors.push("L'Uai doit être définit et au format 8 caractères");
+    // }
 
     let uai = `${providedUai}`.trim();
 
