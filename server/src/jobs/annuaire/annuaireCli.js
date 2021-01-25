@@ -1,5 +1,8 @@
 const { program: cli } = require("commander");
 const { createWriteStream } = require("fs");
+const { range } = require("lodash");
+const faker = require("faker"); // eslint-disable-line node/no-unpublished-require
+const { Annuaire } = require("../../common/model");
 const { stdoutStream } = require("oleoduc");
 const { runScript } = require("../scriptWrapper");
 const { createReadStream } = require("fs");
@@ -43,6 +46,29 @@ cli
   .action(({ out, format }) => {
     runScript(() => {
       return annuaire.export(out, { format });
+    });
+  });
+
+cli
+  .command("dataset")
+  .description("Génère un jeu de données")
+  .action(() => {
+    runScript(async () => {
+      let nbElements = 50;
+      await Promise.all(
+        range(0, nbElements).map((value) => {
+          return new Annuaire({
+            uai: faker.helpers.replaceSymbols("#######?"),
+            siret: faker.helpers.replaceSymbols("#########00015"),
+            nom: faker.company.companyName(),
+            uais_secondaires: value % 2 ? [{ uai: faker.helpers.replaceSymbols("#######?"), type: "test" }] : [],
+          }).save();
+        })
+      );
+
+      return {
+        inserted: nbElements,
+      };
     });
   });
 
