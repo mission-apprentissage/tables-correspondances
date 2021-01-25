@@ -253,6 +253,37 @@ integrationTests(__filename, () => {
     });
   });
 
+  it("Vérifie qu'on peut collecter des informations du fichier ONISEP (structure)", async () => {
+    let source = createSource("onisep-structure", {
+      stream: createStream(
+        `STRUCT SIRET;STRUCT UAI;STRUCT Libellé Amétys
+"11111111111111";"0011073L";"Centre de formation"`
+      ),
+    });
+
+    await annuaire.initialize(createDEPPStream());
+    let results = await annuaire.collect("onisep-structure", source);
+
+    let found = await Annuaire.findOne();
+    assert.deepStrictEqual(omit(raw(found), ["_id"]), {
+      uai: "0011058V",
+      siret: "11111111111111",
+      nom: "Centre de formation",
+      uais_secondaires: [
+        {
+          type: "onisep-structure",
+          uai: "0011073L",
+          valide: true,
+        },
+      ],
+    });
+    assert.deepStrictEqual(results, {
+      total: 1,
+      updated: 1,
+      failed: 0,
+    });
+  });
+
   it("Vérifie qu'on peut collecter des informations du fichier REFEA", async () => {
     let source = createSource("refea", {
       stream: createStream(
@@ -304,6 +335,37 @@ integrationTests(__filename, () => {
       uais_secondaires: [
         {
           type: "catalogue",
+          uai: "0011073L",
+          valide: true,
+        },
+      ],
+    });
+    assert.deepStrictEqual(results, {
+      total: 1,
+      updated: 1,
+      failed: 0,
+    });
+  });
+
+  it("Vérifie qu'on peut collecter des informations du fichier OPCO EP", async () => {
+    let source = createSource("opcoep", {
+      stream: createStream(
+        `SIRET CFA;N UAI CFA;Nom CFA
+"11111111111111";"0011073L";"Centre de formation"`
+      ),
+    });
+
+    await annuaire.initialize(createDEPPStream());
+    let results = await annuaire.collect("opcoep", source);
+
+    let found = await Annuaire.findOne();
+    assert.deepStrictEqual(omit(raw(found), ["_id"]), {
+      uai: "0011058V",
+      siret: "11111111111111",
+      nom: "Centre de formation",
+      uais_secondaires: [
+        {
+          type: "opcoep",
           uai: "0011073L",
           valide: true,
         },
