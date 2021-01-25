@@ -77,6 +77,7 @@ const etablissementService = async (etablissement, { withHistoryUpdate = true } 
 
     const published = !updatedEtablissement.ferme && updatedEtablissement.api_entreprise_reference;
     updatedEtablissement.published = published;
+    logger.info(updatedEtablissement);
 
     const { updates, keys } = diffEtablissement(etablissement, updatedEtablissement);
     if (updates) {
