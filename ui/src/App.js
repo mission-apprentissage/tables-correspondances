@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
+import AnnuairePage from "./pages/annuaire/AnnuairePage";
 import Layout from "./pages/Layout";
 import "tabler-react/dist/Tabler.css";
 import DashboardPage from "./pages/DashboardPage";
@@ -35,6 +36,9 @@ export default () => {
           <Route exact path="/login" component={LoginPage} />
           <Route exact path="/reset-password" component={ResetPasswordPage} />
           <Route exact path="/forgotten-password" component={ForgottenPasswordPage} />
+          <Layout>
+            <Route exact path="/annuaire" component={AnnuairePage} />
+          </Layout>
         </Switch>
       </Router>
     </div>
