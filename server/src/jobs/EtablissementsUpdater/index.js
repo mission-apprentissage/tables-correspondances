@@ -6,8 +6,9 @@ const { runScript } = require("../scriptWrapper");
 const EtablissementsUpdater = async () => {
   try {
     logger.info(" -- Start of etablissements updater -- ");
+    const args = process.argv.slice(2);
 
-    await updater.run();
+    await updater.run(JSON.parse(args[0]) || {});
 
     logger.info(" -- End of etablissements updater -- ");
   } catch (err) {
