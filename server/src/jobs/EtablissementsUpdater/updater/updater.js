@@ -4,8 +4,8 @@ const { etablissementService } = require("../../../logic/services/etablissementS
 const { asyncForEach } = require("../../../common/utils/asyncUtils");
 const { Etablissement } = require("../../../common/model/index");
 
-const run = async (model, filter = {}) => {
-  await performUpdates(model, filter);
+const run = async (filter = {}) => {
+  await performUpdates(filter);
 };
 
 const performUpdates = async (filter = {}) => {
