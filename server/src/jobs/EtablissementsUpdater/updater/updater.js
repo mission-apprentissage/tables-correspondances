@@ -30,6 +30,7 @@ const performUpdates = async (filter = {}, options = null) => {
       if (error) {
         etablissement.update_error = error;
         await Etablissement.findOneAndUpdate({ _id: etablissement._id }, etablissement, { new: true });
+        logger.error(`Etablissement ${etablissement._id} errored`, error);
       } else if (!updates) {
         // Do noting
       } else {
