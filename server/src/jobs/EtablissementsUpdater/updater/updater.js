@@ -18,10 +18,10 @@ const performUpdates = async (filter = {}, options = null) => {
     scope: { siret: true, location: true, geoloc: true, conventionnement: true },
   };
 
-  logger.info(JSON.stringify(etablissementServiceOptions));
-
   const etablissements = await Etablissement.find(filter);
 
+  logger.info(JSON.stringify(etablissementServiceOptions), etablissements.length);
+  let count = 0;
   await asyncForEach(etablissements, async (etablissement) => {
     try {
       const { updates, etablissement: updatedEtablissement, error } = await etablissementService(
@@ -29,16 +29,19 @@ const performUpdates = async (filter = {}, options = null) => {
         etablissementServiceOptions
       );
 
+      count++;
+
       if (error) {
         etablissement.update_error = error;
         await Etablissement.findOneAndUpdate({ _id: etablissement._id }, etablissement, { new: true });
-        logger.error(`Etablissement ${etablissement._id} errored`, error);
+        logger.error(`${count}: Etablissement ${etablissement._id} errored`, error);
       } else if (!updates) {
         // Do noting
+        logger.info(`${count}: Etablissement ${etablissement._id} nothing to do`);
       } else {
         updatedEtablissement.last_update_at = Date.now();
         await Etablissement.findOneAndUpdate({ _id: etablissement._id }, updatedEtablissement, { new: true });
-        logger.info(`Etablissement ${etablissement._id} updated`);
+        logger.info(`${count}: Etablissement ${etablissement._id} updated`);
       }
     } catch (error) {
       logger.error(error);
