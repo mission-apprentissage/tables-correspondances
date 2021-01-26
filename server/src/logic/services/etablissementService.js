@@ -30,60 +30,134 @@ const parseErrors = (messages) => {
     .reduce((acc, [key, value]) => `${acc}${acc ? " " : ""}${key}: ${value}.`, "");
 };
 
-const etablissementService = async (etablissement, { withHistoryUpdate = true } = {}) => {
+const etablissementService = async (
+  etablissement,
+  { withHistoryUpdate = true, scope = { siret: true, location: true, geoloc: true, conventionnement: true } } = {}
+) => {
   try {
     await etablissementSchema.validateAsync(etablissement, { abortEarly: false });
+    let error = null;
+
+    let current = {
+      code_postal: etablissement.code_postal,
+      siret: etablissement.siret,
+      etablissement_siege_siret: etablissement.etablissement_siege_siret,
+
+      code_commune_insee: etablissement.code_commune_insee,
+      commune: etablissement.localite,
+      num_departement: etablissement.num_departement,
+      nom_departement: etablissement.nom_departement,
+      region: etablissement.region,
+      num_region: etablissement.num_region,
+      nom_academie: etablissement.nom_academie,
+      num_academie: etablissement.num_academie,
+
+      localite: etablissement.localite,
+      numero_voie: etablissement.numero_voie,
+      type_voie: etablissement.type_voie,
+      nom_voie: etablissement.nom_voie,
+    };
+
+    let updatedEtablissement = null;
 
     // ENTREPRISE DATA
-    const { result: siretMapping, messages: siretMessages } = await getDataFromSiret(etablissement.siret);
+    if (scope.siret) {
+      const { result: siretMapping, messages: siretMessages } = await getDataFromSiret(etablissement.siret);
 
-    let error = parseErrors(siretMessages);
-    if (error) {
-      return { updates: null, etablissement, error };
+      let error = parseErrors(siretMessages);
+      if (error) {
+        return { updates: null, etablissement, error };
+      }
+
+      current.code_postal = siretMapping.code_postal;
+      current.siret = siretMapping.siret;
+      current.etablissement_siege_siret = siretMapping.etablissement_siege_siret;
+
+      current.numero_voie = siretMapping.numero_voie;
+      current.type_voie = siretMapping.type_voie;
+      current.nom_voie = siretMapping.nom_voie;
+
+      updatedEtablissement = {
+        ...updatedEtablissement,
+        ...siretMapping,
+      };
     }
 
     // CODE POSTAL DATA
-    const { result: cpMapping, messages: cpMessages } = await getDataFromCP(siretMapping.code_postal);
-    error = parseErrors(cpMessages);
-    if (error) {
-      return { updates: null, etablissement, error };
+    if (scope.location) {
+      const { result: cpMapping, messages: cpMessages } = await getDataFromCP(current.code_postal);
+      error = parseErrors(cpMessages);
+      if (error) {
+        return { updates: null, etablissement, error };
+      }
+
+      current.code_postal = cpMapping.postal_code;
+      current.code_commune_insee = cpMapping.code_commune_insee;
+      current.commune = cpMapping.commune;
+      current.num_departement = cpMapping.num_departement;
+      current.nom_departement = cpMapping.nom_departement;
+      current.region = cpMapping.region;
+      current.num_region = cpMapping.num_region;
+      current.nom_academie = cpMapping.nom_academie;
+      current.num_academie = cpMapping.num_academie;
+
+      updatedEtablissement = {
+        ...updatedEtablissement,
+        ...cpMapping,
+      };
     }
 
     // GEOLOC DATA
-    const { result: geoMapping, messages: geoMessages } = await getCoordaniteFromAdresseData({
-      ...siretMapping,
-      ...cpMapping,
-    });
-    error = parseErrors(geoMessages);
+    if (scope.geoloc) {
+      const { result: geoMapping, messages: geoMessages } = await getCoordaniteFromAdresseData({
+        numero_voie: current.numero_voie,
+        type_voie: current.type_voie,
+        nom_voie: current.nom_voie,
+        localite: current.commune,
+        code_postal: current.code_postal,
+      });
+      error = parseErrors(geoMessages);
+
+      updatedEtablissement = {
+        ...updatedEtablissement,
+        ...geoMapping,
+      };
+    }
 
     // CONVENTIONNEMENNT DATA
-    const conventionData = await conventionController.getConventionData(
-      siretMapping.siret,
-      etablissement.uai,
-      siretMapping.etablissement_siege_siret
-    );
+    if (scope.conventionnement) {
+      const conventionData = await conventionController.getConventionData(
+        current.siret,
+        etablissement.uai,
+        current.etablissement_siege_siret
+      );
+
+      updatedEtablissement = {
+        ...updatedEtablissement,
+        ...conventionData,
+      };
+    }
 
     if (error) {
       return { updates: null, etablissement, error };
     }
 
-    let updatedEtablissement = {
-      ...etablissement,
-      ...siretMapping,
-      ...cpMapping,
-      ...geoMapping,
-      ...conventionData,
-    };
+    if (updatedEtablissement) {
+      updatedEtablissement = {
+        ...etablissement,
+        ...updatedEtablissement,
+      };
 
-    const published = !updatedEtablissement.ferme && updatedEtablissement.api_entreprise_reference;
-    updatedEtablissement.published = published;
+      const published = !updatedEtablissement.ferme && updatedEtablissement.api_entreprise_reference;
+      updatedEtablissement.published = published;
 
-    const { updates, keys } = diffEtablissement(etablissement, updatedEtablissement);
-    if (updates) {
-      if (withHistoryUpdate) {
-        updatedEtablissement.updates_history = buildUpdatesHistory(etablissement, updates, keys);
+      const { updates, keys } = diffEtablissement(etablissement, updatedEtablissement);
+      if (updates) {
+        if (withHistoryUpdate) {
+          updatedEtablissement.updates_history = buildUpdatesHistory(etablissement, updates, keys);
+        }
+        return { updates, etablissement: updatedEtablissement };
       }
-      return { updates, etablissement: updatedEtablissement };
     }
 
     return { updates: null, etablissement };
