@@ -2,19 +2,18 @@ const { program: cli } = require("commander");
 const { createWriteStream } = require("fs");
 const { range } = require("lodash");
 const faker = require("faker"); // eslint-disable-line node/no-unpublished-require
-const { Annuaire } = require("../../common/model");
 const { stdoutStream } = require("oleoduc");
-const { runScript } = require("../scriptWrapper");
 const { createReadStream } = require("fs");
+const { Annuaire } = require("../../common/model");
+const { runScript } = require("../scriptWrapper");
 const annuaire = require("./annuaire");
-const { createSource } = require("./sources/sources");
 
 cli
-  .command("reset [depp]")
+  .command("reset [file]")
   .description("Réinitialise l'annuaire avec les données de la DEPP")
-  .action((depp) => {
+  .action((file) => {
     runScript(async () => {
-      let stream = depp ? createReadStream(depp) : process.stdin;
+      let stream = file ? createReadStream(file) : null;
 
       await annuaire.deleteAll();
       return annuaire.initialize(stream);
@@ -22,14 +21,26 @@ cli
   });
 
 cli
-  .command("collect <type> [input]")
+  .command("collect")
   .description("Collecte les données contenues dans la source")
-  .action((type, input) => {
+  .action(() => {
     runScript(() => {
-      let stream = input ? createReadStream(input) : process.stdin;
+      return Promise.all(
+        ["catalogue", "onisep", "refea", "opcoep", "onisepStructure"].map(async (type) => {
+          return { [type]: await annuaire.collect(type) };
+        })
+      );
+    });
+  });
 
-      let source = createSource(type, { stream });
-      return annuaire.collect(type, source);
+cli
+  .command("collect <type> [file]")
+  .description("Collecte les données contenues dans la source")
+  .action((type, file) => {
+    runScript(() => {
+      let stream = file ? createReadStream(file) : null;
+
+      return annuaire.collect(type, { stream });
     });
   });
 

@@ -40,9 +40,10 @@ module.exports = {
   getFileAsStream: async (path) => {
     let { token, baseUrl } = await getAuth(config.ovh.storage.uri);
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
+      let fullPath = encodeURI(`${baseUrl}${path}`);
       let options = {
-        ...parseUrl(`${baseUrl}${path}`),
+        ...parseUrl(fullPath),
         method: "GET",
         headers: {
           "X-Auth-Token": token,
@@ -50,7 +51,13 @@ module.exports = {
         },
       };
 
-      let req = https.request(options, (res) => resolve(res));
+      let req = https.request(options, (res) => {
+        if (res.statusCode >= 400) {
+          reject(new Error(`Unable to request OVH Storage. Status code ${res.statusCode}. Path ${fullPath}`));
+        }
+
+        resolve(res);
+      });
       req.end();
     });
   },

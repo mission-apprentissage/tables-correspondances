@@ -1,9 +1,13 @@
 const { oleoduc, transformData } = require("oleoduc");
 const csv = require("csv-parse");
+const ovhStorage = require("../../../common/ovhStorage");
 
-module.exports = (stream) => {
+module.exports = async (stream) => {
+  let source =
+    stream || (await ovhStorage.getFileAsStream("/mna-tables-correspondances/annuaire/ONISEP-Structures.csv"));
+
   return oleoduc(
-    stream,
+    source,
     csv({
       delimiter: ";",
       bom: true,
@@ -15,6 +19,7 @@ module.exports = (stream) => {
         uai: data["STRUCT UAI"],
         nom: data["STRUCT Libellé Amétys"],
       };
-    })
+    }),
+    { promisify: false }
   );
 };

@@ -10,6 +10,7 @@ module.exports = () => {
         uai: etablissement.uai,
         nom: etablissement.entreprise_raison_sociale,
       };
-    })
+    }),
+    { promisify: false }
   );
 };

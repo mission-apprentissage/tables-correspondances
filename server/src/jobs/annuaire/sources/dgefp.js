@@ -1,9 +1,13 @@
 const { oleoduc, filterData, transformData } = require("oleoduc");
 const csv = require("csv-parse");
+const ovhStorage = require("../../../common/ovhStorage");
 
-module.exports = (stream) => {
+module.exports = async (stream) => {
+  let source =
+    stream || (await ovhStorage.getFileAsStream("/mna-tables-correspondances/annuaire/DGEFP-20210105_public_ofs.csv"));
+
   return oleoduc(
-    stream,
+    source,
     csv({
       separator: ";",
       columns: (header) => header.map((column) => column.replace(/ /g, "")),
@@ -15,6 +19,7 @@ module.exports = (stream) => {
         uai: null,
         nom: data.raison_sociale,
       };
-    })
+    }),
+    { promisify: false }
   );
 };
