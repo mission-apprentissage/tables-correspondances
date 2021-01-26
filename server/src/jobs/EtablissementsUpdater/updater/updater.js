@@ -18,7 +18,7 @@ const performUpdates = async (filter = {}, options = null) => {
     scope: { siret: true, location: true, geoloc: true, conventionnement: true },
   };
 
-  logger.info(options);
+  logger.info(JSON.stringify(etablissementServiceOptions));
 
   const etablissements = await Etablissement.find(filter);
 
