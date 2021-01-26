@@ -58,7 +58,7 @@ const etablissementService = async (
       nom_voie: etablissement.nom_voie,
     };
 
-    let updatedEtablissement = null;
+    let updatedEtablissement = {};
 
     // ENTREPRISE DATA
     if (scope.siret) {
@@ -145,7 +145,7 @@ const etablissementService = async (
       };
     }
 
-    if (updatedEtablissement) {
+    if (Object.keys(updatedEtablissement).length > 0) {
       updatedEtablissement = {
         ...etablissement,
         ...updatedEtablissement,
