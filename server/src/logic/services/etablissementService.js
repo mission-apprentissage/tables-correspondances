@@ -1,14 +1,14 @@
 const logger = require("../../common/logger");
-const Joi = require("joi");
+//const Joi = require("joi");
 const { getDataFromSiret } = require("../handlers/siretHandler");
 const { getDataFromCP, getCoordaniteFromAdresseData } = require("../handlers/geoHandler");
 const conventionController = require("../controllers/conventionController");
 const { diffEtablissement } = require("../../common/utils/diffUtils");
 
-const etablissementSchema = Joi.object({
-  siret: Joi.string().required(),
-  uai: Joi.string().allow(null).required(),
-}).unknown();
+// const etablissementSchema = Joi.object({
+//   siret: Joi.string().required(),
+//   uai: Joi.string().allow(null).required(),
+// }).unknown();
 
 /*
  * Build updates history
@@ -35,7 +35,7 @@ const etablissementService = async (
   { withHistoryUpdate = true, scope = { siret: true, location: true, geoloc: true, conventionnement: true } } = {}
 ) => {
   try {
-    await etablissementSchema.validateAsync(etablissement, { abortEarly: false });
+    // await etablissementSchema.validateAsync(etablissement, { abortEarly: false });
     let error = null;
 
     let current = {
@@ -58,10 +58,11 @@ const etablissementService = async (
       nom_voie: etablissement.nom_voie,
     };
 
-    let updatedEtablissement = null;
+    let updatedEtablissement = {};
 
     // ENTREPRISE DATA
     if (scope.siret) {
+      // console.log("Update siret info");
       const { result: siretMapping, messages: siretMessages } = await getDataFromSiret(etablissement.siret);
 
       let error = parseErrors(siretMessages);
@@ -85,6 +86,7 @@ const etablissementService = async (
 
     // CODE POSTAL DATA
     if (scope.location) {
+      // console.log("Update location info");
       const { result: cpMapping, messages: cpMessages } = await getDataFromCP(current.code_postal);
       error = parseErrors(cpMessages);
       if (error) {
@@ -109,6 +111,7 @@ const etablissementService = async (
 
     // GEOLOC DATA
     if (scope.geoloc) {
+      // console.log("Update geoloc info");
       const { result: geoMapping, messages: geoMessages } = await getCoordaniteFromAdresseData({
         numero_voie: current.numero_voie,
         type_voie: current.type_voie,
@@ -117,6 +120,9 @@ const etablissementService = async (
         code_postal: current.code_postal,
       });
       error = parseErrors(geoMessages);
+      if (error) {
+        return { updates: null, etablissement, error };
+      }
 
       updatedEtablissement = {
         ...updatedEtablissement,
@@ -126,6 +132,7 @@ const etablissementService = async (
 
     // CONVENTIONNEMENNT DATA
     if (scope.conventionnement) {
+      // console.log("Update conventionnement info");
       const conventionData = await conventionController.getConventionData(
         current.siret,
         etablissement.uai,
@@ -138,11 +145,7 @@ const etablissementService = async (
       };
     }
 
-    if (error) {
-      return { updates: null, etablissement, error };
-    }
-
-    if (updatedEtablissement) {
+    if (Object.keys(updatedEtablissement).length > 0) {
       updatedEtablissement = {
         ...etablissement,
         ...updatedEtablissement,
