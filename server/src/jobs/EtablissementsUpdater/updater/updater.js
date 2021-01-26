@@ -22,6 +22,8 @@ const performUpdates = async (filter = {}, options = null) => {
         scope: { siret: true, location: true, geoloc: true, conventionnement: true },
       };
 
+      logger.info(options);
+
       const { updates, etablissement: updatedEtablissement, error } = await etablissementService(
         etablissement._doc,
         etablissementServiceOptions
