@@ -4,11 +4,11 @@ const { etablissementService } = require("../../../logic/services/etablissementS
 const { asyncForEach } = require("../../../common/utils/asyncUtils");
 const { Etablissement } = require("../../../common/model/index");
 
-const run = async (filter = {}) => {
-  await performUpdates(filter);
+const run = async (filter = {}, options = null) => {
+  await performUpdates(filter, options);
 };
 
-const performUpdates = async (filter = {}) => {
+const performUpdates = async (filter = {}, options = null) => {
   // const invalidEtablissements = [];
   // const notUpdatedEtablissements = [];
   // const updatedEtablissements = [];
@@ -17,7 +17,16 @@ const performUpdates = async (filter = {}) => {
 
   await asyncForEach(etablissements, async (etablissement) => {
     try {
-      const { updates, etablissement: updatedEtablissement, error } = await etablissementService(etablissement._doc);
+      let etablissementServiceOptions = options || {
+        withHistoryUpdate: true,
+        scope: { siret: true, location: true, geoloc: true, conventionnement: true },
+      };
+
+      const { updates, etablissement: updatedEtablissement, error } = await etablissementService(
+        etablissement._doc,
+        etablissementServiceOptions
+      );
+
       if (error) {
         etablissement.update_error = error;
         await Etablissement.findOneAndUpdate({ _id: etablissement._id }, etablissement, { new: true });

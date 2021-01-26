@@ -10,6 +10,7 @@ const { etablissementService } = require("../../logic/services/etablissementServ
 const requestSchema = Joi.object({
   siret: Joi.string().required(),
   uai: Joi.string().required(),
+  scope: Joi.object().default(null),
 }).unknown();
 
 /**
@@ -22,9 +23,17 @@ module.exports = () => {
     "/etablissement",
     tryCatch(async (req, res) => {
       await requestSchema.validateAsync(req.body, { abortEarly: false });
-      const item = req.body;
-      logger.info("Generate all data from", item);
-      const result = await etablissementService(item, { withHistoryUpdate: false });
+
+      const { scope: reqScope, ...item } = req.body;
+      const scope = reqScope || {
+        siret: true,
+        location: true,
+        geoloc: true,
+        conventionnement: true,
+      };
+
+      logger.info("Generate all data from", item, scope);
+      const result = await etablissementService(item, { withHistoryUpdate: false, scope });
       return res.json({ ...result.etablissement });
     })
   );

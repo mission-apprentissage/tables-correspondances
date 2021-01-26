@@ -49,7 +49,6 @@ const getDataFromCP = async (providedCP) => {
 module.exports.getDataFromCP = getDataFromCP;
 
 const getCoordaniteFromAdresseData = async ({ numero_voie, type_voie, nom_voie, code_postal, localite }) => {
-  const geoUpdated = await getDataFromCP(code_postal);
   const coordUpdated = await geoController.findGeoCoordinateFromAdresse({
     numero_voie,
     type_voie,
@@ -61,11 +60,9 @@ const getCoordaniteFromAdresseData = async ({ numero_voie, type_voie, nom_voie, 
   return {
     result: {
       geo_coordonnees: coordUpdated.value,
-      ...geoUpdated.result,
     },
     messages: {
       geo_coordonnees: coordUpdated.info,
-      ...geoUpdated.messages,
     },
   };
 };
