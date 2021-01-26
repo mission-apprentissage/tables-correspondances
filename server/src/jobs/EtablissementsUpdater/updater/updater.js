@@ -35,6 +35,7 @@ const performUpdates = async (filter = {}, options = null) => {
       } else {
         updatedEtablissement.last_update_at = Date.now();
         await Etablissement.findOneAndUpdate({ _id: etablissement._id }, updatedEtablissement, { new: true });
+        logger.info(`Etablissement ${etablissement._id} updated`);
       }
     } catch (error) {
       logger.error(error);
