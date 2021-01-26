@@ -3,7 +3,6 @@ const Joi = require("joi");
 const { omit } = require("lodash");
 const { oleoduc, jsonStream, transformData } = require("oleoduc");
 const { Annuaire } = require("../../common/model");
-const { raw } = require("../../common/utils/mongooseUtils");
 const tryCatch = require("../middlewares/tryCatchMiddleware");
 
 module.exports = () => {
@@ -17,10 +16,10 @@ module.exports = () => {
       }).validateAsync(req.query, { abortEarly: false });
 
       await oleoduc(
-        Annuaire.find(
-          value ? { $or: [{ uai: value }, { siret: value }, { "uais_secondaires.uai": value }] } : {}
-        ).cursor(),
-        transformData((doc) => omit(raw(doc), ["_id"])),
+        Annuaire.find(value ? { $or: [{ uai: value }, { siret: value }, { "uais_secondaires.uai": value }] } : {})
+          .lean()
+          .cursor(),
+        transformData((doc) => omit(doc, ["_id", "__v"])),
         jsonStream(),
         res
       );
