@@ -13,17 +13,17 @@ const performUpdates = async (filter = {}, options = null) => {
   // const notUpdatedEtablissements = [];
   // const updatedEtablissements = [];
 
+  let etablissementServiceOptions = options || {
+    withHistoryUpdate: true,
+    scope: { siret: true, location: true, geoloc: true, conventionnement: true },
+  };
+
+  logger.info(options);
+
   const etablissements = await Etablissement.find(filter);
 
   await asyncForEach(etablissements, async (etablissement) => {
     try {
-      let etablissementServiceOptions = options || {
-        withHistoryUpdate: true,
-        scope: { siret: true, location: true, geoloc: true, conventionnement: true },
-      };
-
-      logger.info(options);
-
       const { updates, etablissement: updatedEtablissement, error } = await etablissementService(
         etablissement._doc,
         etablissementServiceOptions
