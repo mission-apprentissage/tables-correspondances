@@ -111,8 +111,12 @@ class ConventionController {
 
     // Check if can be published
     if (
-      result.computed_conventionne === computeCodes.conventionne.No &&
-      result.computed_declare_prefecture === computeCodes.declarePrefecture.No
+      (result.computed_conventionne === computeCodes.conventionne.No &&
+        result.computed_declare_prefecture === computeCodes.declarePrefecture.No &&
+        filesInfos.info_datadock !== infosCodes.infoDATADOCK.Referencable) ||
+      (result.computed_conventionne === computeCodes.conventionne.No &&
+        result.computed_declare_prefecture === computeCodes.declarePrefecture.Yes &&
+        filesInfos.info_datadock !== infosCodes.infoDATADOCK.Referencable)
     ) {
       // To Remove Trainings - Établissements can't be in EducNat SI
       result.catalogue_published = false;
