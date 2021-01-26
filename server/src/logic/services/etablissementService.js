@@ -62,7 +62,7 @@ const etablissementService = async (
 
     // ENTREPRISE DATA
     if (scope.siret) {
-      console.log("Update siret info");
+      // console.log("Update siret info");
       const { result: siretMapping, messages: siretMessages } = await getDataFromSiret(etablissement.siret);
 
       let error = parseErrors(siretMessages);
@@ -86,7 +86,7 @@ const etablissementService = async (
 
     // CODE POSTAL DATA
     if (scope.location) {
-      console.log("Update location info");
+      // console.log("Update location info");
       const { result: cpMapping, messages: cpMessages } = await getDataFromCP(current.code_postal);
       error = parseErrors(cpMessages);
       if (error) {
@@ -111,7 +111,7 @@ const etablissementService = async (
 
     // GEOLOC DATA
     if (scope.geoloc) {
-      console.log("Update geoloc info");
+      // console.log("Update geoloc info");
       const { result: geoMapping, messages: geoMessages } = await getCoordaniteFromAdresseData({
         numero_voie: current.numero_voie,
         type_voie: current.type_voie,
@@ -132,7 +132,7 @@ const etablissementService = async (
 
     // CONVENTIONNEMENNT DATA
     if (scope.conventionnement) {
-      console.log("Update conventionnement info");
+      // console.log("Update conventionnement info");
       const conventionData = await conventionController.getConventionData(
         current.siret,
         etablissement.uai,
