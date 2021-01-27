@@ -1,5 +1,4 @@
 const assert = require("assert");
-const { omit } = require("lodash");
 const { Etablissement, Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
 const annuaire = require("../../../src/jobs/annuaire/annuaire");
@@ -21,8 +20,8 @@ integrationTests(__filename, () => {
 
     let results = await annuaire.initialize(stream);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
-    assert.deepStrictEqual(omit(found, ["_id", "__v"]), {
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found, {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
@@ -75,8 +74,8 @@ integrationTests(__filename, () => {
     await annuaire.initialize(createDEPPStream());
     let results = await annuaire.collect("onisep", { stream });
 
-    let found = await Annuaire.findOne().lean();
-    assert.deepStrictEqual(omit(found, ["_id", "__v"]), {
+    let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found, {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
@@ -104,7 +103,7 @@ integrationTests(__filename, () => {
     await annuaire.initialize(createDEPPStream());
     let results = await annuaire.collect("onisep", { stream });
 
-    let found = await Annuaire.findOne().lean();
+    let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires[0], {
       type: "onisep",
       uai: "093XXXT",
@@ -126,8 +125,8 @@ integrationTests(__filename, () => {
     await annuaire.initialize(createDEPPStream());
     let stats = await annuaire.collect("onisep", { stream });
 
-    let found = await Annuaire.findOne().lean();
-    assert.deepStrictEqual(omit(found, ["_id", "__v"]), {
+    let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found, {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
@@ -160,8 +159,8 @@ integrationTests(__filename, () => {
 
     let stats = await annuaire.collect("onisep", { stream });
 
-    let found = await Annuaire.findOne().lean();
-    assert.deepStrictEqual(omit(found, ["_id", "__v"]), {
+    let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found, {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
@@ -189,8 +188,8 @@ integrationTests(__filename, () => {
     await annuaire.initialize(createDEPPStream());
     let stats = await annuaire.collect("onisep", { stream });
 
-    let found = await Annuaire.findOne().lean();
-    assert.deepStrictEqual(omit(found, ["_id", "__v"]), {
+    let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found, {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
@@ -212,8 +211,8 @@ integrationTests(__filename, () => {
     await annuaire.initialize(createDEPPStream());
     let results = await annuaire.collect("onisep", { stream });
 
-    let found = await Annuaire.findOne().lean();
-    assert.deepStrictEqual(omit(found, ["_id", "__v"]), {
+    let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found, {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
@@ -241,8 +240,8 @@ integrationTests(__filename, () => {
     await annuaire.initialize(createDEPPStream());
     let results = await annuaire.collect("onisepStructure", { stream });
 
-    let found = await Annuaire.findOne().lean();
-    assert.deepStrictEqual(omit(found, ["_id", "__v"]), {
+    let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found, {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
@@ -270,8 +269,8 @@ integrationTests(__filename, () => {
     await annuaire.initialize(createDEPPStream());
     let results = await annuaire.collect("refea", { stream });
 
-    let found = await Annuaire.findOne().lean();
-    assert.deepStrictEqual(omit(found, ["_id", "__v"]), {
+    let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found, {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
@@ -300,8 +299,8 @@ integrationTests(__filename, () => {
     await annuaire.initialize(createDEPPStream());
     let results = await annuaire.collect("catalogue");
 
-    let found = await Annuaire.findOne().lean();
-    assert.deepStrictEqual(omit(found, ["_id", "__v"]), {
+    let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found, {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
@@ -329,8 +328,8 @@ integrationTests(__filename, () => {
     await annuaire.initialize(createDEPPStream());
     let results = await annuaire.collect("opcoep", { stream });
 
-    let found = await Annuaire.findOne().lean();
-    assert.deepStrictEqual(omit(found, ["_id", "__v"]), {
+    let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found, {
       uai: "0011058V",
       siret: "11111111111111",
       nom: "Centre de formation",
