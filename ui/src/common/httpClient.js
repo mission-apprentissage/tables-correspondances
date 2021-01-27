@@ -1,5 +1,6 @@
 import EventEmitter from "events";
 import { getAuth } from "./auth";
+import * as queryString from "querystring";
 
 class AuthError extends Error {
   constructor(json, statusCode) {
@@ -48,8 +49,10 @@ const getHeaders = () => {
   };
 };
 
-export const _get = (path) => {
-  return fetch(`${path}`, {
+export const _get = (path, parmeters = {}) => {
+  let params = queryString.stringify(parmeters, { skipNull: true });
+
+  return fetch(`${path}${params ? `?${params}` : ""}`, {
     method: "GET",
     headers: getHeaders(),
   }).then((res) => handleResponse(path, res));

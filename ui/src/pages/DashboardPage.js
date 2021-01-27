@@ -1,12 +1,11 @@
 import React from "react";
-import { Page, Grid, StatsCard, Header, Table } from "tabler-react";
+import { Page, Grid, StatsCard, Header } from "tabler-react";
 import { useFetch } from "../common/hooks/useFetch";
 
 import "./DashboardPage.css";
 
 export default () => {
   const [data, loading] = useFetch("api/stats");
-  console.log(data);
 
   return (
     <Page>
