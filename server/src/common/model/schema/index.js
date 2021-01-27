@@ -9,6 +9,7 @@ const bcnNNiveauFormationDiplomeSchema = require("./bcnNNiveauFormationDiplome")
 const bcnNMefSchema = require("./bcnNMef");
 const bcnNDispositifFormationSchema = require("./bcnNDispositifFormation");
 const etablissementSchema = require("./etablissement");
+const annuaireSchema = require("./annuaire");
 const conventionFileSchema = require("./conventionFile");
 
 const codeIdccOpcoSchema = require("./codeIdccOpco");
@@ -25,6 +26,7 @@ module.exports = {
   domainesMetiersSchema,
   ficheRncpSchema,
   etablissementSchema,
+  annuaireSchema,
   conventionFileSchema,
   codeIdccOpcoSchema,
   codeEnCodesIdccSchema,
