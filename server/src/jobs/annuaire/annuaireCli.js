@@ -47,16 +47,25 @@ cli
 cli
   .command("export")
   .description("Exporte l'annuaire")
-  .option(
-    "--out <out>",
-    "Fichier cible dans lequel sera stocké l'export (defaut: stdout)",
-    (out) => createWriteStream(out),
-    stdoutStream()
-  )
+  .option("--out <out>", "Fichier cible dans lequel sera stocké l'export (defaut: stdout)", createWriteStream)
   .option("--format <format>", "Format : json|csv(défaut)")
   .action(({ out, format }) => {
     runScript(() => {
-      return annuaire.export(out, { format });
+      let output = out || stdoutStream();
+
+      return annuaire.export(output, { format });
+    });
+  });
+
+cli
+  .command("exportManquants")
+  .description("Exporte les établissements de l'annuaire qui ne sont pas dans le catalogue")
+  .option("--out <out>", "Fichier cible dans lequel sera stocké l'export (defaut: stdout)", createWriteStream)
+  .option("--format <format>", "Format : json|csv(défaut)")
+  .action(({ out, format }) => {
+    runScript(() => {
+      let output = out || stdoutStream();
+      return annuaire.exportManquants(output, { format });
     });
   });
 
