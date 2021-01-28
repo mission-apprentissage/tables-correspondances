@@ -10,12 +10,12 @@ module.exports = () => {
   router.get(
     "/etablissements",
     tryCatch(async (req, res) => {
-      let { value } = await Joi.object({
-        value: Joi.string(),
+      let { filter } = await Joi.object({
+        filter: Joi.string(),
       }).validateAsync(req.query, { abortEarly: false });
 
       await oleoduc(
-        Annuaire.find(value ? { $or: [{ uai: value }, { siret: value }, { "uais_secondaires.uai": value }] } : {}, {
+        Annuaire.find(filter ? { $or: [{ uai: filter }, { siret: filter }, { "uais_secondaires.uai": filter }] } : {}, {
           _id: 0,
           __v: 0,
         })

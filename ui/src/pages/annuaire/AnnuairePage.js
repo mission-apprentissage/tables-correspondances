@@ -17,7 +17,7 @@ export default () => {
       }
     } catch (e) {
       console.error(e);
-      setStatus({ message: e.prettyMessage });
+      setStatus({ error: e.prettyMessage });
     }
   };
 
@@ -44,10 +44,10 @@ export default () => {
                 <Card.Body>
                   <Formik
                     initialValues={{
-                      value: "0062093T",
+                      filter: "0062093T",
                     }}
                     validationSchema={Yup.object().shape({
-                      value: Yup.string().required("Veuillez saisir une valeur (siret ou uai)"),
+                      filter: Yup.string().required("Veuillez saisir une valeur (siret ou uai)"),
                     })}
                     onSubmit={findUai}
                   >
@@ -55,7 +55,7 @@ export default () => {
                       return (
                         <Form>
                           <TablerForm.Group label="Siret ou UAI">
-                            <Field name="value">
+                            <Field name="filter">
                               {({ field, meta }) => {
                                 return (
                                   <TablerForm.Input type={"text"} placeholder="..." {...field} {...showError(meta)} />

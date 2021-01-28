@@ -34,7 +34,7 @@ httpTests(__filename, ({ startServer }) => {
       uais_secondaires: [],
     }).save();
 
-    const response = await httpClient.get("/api/v1/annuaire/etablissements?value=0010856A");
+    const response = await httpClient.get("/api/v1/annuaire/etablissements?filter=0010856A");
 
     strictEqual(response.status, 200);
     deepStrictEqual(response.data, [
@@ -56,7 +56,7 @@ httpTests(__filename, ({ startServer }) => {
       uais_secondaires: [],
     }).save();
 
-    const response = await httpClient.get("/api/v1/annuaire/etablissements?value=11111111111111");
+    const response = await httpClient.get("/api/v1/annuaire/etablissements?filter=11111111111111");
 
     strictEqual(response.status, 200);
     deepStrictEqual(response.data, [
@@ -72,9 +72,18 @@ httpTests(__filename, ({ startServer }) => {
   it("Vérifie que le service retourne une liste vide quand aucun etablissement ne correspond", async () => {
     const { httpClient } = await startServer();
 
-    const response = await httpClient.get("/api/v1/annuaire/etablissements?value=XXX");
+    const response = await httpClient.get("/api/v1/annuaire/etablissements?filter=XXX");
 
     strictEqual(response.status, 200);
     deepStrictEqual(response.data, []);
+  });
+
+  it("Vérifie que le service retourne une 400 quand les paramètres sont invalides", async () => {
+    const { httpClient } = await startServer();
+
+    const response = await httpClient.get("/api/v1/annuaire/etablissements?invalid=XXX");
+
+    strictEqual(response.status, 400);
+    deepStrictEqual(response.data.details[0].path[0], "invalid");
   });
 });
