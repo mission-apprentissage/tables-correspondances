@@ -1,8 +1,9 @@
 const { oleoduc, transformData, writeData, csvStream, jsonStream } = require("oleoduc");
 const { isEmpty } = require("lodash");
 const { createSource } = require("./sources/sources");
-const { Annuaire } = require("../../common/model");
+const { Annuaire, Etablissement } = require("../../common/model");
 const { validateUAI } = require("../../common/utils/uaiUtils");
+const { getEtablissementStatus } = require("../../logic/controllers/entrepriseController");
 const logger = require("../../common/logger");
 
 module.exports = {
@@ -88,6 +89,29 @@ module.exports = {
     );
 
     return stats;
+  },
+  exportManquants: async (out, options = {}) => {
+    return oleoduc(
+      Annuaire.find().cursor(),
+      transformData(
+        async ({ siret, nom, uai }) => {
+          try {
+            let found = await Etablissement.findOne({ siret });
+            if (found) {
+              return null;
+            }
+
+            let status = await getEtablissementStatus(siret);
+            return status === "actif" ? { siret, nom, uai } : null;
+          } catch (e) {
+            logger.error(`Unable to handle siret ${siret}`, e.message);
+          }
+        },
+        { parallel: 10 }
+      ),
+      options.json ? jsonStream() : csvStream(),
+      out
+    );
   },
   export: (out, options = {}) => {
     let formatter = options.json
