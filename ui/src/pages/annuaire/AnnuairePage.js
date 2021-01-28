@@ -1,24 +1,35 @@
-import React, { useState } from "react";
+import React from "react";
+import { omit } from "lodash-es";
 import * as Yup from "yup";
-import { Form as TablerForm, Card, Page, Grid, Table, Button } from "tabler-react";
-import { Formik, Field, Form } from "formik";
+import { Button, Card, Form as TablerForm, Grid, Page, Table, Badge } from "tabler-react";
+import { Field, Form, Formik } from "formik";
 import FormError from "../../common/components/FormError";
+import Pagination from "./Pagination";
 import FormMessage from "../../common/components/FormMessage";
-import { _get } from "../../common/httpClient";
+import { useFetch } from "../../common/hooks/useFetch";
+import queryString from "query-string";
+import { useHistory } from "react-router-dom";
+
+const buildQuery = (elements = {}) => {
+  return `${queryString.stringify(elements, { skipNull: true, skipEmptyString: true })}`;
+};
 
 export default () => {
-  let [etablissements, setEtablisssements] = useState([]);
-  let findUai = async (values, { setStatus }) => {
-    try {
-      let res = await _get(`/api/v1/annuaire/etablissements`, values);
-      setEtablisssements(res);
-      if (res.length === 0) {
-        setStatus({ message: "Pas de résultats" });
-      }
-    } catch (e) {
-      console.error(e);
-      setStatus({ error: e.prettyMessage });
-    }
+  let history = useHistory();
+  let query = { page: 1, limit: 25, ...queryString.parse(window.location.search) };
+  let [data, loading, error] = useFetch(`/api/v1/annuaire/etablissements?${buildQuery(query)}`, {
+    etablissements: [],
+    pagination: {
+      page: 0,
+      resultats_par_page: 0,
+      nombre_de_page: 0,
+      total: 0,
+    },
+  });
+
+  let search = async (options = {}) => {
+    let keys = Object.keys(options);
+    history.push(`/annuaire?${buildQuery({ ...omit(query, keys), ...options })}`);
   };
 
   let showError = (meta) => {
@@ -44,12 +55,12 @@ export default () => {
                 <Card.Body>
                   <Formik
                     initialValues={{
-                      filter: "0062093T",
+                      filter: "",
                     }}
                     validationSchema={Yup.object().shape({
-                      filter: Yup.string().required("Veuillez saisir une valeur (siret ou uai)"),
+                      filter: Yup.string(),
                     })}
-                    onSubmit={findUai}
+                    onSubmit={search}
                   >
                     {({ status = {} }) => {
                       return (
@@ -57,17 +68,16 @@ export default () => {
                           <TablerForm.Group label="Siret ou UAI">
                             <Field name="filter">
                               {({ field, meta }) => {
-                                return (
-                                  <TablerForm.Input type={"text"} placeholder="..." {...field} {...showError(meta)} />
-                                );
+                                return <TablerForm.Input placeholder="..." {...field} {...showError(meta)} />;
                               }}
                             </Field>
                           </TablerForm.Group>
                           <Button color="primary" className="text-left" type={"submit"}>
                             Rechercher
                           </Button>
-                          {status.error && <FormError>{status.error}</FormError>}
+
                           {status.message && <FormMessage>{status.message}</FormMessage>}
+                          {error && <FormError>Une erreur est survenue</FormError>}
                         </Form>
                       );
                     }}
@@ -94,20 +104,36 @@ export default () => {
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
-                      {etablissements.map((e) => {
-                        return (
-                          <Table.Row key={e.uai}>
-                            <Table.Col>
-                              <b>{e.uai}</b>
-                            </Table.Col>
-                            <Table.Col>{e.siret}</Table.Col>
-                            <Table.Col>{e.nom}</Table.Col>
-                            <Table.Col>{e.uais_secondaires.map((u) => `${u.uai}/${u.type}`).join("  ")}</Table.Col>
-                          </Table.Row>
-                        );
-                      })}
+                      {loading || data.etablissements.length === 0 ? (
+                        <Table.Row>
+                          <Table.Col colSpan={4}>{loading ? "Chargement..." : "Pas de résultats"}</Table.Col>
+                        </Table.Row>
+                      ) : (
+                        data.etablissements.map((e) => {
+                          return (
+                            <Table.Row key={e.uai}>
+                              <Table.Col>
+                                <b>{e.uai}</b>
+                              </Table.Col>
+                              <Table.Col>{e.siret}</Table.Col>
+                              <Table.Col>{e.nom}</Table.Col>
+                              <Table.Col>
+                                {e.uais_secondaires.map((u) => {
+                                  return (
+                                    <div>
+                                      <span style={{ paddingRight: "1rem" }}>{u.uai}</span>
+                                      <Badge>{u.type}</Badge>
+                                    </div>
+                                  );
+                                })}
+                              </Table.Col>
+                            </Table.Row>
+                          );
+                        })
+                      )}
                     </Table.Body>
                   </Table>
+                  <Pagination pagination={data.pagination} onClick={(page) => search({ page })} />
                 </Card.Body>
               </Card>
             </Grid.Col>

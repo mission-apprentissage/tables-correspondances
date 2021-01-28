@@ -17,7 +17,12 @@ const createModel = (modelName, descriptor, options = {}) => {
 module.exports = {
   User: createModel("user", schema.userSchema),
   Log: createModel("log", schema.logSchema),
-  Annuaire: createModel("annuaire", schema.annuaireSchema, { collectionName: "annuaire" }),
+  Annuaire: createModel("annuaire", schema.annuaireSchema, {
+    collectionName: "annuaire",
+    createMongoDBIndexes: (schema) => {
+      schema.index({ "$**": "text" }, { default_language: "french" });
+    },
+  }),
   FicheRncp: createModel("ficherncp", schema.ficheRncpSchema),
   ConventionFile: createModel("conventionfile", schema.conventionFileSchema),
   CodeIdccOpco: createModel("codeIdccOpco", schema.codeIdccOpcoSchema),

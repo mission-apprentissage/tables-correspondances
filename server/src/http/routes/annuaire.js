@@ -2,6 +2,7 @@ const express = require("express");
 const Joi = require("joi");
 const { oleoduc, jsonStream } = require("oleoduc");
 const { Annuaire } = require("../../common/model");
+const { paginate } = require("../../common/utils/mongooseUtils");
 const tryCatch = require("../middlewares/tryCatchMiddleware");
 
 module.exports = () => {
@@ -10,18 +11,28 @@ module.exports = () => {
   router.get(
     "/etablissements",
     tryCatch(async (req, res) => {
-      let { filter } = await Joi.object({
+      let { filter, page, limit } = await Joi.object({
         filter: Joi.string(),
+        page: Joi.number().default(1),
+        limit: Joi.number().default(10),
       }).validateAsync(req.query, { abortEarly: false });
 
+      let query = filter ? { $text: { $search: filter } } : {};
+      let { find, pagination } = await paginate(Annuaire, query, { page, limit });
+
       await oleoduc(
-        Annuaire.find(filter ? { $or: [{ uai: filter }, { siret: filter }, { "uais_secondaires.uai": filter }] } : {}, {
-          _id: 0,
-          __v: 0,
-        })
-          .lean()
+        find
+          .select({
+            _id: 0,
+            __v: 0,
+          })
           .cursor(),
-        jsonStream(),
+        jsonStream({
+          arrayPropertyName: "etablissements",
+          arrayWrapper: {
+            pagination,
+          },
+        }),
         res
       );
     })
