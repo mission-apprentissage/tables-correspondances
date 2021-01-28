@@ -58,34 +58,30 @@ module.exports = {
 
     await oleoduc(
       source,
-      writeData(
-        async (current) => {
-          try {
-            stats.total++;
+      writeData(async (current) => {
+        try {
+          stats.total++;
 
-            if (!current.uai) {
-              return;
-            }
-
-            let element = { type, uai: current.uai, valide: validateUAI(current.uai) };
-            let found = await Annuaire.findOne({
-              siret: current.siret,
-              uai: { $ne: current.uai },
-              "uais_secondaires.uai": { $ne: current.uai },
-            });
-
-            if (found) {
-              found.uais_secondaires.push(element);
-              await found.save();
-              stats.updated++;
-            }
-          } catch (e) {
-            stats.failed++;
-            logger.error(`Unable to add UAI informations for siret ${current.siret}`, e);
+          if (!current.uai) {
+            return;
           }
-        },
-        { parallel: 25 }
-      )
+
+          let found = await Annuaire.findOne({
+            siret: current.siret,
+            uai: { $ne: current.uai },
+            "uais_secondaires.uai": { $ne: current.uai },
+          });
+
+          if (found) {
+            found.uais_secondaires.push({ type, uai: current.uai, valide: validateUAI(current.uai) });
+            await found.save();
+            stats.updated++;
+          }
+        } catch (e) {
+          stats.failed++;
+          logger.error(`Unable to add UAI informations for siret ${current.siret}`, e);
+        }
+      })
     );
 
     return stats;

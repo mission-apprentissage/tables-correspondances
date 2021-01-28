@@ -34,7 +34,7 @@
     "etablissements:updater:local": "standalone=true dotenv node src/jobs/EtablissementsUpdater/index.js",
     "es:index": "standalone=true node src/jobs/esIndex/index.js",
     "generate:swaggerschema": "standalone=true node src/jobs/generateSwaggerSchema/index.js",
-    "annuaire": "TABLES_CORRESPONDANCES_LOG_TYPE=stderr node src/jobs/annuaire/annuaireCli.js"
+    "annuaire": "TABLES_CORRESPONDANCES_LOG_TYPE=stderr node -r dotenv/config src/jobs/annuaire/annuaireCli.js"
   },
   "dependencies": {
     "@azure/storage-blob": "12.3.0",

@@ -65,7 +65,7 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on ajoute un uai quand il n'existe pas", async () => {
+  it("Vérifie qu'on collecte un uai quand il n'existe pas", async () => {
     let stream = createStream(
       `"code UAI";"n° SIRET";"nom"
 "0011073L";"11111111111111";"Centre de formation"`

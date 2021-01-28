@@ -21,23 +21,18 @@ cli
   });
 
 cli
-  .command("collect")
-  .description("Collecte les données contenues dans la source")
-  .action(() => {
-    runScript(() => {
-      return Promise.all(
-        ["catalogue", "onisep", "refea", "opcoep", "onisepStructure"].map(async (type) => {
-          return { [type]: await annuaire.collect(type) };
-        })
-      );
-    });
-  });
-
-cli
-  .command("collect <type> [file]")
-  .description("Collecte les données contenues dans la source")
+  .command("collect [type] [file]")
+  .description("Collecte les données pour toutes les sources ou un type de source")
   .action((type, file) => {
     runScript(() => {
+      if (!type) {
+        return Promise.all(
+          ["catalogue", "onisep", "refea", "opcoep", "onisepStructure"].map(async (type) => {
+            return { [type]: await annuaire.collect(type) };
+          })
+        );
+      }
+
       let stream = file ? createReadStream(file) : null;
 
       return annuaire.collect(type, { stream });
