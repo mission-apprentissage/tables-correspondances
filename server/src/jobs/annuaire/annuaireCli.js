@@ -50,9 +50,10 @@ cli
     });
   });
 
-cli
-  .command("collect [type] [file]")
-  .description("Collecte les données pour toutes les sources ou un type de source")
+let collect = cli.command("collect");
+collect
+  .command("uais [type] [file]")
+  .description("Parcoure la ou les sources pour trouver des uais secondaires")
   .action((type, file) => {
     runScript(async () => {
       let collectable = type
@@ -61,14 +62,15 @@ cli
 
       return Promise.all(
         collectable.map(async ({ type, stream }) => {
-          return { [type]: await annuaire.collect(type, stream) };
+          return { [type]: await annuaire.collectUAIs(type, stream) };
         })
       );
     });
   });
 
-cli
-  .command("export")
+let exporter = cli.command("export");
+exporter
+  .command("all")
   .description("Exporte l'annuaire")
   .option("--out <out>", "Fichier cible dans lequel sera stocké l'export (defaut: stdout)", createWriteStream)
   .option("--format <format>", "Format : json|csv(défaut)")
@@ -80,8 +82,8 @@ cli
     });
   });
 
-cli
-  .command("exportManquants")
+exporter
+  .command("manquants")
   .description("Exporte les établissements de l'annuaire qui ne sont pas dans le catalogue")
   .option("--out <out>", "Fichier cible dans lequel sera stocké l'export (defaut: stdout)", createWriteStream)
   .option("--format <format>", "Format : json|csv(défaut)")
@@ -98,6 +100,7 @@ cli
   .action(() => {
     runScript(async () => {
       let nbElements = 50;
+      // TODO reuse fixture
       await Promise.all(
         range(0, nbElements).map((value) => {
           return new Annuaire({
@@ -105,6 +108,11 @@ cli
             siret: faker.helpers.replaceSymbols("#########00015"),
             nom: faker.company.companyName(),
             uais_secondaires: value % 2 ? [{ uai: faker.helpers.replaceSymbols("#######?"), type: "test" }] : [],
+            sirene: {
+              siegeSocial: true,
+              dateCreation: new Date("2020-11-26T23:00:00.000Z"),
+              statut: "actif",
+            },
           }).save();
         })
       );

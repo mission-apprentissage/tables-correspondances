@@ -74,7 +74,7 @@ module.exports = {
 
     return stats;
   },
-  collect: async (type, stream) => {
+  collectUAIs: async (type, stream) => {
     let stats = {
       total: 0,
       updated: 0,
