@@ -3,12 +3,12 @@ const { isEmpty } = require("lodash");
 const { createSource } = require("./sources/sources");
 const { Annuaire, Etablissement } = require("../../common/model");
 const { validateUAI } = require("../../common/utils/uaiUtils");
-const { getEtablissementStatus } = require("../../logic/controllers/entrepriseController");
+const { getEtablissementStatut } = require("../../logic/controllers/entrepriseController");
 const logger = require("../../common/logger");
 
 module.exports = {
   deleteAll: () => Annuaire.deleteMany({}),
-  initialize: async (stream) => {
+  initialize: async (stream, apiEntreprise) => {
     let source = await createSource("depp", stream);
     let stats = {
       total: 0,
@@ -30,24 +30,46 @@ module.exports = {
         }
         return !already;
       }),
-      writeData(async (data) => {
-        stats.total++;
-        if (isEmpty(data.siret)) {
-          stats.invalid++;
-          return;
-        }
-
-        try {
-          let count = await Annuaire.countDocuments({ $or: [{ siret: data.siret }, { uai: data.uai }] });
-          if (count === 0) {
-            await Annuaire.create(data);
-            stats.inserted++;
+      transformData(
+        async (e) => {
+          try {
+            let etablissement = await apiEntreprise.getEtablissement(e.siret);
+            return {
+              ...e,
+              sirene: {
+                siegeSocial: etablissement.siege_social,
+                dateCreation: new Date(etablissement.date_creation_etablissement * 1000),
+                statut: etablissement.etat_administratif.value === "A" ? "actif" : "fermé",
+              },
+            };
+          } catch (e) {
+            logger.error(`Unable to find etablissement ${e.siret} into api entreprise`);
+            return e;
           }
-        } catch (e) {
-          stats.failed++;
-          logger.error(`Unable to insert document with siret ${data.siret} into annuaire`, e);
-        }
-      })
+        },
+        { parallel: 10 }
+      ),
+      writeData(
+        async (e) => {
+          stats.total++;
+          if (isEmpty(e.siret)) {
+            stats.invalid++;
+            return;
+          }
+
+          try {
+            let count = await Annuaire.countDocuments({ $or: [{ siret: e.siret }, { uai: e.uai }] });
+            if (count === 0) {
+              await Annuaire.create(e);
+              stats.inserted++;
+            }
+          } catch (e) {
+            stats.failed++;
+            logger.error(`Unable to insert document with siret ${e.siret} into annuaire`, e);
+          }
+        },
+        { parallel: 10 }
+      )
     );
 
     return stats;
@@ -102,7 +124,7 @@ module.exports = {
               return null;
             }
 
-            let status = await getEtablissementStatus(siret);
+            let { status } = await getEtablissementStatut(siret);
             return status === "actif" ? { siret, nom, uai } : null;
           } catch (e) {
             logger.error(`Unable to handle siret ${siret}`, e.message);

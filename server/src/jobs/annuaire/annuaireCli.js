@@ -9,6 +9,7 @@ const { Annuaire } = require("../../common/model");
 const { runScript } = require("../scriptWrapper");
 const annuaire = require("./annuaire");
 const ovhStorage = require("../../common/ovhStorage");
+const apiEntreprise = require("../../common/apis/apiEntreprise");
 
 const getOVHFileAsStream = (filename) => {
   let file = `/mna-tables-correspondances/annuaire/${filename}`;
@@ -45,7 +46,7 @@ cli
       let stream = file ? createReadStream(file) : await getOVHFileAsStream("DEPP-CFASousConvRegionale_17122020_1.csv");
 
       await annuaire.deleteAll();
-      return annuaire.initialize(stream);
+      return annuaire.initialize(stream, apiEntreprise);
     });
   });
 

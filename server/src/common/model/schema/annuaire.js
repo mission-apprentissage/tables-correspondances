@@ -1,3 +1,5 @@
+const { Schema } = require("mongoose");
+
 const annuaireSchema = {
   uai: {
     type: String,
@@ -21,6 +23,26 @@ const annuaireSchema = {
     default: [],
     description: "La liste de tous les uais connus pour cet établissement",
   },
+  sirene: new Schema(
+    {
+      siegeSocial: {
+        type: Boolean,
+        default: null,
+        description: "Le siège social",
+      },
+      dateCreation: {
+        type: Date,
+        default: null,
+        description: "Date de création",
+      },
+      statut: {
+        type: String,
+        default: null,
+        description: "Statut de l'entreprise",
+      },
+    },
+    { _id: false }
+  ),
 };
 
 module.exports = annuaireSchema;
