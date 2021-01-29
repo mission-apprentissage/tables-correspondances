@@ -16,7 +16,7 @@ module.exports = {
       failed: 0,
     };
 
-    let source = await createSource("depp", { stream });
+    let source = await createSource("depp", stream);
 
     await oleoduc(
       source,
@@ -47,45 +47,41 @@ module.exports = {
 
     return stats;
   },
-  collect: async (type, options = {}) => {
+  collect: async (type, stream) => {
     let stats = {
       total: 0,
       updated: 0,
       failed: 0,
     };
 
-    let source = await createSource(type, { stream: options.stream });
+    let source = await createSource(type, stream);
 
     await oleoduc(
       source,
-      writeData(
-        async (current) => {
-          try {
-            stats.total++;
+      writeData(async (current) => {
+        try {
+          stats.total++;
 
-            if (!current.uai) {
-              return;
-            }
-
-            let element = { type, uai: current.uai, valide: validateUAI(current.uai) };
-            let found = await Annuaire.findOne({
-              siret: current.siret,
-              uai: { $ne: current.uai },
-              "uais_secondaires.uai": { $ne: current.uai },
-            });
-
-            if (found) {
-              found.uais_secondaires.push(element);
-              await found.save();
-              stats.updated++;
-            }
-          } catch (e) {
-            stats.failed++;
-            logger.error(`Unable to add UAI informations for siret ${current.siret}`, e);
+          if (!current.uai) {
+            return;
           }
-        },
-        { parallel: 25 }
-      )
+
+          let found = await Annuaire.findOne({
+            siret: current.siret,
+            uai: { $ne: current.uai },
+            "uais_secondaires.uai": { $ne: current.uai },
+          });
+
+          if (found) {
+            found.uais_secondaires.push({ type, uai: current.uai, valide: validateUAI(current.uai) });
+            await found.save();
+            stats.updated++;
+          }
+        } catch (e) {
+          stats.failed++;
+          logger.error(`Unable to add UAI informations for siret ${current.siret}`, e);
+        }
+      })
     );
 
     return stats;

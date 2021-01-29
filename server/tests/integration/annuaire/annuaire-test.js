@@ -65,14 +65,14 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on ajoute un uai quand il n'existe pas", async () => {
+  it("Vérifie qu'on collecte un uai quand il n'existe pas", async () => {
     let stream = createStream(
       `"code UAI";"n° SIRET";"nom"
 "0011073L";"11111111111111";"Centre de formation"`
     );
 
     await annuaire.initialize(createDEPPStream());
-    let results = await annuaire.collect("onisep", { stream });
+    let results = await annuaire.collect("onisep", stream);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found, {
@@ -101,7 +101,7 @@ integrationTests(__filename, () => {
     );
 
     await annuaire.initialize(createDEPPStream());
-    let results = await annuaire.collect("onisep", { stream });
+    let results = await annuaire.collect("onisep", stream);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires[0], {
@@ -123,7 +123,7 @@ integrationTests(__filename, () => {
     );
 
     await annuaire.initialize(createDEPPStream());
-    let stats = await annuaire.collect("onisep", { stream });
+    let stats = await annuaire.collect("onisep", stream);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found, {
@@ -157,7 +157,7 @@ integrationTests(__filename, () => {
       ],
     }).save();
 
-    let stats = await annuaire.collect("onisep", { stream });
+    let stats = await annuaire.collect("onisep", stream);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found, {
@@ -186,7 +186,7 @@ integrationTests(__filename, () => {
     );
 
     await annuaire.initialize(createDEPPStream());
-    let stats = await annuaire.collect("onisep", { stream });
+    let stats = await annuaire.collect("onisep", stream);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found, {
@@ -209,7 +209,7 @@ integrationTests(__filename, () => {
     );
 
     await annuaire.initialize(createDEPPStream());
-    let results = await annuaire.collect("onisep", { stream });
+    let results = await annuaire.collect("onisep", stream);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found, {
@@ -238,7 +238,7 @@ integrationTests(__filename, () => {
     );
 
     await annuaire.initialize(createDEPPStream());
-    let results = await annuaire.collect("onisepStructure", { stream });
+    let results = await annuaire.collect("onisepStructure", stream);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found, {
@@ -267,7 +267,7 @@ integrationTests(__filename, () => {
     );
 
     await annuaire.initialize(createDEPPStream());
-    let results = await annuaire.collect("refea", { stream });
+    let results = await annuaire.collect("refea", stream);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found, {
@@ -326,7 +326,7 @@ integrationTests(__filename, () => {
     );
 
     await annuaire.initialize(createDEPPStream());
-    let results = await annuaire.collect("opcoep", { stream });
+    let results = await annuaire.collect("opcoep", stream);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found, {
