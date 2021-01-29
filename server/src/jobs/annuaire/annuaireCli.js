@@ -4,16 +4,45 @@ const { range } = require("lodash");
 const faker = require("faker"); // eslint-disable-line node/no-unpublished-require
 const { stdoutStream } = require("oleoduc");
 const { createReadStream } = require("fs");
+const logger = require("../../common/logger");
 const { Annuaire } = require("../../common/model");
 const { runScript } = require("../scriptWrapper");
 const annuaire = require("./annuaire");
+const ovhStorage = require("../../common/ovhStorage");
+
+const getOVHFileAsStream = (filename) => {
+  let file = `/mna-tables-correspondances/annuaire/${filename}`;
+  logger.info(`Downloading ${file} from OVH...`);
+  return ovhStorage.getFileAsStream(file);
+};
+
+const getDefaultsCollectableRessources = () => {
+  return Promise.all(
+    [
+      { type: "catalogue" },
+      { type: "onisep", file: "ONISEP-ideo-structures_denseignement_secondaire.csv" },
+      { type: "onisep", file: "ONISEP-ideo-structures_denseignement_superieur.csv" },
+      { type: "onisepStructure", file: "ONISEP-Structures.csv" },
+      { type: "refea", file: "REFEA-liste-uai-avec-coordonnees.csv" },
+      {
+        type: "opcoep",
+        file: "OPCO EP-20201202 OPCO EP - Jeunes sans contrat par CFA, région et formation au 26 nov.csv",
+      },
+    ].map(async ({ type, file }) => {
+      return {
+        type: type,
+        stream: file && (await getOVHFileAsStream(file)),
+      };
+    })
+  );
+};
 
 cli
   .command("reset [file]")
   .description("Réinitialise l'annuaire avec les données de la DEPP")
   .action((file) => {
     runScript(async () => {
-      let stream = file ? createReadStream(file) : null;
+      let stream = file ? createReadStream(file) : await getOVHFileAsStream("DEPP-CFASousConvRegionale_17122020_1.csv");
 
       await annuaire.deleteAll();
       return annuaire.initialize(stream);
@@ -21,42 +50,44 @@ cli
   });
 
 cli
-  .command("collect")
-  .description("Collecte les données contenues dans la source")
-  .action(() => {
-    runScript(() => {
+  .command("collect [type] [file]")
+  .description("Collecte les données pour toutes les sources ou un type de source")
+  .action((type, file) => {
+    runScript(async () => {
+      let collectable = type
+        ? [{ type, stream: file ? createReadStream(file) : null }]
+        : await getDefaultsCollectableRessources();
+
       return Promise.all(
-        ["catalogue", "onisep", "refea", "opcoep", "onisepStructure"].map(async (type) => {
-          return { [type]: await annuaire.collect(type) };
+        collectable.map(async ({ type, stream }) => {
+          return { [type]: await annuaire.collect(type, stream) };
         })
       );
     });
   });
 
 cli
-  .command("collect <type> [file]")
-  .description("Collecte les données contenues dans la source")
-  .action((type, file) => {
+  .command("export")
+  .description("Exporte l'annuaire")
+  .option("--out <out>", "Fichier cible dans lequel sera stocké l'export (defaut: stdout)", createWriteStream)
+  .option("--format <format>", "Format : json|csv(défaut)")
+  .action(({ out, format }) => {
     runScript(() => {
-      let stream = file ? createReadStream(file) : null;
+      let output = out || stdoutStream();
 
-      return annuaire.collect(type, { stream });
+      return annuaire.export(output, { format });
     });
   });
 
 cli
-  .command("export")
-  .description("Exporte l'annuaire")
-  .option(
-    "--out <out>",
-    "Fichier cible dans lequel sera stocké l'export (defaut: stdout)",
-    (out) => createWriteStream(out),
-    stdoutStream()
-  )
+  .command("exportManquants")
+  .description("Exporte les établissements de l'annuaire qui ne sont pas dans le catalogue")
+  .option("--out <out>", "Fichier cible dans lequel sera stocké l'export (defaut: stdout)", createWriteStream)
   .option("--format <format>", "Format : json|csv(défaut)")
   .action(({ out, format }) => {
     runScript(() => {
-      return annuaire.export(out, { format });
+      let output = out || stdoutStream();
+      return annuaire.exportManquants(output, { format });
     });
   });
 

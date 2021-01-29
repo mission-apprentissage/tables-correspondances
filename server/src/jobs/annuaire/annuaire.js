@@ -1,8 +1,9 @@
 const { oleoduc, transformData, writeData, csvStream, jsonStream } = require("oleoduc");
 const { isEmpty } = require("lodash");
 const { createSource } = require("./sources/sources");
-const { Annuaire } = require("../../common/model");
+const { Annuaire, Etablissement } = require("../../common/model");
 const { validateUAI } = require("../../common/utils/uaiUtils");
+const { getEtablissementStatus } = require("../../logic/controllers/entrepriseController");
 const logger = require("../../common/logger");
 
 module.exports = {
@@ -15,7 +16,7 @@ module.exports = {
       failed: 0,
     };
 
-    let source = await createSource("depp", { stream });
+    let source = await createSource("depp", stream);
 
     await oleoduc(
       source,
@@ -46,48 +47,67 @@ module.exports = {
 
     return stats;
   },
-  collect: async (type, options = {}) => {
+  collect: async (type, stream) => {
     let stats = {
       total: 0,
       updated: 0,
       failed: 0,
     };
 
-    let source = await createSource(type, { stream: options.stream });
+    let source = await createSource(type, stream);
 
     await oleoduc(
       source,
-      writeData(
-        async (current) => {
-          try {
-            stats.total++;
+      writeData(async (current) => {
+        try {
+          stats.total++;
 
-            if (!current.uai) {
-              return;
-            }
-
-            let element = { type, uai: current.uai, valide: validateUAI(current.uai) };
-            let found = await Annuaire.findOne({
-              siret: current.siret,
-              uai: { $ne: current.uai },
-              "uais_secondaires.uai": { $ne: current.uai },
-            });
-
-            if (found) {
-              found.uais_secondaires.push(element);
-              await found.save();
-              stats.updated++;
-            }
-          } catch (e) {
-            stats.failed++;
-            logger.error(`Unable to add UAI informations for siret ${current.siret}`, e);
+          if (!current.uai) {
+            return;
           }
-        },
-        { parallel: 25 }
-      )
+
+          let found = await Annuaire.findOne({
+            siret: current.siret,
+            uai: { $ne: current.uai },
+            "uais_secondaires.uai": { $ne: current.uai },
+          });
+
+          if (found) {
+            found.uais_secondaires.push({ type, uai: current.uai, valide: validateUAI(current.uai) });
+            await found.save();
+            stats.updated++;
+          }
+        } catch (e) {
+          stats.failed++;
+          logger.error(`Unable to add UAI informations for siret ${current.siret}`, e);
+        }
+      })
     );
 
     return stats;
+  },
+  exportManquants: async (out, options = {}) => {
+    return oleoduc(
+      Annuaire.find().cursor(),
+      transformData(
+        async ({ siret, nom, uai }) => {
+          try {
+            let found = await Etablissement.findOne({ siret });
+            if (found) {
+              return null;
+            }
+
+            let status = await getEtablissementStatus(siret);
+            return status === "actif" ? { siret, nom, uai } : null;
+          } catch (e) {
+            logger.error(`Unable to handle siret ${siret}`, e.message);
+          }
+        },
+        { parallel: 10 }
+      ),
+      options.json ? jsonStream() : csvStream(),
+      out
+    );
   },
   export: (out, options = {}) => {
     let formatter = options.json

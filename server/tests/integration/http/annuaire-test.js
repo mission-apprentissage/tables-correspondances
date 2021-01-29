@@ -15,14 +15,22 @@ httpTests(__filename, ({ startServer }) => {
     const response = await httpClient.get("/api/v1/annuaire/etablissements");
 
     strictEqual(response.status, 200);
-    deepStrictEqual(response.data, [
-      {
-        uai: "0010856A",
-        siret: "11111111111111",
-        nom: "Centre de formation",
-        uais_secondaires: [],
+    deepStrictEqual(response.data, {
+      etablissements: [
+        {
+          uai: "0010856A",
+          siret: "11111111111111",
+          nom: "Centre de formation",
+          uais_secondaires: [],
+        },
+      ],
+      pagination: {
+        page: 1,
+        resultats_par_page: 10,
+        nombre_de_page: 1,
+        total: 1,
       },
-    ]);
+    });
   });
 
   it("Vérifie qu'on peut rechercher des établissements à partir d'un uai", async () => {
@@ -34,17 +42,25 @@ httpTests(__filename, ({ startServer }) => {
       uais_secondaires: [],
     }).save();
 
-    const response = await httpClient.get("/api/v1/annuaire/etablissements?value=0010856A");
+    const response = await httpClient.get("/api/v1/annuaire/etablissements?filter=0010856A");
 
     strictEqual(response.status, 200);
-    deepStrictEqual(response.data, [
-      {
-        uai: "0010856A",
-        siret: "11111111111111",
-        nom: "Centre de formation",
-        uais_secondaires: [],
+    deepStrictEqual(response.data, {
+      etablissements: [
+        {
+          uai: "0010856A",
+          siret: "11111111111111",
+          nom: "Centre de formation",
+          uais_secondaires: [],
+        },
+      ],
+      pagination: {
+        page: 1,
+        resultats_par_page: 10,
+        nombre_de_page: 1,
+        total: 1,
       },
-    ]);
+    });
   });
 
   it("Vérifie qu'on peut rechercher des établissements à partir d'un siret", async () => {
@@ -56,25 +72,50 @@ httpTests(__filename, ({ startServer }) => {
       uais_secondaires: [],
     }).save();
 
-    const response = await httpClient.get("/api/v1/annuaire/etablissements?value=11111111111111");
+    const response = await httpClient.get("/api/v1/annuaire/etablissements?filter=11111111111111");
 
     strictEqual(response.status, 200);
-    deepStrictEqual(response.data, [
-      {
-        uai: "0010856A",
-        siret: "11111111111111",
-        nom: "Centre de formation",
-        uais_secondaires: [],
+    deepStrictEqual(response.data, {
+      etablissements: [
+        {
+          uai: "0010856A",
+          siret: "11111111111111",
+          nom: "Centre de formation",
+          uais_secondaires: [],
+        },
+      ],
+      pagination: {
+        page: 1,
+        resultats_par_page: 10,
+        nombre_de_page: 1,
+        total: 1,
       },
-    ]);
+    });
   });
 
   it("Vérifie que le service retourne une liste vide quand aucun etablissement ne correspond", async () => {
     const { httpClient } = await startServer();
 
-    const response = await httpClient.get("/api/v1/annuaire/etablissements?value=XXX");
+    const response = await httpClient.get("/api/v1/annuaire/etablissements?filter=XXX");
 
     strictEqual(response.status, 200);
-    deepStrictEqual(response.data, []);
+    deepStrictEqual(response.data, {
+      etablissements: [],
+      pagination: {
+        page: 1,
+        resultats_par_page: 10,
+        nombre_de_page: 1,
+        total: 0,
+      },
+    });
+  });
+
+  it("Vérifie que le service retourne une 400 quand les paramètres sont invalides", async () => {
+    const { httpClient } = await startServer();
+
+    const response = await httpClient.get("/api/v1/annuaire/etablissements?invalid=XXX");
+
+    strictEqual(response.status, 400);
+    deepStrictEqual(response.data.details[0].path[0], "invalid");
   });
 });
