@@ -22,11 +22,10 @@ httpTests(__filename, ({ startServer }) => {
           siret: "11111111111111",
           nom: "Centre de formation",
           uais_secondaires: [],
-          sirene: {
-            siegeSocial: true,
-            dateCreation: "2020-11-26T23:00:00.000Z",
-            statut: "actif",
-          },
+          region: "11",
+          siegeSocial: true,
+          dateCreation: "2020-11-26T23:00:00.000Z",
+          statut: "actif",
         },
       ],
       pagination: {

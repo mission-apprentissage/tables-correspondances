@@ -9,7 +9,7 @@ const { Annuaire } = require("../../common/model");
 const { runScript } = require("../scriptWrapper");
 const annuaire = require("./annuaire");
 const ovhStorage = require("../../common/ovhStorage");
-const apiEntreprise = require("../../common/apis/apiEntreprise");
+const { createSource } = require("./sources/sources");
 
 const getOVHFileAsStream = (filename) => {
   let file = `/mna-tables-correspondances/annuaire/${filename}`;
@@ -17,7 +17,7 @@ const getOVHFileAsStream = (filename) => {
   return ovhStorage.getFileAsStream(file);
 };
 
-const getDefaultsCollectableRessources = () => {
+const getDefaultsUAIsRessources = () => {
   return Promise.all(
     [
       { type: "catalogue" },
@@ -46,23 +46,23 @@ cli
       let stream = file ? createReadStream(file) : await getOVHFileAsStream("DEPP-CFASousConvRegionale_17122020_1.csv");
 
       await annuaire.deleteAll();
-      return annuaire.initialize(stream, apiEntreprise);
+      return annuaire.initialize(stream);
     });
   });
 
-let collect = cli.command("collect");
-collect
-  .command("uais [type] [file]")
+cli
+  .command("collect [type] [file]")
   .description("Parcoure la ou les sources pour trouver des uais secondaires")
   .action((type, file) => {
     runScript(async () => {
       let collectable = type
         ? [{ type, stream: file ? createReadStream(file) : null }]
-        : await getDefaultsCollectableRessources();
+        : await getDefaultsUAIsRessources();
 
       return Promise.all(
         collectable.map(async ({ type, stream }) => {
-          return { [type]: await annuaire.collectUAIs(type, stream) };
+          let source = createSource(type, stream);
+          return { [type]: await annuaire.collect(source) };
         })
       );
     });
@@ -108,11 +108,10 @@ cli
             siret: faker.helpers.replaceSymbols("#########00015"),
             nom: faker.company.companyName(),
             uais_secondaires: value % 2 ? [{ uai: faker.helpers.replaceSymbols("#######?"), type: "test" }] : [],
-            sirene: {
-              siegeSocial: true,
-              dateCreation: new Date("2020-11-26T23:00:00.000Z"),
-              statut: "actif",
-            },
+            region: "11",
+            siegeSocial: true,
+            dateCreation: new Date("2020-11-26T23:00:00.000Z"),
+            statut: "actif",
           }).save();
         })
       );
