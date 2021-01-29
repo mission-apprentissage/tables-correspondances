@@ -4,16 +4,45 @@ const { range } = require("lodash");
 const faker = require("faker"); // eslint-disable-line node/no-unpublished-require
 const { stdoutStream } = require("oleoduc");
 const { createReadStream } = require("fs");
+const logger = require("../../common/logger");
 const { Annuaire } = require("../../common/model");
 const { runScript } = require("../scriptWrapper");
 const annuaire = require("./annuaire");
+const ovhStorage = require("../../common/ovhStorage");
+
+const getOVHFileAsStream = (filename) => {
+  let file = `/mna-tables-correspondances/annuaire/${filename}`;
+  logger.info(`Downloading ${file} from OVH...`);
+  return ovhStorage.getFileAsStream(file);
+};
+
+const getDefaultsCollectableRessources = () => {
+  return Promise.all(
+    [
+      { type: "catalogue" },
+      { type: "onisep", file: "ONISEP-ideo-structures_denseignement_secondaire.csv" },
+      { type: "onisep", file: "ONISEP-ideo-structures_denseignement_superieur.csv" },
+      { type: "onisepStructure", file: "ONISEP-Structures.csv" },
+      { type: "refea", file: "REFEA-liste-uai-avec-coordonnees.csv" },
+      {
+        type: "opcoep",
+        file: "OPCO EP-20201202 OPCO EP - Jeunes sans contrat par CFA, région et formation au 26 nov.csv",
+      },
+    ].map(async ({ type, file }) => {
+      return {
+        type: type,
+        stream: file && (await getOVHFileAsStream(file)),
+      };
+    })
+  );
+};
 
 cli
   .command("reset [file]")
   .description("Réinitialise l'annuaire avec les données de la DEPP")
   .action((file) => {
     runScript(async () => {
-      let stream = file ? createReadStream(file) : null;
+      let stream = file ? createReadStream(file) : await getOVHFileAsStream("DEPP-CFASousConvRegionale_17122020_1.csv");
 
       await annuaire.deleteAll();
       return annuaire.initialize(stream);
@@ -24,18 +53,16 @@ cli
   .command("collect [type] [file]")
   .description("Collecte les données pour toutes les sources ou un type de source")
   .action((type, file) => {
-    runScript(() => {
-      if (!type) {
-        return Promise.all(
-          ["catalogue", "onisep", "refea", "opcoep", "onisepStructure"].map(async (type) => {
-            return { [type]: await annuaire.collect(type) };
-          })
-        );
-      }
+    runScript(async () => {
+      let collectable = type
+        ? [{ type, stream: file ? createReadStream(file) : null }]
+        : await getDefaultsCollectableRessources();
 
-      let stream = file ? createReadStream(file) : null;
-
-      return annuaire.collect(type, { stream });
+      return Promise.all(
+        collectable.map(async ({ type, stream }) => {
+          return { [type]: await annuaire.collect(type, stream) };
+        })
+      );
     });
   });
 

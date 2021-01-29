@@ -16,7 +16,7 @@ module.exports = {
       failed: 0,
     };
 
-    let source = await createSource("depp", { stream });
+    let source = await createSource("depp", stream);
 
     await oleoduc(
       source,
@@ -47,14 +47,14 @@ module.exports = {
 
     return stats;
   },
-  collect: async (type, options = {}) => {
+  collect: async (type, stream) => {
     let stats = {
       total: 0,
       updated: 0,
       failed: 0,
     };
 
-    let source = await createSource(type, { stream: options.stream });
+    let source = await createSource(type, stream);
 
     await oleoduc(
       source,

@@ -1,13 +1,9 @@
 const { oleoduc, filterData, transformData } = require("oleoduc");
 const csv = require("csv-parse");
-const ovhStorage = require("../../../common/ovhStorage");
 
 module.exports = async (stream) => {
-  let source =
-    stream || (await ovhStorage.getFileAsStream("/mna-tables-correspondances/annuaire/DGEFP-20210105_public_ofs.csv"));
-
   return oleoduc(
-    source,
+    stream,
     csv({
       separator: ";",
       columns: (header) => header.map((column) => column.replace(/ /g, "")),
