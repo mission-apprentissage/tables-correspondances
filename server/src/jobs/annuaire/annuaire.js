@@ -1,4 +1,4 @@
-const { oleoduc, transformData, writeData, csvStream, jsonStream } = require("oleoduc");
+const { oleoduc, transformData, filterData, writeData, csvStream, jsonStream } = require("oleoduc");
 const { isEmpty } = require("lodash");
 const { createSource } = require("./sources/sources");
 const { Annuaire, Etablissement } = require("../../common/model");
@@ -9,40 +9,45 @@ const logger = require("../../common/logger");
 module.exports = {
   deleteAll: () => Annuaire.deleteMany({}),
   initialize: async (stream) => {
+    let source = await createSource("depp", stream);
     let stats = {
       total: 0,
       inserted: 0,
       invalid: 0,
+      ignored: 0,
       failed: 0,
     };
 
-    let source = await createSource("depp", stream);
-
+    let duplicated = [];
     await oleoduc(
       source,
-      transformData((e) => ({ ...e })),
-      writeData(
-        async (data) => {
-          stats.total++;
-          if (isEmpty(data.siret)) {
-            stats.invalid++;
-            return;
-          }
+      filterData(({ uai, siret }) => {
+        let already = duplicated.filter((d) => d === uai || d === siret).length > 0;
+        duplicated.push(uai);
+        duplicated.push(siret);
+        if (already) {
+          stats.ignored++;
+        }
+        return !already;
+      }),
+      writeData(async (data) => {
+        stats.total++;
+        if (isEmpty(data.siret)) {
+          stats.invalid++;
+          return;
+        }
 
-          try {
-            let count = await Annuaire.countDocuments({ siret: data.siret });
-            if (count === 0) {
-              let annuaire = new Annuaire(data);
-              await annuaire.save();
-              stats.inserted++;
-            }
-          } catch (e) {
-            stats.failed++;
-            logger.error(`Unable to insert document with siret ${data.siret} into annuaire`, e);
+        try {
+          let count = await Annuaire.countDocuments({ $or: [{ siret: data.siret }, { uai: data.uai }] });
+          if (count === 0) {
+            await Annuaire.create(data);
+            stats.inserted++;
           }
-        },
-        { parallel: 25 }
-      )
+        } catch (e) {
+          stats.failed++;
+          logger.error(`Unable to insert document with siret ${data.siret} into annuaire`, e);
+        }
+      })
     );
 
     return stats;

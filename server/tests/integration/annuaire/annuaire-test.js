@@ -31,6 +31,24 @@ integrationTests(__filename, () => {
       total: 1,
       inserted: 1,
       invalid: 0,
+      ignored: 0,
+      failed: 0,
+    });
+  });
+
+  it("Vérifie qu'on ignore les établissements en double lors de l'initialisation", async () => {
+    let stream = createDEPPStream(`"numero_uai";"numero_siren_siret_uai";"patronyme_uai"
+"0011058V";"11111111111111";"Centre de formation"
+"0011058V";"11111111111111";"Centre de formation"`);
+
+    let results = await annuaire.initialize(stream);
+
+    await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(results, {
+      total: 1, // Filtered
+      inserted: 1,
+      invalid: 0,
+      ignored: 1,
       failed: 0,
     });
   });
@@ -61,6 +79,7 @@ integrationTests(__filename, () => {
       total: 1,
       inserted: 0,
       invalid: 1,
+      ignored: 0,
       failed: 0,
     });
   });
