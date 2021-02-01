@@ -4,10 +4,10 @@ const csv = require("csv-parse");
 const { Etablissement, Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
 const { apiEntrepriseMock } = require("../../utils/mocks");
-const annuaire = require("../../../src/jobs/annuaire/annuaire");
 const { createSource } = require("../../../src/jobs/annuaire/sources/sources");
 const { createAnnuaire } = require("../../utils/fixtures");
-
+const initialize = require("../../../src/jobs/annuaire/initialize");
+const collect = require("../../../src/jobs/annuaire/collect");
 const { createStream } = require("../../utils/testUtils");
 
 integrationTests(__filename, () => {
@@ -33,83 +33,14 @@ integrationTests(__filename, () => {
     return source;
   };
 
-  it("Vérifie qu'on peut initialiser un annuaire avec le fichier de la DEPP", async () => {
-    let stream = createDEPPStream();
-
-    let results = await annuaire.initialize(stream);
-
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(found, {
-      uai: "0011058V",
-      siret: "11111111111111",
-      nom: "Centre de formation",
-      uais_secondaires: [],
-    });
-    assert.deepStrictEqual(results, {
-      total: 1,
-      inserted: 1,
-      invalid: 0,
-      ignored: 0,
-      failed: 0,
-    });
-  });
-
-  it("Vérifie qu'on ignore les établissements en double lors de l'initialisation", async () => {
-    let stream = createDEPPStream(`"numero_uai";"numero_siren_siret_uai";"patronyme_uai"
-"0011058V";"11111111111111";"Centre de formation"
-"0011058V";"11111111111111";"Centre de formation"`);
-
-    let results = await annuaire.initialize(stream);
-
-    await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(results, {
-      total: 2,
-      inserted: 1,
-      invalid: 0,
-      ignored: 1,
-      failed: 0,
-    });
-  });
-
-  it("Vérifie qu'on peut supprimer un annuaire", async () => {
-    await createAnnuaire({
-      uai: "0011058V",
-      siret: "11111111111111",
-      nom: "Centre de formation",
-      uais_secondaires: [],
-    }).save();
-
-    await annuaire.deleteAll();
-
-    let count = await Annuaire.countDocuments();
-    assert.strictEqual(count, 0);
-  });
-
-  it("Vérifie qu'on peut ignore un établissement avec un siret vide dans le fichier de la DEPP", async () => {
-    let stream = createStream(`"numero_uai";"numero_siren_siret_uai";"patronyme_uai"
-"0011058V";"";"Centre de formation"`);
-
-    let results = await annuaire.initialize(stream);
-
-    let count = await Annuaire.countDocuments({ siret: "11111111111111" });
-    assert.strictEqual(count, 0);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      inserted: 0,
-      invalid: 1,
-      ignored: 0,
-      failed: 0,
-    });
-  });
-
   it("Vérifie qu'on peut collecter un uai", async () => {
     let source = createTestSource(
       `"uai";"siret";"nom"
 "0011073L";"11111111111111";"Centre de formation"`
     );
 
-    await annuaire.initialize(createDEPPStream());
-    let results = await annuaire.collect(source);
+    await initialize(createDEPPStream());
+    let results = await collect(source);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found, {
@@ -137,8 +68,8 @@ integrationTests(__filename, () => {
 "093XXXT";"11111111111111";"Centre de formation"`
     );
 
-    await annuaire.initialize(createDEPPStream());
-    let results = await annuaire.collect(source);
+    await initialize(createDEPPStream());
+    let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires[0], {
@@ -159,8 +90,8 @@ integrationTests(__filename, () => {
 "0011058V";"11111111111111";"Centre de formation"`
     );
 
-    await annuaire.initialize(createDEPPStream());
-    let stats = await annuaire.collect(source);
+    await initialize(createDEPPStream());
+    let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, []);
@@ -189,7 +120,7 @@ integrationTests(__filename, () => {
       ],
     }).save();
 
-    let stats = await annuaire.collect(source);
+    let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, [
@@ -212,8 +143,8 @@ integrationTests(__filename, () => {
 "";"11111111111111";"Centre de formation"`
     );
 
-    await annuaire.initialize(createDEPPStream());
-    let stats = await annuaire.collect(source);
+    await initialize(createDEPPStream());
+    let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, []);
@@ -233,8 +164,8 @@ integrationTests(__filename, () => {
       )
     );
 
-    await annuaire.initialize(createDEPPStream());
-    let results = await annuaire.collect(source);
+    await initialize(createDEPPStream());
+    let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, [
@@ -260,8 +191,8 @@ integrationTests(__filename, () => {
       )
     );
 
-    await annuaire.initialize(createDEPPStream());
-    let results = await annuaire.collect(source);
+    await initialize(createDEPPStream());
+    let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, [
@@ -287,8 +218,8 @@ integrationTests(__filename, () => {
       )
     );
 
-    await annuaire.initialize(createDEPPStream());
-    let results = await annuaire.collect(source);
+    await initialize(createDEPPStream());
+    let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, [
@@ -313,8 +244,8 @@ integrationTests(__filename, () => {
     });
     let source = createSource("catalogue");
 
-    await annuaire.initialize(createDEPPStream());
-    let results = await annuaire.collect(source);
+    await initialize(createDEPPStream());
+    let results = await collect(source);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, [
@@ -340,8 +271,8 @@ integrationTests(__filename, () => {
       )
     );
 
-    await annuaire.initialize(createDEPPStream());
-    let results = await annuaire.collect(source);
+    await initialize(createDEPPStream());
+    let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, [
@@ -358,8 +289,8 @@ integrationTests(__filename, () => {
     });
   });
 
-  it.only("Vérifie qu'on peut collecter des informations du sirene", async () => {
-    await annuaire.initialize(createDEPPStream());
+  it("Vérifie qu'on peut collecter des informations du sirene", async () => {
+    await initialize(createDEPPStream());
     let source = createSource(
       "sirene",
       apiEntrepriseMock({
@@ -377,13 +308,13 @@ integrationTests(__filename, () => {
       })
     );
 
-    let results = await annuaire.collect(source);
+    let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found, {
       siret: "11111111111111",
       nom: "Centre de formation",
-      uais_secondaires: [{ type: "sirene", uai: null, valide: false }],
+      uais_secondaires: [],
       uai: "0011058V",
       region: "11",
       dateCreation: new Date("2020-11-26T23:00:00.000Z"),

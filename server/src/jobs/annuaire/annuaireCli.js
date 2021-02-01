@@ -4,13 +4,16 @@ const { range } = require("lodash");
 const faker = require("faker"); // eslint-disable-line node/no-unpublished-require
 const { stdoutStream } = require("oleoduc");
 const { createReadStream } = require("fs");
+const { runScript } = require("../scriptWrapper");
 const logger = require("../../common/logger");
 const { Annuaire } = require("../../common/model");
-const { runScript } = require("../scriptWrapper");
-const annuaire = require("./annuaire");
 const ovhStorage = require("../../common/ovhStorage");
 const apiEntreprise = require("../../common/apis/apiEntreprise");
 const { createSource } = require("./sources/sources");
+const deleteAll = require("./deleteAll");
+const initialize = require("./initialize");
+const collect = require("./collect");
+const { exportAll } = require("./exports");
 
 const getOVHStream = (filename) => {
   let file = `/mna-tables-correspondances/annuaire/${filename}`;
@@ -45,8 +48,8 @@ cli
     runScript(async () => {
       let stream = file ? createReadStream(file) : await getOVHStream("DEPP-CFASousConvRegionale_17122020_1.csv");
 
-      await annuaire.deleteAll();
-      return annuaire.initialize(stream);
+      await deleteAll();
+      return initialize(stream);
     });
   });
 
@@ -65,7 +68,7 @@ cli
 
       return Promise.all(
         sources.map(async (source) => {
-          return { [source.type]: await annuaire.collect(source) };
+          return { [source.type]: await collect(source) };
         })
       );
     });
@@ -81,19 +84,7 @@ exporter
     runScript(() => {
       let output = out || stdoutStream();
 
-      return annuaire.export(output, { format });
-    });
-  });
-
-exporter
-  .command("manquants")
-  .description("Exporte les établissements de l'annuaire qui ne sont pas dans le catalogue")
-  .option("--out <out>", "Fichier cible dans lequel sera stocké l'export (defaut: stdout)", createWriteStream)
-  .option("--format <format>", "Format : json|csv(défaut)")
-  .action(({ out, format }) => {
-    runScript(() => {
-      let output = out || stdoutStream();
-      return annuaire.exportManquants(output, { format });
+      return exportAll(output, { format });
     });
   });
 
