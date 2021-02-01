@@ -9,32 +9,32 @@ const { Annuaire } = require("../../common/model");
 const { runScript } = require("../scriptWrapper");
 const annuaire = require("./annuaire");
 const ovhStorage = require("../../common/ovhStorage");
+const apiEntreprise = require("../../common/apis/apiEntreprise");
 const { createSource } = require("./sources/sources");
 
-const getOVHFileAsStream = (filename) => {
+const getOVHStream = (filename) => {
   let file = `/mna-tables-correspondances/annuaire/${filename}`;
   logger.info(`Downloading ${file} from OVH...`);
   return ovhStorage.getFileAsStream(file);
 };
 
-const getDefaultsUAIsRessources = () => {
+const getDefaultsSources = () => {
   return Promise.all(
     [
-      { type: "catalogue" },
-      { type: "onisep", file: "ONISEP-ideo-structures_denseignement_secondaire.csv" },
-      { type: "onisep", file: "ONISEP-ideo-structures_denseignement_superieur.csv" },
-      { type: "onisepStructure", file: "ONISEP-Structures.csv" },
-      { type: "refea", file: "REFEA-liste-uai-avec-coordonnees.csv" },
-      {
-        type: "opcoep",
-        file: "OPCO EP-20201202 OPCO EP - Jeunes sans contrat par CFA, région et formation au 26 nov.csv",
-      },
-    ].map(async ({ type, file }) => {
-      return {
-        type: type,
-        stream: file && (await getOVHFileAsStream(file)),
-      };
-    })
+      () => createSource("catalogue"),
+      () => createSource("sirene", apiEntreprise),
+      async () => createSource("onisep", await getOVHStream("ONISEP-ideo-structures_denseignement_secondaire.csv")),
+      async () => createSource("onisep", await getOVHStream("ONISEP-ideo-structures_denseignement_superieur.csv")),
+      async () => createSource("onisepStructure", await getOVHStream("ONISEP-Structures.csv")),
+      async () => createSource("refea", await getOVHStream("REFEA-liste-uai-avec-coordonnees.csv")),
+      async () =>
+        createSource(
+          "opcoep",
+          await getOVHStream(
+            "OPCO EP-20201202 OPCO EP - Jeunes sans contrat par CFA, région et formation au 26 nov.csv"
+          )
+        ),
+    ].map((build) => build())
   );
 };
 
@@ -43,7 +43,7 @@ cli
   .description("Réinitialise l'annuaire avec les données de la DEPP")
   .action((file) => {
     runScript(async () => {
-      let stream = file ? createReadStream(file) : await getOVHFileAsStream("DEPP-CFASousConvRegionale_17122020_1.csv");
+      let stream = file ? createReadStream(file) : await getOVHStream("DEPP-CFASousConvRegionale_17122020_1.csv");
 
       await annuaire.deleteAll();
       return annuaire.initialize(stream);
@@ -52,17 +52,20 @@ cli
 
 cli
   .command("collect [type] [file]")
-  .description("Parcoure la ou les sources pour trouver des uais secondaires")
+  .description("Parcoure la ou les sources pour trouver des données complémentaires")
   .action((type, file) => {
     runScript(async () => {
-      let collectable = type
-        ? [{ type, stream: file ? createReadStream(file) : null }]
-        : await getDefaultsUAIsRessources();
+      let sources = [];
+      if (type) {
+        let stream = file ? createReadStream(file) : null;
+        sources.push(createSource(type, stream));
+      } else {
+        sources = await getDefaultsSources();
+      }
 
       return Promise.all(
-        collectable.map(async ({ type, stream }) => {
-          let source = createSource(type, stream);
-          return { [type]: await annuaire.collect(source) };
+        sources.map(async (source) => {
+          return { [source.type]: await annuaire.collect(source) };
         })
       );
     });
