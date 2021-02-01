@@ -13,6 +13,11 @@
     "accessKeyId": "TABLES_CORRESPONDANCE_ACCESS_KEY_ID",
     "secretAccessKey": "TABLES_CORRESPONDANCE_SECRET_ACCESS_KEY"
   },
+  "ovh": {
+    "storage": {
+      "uri": "TABLES_CORRESPONDANCES_OVH_STORAGE_URI"
+    }
+  },
   "auth": {
     "passwordHashRounds": "TABLES_CORRESPONDANCES_AUTH_PASSWORD_HASH_ROUNDS",
     "user": {

@@ -11,12 +11,18 @@ const createModel = (modelName, descriptor, options = {}) => {
   if (options.createMongoDBIndexes) {
     options.createMongoDBIndexes(schema);
   }
-  return mongoose.model(modelName, schema);
+  return mongoose.model(modelName, schema, options.collectionName);
 };
 
 module.exports = {
   User: createModel("user", schema.userSchema),
   Log: createModel("log", schema.logSchema),
+  Annuaire: createModel("annuaire", schema.annuaireSchema, {
+    collectionName: "annuaire",
+    createMongoDBIndexes: (schema) => {
+      schema.index({ "$**": "text" }, { default_language: "french" });
+    },
+  }),
   FicheRncp: createModel("ficherncp", schema.ficheRncpSchema),
   ConventionFile: createModel("conventionfile", schema.conventionFileSchema),
   CodeIdccOpco: createModel("codeIdccOpco", schema.codeIdccOpcoSchema),

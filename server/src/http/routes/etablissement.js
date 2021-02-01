@@ -1,5 +1,9 @@
 const express = require("express");
+const Joi = require("joi");
+const { oleoduc, jsonStream } = require("oleoduc");
 const tryCatch = require("../middlewares/tryCatchMiddleware");
+const { sendJsonStream } = require("../utils/httpUtils");
+const { paginate } = require("../../common/utils/mongooseUtils");
 const { Etablissement } = require("../../common/model");
 
 /**
@@ -75,21 +79,25 @@ module.exports = () => {
   router.get(
     "/etablissements",
     tryCatch(async (req, res) => {
-      let qs = req.query;
-      const query = qs && qs.query ? JSON.parse(qs.query) : {};
-      const page = qs && qs.page ? qs.page : 1;
-      const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 10;
+      let { query, page, limit } = await Joi.object({
+        query: Joi.string().default("{}"),
+        page: Joi.number().default(1),
+        limit: Joi.number().default(10),
+      }).validateAsync(req.query, { abortEarly: false });
 
-      const allData = await Etablissement.paginate(query, { page, limit });
-      return res.json({
-        etablissements: allData.docs,
-        pagination: {
-          page: allData.page,
-          resultats_par_page: limit,
-          nombre_de_page: allData.pages,
-          total: allData.total,
-        },
-      });
+      let json = JSON.parse(query);
+      let { find, pagination } = await paginate(Etablissement, json, { page, limit });
+      let stream = oleoduc(
+        find.cursor(),
+        jsonStream({
+          arrayWrapper: {
+            pagination,
+          },
+          arrayPropertyName: "etablissements",
+        })
+      );
+
+      return sendJsonStream(stream, res);
     })
   );
 

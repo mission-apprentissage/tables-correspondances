@@ -1,7 +1,30 @@
 const apiEntreprise = require("../../common/apis/apiEntreprise");
 
+const errors = {
+  451: "indisponible",
+  404: "inconnu",
+  422: "invalide",
+};
+
 class EntrepriseApiData {
   constructor() {}
+
+  async getEtablissementStatus(siret, options = {}) {
+    let api = options.apiEntreprise || apiEntreprise;
+    if (!siret) {
+      return "invalide";
+    }
+    try {
+      const etablissement = await api.getEtablissement(siret);
+      return etablissement.etat_administratif.value === "A" ? "actif" : "fermé";
+    } catch (e) {
+      let status = errors[e.response.status];
+      if (!status) {
+        throw e;
+      }
+      return status;
+    }
+  }
 
   async findDataFromSiret(providedSiret) {
     if (!providedSiret || !/^[0-9]{14}$/g.test(providedSiret.trim())) {
@@ -15,8 +38,10 @@ class EntrepriseApiData {
 
     let siret = `${providedSiret}`.trim();
 
-    const responseEstablishmentApiInfo = await apiEntreprise.getEntrepriseInfoFromSiret(siret);
-    if (!responseEstablishmentApiInfo) {
+    let etablissementApiInfo;
+    try {
+      etablissementApiInfo = await apiEntreprise.getEtablissement(siret);
+    } catch (e) {
       return {
         result: {},
         messages: {
@@ -26,9 +51,10 @@ class EntrepriseApiData {
     }
 
     const siren = siret.substring(0, 9);
-    const responseEntrepriseApiInfo = await apiEntreprise.getEntrepriseInfoFromSiren(siren);
-
-    if (!responseEntrepriseApiInfo) {
+    let entrepriseApiInfo;
+    try {
+      entrepriseApiInfo = await apiEntreprise.getEntreprise(siren);
+    } catch (e) {
       return {
         result: {},
         messages: {
@@ -36,10 +62,6 @@ class EntrepriseApiData {
         },
       };
     }
-
-    const { entreprise: entrepriseApiInfo } = responseEntrepriseApiInfo;
-
-    const { etablissement: etablissementApiInfo } = responseEstablishmentApiInfo;
 
     return {
       result: {
