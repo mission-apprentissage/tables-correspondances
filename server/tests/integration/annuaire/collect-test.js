@@ -327,4 +327,21 @@ integrationTests(__filename, () => {
       failed: 0,
     });
   });
+
+  it("Vérifie qu'on gère une erreir lors de la collecte des informations du sirene", async () => {
+    await initialize(createDEPPStream());
+    let source = createSource("sirene", {
+      getEtablissement: () => {
+        throw new Error("HTTP error");
+      },
+    });
+
+    let results = await collect(source);
+
+    assert.deepStrictEqual(results, {
+      total: 1,
+      updated: 0,
+      failed: 1,
+    });
+  });
 });

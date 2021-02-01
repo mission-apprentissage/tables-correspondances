@@ -17,13 +17,24 @@ module.exports = async (source) => {
     failed: 0,
   };
 
+  let handleError = (e, options) => {
+    stats.failed++;
+    let extra = options ? `[${JSON.stringify(options)}]` : "";
+    logger.error(`Unable to collect informations for source '${source.type}' ${extra}`, e);
+  };
+
   await oleoduc(
     source,
     writeData(async (current) => {
-      try {
-        stats.total++;
+      let siret = current.siret;
+      stats.total++;
 
-        let etablissement = await Annuaire.findOne({ siret: current.siret });
+      try {
+        if (current.error instanceof Error) {
+          return handleError(current.error);
+        }
+
+        let etablissement = await Annuaire.findOne({ siret: siret });
         if (!etablissement) {
           return;
         }
@@ -45,8 +56,7 @@ module.exports = async (source) => {
         );
         stats.updated += getNbModifiedDocuments(res);
       } catch (e) {
-        stats.failed++;
-        logger.error(`Unable to add UAI informations for siret ${current.siret}`, e);
+        handleError(e, siret);
       }
     })
   );
