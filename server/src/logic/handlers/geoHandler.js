@@ -12,7 +12,7 @@ const getDataFromCP = async (providedCP) => {
 
   let codePostal = `${providedCP}`.trim();
 
-  const { info, value } = await geoController.findCode(codePostal);
+  const { info, value, update } = await geoController.findCode(codePostal);
 
   if (!value) {
     return {
@@ -43,6 +43,7 @@ const getDataFromCP = async (providedCP) => {
     },
     messages: {
       cp: info,
+      update: update ? update : "",
     },
   };
 };
