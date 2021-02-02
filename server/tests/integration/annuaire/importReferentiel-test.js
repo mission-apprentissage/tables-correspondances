@@ -3,7 +3,7 @@ const csv = require("csv-parse");
 const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
-const importEtablissements = require("../../../src/jobs/annuaire/importEtablissements");
+const importReferentiel = require("../../../src/jobs/annuaire/importReferentiel");
 const { createReferentiel } = require("../../../src/jobs/annuaire/referentiels/referentiels");
 const { createStream } = require("../../utils/testUtils");
 
@@ -30,7 +30,7 @@ integrationTests(__filename, () => {
 "0011058V";"11111111111111";"Centre de formation"`
     );
 
-    let results = await importEtablissements(referentiel);
+    let results = await importReferentiel(referentiel);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found, {
@@ -54,7 +54,7 @@ integrationTests(__filename, () => {
 "0011058V";"11111111111111";"Centre de formation"
 "0011058V";"11111111111111";"Centre de formation"`);
 
-    let results = await importEtablissements(referentiel);
+    let results = await importReferentiel(referentiel);
 
     await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(results, {
@@ -70,7 +70,7 @@ integrationTests(__filename, () => {
     let referentiel = createTestReferentiel(`"uai";"siret";"nom"
 "0011058V";"";"Centre de formation"`);
 
-    let results = await importEtablissements(referentiel);
+    let results = await importReferentiel(referentiel);
 
     let count = await Annuaire.countDocuments({ siret: "11111111111111" });
     assert.strictEqual(count, 0);
@@ -90,7 +90,7 @@ integrationTests(__filename, () => {
 "0011058V";"11111111111111";"Centre de formation"`)
     );
 
-    let results = await importEtablissements(referentiel);
+    let results = await importReferentiel(referentiel);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found, {
@@ -117,7 +117,7 @@ integrationTests(__filename, () => {
 "Centre de formation 2";"222222222";"22222";"Non"`)
     );
 
-    let results = await importEtablissements(referentiel);
+    let results = await importReferentiel(referentiel);
 
     let docs = await Annuaire.find({}, { _id: 0, __v: 0 }).lean();
     assert.strictEqual(docs.length, 1);

@@ -9,7 +9,7 @@ const { Annuaire } = require("../../common/model");
 const { createSource, getDefaultSources } = require("./sources/sources");
 const { createReferentiel, getDefaultReferentiels } = require("./referentiels/referentiels");
 const cleanAll = require("./cleanAll");
-const importEtablissements = require("./importEtablissements");
+const importReferentiel = require("./importReferentiel");
 const collect = require("./collect");
 const { exportAll } = require("./exports");
 
@@ -37,7 +37,7 @@ cli
 
       return Promise.all(
         referentiels.map(async (referentiel) => {
-          return { [referentiel.type]: await importEtablissements(referentiel) };
+          return { [referentiel.type]: await importReferentiel(referentiel) };
         })
       );
     });

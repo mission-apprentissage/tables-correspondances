@@ -7,7 +7,7 @@ const { apiEntrepriseMock } = require("../../utils/mocks");
 const { createSource } = require("../../../src/jobs/annuaire/sources/sources");
 const { createReferentiel } = require("../../../src/jobs/annuaire/referentiels/referentiels");
 const { createAnnuaire } = require("../../utils/fixtures");
-const addEtablissements = require("../../../src/jobs/annuaire/importEtablissements");
+const importReferentiel = require("../../../src/jobs/annuaire/importReferentiel");
 const collect = require("../../../src/jobs/annuaire/collect");
 const { createStream } = require("../../utils/testUtils");
 
@@ -42,7 +42,7 @@ integrationTests(__filename, () => {
 "0011073L";"11111111111111";"Centre de formation"`
     );
 
-    await addEtablissements(createDeppReferentiel());
+    await importReferentiel(createDeppReferentiel());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
@@ -72,7 +72,7 @@ integrationTests(__filename, () => {
 "093XXXT";"11111111111111";"Centre de formation"`
     );
 
-    await addEtablissements(createDeppReferentiel());
+    await importReferentiel(createDeppReferentiel());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
@@ -94,7 +94,7 @@ integrationTests(__filename, () => {
 "0011058V";"11111111111111";"Centre de formation"`
     );
 
-    await addEtablissements(createDeppReferentiel());
+    await importReferentiel(createDeppReferentiel());
     let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
@@ -147,7 +147,7 @@ integrationTests(__filename, () => {
 "";"11111111111111";"Centre de formation"`
     );
 
-    await addEtablissements(createDeppReferentiel());
+    await importReferentiel(createDeppReferentiel());
     let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
@@ -168,7 +168,7 @@ integrationTests(__filename, () => {
       )
     );
 
-    await addEtablissements(createDeppReferentiel());
+    await importReferentiel(createDeppReferentiel());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
@@ -195,7 +195,7 @@ integrationTests(__filename, () => {
       )
     );
 
-    await addEtablissements(createDeppReferentiel());
+    await importReferentiel(createDeppReferentiel());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
@@ -222,7 +222,7 @@ integrationTests(__filename, () => {
       )
     );
 
-    await addEtablissements(createDeppReferentiel());
+    await importReferentiel(createDeppReferentiel());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
@@ -248,7 +248,7 @@ integrationTests(__filename, () => {
     });
     let source = await createSource("catalogue");
 
-    await addEtablissements(createDeppReferentiel());
+    await importReferentiel(createDeppReferentiel());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
@@ -275,7 +275,7 @@ integrationTests(__filename, () => {
       )
     );
 
-    await addEtablissements(createDeppReferentiel());
+    await importReferentiel(createDeppReferentiel());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
@@ -294,7 +294,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut collecter des informations relatives à l'entreprise", async () => {
-    await addEtablissements(createDeppReferentiel());
+    await importReferentiel(createDeppReferentiel());
     let source = await createSource(
       "entreprise",
       apiEntrepriseMock({
@@ -334,7 +334,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on gère une erreur lors de la collecte des informations de l'entreprise", async () => {
-    await addEtablissements(createDeppReferentiel());
+    await importReferentiel(createDeppReferentiel());
     let source = await createSource("entreprise", {
       getEtablissement: () => {
         throw new Error("HTTP error");
