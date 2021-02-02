@@ -160,7 +160,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut collecter des informations du fichier ONISEP", async () => {
-    let source = createSource(
+    let source = await createSource(
       "onisep",
       createStream(
         `"code UAI";"n° SIRET";"nom"
@@ -187,7 +187,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut collecter des informations du fichier ONISEP (structure)", async () => {
-    let source = createSource(
+    let source = await createSource(
       "onisepStructure",
       createStream(
         `STRUCT SIRET;STRUCT UAI;STRUCT Libellé Amétys
@@ -214,7 +214,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut collecter des informations du fichier REFEA", async () => {
-    let source = createSource(
+    let source = await createSource(
       "refea",
       createStream(
         `uai_code_siret;uai_code_educnationale;uai_libelle_educnationale
@@ -246,7 +246,7 @@ integrationTests(__filename, () => {
       siret: "11111111111111",
       entreprise_raison_sociale: "Centre de formation",
     });
-    let source = createSource("catalogue");
+    let source = await createSource("catalogue");
 
     await addEtablissements(createDeppReferentiel());
     let results = await collect(source);
@@ -267,7 +267,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut collecter des informations du fichier OPCO EP", async () => {
-    let source = createSource(
+    let source = await createSource(
       "opcoep",
       createStream(
         `SIRET CFA;N UAI CFA;Nom CFA
@@ -295,7 +295,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on peut collecter des informations relatives à l'entreprise", async () => {
     await addEtablissements(createDeppReferentiel());
-    let source = createSource(
+    let source = await createSource(
       "entreprise",
       apiEntrepriseMock({
         siege_social: true,
@@ -333,9 +333,9 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on gère une erreir lors de la collecte des informations de l'entreprise", async () => {
+  it("Vérifie qu'on gère une erreur lors de la collecte des informations de l'entreprise", async () => {
     await addEtablissements(createDeppReferentiel());
-    let source = createSource("entreprise", {
+    let source = await createSource("entreprise", {
       getEtablissement: () => {
         throw new Error("HTTP error");
       },

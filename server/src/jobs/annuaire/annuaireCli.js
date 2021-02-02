@@ -51,7 +51,7 @@ cli
       let sources = [];
       if (type) {
         let stream = file ? createReadStream(file) : null;
-        sources.push(createSource(type, stream));
+        sources.push(await createSource(type, stream));
       } else {
         sources = await getDefaultSources();
       }

@@ -11,8 +11,8 @@ let sources = fs.readdirSync(__dirname).reduce((acc, filename) => {
   };
 }, {});
 
-let createSource = (type, ...args) => {
-  let source = sources[type](...args);
+let createSource = async (type, ...args) => {
+  let source = await sources[type](...args);
   source.type = type;
   return source;
 };
