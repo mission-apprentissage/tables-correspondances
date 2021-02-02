@@ -289,10 +289,10 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on peut collecter des informations du sirene", async () => {
+  it("Vérifie qu'on peut collecter des informations relatives à l'entreprise", async () => {
     await initialize(createDEPPStream());
     let source = createSource(
-      "sirene",
+      "entreprise",
       apiEntrepriseMock({
         siege_social: true,
         siret: "11111111111111",
@@ -328,9 +328,9 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on gère une erreir lors de la collecte des informations du sirene", async () => {
+  it("Vérifie qu'on gère une erreir lors de la collecte des informations de l'entreprise", async () => {
     await initialize(createDEPPStream());
-    let source = createSource("sirene", {
+    let source = createSource("entreprise", {
       getEtablissement: () => {
         throw new Error("HTTP error");
       },

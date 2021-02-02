@@ -25,7 +25,7 @@ const getDefaultsSources = () => {
   return Promise.all(
     [
       () => createSource("catalogue"),
-      () => createSource("sirene", apiEntreprise),
+      () => createSource("entreprise", apiEntreprise),
       async () => createSource("onisep", await getOVHStream("ONISEP-ideo-structures_denseignement_secondaire.csv")),
       async () => createSource("onisep", await getOVHStream("ONISEP-ideo-structures_denseignement_superieur.csv")),
       async () => createSource("onisepStructure", await getOVHStream("ONISEP-Structures.csv")),
