@@ -9,7 +9,7 @@ const { Annuaire } = require("../../common/model");
 const { createSource, getDefaultSources } = require("./sources/sources");
 const { createReferentiel, getDefaultReferentiels } = require("./referentiels/referentiels");
 const cleanAll = require("./cleanAll");
-const addEtablissements = require("./addEtablissements");
+const importEtablissements = require("./importEtablissements");
 const collect = require("./collect");
 const { exportAll } = require("./exports");
 
@@ -23,8 +23,8 @@ cli
   });
 
 cli
-  .command("add [type] [file]")
-  .description("Ajoute les établissements contenus dans le ou les référentiels")
+  .command("import [type] [file]")
+  .description("Importe les établissements contenus dans le ou les référentiels")
   .action((type, file) => {
     runScript(async () => {
       let referentiels = [];
@@ -37,7 +37,7 @@ cli
 
       return Promise.all(
         referentiels.map(async (referentiel) => {
-          return { [referentiel.type]: await addEtablissements(referentiel) };
+          return { [referentiel.type]: await importEtablissements(referentiel) };
         })
       );
     });
