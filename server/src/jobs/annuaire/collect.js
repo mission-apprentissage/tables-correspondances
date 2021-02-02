@@ -5,10 +5,8 @@ const { getNbModifiedDocuments } = require("../../common/utils/mongooseUtils");
 const { validateUAI } = require("../../common/utils/uaiUtils");
 const logger = require("../../common/logger");
 
-const shouldIgnoreUAIs = (etablissement, data) => {
-  return (
-    !data.uai || etablissement.uai === data.uai || !!etablissement.uais_secondaires.find(({ uai }) => uai === data.uai)
-  );
+const shouldAddUAIs = (etablissement, uai) => {
+  return uai && etablissement.uai !== uai && !etablissement.uais_secondaires.find(({ uai }) => uai === uai);
 };
 module.exports = async (source) => {
   let stats = {
@@ -45,13 +43,13 @@ module.exports = async (source) => {
             $set: {
               ...omit(current, ["uai", "siret", "nom"]),
             },
-            ...(shouldIgnoreUAIs(etablissement, current)
-              ? {}
-              : {
+            ...(shouldAddUAIs(etablissement, current.uai)
+              ? {
                   $push: {
                     uais_secondaires: { type: source.type, uai: current.uai, valide: validateUAI(current.uai) },
                   },
-                }),
+                }
+              : {}),
           }
         );
         stats.updated += getNbModifiedDocuments(res);
