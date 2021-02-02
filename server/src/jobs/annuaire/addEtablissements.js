@@ -1,10 +1,9 @@
-const { oleoduc, transformData, writeData } = require("oleoduc");
+const { oleoduc, writeData } = require("oleoduc");
 const { isEmpty } = require("lodash");
-const csv = require("csv-parse");
 const { Annuaire } = require("../../common/model");
 const logger = require("../../common/logger");
 
-module.exports = async (stream) => {
+module.exports = async (referentiel) => {
   let stats = {
     total: 0,
     inserted: 0,
@@ -14,18 +13,7 @@ module.exports = async (stream) => {
   };
 
   await oleoduc(
-    stream,
-    csv({
-      delimiter: ";",
-      columns: true,
-    }),
-    transformData((data) => {
-      return {
-        uai: data.numero_uai,
-        siret: data.numero_siren_siret_uai,
-        nom: data.patronyme_uai,
-      };
-    }),
+    referentiel,
     writeData(async (e) => {
       stats.total++;
       if (isEmpty(e.siret)) {

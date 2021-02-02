@@ -26,6 +26,7 @@ httpTests(__filename, ({ startServer }) => {
           siegeSocial: true,
           dateCreation: "2020-11-26T23:00:00.000Z",
           statut: "actif",
+          referentiel: "test",
         },
       ],
       pagination: {
