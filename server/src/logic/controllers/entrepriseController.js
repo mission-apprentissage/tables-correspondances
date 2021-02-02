@@ -9,20 +9,21 @@ const errors = {
 class EntrepriseApiData {
   constructor() {}
 
-  async getEtablissementStatus(siret, options = {}) {
+  async getEtablissementStatut(siret, options = {}) {
     let api = options.apiEntreprise || apiEntreprise;
     if (!siret) {
       return "invalide";
     }
+
     try {
       const etablissement = await api.getEtablissement(siret);
       return etablissement.etat_administratif.value === "A" ? "actif" : "fermé";
     } catch (e) {
-      let status = errors[e.response.status];
-      if (!status) {
+      let statut = errors[e.response.status];
+      if (!statut) {
         throw e;
       }
-      return status;
+      return statut;
     }
   }
 
