@@ -49,7 +49,7 @@ module.exports = async (referentiel, apiEntreprise) => {
       stats.total++;
       if (err) {
         stats.failed++;
-        logger.error(`Erreur lors du traitement d'un établissement pour le référentiel ${type}`, err);
+        logger.error(`[Referentiel] Erreur lors du traitement d'un établissement pour le référentiel ${type}`, err);
         return;
       }
 
@@ -65,7 +65,7 @@ module.exports = async (referentiel, apiEntreprise) => {
         }
       } catch (e) {
         stats.failed++;
-        logger.error(`Unable to insert document with siret ${e.siret} into annuaire`, e);
+        logger.error(`[Referentiel] Unable to insert document with siret ${e.siret} into annuaire`, e);
       }
     })
   );
