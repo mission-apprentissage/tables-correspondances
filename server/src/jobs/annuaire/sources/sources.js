@@ -10,7 +10,9 @@ let sources = fs.readdirSync(__dirname).reduce((acc, filename) => {
 }, {});
 
 module.exports = {
-  createSource: (type, stream) => {
-    return sources[type](stream);
+  createSource: (type, ...args) => {
+    let source = sources[type](...args);
+    source.type = type;
+    return source;
   },
 };

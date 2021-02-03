@@ -100,7 +100,7 @@ export default () => {
                         <Table.ColHeader>Siret</Table.ColHeader>
                         <Table.ColHeader>Nom</Table.ColHeader>
                         <Table.ColHeader>Uai secondaires</Table.ColHeader>
-                        <Table.ColHeader />
+                        <Table.ColHeader>Siège social</Table.ColHeader>
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -127,6 +127,7 @@ export default () => {
                                   );
                                 })}
                               </Table.Col>
+                              <Table.Col>{e.siegeSocial ? "Oui" : "Non"}</Table.Col>
                             </Table.Row>
                           );
                         })

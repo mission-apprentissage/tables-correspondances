@@ -8,7 +8,6 @@ module.exports = () => {
       return {
         siret: etablissement.siret,
         uai: etablissement.uai,
-        nom: etablissement.entreprise_raison_sociale,
       };
     }),
     { promisify: false }

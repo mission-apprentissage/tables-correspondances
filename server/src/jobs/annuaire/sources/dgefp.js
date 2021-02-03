@@ -1,7 +1,7 @@
 const { oleoduc, filterData, transformData } = require("oleoduc");
 const csv = require("csv-parse");
 
-module.exports = async (stream) => {
+module.exports = (stream) => {
   return oleoduc(
     stream,
     csv({
@@ -13,7 +13,6 @@ module.exports = async (stream) => {
       return {
         siret: `${data.siren}${data.num_etablissement}`,
         uai: null,
-        nom: data.raison_sociale,
       };
     }),
     { promisify: false }
