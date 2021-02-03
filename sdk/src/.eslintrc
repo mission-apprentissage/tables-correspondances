@@ -1,0 +1,3 @@
+{
+  "extends": ["sbs/base", "sbs/typescript"]
+}

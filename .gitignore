@@ -133,3 +133,9 @@ setEnv.sh
 **/.vagrant/
 **/node_modules/
 yarn-error.log
+
+# Builds
+dist
+build
+sdk/lib
+.npmrc
