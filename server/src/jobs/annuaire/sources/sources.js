@@ -1,6 +1,5 @@
 const fs = require("fs");
 const { getOvhFileAsStream } = require("../../../common/ovhStorage");
-const apiEntreprise = require("../../../common/apis/apiEntreprise");
 
 let sources = fs.readdirSync(__dirname).reduce((acc, filename) => {
   let type = filename.split(".")[0];
@@ -24,9 +23,6 @@ module.exports = {
       [
         () => {
           return createSource("catalogue");
-        },
-        () => {
-          return createSource("entreprise", apiEntreprise);
         },
         async () => {
           let stream = await getOvhFileAsStream("annuaire/ONISEP-ideo-structures_denseignement_secondaire.csv");

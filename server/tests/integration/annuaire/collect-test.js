@@ -3,7 +3,7 @@ const { oleoduc } = require("oleoduc");
 const csv = require("csv-parse");
 const { Etablissement, Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
-const { apiEntrepriseMock } = require("../../utils/mocks");
+const { createApiEntrepriseMock } = require("../../utils/mocks");
 const { createSource } = require("../../../src/jobs/annuaire/sources/sources");
 const { createReferentiel } = require("../../../src/jobs/annuaire/referentiels/referentiels");
 const { createAnnuaire } = require("../../utils/fixtures");
@@ -42,23 +42,17 @@ integrationTests(__filename, () => {
 "0011073L";"11111111111111";"Centre de formation"`
     );
 
-    await importReferentiel(createDeppReferentiel());
+    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(found, {
-      uai: "0011058V",
-      siret: "11111111111111",
-      nom: "Centre de formation",
-      referentiel: "depp",
-      uais_secondaires: [
-        {
-          type: "test",
-          uai: "0011073L",
-          valide: true,
-        },
-      ],
-    });
+    assert.deepStrictEqual(found.uais_secondaires, [
+      {
+        type: "test",
+        uai: "0011073L",
+        valide: true,
+      },
+    ]);
     assert.deepStrictEqual(results, {
       total: 1,
       failed: 0,
@@ -72,7 +66,7 @@ integrationTests(__filename, () => {
 "093XXXT";"11111111111111";"Centre de formation"`
     );
 
-    await importReferentiel(createDeppReferentiel());
+    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
@@ -94,7 +88,7 @@ integrationTests(__filename, () => {
 "0011058V";"11111111111111";"Centre de formation"`
     );
 
-    await importReferentiel(createDeppReferentiel());
+    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
@@ -114,7 +108,6 @@ integrationTests(__filename, () => {
     await createAnnuaire({
       uai: "0011058V",
       siret: "11111111111111",
-      nom: "Centre de formation",
       uais_secondaires: [
         {
           type: "test",
@@ -147,7 +140,7 @@ integrationTests(__filename, () => {
 "";"11111111111111";"Centre de formation"`
     );
 
-    await importReferentiel(createDeppReferentiel());
+    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
@@ -168,7 +161,7 @@ integrationTests(__filename, () => {
       )
     );
 
-    await importReferentiel(createDeppReferentiel());
+    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
@@ -195,7 +188,7 @@ integrationTests(__filename, () => {
       )
     );
 
-    await importReferentiel(createDeppReferentiel());
+    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
@@ -222,7 +215,7 @@ integrationTests(__filename, () => {
       )
     );
 
-    await importReferentiel(createDeppReferentiel());
+    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
@@ -248,7 +241,7 @@ integrationTests(__filename, () => {
     });
     let source = await createSource("catalogue");
 
-    await importReferentiel(createDeppReferentiel());
+    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
@@ -275,7 +268,7 @@ integrationTests(__filename, () => {
       )
     );
 
-    await importReferentiel(createDeppReferentiel());
+    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
@@ -290,63 +283,6 @@ integrationTests(__filename, () => {
       total: 1,
       updated: 1,
       failed: 0,
-    });
-  });
-
-  it("Vérifie qu'on peut collecter des informations relatives à l'entreprise", async () => {
-    await importReferentiel(createDeppReferentiel());
-    let source = await createSource(
-      "entreprise",
-      apiEntrepriseMock({
-        siege_social: true,
-        siret: "11111111111111",
-        date_creation_etablissement: 1606431600,
-        etat_administratif: {
-          value: "A",
-          date_fermeture: null,
-        },
-        region_implantation: {
-          code: "11",
-          value: "Île-de-France",
-        },
-      })
-    );
-
-    let results = await collect(source);
-
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(found, {
-      siret: "11111111111111",
-      nom: "Centre de formation",
-      uais_secondaires: [],
-      referentiel: "depp",
-      uai: "0011058V",
-      region: "11",
-      dateCreation: new Date("2020-11-26T23:00:00.000Z"),
-      siegeSocial: true,
-      statut: "actif",
-    });
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 0,
-    });
-  });
-
-  it("Vérifie qu'on gère une erreur lors de la collecte des informations de l'entreprise", async () => {
-    await importReferentiel(createDeppReferentiel());
-    let source = await createSource("entreprise", {
-      getEtablissement: () => {
-        throw new Error("HTTP error");
-      },
-    });
-
-    let results = await collect(source);
-
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 0,
-      failed: 1,
     });
   });
 });

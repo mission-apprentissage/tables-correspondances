@@ -1,11 +1,11 @@
 const assert = require("assert");
-const { apiEntrepriseMock } = require("../utils/mocks");
+const { createApiEntrepriseMock } = require("../utils/mocks");
 const entrepriseController = require("../../src/logic/controllers/entrepriseController");
 
 describe(__filename, () => {
   it("Permet d'obtenir le statut d'une entreprise (actif)", async () => {
     let statut = await entrepriseController.getEtablissementStatut("11111111111111", {
-      apiEntreprise: apiEntrepriseMock({
+      apiEntreprise: createApiEntrepriseMock({
         siret: "11111111111111",
         etat_administratif: {
           value: "A",
@@ -19,7 +19,7 @@ describe(__filename, () => {
 
   it("Permet d'obtenir le statut d'une entreprise (fermé)", async () => {
     let statut = await entrepriseController.getEtablissementStatut("11111111111111", {
-      apiEntreprise: apiEntrepriseMock({
+      apiEntreprise: createApiEntrepriseMock({
         siret: "11111111111111",
         etat_administratif: {
           value: "F",
