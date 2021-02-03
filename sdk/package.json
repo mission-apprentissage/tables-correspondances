@@ -1,7 +1,7 @@
 {
   "name": "@mission-apprentissage/tco-service-node",
   "repository": "https://github.com/mission-apprentissage/tables-correspondances.git",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-042f98d0629f39dc9215670a017f464a.1",
   "description": "NodeJS library",
   "license": "SEE LICENSE IN LICENSE.md",
   "main": "lib/index.js",
@@ -26,6 +26,7 @@
     "build": "tsc -b",
     "clean": "tsc -b --clean && rm -rf lib",
     "prepublishOnly": "yarn build",
-    "npm:release": "semantic-release"
+    "npm:release": "semantic-release",
+    "npm:release:local": "CI=true LOCAL_RELEASE=true semantic-release"
   }
 }
