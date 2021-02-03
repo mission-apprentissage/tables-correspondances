@@ -1,7 +1,7 @@
 const { merge } = require("lodash");
 
 module.exports = {
-  apiEntrepriseMock: (etablissement = {}) => {
+  createApiEntrepriseMock: (etablissement = {}) => {
     return {
       getEtablissement: () => {
         return merge(
