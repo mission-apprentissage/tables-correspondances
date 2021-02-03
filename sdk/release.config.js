@@ -1,7 +1,7 @@
 const mainConfig = {
   branches: [
-    "master",
-    { name: "develop", channel: "beta", prerelease: "beta" },
+    "sdk",
+    // { name: "develop", channel: "beta", prerelease: "beta" },
   ],
   repositoryUrl: "https://github.com/mission-apprentissage/tables-correspondances.git",
   plugins: [
@@ -49,8 +49,8 @@ const channel = createHash("md5").update(branch).digest("hex");
 
 const localConfig = {
   branches: [
-    "master",
-    { name: "develop", channel: "beta", prerelease: "beta" },
+    "sdk",
+    // { name: "develop", channel: "beta", prerelease: "beta" },
     {
       name: branch,
       channel,
