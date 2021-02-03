@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v1.0.0...v1.1.0) (2021-02-03)
+
+
+### Features
+
+* dummy change ([4c8df59](https://github.com/mission-apprentissage/tables-correspondances/commit/4c8df59244df96eb59f76e5e3154291f200b3ff7))
+
 # 1.0.0 (2021-02-03)
 
 
