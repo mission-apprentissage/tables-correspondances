@@ -11,7 +11,7 @@
     "declarationMap": true,
     "sourceMap": true,
     "allowJs": true,
-    "checkJs": true,
+    "checkJs": false,
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,

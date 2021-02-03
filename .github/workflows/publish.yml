@@ -22,23 +22,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-
 
-      - run: echo -e "//npm.pkg.github.com/:_authToken=$NPM_TOKEN\n@mission-apprentissage:registry=https://npm.pkg.github.com" > sdk/.npmrc
+      - run: echo -e "//npm.pkg.github.com/:_authToken=$NPM_TOKEN\n@mission-apprentissage:registry=https://npm.pkg.github.com" > server/.npmrc
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Run Yarn Install
         run: |
-          cd sdk
+          cd server
           yarn install
 
       - name: build sdk
         run: |
-          cd sdk
-          yarn build
+          cd server
+          yarn sdk:build
 
       - name: publish sdk
         run: |
-          cd sdk
+          cd server
           yarn npm:release
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
