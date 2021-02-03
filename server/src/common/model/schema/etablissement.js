@@ -94,6 +94,11 @@ const etablissementSchema = {
     default: null,
     description: "Numéro de département",
   },
+  nom_departement: {
+    type: String,
+    default: null,
+    description: "Nom du departement",
+  },
   localite: {
     type: String,
     default: null,
