@@ -4,10 +4,12 @@
     "composite": true,
     "outDir": "./lib",
     "rootDir": "./src",
-    "lib": ["ES2019"],
+    "sourceRoot": "./src/sdk",
+    "lib": ["es2015"],
     "module": "commonjs",
-    "target": "ES2019",
+    "target": "es6",
     "tsBuildInfoFile": "../../.build-cache/node.tsbuildinfo"
   },
-  "include": ["src"],
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*__test.js", "**/*.test.js"]
 }

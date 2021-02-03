@@ -1,12 +1,17 @@
 {
-  "name": "mna-tables-correspondances-server",
-  "version": "0.0.1",
+  "name": "@mission-apprentissage/tco-service-node",
+  "version": "1.0.0-042f98d0629f39dc9215670a017f464a.1",
   "description": "[MNA] Tables de correspondances",
+  "license": "SEE LICENSE IN LICENSE.md",
   "repository": "https://github.com/mission-apprentissage/tables-correspondances.git",
   "private": false,
+  "sideEffects": false,
   "author": "MNA",
-  "license": "MIT",
-  "main": "src/index.js",
+  "main": "lib/sdk/index.js",
+  "types": "lib/sdk/index.d.ts",
+  "publishConfig": {
+    "access": "restricted"
+  },
   "scripts": {
     "start": "node src/index.js",
     "debug": "nodemon --inspect=0.0.0.0 --signal SIGINT --ignore tests/ src/index.js",
@@ -29,7 +34,12 @@
     "etablissements:updater": "standalone=true node src/jobs/EtablissementsUpdater/index.js",
     "es:index": "standalone=true node src/jobs/esIndex/index.js",
     "generate:swaggerschema": "standalone=true node src/jobs/generateSwaggerSchema/index.js",
-    "annuaire": "TABLES_CORRESPONDANCES_LOG_TYPE=stderr node -r dotenv/config src/jobs/annuaire/annuaireCli.js"
+    "annuaire": "TABLES_CORRESPONDANCES_LOG_TYPE=stderr node -r dotenv/config src/jobs/annuaire/annuaireCli.js",
+    "sdk:build": "tsc -b",
+    "sdk:clean": "tsc -b --clean && rm -rf lib",
+    "sdk:prepublishOnly": "yarn build",
+    "npm:release": "semantic-release",
+    "npm:release:local": "CI=true LOCAL_RELEASE=true semantic-release"
   },
   "dependencies": {
     "@azure/storage-blob": "12.3.0",
@@ -100,7 +110,13 @@
     "lint-staged": ">=10",
     "mocha": "7.1.2",
     "nodemon": "2.0.3",
-    "prettier": "2.0.5"
+    "prettier": "2.0.5",
+    "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/exec": "^5.0.0",
+    "@semantic-release/git": "^9.0.0",
+    "semantic-release": "^17.3.1",
+    "semantic-release-slack-bot": "^1.7.0",
+    "typescript": "^4.1.3"
   },
   "husky": {
     "hooks": {
