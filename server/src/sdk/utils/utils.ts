@@ -7,7 +7,7 @@ export async function getCpInfo(
     const result = await getDataFromCP(codePostal);
     return result;
   } catch (error) {
-    console.error(`getCpInfo: something went wrong`);
+    console.error(`getCpInfo: something went wrong!`);
     return null;
   }
 }
