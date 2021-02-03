@@ -4,6 +4,7 @@ const { stdoutStream } = require("oleoduc");
 const { createReadStream } = require("fs");
 const { runScript } = require("../scriptWrapper");
 const apiEntreprise = require("../../common/apis/apiEntreprise");
+const apiGeoAdresse = require("../../common/apis/apiGeoAdresse");
 const { createSource, getDefaultSources } = require("./sources/sources");
 const { createReferentiel, getDefaultReferentiels } = require("./referentiels/referentiels");
 const cleanAll = require("./cleanAll");
@@ -35,7 +36,9 @@ cli
 
       return Promise.all(
         referentiels.map(async (referentiel) => {
-          return { [referentiel.type]: await importReferentiel(referentiel, apiEntreprise) };
+          return {
+            [referentiel.type]: await importReferentiel(referentiel, apiEntreprise, apiGeoAdresse),
+          };
         })
       );
     });

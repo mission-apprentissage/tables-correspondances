@@ -3,7 +3,7 @@ const { isEmpty } = require("lodash");
 const { Annuaire } = require("../../common/model");
 const logger = require("../../common/logger");
 
-module.exports = async (referentiel, apiEntreprise) => {
+module.exports = async (referentiel, apiEntreprise, apiGeoAddresse) => {
   let type = referentiel.type;
   let stats = {
     total: 0,
@@ -11,39 +11,52 @@ module.exports = async (referentiel, apiEntreprise) => {
     ignored: 0,
     failed: 0,
   };
-  const fetchEntrepriseInformations = async (siret) => {
-    let info = await apiEntreprise.getEtablissement(siret);
+
+  const resolveAdresse = async ({ adresse, region_implantation }) => {
+    let query = `${adresse.numero_voie}+${adresse.type_voie}+${adresse.nom_voie}+${adresse.code_postal}+${adresse.localite}`;
+    let results = await apiGeoAddresse.search(query, {
+      postcode: adresse.code_postal,
+      citycode: adresse.code_insee_localite,
+    });
+
+    if (results.length === 0) {
+      throw new Error(`Unable to find adresse ${query}`);
+    }
+
+    let best = results.features[0];
     return {
-      siegeSocial: info.siege_social,
-      dateCreation: new Date(info.date_creation_etablissement * 1000),
-      statut: info.etat_administratif.value === "A" ? "actif" : "fermé",
-      region: info.region_implantation.code,
+      position: best.geometry,
+      label: best.properties.label,
+      region: region_implantation.code,
+      ...adresse,
     };
   };
 
   await oleoduc(
     referentiel,
     transformData(
-      async (e) => {
-        if (isEmpty(e.siret)) {
-          return { err: new Error(`Siret invalide ${e.siret}`) };
+      async (etablissement) => {
+        if (isEmpty(etablissement.siret)) {
+          return { err: new Error(`Siret invalide ${etablissement.siret}`) };
         }
 
         try {
-          let info = await fetchEntrepriseInformations(e.siret);
+          let entreprise = await apiEntreprise.getEtablissement(etablissement.siret);
+          let adresse = await resolveAdresse(entreprise);
+
           return {
             etablissement: {
-              ...e,
-              ...info,
+              ...etablissement,
+              siegeSocial: entreprise.siege_social,
+              statut: entreprise.etat_administratif.value === "A" ? "actif" : "fermé",
+              adresse,
             },
           };
-        } catch (e) {
-          return {
-            err: new Error(`Erreur API entreprise pour le siret ${e.siret}. ${e.message}`),
-          };
+        } catch (err) {
+          return { err };
         }
       },
-      { parallel: 5 }
+      { parallel: 2 }
     ),
     writeData(async ({ err, etablissement }) => {
       stats.total++;
