@@ -7,7 +7,7 @@ const annuaireSchema = {
   },
   siret: {
     type: String,
-    default: undefined,
+    required: true,
     description: "Le siret de l'établissement",
     unique: true,
   },
@@ -15,6 +15,11 @@ const annuaireSchema = {
     type: String,
     default: undefined,
     description: "Le nom de l'établissement",
+  },
+  referentiel: {
+    type: String,
+    required: true,
+    description: "Le nom du référentiel depuis lequel a été importé l'établissement",
   },
   uais_secondaires: {
     type: Array,

@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
-const deleteAll = require("../../../src/jobs/annuaire/deleteAll");
+const cleanAll = require("../../../src/jobs/annuaire/cleanAll");
 const { createAnnuaire } = require("../../utils/fixtures");
 
 integrationTests(__filename, () => {
@@ -13,9 +13,12 @@ integrationTests(__filename, () => {
       uais_secondaires: [],
     }).save();
 
-    await deleteAll();
+    let stats = await cleanAll();
 
     let count = await Annuaire.countDocuments();
     assert.strictEqual(count, 0);
+    assert.deepStrictEqual(stats, {
+      deleted: 1,
+    });
   });
 });
