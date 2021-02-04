@@ -69,25 +69,22 @@ module.exports = async (referentiel, apiEntreprise, apiGeoAddresse) => {
 
   await oleoduc(
     referentiel,
-    transformData(
-      async (data) => {
-        if (isEmpty(data.siret)) {
-          return new Error(`Siret invalide ${data.siret}`);
-        }
+    transformData(async (data) => {
+      if (isEmpty(data.siret)) {
+        return new Error(`Siret invalide ${data.siret}`);
+      }
 
-        try {
-          return await buildEtablissement(data);
-        } catch (err) {
-          return err;
-        }
-      },
-      { parallel: 2 }
-    ),
+      try {
+        return await buildEtablissement(data);
+      } catch (err) {
+        return err;
+      }
+    }),
     writeData(async (res) => {
       stats.total++;
       if (res instanceof Error) {
         stats.failed++;
-        logger.error(`[Referentiel] Erreur lors du traitement d'un établissement pour le référentiel ${type}`, res);
+        logger.error(`[Referentiel] Erreur lors de l'import d'un établissement pour le référentiel ${type}.`, res);
         return;
       }
 
