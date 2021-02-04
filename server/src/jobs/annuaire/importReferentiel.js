@@ -3,6 +3,8 @@ const { isEmpty } = require("lodash");
 const { Annuaire } = require("../../common/model");
 const logger = require("../../common/logger");
 
+const MAX_ALLOWED_ADRESS_SCORE = 0.7;
+
 module.exports = async (referentiel, apiEntreprise, apiGeoAddresse) => {
   let type = referentiel.type;
   let stats = {
@@ -19,8 +21,8 @@ module.exports = async (referentiel, apiEntreprise, apiGeoAddresse) => {
       citycode: adresse.code_insee_localite,
     });
 
-    if (results.length === 0) {
-      throw new Error(`Unable to find adresse ${query}`);
+    if (results.length === 0 || results.features[0].properties.score < MAX_ALLOWED_ADRESS_SCORE) {
+      throw new Error(`Adresse introuvable ou score trop failble : ${query}`);
     }
 
     let best = results.features[0];

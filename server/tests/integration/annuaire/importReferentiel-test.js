@@ -86,6 +86,61 @@ integrationTests(__filename, () => {
     });
   });
 
+  it("Vérifie qu'on gère une erreur lors de la récupération de l'adresse", async () => {
+    let apiGeoAddresse = {
+      search: () => {
+        throw new Error("HTTP error");
+      },
+    };
+    let referentiel = createFakeReferentiel(
+      `"uai";"siret";"nom"
+"0011058V";"11111111111111";"Centre de formation"`
+    );
+
+    let results = await importReferentiel(referentiel, createApiEntrepriseMock(), apiGeoAddresse);
+
+    let count = await Annuaire.count({ siret: "11111111111111" });
+    assert.deepStrictEqual(count, 0);
+    assert.deepStrictEqual(results, {
+      total: 1,
+      inserted: 0,
+      ignored: 0,
+      failed: 1,
+    });
+  });
+
+  it("Vérifie qu'on gère une adresse mal noté", async () => {
+    let apiGeoAddresse = {
+      search: () => {
+        return {
+          features: [
+            {
+              type: "Feature",
+              properties: {
+                score: 0.5,
+              },
+            },
+          ],
+        };
+      },
+    };
+    let referentiel = createFakeReferentiel(
+      `"uai";"siret";"nom"
+"0011058V";"11111111111111";"Centre de formation"`
+    );
+
+    let results = await importReferentiel(referentiel, createApiEntrepriseMock(), apiGeoAddresse);
+
+    let count = await Annuaire.count({ siret: "11111111111111" });
+    assert.deepStrictEqual(count, 0);
+    assert.deepStrictEqual(results, {
+      total: 1,
+      inserted: 0,
+      ignored: 0,
+      failed: 1,
+    });
+  });
+
   it("Vérifie qu'on ignore les établissements en double", async () => {
     let apiEntreprise = createApiEntrepriseMock();
     let apiGeoAddresse = createaApiGeoAddresseMock();
