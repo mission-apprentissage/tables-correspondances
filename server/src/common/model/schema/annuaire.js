@@ -40,44 +40,35 @@ const annuaireSchema = {
   },
   adresse: new Schema(
     {
-      position: new Schema(
-        {
-          type: {
-            type: String,
-            required: true,
-          },
-          coordinates: {
-            type: Array,
-            required: true,
-          },
-        },
-        { _id: false }
-      ),
-      label: {
+      postale: {
         type: String,
         required: true,
       },
       numero_voie: {
         type: String,
-        required: true,
+        default: undefined,
       },
       type_voie: {
         type: String,
-        required: true,
+        default: undefined,
       },
       nom_voie: {
         type: String,
-        required: true,
+        default: undefined,
       },
       code_postal: {
         type: String,
-        required: true,
+        default: undefined,
+      },
+      code_insee: {
+        type: String,
+        default: undefined,
+      },
+      cedex: {
+        type: String,
+        default: undefined,
       },
       localite: {
-        type: String,
-        required: true,
-      },
-      code_insee_localite: {
         type: String,
         required: true,
       },
@@ -85,6 +76,28 @@ const annuaireSchema = {
         type: String,
         required: true,
       },
+      geocoding: new Schema(
+        {
+          position: new Schema(
+            {
+              type: {
+                type: String,
+                required: true,
+              },
+              coordinates: {
+                type: Array,
+                required: true,
+              },
+            },
+            { _id: false }
+          ),
+          description: {
+            type: String,
+            required: true,
+          },
+        },
+        { _id: false }
+      ),
     },
     { _id: false }
   ),

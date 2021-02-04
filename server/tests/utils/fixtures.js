@@ -18,15 +18,19 @@ module.exports = {
       siegeSocial: true,
       statut: "actif",
       adresse: {
-        position: { coordinates: [2.396444, 48.879706], type: "Point" },
-        label: "31 Rue des Lilas 75019 Paris",
+        geocoding: {
+          position: { coordinates: [2.396444, 48.879706], type: "Point" },
+          description: "31 Rue des Lilas 75019 Paris",
+        },
+        postale: "NOMAYO\n31 RUE DES LILAS\n75001 PARIS\nFRANCE",
         region: "11",
         numero_voie: "31",
         type_voie: "RUE",
-        nom_voie: "DES LILAS",
+        nom_voie: "31",
         code_postal: "75001",
+        code_insee: "75000",
         localite: "PARIS",
-        code_insee_localite: "75000",
+        cedex: null,
       },
       ...custom,
     });
