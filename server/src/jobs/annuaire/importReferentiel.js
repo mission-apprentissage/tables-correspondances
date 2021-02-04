@@ -9,8 +9,8 @@ module.exports = async (referentiel, apiEntreprise, apiGeoAddresse) => {
   let type = referentiel.type;
   let stats = {
     total: 0,
-    inserted: 0,
-    ignored: 0,
+    created: 0,
+    updated: 0,
     failed: 0,
   };
 
@@ -90,15 +90,17 @@ module.exports = async (referentiel, apiEntreprise, apiGeoAddresse) => {
 
       let etablissement = res;
       try {
-        let count = await Annuaire.countDocuments({
-          $or: [{ siret: etablissement.siret }, { uai: etablissement.uai }],
-        });
-        if (count === 0) {
-          await Annuaire.create(etablissement);
-          stats.inserted++;
-        } else {
-          stats.ignored++;
-        }
+        let res = await Annuaire.updateOne(
+          { siret: etablissement.siret },
+          {
+            $set: {
+              ...etablissement,
+            },
+          },
+          { upsert: true, setDefaultsOnInsert: true, runValidators: true }
+        );
+        stats.updated += res.nModified || 0;
+        stats.created += (res.upserted && res.upserted.length) || 0;
       } catch (e) {
         stats.failed++;
         logger.error(

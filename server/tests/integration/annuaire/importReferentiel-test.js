@@ -60,8 +60,8 @@ integrationTests(__filename, () => {
     });
     assert.deepStrictEqual(results, {
       total: 1,
-      inserted: 1,
-      ignored: 0,
+      created: 1,
+      updated: 0,
       failed: 0,
     });
   });
@@ -84,8 +84,8 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(count, 0);
     assert.deepStrictEqual(results, {
       total: 1,
-      inserted: 0,
-      ignored: 0,
+      created: 0,
+      updated: 0,
       failed: 1,
     });
   });
@@ -107,8 +107,8 @@ integrationTests(__filename, () => {
     assert.ok(!found.adresse.geocoding);
     assert.deepStrictEqual(results, {
       total: 1,
-      inserted: 1,
-      ignored: 0,
+      created: 1,
+      updated: 0,
       failed: 0,
     });
   });
@@ -139,8 +139,8 @@ integrationTests(__filename, () => {
     assert.ok(!found.adresse.geocoding);
     assert.deepStrictEqual(results, {
       total: 1,
-      inserted: 1,
-      ignored: 0,
+      created: 1,
+      updated: 0,
       failed: 0,
     });
   });
@@ -157,8 +157,8 @@ integrationTests(__filename, () => {
     await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(results, {
       total: 2,
-      inserted: 1,
-      ignored: 1,
+      created: 1,
+      updated: 0,
       failed: 0,
     });
   });
@@ -175,8 +175,8 @@ integrationTests(__filename, () => {
     assert.strictEqual(count, 0);
     assert.deepStrictEqual(results, {
       total: 1,
-      inserted: 0,
-      ignored: 0,
+      created: 0,
+      updated: 0,
       failed: 1,
     });
   });
@@ -219,8 +219,8 @@ integrationTests(__filename, () => {
     });
     assert.deepStrictEqual(results, {
       total: 1,
-      inserted: 1,
-      ignored: 0,
+      created: 1,
+      updated: 0,
       failed: 0,
     });
   });
@@ -264,8 +264,8 @@ integrationTests(__filename, () => {
     });
     assert.deepStrictEqual(results, {
       total: 1,
-      inserted: 1,
-      ignored: 0,
+      created: 1,
+      updated: 0,
       failed: 0,
     });
   });
