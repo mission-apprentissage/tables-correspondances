@@ -5,51 +5,42 @@ const faker = require("faker"); // eslint-disable-line node/no-unpublished-requi
 const { stdoutStream } = require("oleoduc");
 const { createReadStream } = require("fs");
 const { runScript } = require("../scriptWrapper");
-const logger = require("../../common/logger");
 const { Annuaire } = require("../../common/model");
-const ovhStorage = require("../../common/ovhStorage");
 const apiEntreprise = require("../../common/apis/apiEntreprise");
-const { createSource } = require("./sources/sources");
-const deleteAll = require("./deleteAll");
-const initialize = require("./initialize");
+const { createSource, getDefaultSources } = require("./sources/sources");
+const { createReferentiel, getDefaultReferentiels } = require("./referentiels/referentiels");
+const cleanAll = require("./cleanAll");
+const importReferentiel = require("./importReferentiel");
 const collect = require("./collect");
 const { exportAll } = require("./exports");
 
-const getOVHStream = (filename) => {
-  let file = `/mna-tables-correspondances/annuaire/${filename}`;
-  logger.info(`Downloading ${file} from OVH...`);
-  return ovhStorage.getFileAsStream(file);
-};
-
-const getDefaultsSources = () => {
-  return Promise.all(
-    [
-      () => createSource("catalogue"),
-      () => createSource("entreprise", apiEntreprise),
-      async () => createSource("onisep", await getOVHStream("ONISEP-ideo-structures_denseignement_secondaire.csv")),
-      async () => createSource("onisep", await getOVHStream("ONISEP-ideo-structures_denseignement_superieur.csv")),
-      async () => createSource("onisepStructure", await getOVHStream("ONISEP-Structures.csv")),
-      async () => createSource("refea", await getOVHStream("REFEA-liste-uai-avec-coordonnees.csv")),
-      async () =>
-        createSource(
-          "opcoep",
-          await getOVHStream(
-            "OPCO EP-20201202 OPCO EP - Jeunes sans contrat par CFA, région et formation au 26 nov.csv"
-          )
-        ),
-    ].map((build) => build())
-  );
-};
+cli
+  .command("clean")
+  .description("Vide l'annuaire avec les données de la DEPP")
+  .action(() => {
+    runScript(() => {
+      return cleanAll();
+    });
+  });
 
 cli
-  .command("reset [file]")
-  .description("Réinitialise l'annuaire avec les données de la DEPP")
-  .action((file) => {
+  .command("import [type] [file]")
+  .description("Importe les établissements contenus dans le ou les référentiels")
+  .action((type, file) => {
     runScript(async () => {
-      let stream = file ? createReadStream(file) : await getOVHStream("DEPP-CFASousConvRegionale_17122020_1.csv");
+      let referentiels = [];
+      if (type) {
+        let stream = file ? createReadStream(file) : null;
+        referentiels.push(createReferentiel(type, stream));
+      } else {
+        referentiels = await getDefaultReferentiels();
+      }
 
-      await deleteAll();
-      return initialize(stream);
+      return Promise.all(
+        referentiels.map(async (referentiel) => {
+          return { [referentiel.type]: await importReferentiel(referentiel, apiEntreprise) };
+        })
+      );
     });
   });
 
@@ -61,9 +52,9 @@ cli
       let sources = [];
       if (type) {
         let stream = file ? createReadStream(file) : null;
-        sources.push(createSource(type, stream));
+        sources.push(await createSource(type, stream));
       } else {
-        sources = await getDefaultsSources();
+        sources = await getDefaultSources();
       }
 
       return Promise.all(
@@ -74,8 +65,8 @@ cli
     });
   });
 
-let exporter = cli.command("export");
-exporter
+cli
+  .command("export")
   .command("all")
   .description("Exporte l'annuaire")
   .option("--out <out>", "Fichier cible dans lequel sera stocké l'export (defaut: stdout)", createWriteStream)

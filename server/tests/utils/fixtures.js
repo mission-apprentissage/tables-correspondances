@@ -18,6 +18,7 @@ module.exports = {
       siegeSocial: true,
       dateCreation: new Date("2020-11-26T23:00:00.000Z"),
       statut: "actif",
+      referentiel: "test",
       ...custom,
     });
   },

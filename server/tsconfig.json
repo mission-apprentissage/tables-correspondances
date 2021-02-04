@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "./lib",
+    "rootDir": "./src",
+    "sourceRoot": "./src/sdk",
+    "lib": ["es2015"],
+    "module": "commonjs",
+    "target": "es6",
+    "tsBuildInfoFile": "../../.build-cache/node.tsbuildinfo"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*__test.js", "**/*.test.js"]
+}

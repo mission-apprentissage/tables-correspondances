@@ -39,8 +39,6 @@ const conventionFilesImporter = async (db) => {
 
 module.exports = conventionFilesImporter;
 
-if (process.env.run) {
-  runScript(async ({ db }) => {
-    await conventionFilesImporter(db);
-  });
-}
+runScript(async ({ db }) => {
+  await conventionFilesImporter(db);
+});

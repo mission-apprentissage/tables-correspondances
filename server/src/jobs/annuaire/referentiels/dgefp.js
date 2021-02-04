@@ -5,14 +5,15 @@ module.exports = (stream) => {
   return oleoduc(
     stream,
     csv({
-      separator: ";",
+      delimiter: ";",
       columns: (header) => header.map((column) => column.replace(/ /g, "")),
     }),
     filterData((data) => data.cfa === "Oui"),
     transformData((data) => {
       return {
         siret: `${data.siren}${data.num_etablissement}`,
-        uai: null,
+        nom: `${data.raison_sociale}`,
+        referentiel: "dgefp",
       };
     }),
     { promisify: false }
