@@ -52,7 +52,7 @@ const EtablissementsUpdater = async () => {
 
 module.exports = EtablissementsUpdater;
 
-if (process.env.standalone) {
+if (process.env.run) {
   runScript(async () => {
     await EtablissementsUpdater();
   });
