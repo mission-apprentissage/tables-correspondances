@@ -50,6 +50,7 @@ module.exports = async (referentiel, apiEntreprise, apiGeoAddresse) => {
 
     return {
       ...data,
+      referentiel: referentiel.type,
       siegeSocial: entreprise.siege_social,
       statut: entreprise.etat_administratif.value === "A" ? "actif" : "fermé",
       adresse: {
@@ -80,33 +81,30 @@ module.exports = async (referentiel, apiEntreprise, apiGeoAddresse) => {
         return err;
       }
     }),
-    writeData(async (res) => {
+    writeData(async (etab) => {
       stats.total++;
-      if (res instanceof Error) {
+      if (etab instanceof Error) {
         stats.failed++;
-        logger.error(`[Referentiel] Erreur lors de l'import d'un établissement pour le référentiel ${type}.`, res);
+        logger.error(`[Referentiel] Erreur lors de l'import d'un établissement pour le référentiel ${type}.`, etab);
         return;
       }
 
-      let etablissement = res;
       try {
         let res = await Annuaire.updateOne(
-          { siret: etablissement.siret },
+          { siret: etab.siret },
           {
             $set: {
-              ...etablissement,
+              ...etab,
             },
           },
           { upsert: true, setDefaultsOnInsert: true, runValidators: true }
         );
+
         stats.updated += res.nModified || 0;
         stats.created += (res.upserted && res.upserted.length) || 0;
       } catch (e) {
         stats.failed++;
-        logger.error(
-          `[Referentiel] Impossible d'ajouter le document avec le siret ${etablissement.siret} dans l'annuaire`,
-          e
-        );
+        logger.error(`[Referentiel] Impossible d'ajouter le document avec le siret ${etab.siret} dans l'annuaire`, e);
       }
     })
   );
