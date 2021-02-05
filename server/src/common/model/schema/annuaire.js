@@ -12,6 +12,7 @@ const annuaireSchema = {
     default: undefined,
     description: "L'UAI de l'établissement",
     unique: true,
+    sparse: true,
   },
   nom: {
     type: String,
