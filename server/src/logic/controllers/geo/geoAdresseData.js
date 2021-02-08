@@ -37,18 +37,28 @@ class GeoAdresseData {
       };
     }
 
-    let responseApiAdresse = await apiGeoAdresse.search(
-      `${numero_voie ? numero_voie + "+" : ""}${type_voie ? type_voie + "+" : ""}${nom_voie ? nom_voie : ""}`,
-      this.refinePostcode(code_postal)
-    );
+    let responseApiAdresse;
+    let query = `${numero_voie ? numero_voie + "+" : ""}${type_voie ? type_voie + "+" : ""}${nom_voie ? nom_voie : ""}`;
+    let postcode = this.refinePostcode(code_postal);
+    try {
+      responseApiAdresse = await apiGeoAdresse.search(query, { postcode });
+    } catch (error) {
+      console.error(`geo search error : ${query} ${postcode} ${error}`);
+      responseApiAdresse = null;
+    }
 
     // si pas de réponse deuxième recherche sur ville et code postal
     if (!responseApiAdresse || responseApiAdresse.features.length === 0) {
       console.info(`Second geoloc call with postcode and city\t${localite} ${code_postal}`);
-      responseApiAdresse = await apiGeoAdresse.searchPostcodeOnly(
-        `${localite ? localite : "a"}`, // hack si localite absente
-        this.refinePostcode(code_postal)
-      );
+      let query = `${localite ? localite : "a"}`; // hack si localite absente
+      let postcode = this.refinePostcode(code_postal);
+
+      try {
+        responseApiAdresse = await apiGeoAdresse.searchPostcodeOnly(query, { postcode });
+      } catch (error) {
+        console.error(`geo searchPostcodeOnly error : #${query}# ${postcode} ${error}`);
+        responseApiAdresse = null;
+      }
     }
 
     if (!responseApiAdresse)
@@ -118,15 +128,23 @@ class GeoAdresseData {
     const refinedCode = this.refinePostcode(code);
 
     // try to find results by postal code
-    let data = await apiGeoAdresse.searchMunicipalityByCode(refinedCode);
-    if (data && data.features && data.features.length > 0) {
-      return this.formatMunicipalityResponse(data);
+    try {
+      let data = await apiGeoAdresse.searchMunicipalityByCode(refinedCode);
+      if (data.features && data.features.length > 0) {
+        return this.formatMunicipalityResponse(data);
+      }
+    } catch (e) {
+      console.error("geo search municipality error", e);
     }
 
-    // try to find results by citycode (insee)
-    data = await apiGeoAdresse.searchMunicipalityByCode(refinedCode, true);
-    if (data && data.features && data.features.length > 0) {
-      return this.formatMunicipalityResponse(data);
+    try {
+      // try to find results by citycode (insee)
+      let data = await apiGeoAdresse.searchMunicipalityByCode(refinedCode, { isCityCode: true });
+      if (data.features && data.features.length > 0) {
+        return this.formatMunicipalityResponse(data);
+      }
+    } catch (e) {
+      console.error("geo search municipality error", e);
     }
 
     return {};

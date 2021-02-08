@@ -3,7 +3,7 @@ const { oleoduc } = require("oleoduc");
 const csv = require("csv-parse");
 const { Etablissement, Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
-const { createApiEntrepriseMock } = require("../../utils/mocks");
+const { createApiEntrepriseMock, createaApiGeoAddresseMock } = require("../../utils/mocks");
 const { createSource } = require("../../../src/jobs/annuaire/sources/sources");
 const { createReferentiel } = require("../../../src/jobs/annuaire/referentiels/referentiels");
 const { createAnnuaire } = require("../../utils/fixtures");
@@ -12,14 +12,19 @@ const collect = require("../../../src/jobs/annuaire/collect");
 const { createStream } = require("../../utils/testUtils");
 
 integrationTests(__filename, () => {
-  const createDeppReferentiel = (content) => {
-    let args = createStream(
-      content ||
-        `"numero_uai";"numero_siren_siret_uai";"patronyme_uai"
+  const prepareAnnuaire = (content) => {
+    let apiGeoAddresse = createaApiGeoAddresseMock();
+    let apiEntreprise = createApiEntrepriseMock();
+    let referentiel = createReferentiel(
+      "depp",
+      createStream(
+        content ||
+          `"numero_uai";"numero_siren_siret_uai";"patronyme_uai"
 "0011058V";"11111111111111";"Centre de formation"`
+      )
     );
 
-    return createReferentiel("depp", args);
+    return importReferentiel(referentiel, apiEntreprise, apiGeoAddresse);
   };
 
   const createTestSource = (content) => {
@@ -41,8 +46,8 @@ integrationTests(__filename, () => {
       `"uai";"siret";"nom"
 "0011073L";"11111111111111";"Centre de formation"`
     );
+    await prepareAnnuaire();
 
-    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
@@ -65,8 +70,8 @@ integrationTests(__filename, () => {
       `"uai";"siret";"nom"
 "093XXXT";"11111111111111";"Centre de formation"`
     );
+    await prepareAnnuaire();
 
-    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
@@ -87,8 +92,8 @@ integrationTests(__filename, () => {
       `"uai";"siret";"nom"
 "0011058V";"11111111111111";"Centre de formation"`
     );
+    await prepareAnnuaire();
 
-    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
@@ -139,8 +144,8 @@ integrationTests(__filename, () => {
       `"uai";"siret";"nom"
 "";"11111111111111";"Centre de formation"`
     );
+    await prepareAnnuaire();
 
-    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
@@ -160,8 +165,8 @@ integrationTests(__filename, () => {
 "0011073L";"11111111111111";"Centre de formation"`
       )
     );
+    await prepareAnnuaire();
 
-    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
@@ -187,8 +192,8 @@ integrationTests(__filename, () => {
 "11111111111111";"0011073L";"Centre de formation"`
       )
     );
+    await prepareAnnuaire();
 
-    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
@@ -214,8 +219,8 @@ integrationTests(__filename, () => {
 "11111111111111";"0011073L";"Centre de formation"`
       )
     );
+    await prepareAnnuaire();
 
-    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
@@ -240,8 +245,8 @@ integrationTests(__filename, () => {
       entreprise_raison_sociale: "Centre de formation",
     });
     let source = await createSource("catalogue");
+    await prepareAnnuaire();
 
-    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
@@ -267,8 +272,8 @@ integrationTests(__filename, () => {
 "11111111111111";"0011073L";"Centre de formation"`
       )
     );
+    await prepareAnnuaire();
 
-    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();

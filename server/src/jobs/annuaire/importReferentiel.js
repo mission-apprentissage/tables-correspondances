@@ -3,69 +3,108 @@ const { isEmpty } = require("lodash");
 const { Annuaire } = require("../../common/model");
 const logger = require("../../common/logger");
 
-module.exports = async (referentiel, apiEntreprise) => {
+const MAX_ALLOWED_SCORE = 0.6;
+
+module.exports = async (referentiel, apiEntreprise, apiGeoAddresse) => {
   let type = referentiel.type;
   let stats = {
     total: 0,
-    inserted: 0,
-    ignored: 0,
+    created: 0,
+    updated: 0,
     failed: 0,
   };
-  const fetchEntrepriseInformations = async (siret) => {
-    let info = await apiEntreprise.getEtablissement(siret);
+
+  const geocode = async ({ siret, adresse }) => {
+    let query =
+      `${adresse.numero_voie || ""} ${adresse.type_voie || ""} ${adresse.nom_voie}` +
+      ` ${adresse.code_postal} ${adresse.localite}`.split(" ").join("+");
+
+    try {
+      let results = await apiGeoAddresse.search(query, {
+        postcode: adresse.code_postal,
+        citycode: adresse.code_insee_localite,
+      });
+
+      let best = results.features[0];
+      let score = best.properties.score;
+      if (score < MAX_ALLOWED_SCORE) {
+        logger.warn(`Score de geocoding trop faible ${score} pour le siret ${siret} et l'adresse ${query}`);
+      } else {
+        return { position: best.geometry, description: best.properties.label };
+      }
+    } catch (e) {
+      logger.warn(`Impossible de géocoder l'adresse : ${query} pour le siret ${siret}`, e);
+    }
+  };
+
+  const getAdressePostale = (adresse) => {
+    return Object.keys(adresse)
+      .filter((k) => /l[0-9]/.test(k) && adresse[k])
+      .map((k) => adresse[k])
+      .join("\n");
+  };
+
+  const buildEtablissement = async (data) => {
+    let entreprise = await apiEntreprise.getEtablissement(data.siret);
+    let adresse = entreprise.adresse;
+
     return {
-      siegeSocial: info.siege_social,
-      dateCreation: new Date(info.date_creation_etablissement * 1000),
-      statut: info.etat_administratif.value === "A" ? "actif" : "fermé",
-      region: info.region_implantation.code,
+      ...data,
+      referentiel: referentiel.type,
+      siegeSocial: entreprise.siege_social,
+      statut: entreprise.etat_administratif.value === "A" ? "actif" : "fermé",
+      adresse: {
+        geocoding: await geocode(entreprise),
+        postale: getAdressePostale(adresse),
+        region: entreprise.region_implantation.code,
+        numero_voie: adresse.numero_voie,
+        type_voie: adresse.type_voie,
+        nom_voie: adresse.numero_voie,
+        code_postal: adresse.code_postal,
+        code_insee: adresse.code_insee_localite,
+        localite: adresse.localite,
+        cedex: adresse.cedex,
+      },
     };
   };
 
   await oleoduc(
     referentiel,
-    transformData(
-      async (e) => {
-        if (isEmpty(e.siret)) {
-          return { err: new Error(`Siret invalide ${e.siret}`) };
-        }
+    transformData(async (data) => {
+      if (isEmpty(data.siret)) {
+        return new Error(`Siret invalide ${data.siret}`);
+      }
 
-        try {
-          let info = await fetchEntrepriseInformations(e.siret);
-          return {
-            etablissement: {
-              ...e,
-              ...info,
-            },
-          };
-        } catch (e) {
-          return {
-            err: new Error(`Erreur API entreprise pour le siret ${e.siret}. ${e.message}`),
-          };
-        }
-      },
-      { parallel: 5 }
-    ),
-    writeData(async ({ err, etablissement }) => {
+      try {
+        return await buildEtablissement(data);
+      } catch (err) {
+        return err;
+      }
+    }),
+    writeData(async (etab) => {
       stats.total++;
-      if (err) {
+      if (etab instanceof Error) {
         stats.failed++;
-        logger.error(`Erreur lors du traitement d'un établissement pour le référentiel ${type}`, err);
+        logger.error(`[Referentiel] Erreur lors de l'import d'un établissement pour le référentiel ${type}.`, etab);
         return;
       }
 
       try {
-        let count = await Annuaire.countDocuments({
-          $or: [{ siret: etablissement.siret }, { uai: etablissement.uai }],
-        });
-        if (count === 0) {
-          await Annuaire.create(etablissement);
-          stats.inserted++;
-        } else {
-          stats.ignored++;
-        }
+        let res = await Annuaire.updateOne(
+          { siret: etab.siret },
+          {
+            $set: {
+              ...etab,
+            },
+          },
+          { upsert: true, setDefaultsOnInsert: true, runValidators: true }
+        );
+
+        stats.updated += res.nModified || 0;
+        stats.created += (res.upserted && res.upserted.length) || 0;
       } catch (e) {
         stats.failed++;
-        logger.error(`Unable to insert document with siret ${e.siret} into annuaire`, e);
+        logger.error(`[Referentiel] Impossible d'ajouter le document avec le siret ${etab.siret} dans l'annuaire`, e);
       }
     })
   );

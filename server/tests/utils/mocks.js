@@ -1,7 +1,51 @@
 const { merge } = require("lodash");
 
 module.exports = {
-  createApiEntrepriseMock: (etablissement = {}) => {
+  createaApiGeoAddresseMock: (custom = {}) => {
+    return {
+      search: () => {
+        return merge(
+          {},
+          {
+            type: "FeatureCollection",
+            version: "draft",
+            features: [
+              {
+                type: "Feature",
+                geometry: {
+                  type: "Point",
+                  coordinates: [2.396444, 48.879706],
+                },
+                properties: {
+                  label: "31 Rue des Lilas 75019 Paris",
+                  score: 0.7490827272727273,
+                  housenumber: "31",
+                  id: "75119_5683_00031",
+                  name: "31 Rue des Lilas",
+                  postcode: "75019",
+                  citycode: "75119",
+                  x: 655734.91,
+                  y: 6864578.76,
+                  city: "Paris",
+                  district: "Paris 19e Arrondissement",
+                  context: "75, Paris, Île-de-France",
+                  type: "housenumber",
+                  importance: 0.73991,
+                  street: "Rue des Lilas",
+                },
+              },
+            ],
+            attribution: "BAN",
+            licence: "ETALAB-2.0",
+            query: '31 rue des lilas 75001 Paris"',
+            limit: 5,
+          },
+          custom
+        );
+      },
+    };
+  },
+  createApiEntrepriseMock: (custom = {}) => {
     return {
       getEtablissement: () => {
         return merge(
@@ -56,7 +100,7 @@ module.exports = {
               date_fermeture: null,
             },
           },
-          etablissement
+          custom
         );
       },
     };

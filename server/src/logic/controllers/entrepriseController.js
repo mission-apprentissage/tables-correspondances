@@ -1,31 +1,7 @@
 const apiEntreprise = require("../../common/apis/apiEntreprise");
 
-const errors = {
-  451: "indisponible",
-  404: "inconnu",
-  422: "invalide",
-};
-
 class EntrepriseApiData {
   constructor() {}
-
-  async getEtablissementStatut(siret, options = {}) {
-    let api = options.apiEntreprise || apiEntreprise;
-    if (!siret) {
-      return "invalide";
-    }
-
-    try {
-      const etablissement = await api.getEtablissement(siret);
-      return etablissement.etat_administratif.value === "A" ? "actif" : "fermé";
-    } catch (e) {
-      let statut = errors[e.response.status];
-      if (!statut) {
-        throw e;
-      }
-      return statut;
-    }
-  }
 
   async findDataFromSiret(providedSiret) {
     if (!providedSiret || !/^[0-9]{14}$/g.test(providedSiret.trim())) {
