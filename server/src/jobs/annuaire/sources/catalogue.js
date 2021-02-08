@@ -7,7 +7,9 @@ module.exports = () => {
     transformData((etablissement) => {
       return {
         siret: etablissement.siret,
-        uai: etablissement.uai,
+        data: {
+          uai: etablissement.uai,
+        },
       };
     }),
     { promisify: false }

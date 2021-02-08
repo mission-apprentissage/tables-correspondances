@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { oleoduc } = require("oleoduc");
+const { oleoduc, transformData } = require("oleoduc");
 const csv = require("csv-parse");
 const { Etablissement, Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
@@ -35,6 +35,14 @@ integrationTests(__filename, () => {
         delimiter: ";",
         bom: true,
         columns: true,
+      }),
+      transformData((data) => {
+        return {
+          siret: data.siret,
+          data: {
+            uai: data.uai,
+          },
+        };
       })
     );
     source.type = "test";
@@ -42,11 +50,11 @@ integrationTests(__filename, () => {
   };
 
   it("Vérifie qu'on peut collecter un uai", async () => {
+    await prepareAnnuaire();
     let source = createTestSource(
       `"uai";"siret";"nom"
 "0011073L";"11111111111111";"Centre de formation"`
     );
-    await prepareAnnuaire();
 
     let results = await collect(source);
 
@@ -66,11 +74,11 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on teste la validité d'un UAI", async () => {
+    await prepareAnnuaire();
     let source = createTestSource(
       `"uai";"siret";"nom"
 "093XXXT";"11111111111111";"Centre de formation"`
     );
-    await prepareAnnuaire();
 
     let results = await collect(source);
 
@@ -88,11 +96,11 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on ignore un uai quand il existe en tant qu'uai principal", async () => {
+    await prepareAnnuaire();
     let source = createTestSource(
       `"uai";"siret";"nom"
 "0011058V";"11111111111111";"Centre de formation"`
     );
-    await prepareAnnuaire();
 
     let stats = await collect(source);
 
@@ -140,11 +148,11 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on ignore un uai vide", async () => {
+    await prepareAnnuaire();
     let source = createTestSource(
       `"uai";"siret";"nom"
 "";"11111111111111";"Centre de formation"`
     );
-    await prepareAnnuaire();
 
     let stats = await collect(source);
 
@@ -158,6 +166,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut collecter des informations du fichier ONISEP", async () => {
+    await prepareAnnuaire();
     let source = await createSource(
       "onisep",
       createStream(
@@ -165,7 +174,6 @@ integrationTests(__filename, () => {
 "0011073L";"11111111111111";"Centre de formation"`
       )
     );
-    await prepareAnnuaire();
 
     let results = await collect(source);
 
@@ -185,6 +193,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut collecter des informations du fichier ONISEP (structure)", async () => {
+    await prepareAnnuaire();
     let source = await createSource(
       "onisepStructure",
       createStream(
@@ -192,7 +201,6 @@ integrationTests(__filename, () => {
 "11111111111111";"0011073L";"Centre de formation"`
       )
     );
-    await prepareAnnuaire();
 
     let results = await collect(source);
 
@@ -212,6 +220,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut collecter des informations du fichier REFEA", async () => {
+    await prepareAnnuaire();
     let source = await createSource(
       "refea",
       createStream(
@@ -219,7 +228,6 @@ integrationTests(__filename, () => {
 "11111111111111";"0011073L";"Centre de formation"`
       )
     );
-    await prepareAnnuaire();
 
     let results = await collect(source);
 
@@ -239,13 +247,13 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut collecter des informations de la base catalogue", async () => {
+    await prepareAnnuaire();
     await Etablissement.create({
       uai: "0011073L",
       siret: "11111111111111",
       entreprise_raison_sociale: "Centre de formation",
     });
     let source = await createSource("catalogue");
-    await prepareAnnuaire();
 
     let results = await collect(source);
 
@@ -265,6 +273,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut collecter des informations du fichier OPCO EP", async () => {
+    await prepareAnnuaire();
     let source = await createSource(
       "opcoep",
       createStream(
@@ -272,7 +281,6 @@ integrationTests(__filename, () => {
 "11111111111111";"0011073L";"Centre de formation"`
       )
     );
-    await prepareAnnuaire();
 
     let results = await collect(source);
 
@@ -284,6 +292,106 @@ integrationTests(__filename, () => {
         valide: true,
       },
     ]);
+    assert.deepStrictEqual(results, {
+      total: 1,
+      updated: 1,
+      failed: 0,
+    });
+  });
+
+  it("Vérifie qu'on peut collecter des informations de l'entreprise", async () => {
+    await prepareAnnuaire();
+    let source = await createSource("entreprises", createApiEntrepriseMock(), createaApiGeoAddresseMock());
+
+    let results = await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    assert.strictEqual(found.siegeSocial, true);
+    assert.deepStrictEqual(found.statut, "actif");
+    assert.deepStrictEqual(found.adresse, {
+      geocoding: {
+        position: { coordinates: [2.396444, 48.879706], type: "Point" },
+        description: "31 Rue des Lilas 75019 Paris",
+      },
+      postale: "NOMAYO\n31 RUE DES LILAS\n75001 PARIS\nFRANCE",
+      region: "11",
+      numero_voie: "31",
+      type_voie: "RUE",
+      nom_voie: "31",
+      code_postal: "75001",
+      code_insee: "75000",
+      localite: "PARIS",
+      cedex: null,
+    });
+    assert.deepStrictEqual(results, {
+      total: 1,
+      updated: 1,
+      failed: 0,
+    });
+  });
+
+  it("Vérifie qu'on gère une erreur lors de la récupération des informations de l'entreprise", async () => {
+    await prepareAnnuaire();
+    let failingApiEntreprise = {
+      getEtablissement: () => {
+        throw new Error("HTTP error");
+      },
+    };
+    let source = await createSource("entreprises", failingApiEntreprise, createaApiGeoAddresseMock());
+
+    let results = await collect(source);
+
+    let count = await Annuaire.count({ siret: "11111111111111" });
+    assert.deepStrictEqual(count, 1);
+    assert.deepStrictEqual(results, {
+      total: 1,
+      updated: 0,
+      failed: 1,
+    });
+  });
+
+  it("Vérifie qu'on ignore une erreur lors de la récupération de l'adresse", async () => {
+    await prepareAnnuaire();
+    let apiGeoAddresse = {
+      search: () => {
+        throw new Error("HTTP error");
+      },
+    };
+    let source = await createSource("entreprises", createApiEntrepriseMock(), apiGeoAddresse);
+
+    let results = await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    assert.ok(!found.adresse.geocoding);
+    assert.deepStrictEqual(results, {
+      total: 1,
+      updated: 1,
+      failed: 0,
+    });
+  });
+
+  it("Vérifie qu'on gère une adresse mal noté", async () => {
+    await prepareAnnuaire();
+    let apiGeoAddresse = {
+      search: () => {
+        return {
+          features: [
+            {
+              type: "Feature",
+              properties: {
+                score: 0.5,
+              },
+            },
+          ],
+        };
+      },
+    };
+    let source = await createSource("entreprises", createApiEntrepriseMock(), apiGeoAddresse);
+
+    let results = await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    assert.ok(!found.adresse.geocoding);
     assert.deepStrictEqual(results, {
       total: 1,
       updated: 1,
