@@ -3,7 +3,7 @@ const { oleoduc, transformData } = require("oleoduc");
 const csv = require("csv-parse");
 const { Etablissement, Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
-const { createApiEntrepriseMock, createaApiGeoAddresseMock } = require("../../utils/mocks");
+const { createApiSireneMock } = require("../../utils/mocks");
 const { createSource } = require("../../../src/jobs/annuaire/sources/sources");
 const { createReferentiel } = require("../../../src/jobs/annuaire/referentiels/referentiels");
 const { createAnnuaire } = require("../../utils/fixtures");
@@ -13,8 +13,6 @@ const { createStream } = require("../../utils/testUtils");
 
 integrationTests(__filename, () => {
   const prepareAnnuaire = (content) => {
-    let apiGeoAddresse = createaApiGeoAddresseMock();
-    let apiEntreprise = createApiEntrepriseMock();
     let referentiel = createReferentiel(
       "depp",
       createStream(
@@ -24,7 +22,7 @@ integrationTests(__filename, () => {
       )
     );
 
-    return importReferentiel(referentiel, apiEntreprise, apiGeoAddresse);
+    return importReferentiel(referentiel);
   };
 
   const createTestSource = (content) => {
@@ -299,9 +297,9 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on peut collecter des informations de l'entreprise", async () => {
+  it("Vérifie qu'on peut collecter des informations de l'api Sirene", async () => {
     await prepareAnnuaire();
-    let source = await createSource("entreprises", createApiEntrepriseMock(), createaApiGeoAddresseMock());
+    let source = await createSource("sirene", { apiSirene: createApiSireneMock() });
 
     let results = await collect(source);
 
@@ -309,16 +307,21 @@ integrationTests(__filename, () => {
     assert.strictEqual(found.siegeSocial, true);
     assert.deepStrictEqual(found.statut, "actif");
     assert.deepStrictEqual(found.adresse, {
-      geocoding: {
-        position: { coordinates: [2.396444, 48.879706], type: "Point" },
-        description: "31 Rue des Lilas 75019 Paris",
+      geojson: {
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [2.396147, 48.880391],
+        },
+        properties: {
+          score: 0.88,
+        },
       },
-      postale: "NOMAYO\n31 RUE DES LILAS\n75001 PARIS\nFRANCE",
-      region: "11",
+      label: "31 rue des lilas Paris 75019",
       numero_voie: "31",
       type_voie: "RUE",
-      nom_voie: "31",
-      code_postal: "75001",
+      nom_voie: "DES LILAS",
+      code_postal: "75019",
       code_insee: "75000",
       localite: "PARIS",
       cedex: null,
@@ -332,12 +335,12 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on gère une erreur lors de la récupération des informations de l'entreprise", async () => {
     await prepareAnnuaire();
-    let failingApiEntreprise = {
-      getEtablissement: () => {
+    let failingApi = {
+      getUniteLegale: () => {
         throw new Error("HTTP error");
       },
     };
-    let source = await createSource("entreprises", failingApiEntreprise, createaApiGeoAddresseMock());
+    let source = await createSource("sirene", { apiSirene: failingApi });
 
     let results = await collect(source);
 
@@ -347,55 +350,6 @@ integrationTests(__filename, () => {
       total: 1,
       updated: 0,
       failed: 1,
-    });
-  });
-
-  it("Vérifie qu'on ignore une erreur lors de la récupération de l'adresse", async () => {
-    await prepareAnnuaire();
-    let apiGeoAddresse = {
-      search: () => {
-        throw new Error("HTTP error");
-      },
-    };
-    let source = await createSource("entreprises", createApiEntrepriseMock(), apiGeoAddresse);
-
-    let results = await collect(source);
-
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.ok(!found.adresse.geocoding);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 0,
-    });
-  });
-
-  it("Vérifie qu'on gère une adresse mal noté", async () => {
-    await prepareAnnuaire();
-    let apiGeoAddresse = {
-      search: () => {
-        return {
-          features: [
-            {
-              type: "Feature",
-              properties: {
-                score: 0.5,
-              },
-            },
-          ],
-        };
-      },
-    };
-    let source = await createSource("entreprises", createApiEntrepriseMock(), apiGeoAddresse);
-
-    let results = await collect(source);
-
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.ok(!found.adresse.geocoding);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 0,
     });
   });
 });

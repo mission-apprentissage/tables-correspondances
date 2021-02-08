@@ -26,7 +26,7 @@ cli
     runScript(async () => {
       let referentiels = [];
       if (type) {
-        let stream = file ? createReadStream(file) : null;
+        let stream = file ? createReadStream(file) : undefined;
         referentiels.push(createReferentiel(type, stream));
       } else {
         referentiels = await getDefaultReferentiels();
@@ -49,7 +49,7 @@ cli
     runScript(async () => {
       let sources = [];
       if (type) {
-        let stream = file ? createReadStream(file) : null;
+        let stream = file ? createReadStream(file) : undefined;
         sources.push(await createSource(type, stream));
       } else {
         sources = await getDefaultSources();

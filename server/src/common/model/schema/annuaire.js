@@ -41,9 +41,9 @@ const annuaireSchema = {
   },
   adresse: new Schema(
     {
-      postale: {
+      label: {
         type: String,
-        required: true,
+        default: undefined,
       },
       numero_voie: {
         type: String,
@@ -71,15 +71,15 @@ const annuaireSchema = {
       },
       localite: {
         type: String,
-        required: true,
+        default: undefined,
       },
-      region: {
-        type: String,
-        required: true,
-      },
-      geocoding: new Schema(
+      geojson: new Schema(
         {
-          position: new Schema(
+          type: {
+            type: String,
+            required: true,
+          },
+          geometry: new Schema(
             {
               type: {
                 type: String,
@@ -92,9 +92,8 @@ const annuaireSchema = {
             },
             { _id: false }
           ),
-          description: {
-            type: String,
-            required: true,
+          properties: {
+            type: Object,
           },
         },
         { _id: false }
