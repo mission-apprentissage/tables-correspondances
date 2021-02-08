@@ -8,19 +8,31 @@ module.exports = async (options = {}) => {
   return oleoduc(
     Annuaire.find().cursor(),
     transformData(async (etablissement) => {
+      let siret = etablissement.siret;
+
       try {
-        let siren = etablissement.siret.substring(0, 9);
-
+        let siren = siret.substring(0, 9);
         let uniteLegale = await api.getUniteLegale(siren);
-
-        let data = uniteLegale.etablissements.find((e) => {
-          return e.siret === etablissement.siret;
-        });
+        let data = uniteLegale.etablissements.find((e) => e.siret === siret);
+        let siegeSocial = data.etablissement_siege === "true";
+        let filiations = await Promise.all(
+          uniteLegale.etablissements
+            .filter((e) => e.siret !== siret)
+            .map(async (e) => {
+              return {
+                type: e.etablissement_siege === "true" ? "siege" : "établissement",
+                siret: e.siret,
+                statut: e.etat_administratif === "A" ? "actif" : "fermé",
+                exists: (await Annuaire.countDocuments({ siret: e.siret })) > 0,
+              };
+            })
+        );
 
         return {
-          siret: etablissement.siret,
+          siret,
           data: {
-            siegeSocial: data.etablissement_siege === "true",
+            filiations,
+            siegeSocial: siegeSocial,
             statut: data.etat_administratif === "A" ? "actif" : "fermé",
             adresse: {
               geojson: {
@@ -45,7 +57,7 @@ module.exports = async (options = {}) => {
           },
         };
       } catch (e) {
-        return { siret: etablissement, error: e };
+        return { siret, error: e };
       }
     }),
     { promisify: false, parallel: 5 }

@@ -1,4 +1,11 @@
-const { merge } = require("lodash");
+const { merge, mergeWith, isArray } = require("lodash");
+
+const mergeDeep = (...args) =>
+  mergeWith(...args, function (a, b) {
+    if (isArray(a)) {
+      return b.concat(a);
+    }
+  });
 
 module.exports = {
   createaApiGeoAddresseMock: (custom = {}) => {
@@ -105,10 +112,11 @@ module.exports = {
       },
     };
   },
-  createApiSireneMock: (custom = {}) => {
+  createApiSireneMock: (custom = {}, options = {}) => {
+    let mergeMockedData = options.mergeArray ? mergeDeep : merge;
     return {
       getUniteLegale: () => {
-        return merge(
+        return mergeMockedData(
           {},
           {
             id: 129568762,
@@ -282,7 +290,7 @@ module.exports = {
         );
       },
       getEtablissement: () => {
-        return merge(
+        return mergeMockedData(
           {},
           {
             id: 276827433,

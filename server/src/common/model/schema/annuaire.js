@@ -27,7 +27,35 @@ const annuaireSchema = {
   uais_secondaires: {
     type: Array,
     default: [],
+    required: true,
     description: "La liste de tous les uais connus pour cet établissement",
+  },
+  filiations: {
+    type: [
+      new Schema(
+        {
+          siret: {
+            type: String,
+            required: true,
+          },
+          type: {
+            type: String,
+            required: true,
+          },
+          statut: {
+            type: String,
+            required: true,
+          },
+          exists: {
+            type: Boolean,
+            required: true,
+          },
+        },
+        { _id: false }
+      ),
+    ],
+    default: [],
+    description: "La liste des établissements liés",
   },
   siegeSocial: {
     type: Boolean,

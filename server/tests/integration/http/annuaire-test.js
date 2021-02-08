@@ -22,6 +22,7 @@ httpTests(__filename, ({ startServer }) => {
           siret: "11111111111111",
           nom: "Centre de formation",
           uais_secondaires: [],
+          filiations: [],
           siegeSocial: true,
           statut: "actif",
           referentiel: "test",
