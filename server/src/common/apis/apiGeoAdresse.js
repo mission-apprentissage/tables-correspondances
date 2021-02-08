@@ -1,4 +1,7 @@
 const axios = require("axios");
+const queryString = require("query-string");
+const logger = require("../logger");
+const ApiError = require("./ApiError");
 
 // Cf Documentation : https://geo.api.gouv.fr/adresse
 const apiEndpoint = "https://api-adresse.data.gouv.fr";
@@ -6,35 +9,36 @@ const apiEndpoint = "https://api-adresse.data.gouv.fr";
 class ApiGeoAdresse {
   constructor() {}
 
-  async search(q, postcode = null) {
+  async search(q, options = {}) {
     try {
-      const response = await axios.get(`${apiEndpoint}/search/?q=${q}${postcode ? `&postcode=${postcode}` : ""}`);
+      let params = queryString.stringify({ q, ...options });
+      logger.debug(`[Adresse API] Searching adresse with parameters ${params}...`);
+      const response = await axios.get(`${apiEndpoint}/search/?${params}`);
       return response.data;
-    } catch (error) {
-      console.error(`geo search error : ${q} ${postcode} ${error}`);
-      return null;
-    }
-  }
-
-  async searchPostcodeOnly(q, postcode = null) {
-    try {
-      const response = await axios.get(`${apiEndpoint}/search/?q=${q}${postcode ? `&postcode=${postcode}` : ""}`);
-      return response.data;
-    } catch (error) {
-      console.error(`geo searchPostcodeOnly error : #${q}# ${postcode} ${error}`);
-      return null;
-    }
-  }
-
-  async searchMunicipalityByCode(code, isCityCode = false) {
-    try {
-      const { data } = await axios.get(
-        `${apiEndpoint}/search/?limit=1&q=${isCityCode ? "citycode=" : ""}${code}&type=municipality`
-      );
-      return data;
     } catch (e) {
-      console.error("geo search municipality error", e);
-      return e;
+      throw new ApiError("Api Entreprise", e.message, e.code);
+    }
+  }
+
+  async searchPostcodeOnly(q, options = {}) {
+    try {
+      let params = queryString.stringify({ q, ...options });
+      const response = await axios.get(`${apiEndpoint}/search/?${params}`);
+      logger.debug(`[Adresse API] Searching Postcode with parameters ${params}...`);
+      return response.data;
+    } catch (e) {
+      throw new ApiError("Api Entreprise", e.message, e.code);
+    }
+  }
+
+  async searchMunicipalityByCode(code, options = {}) {
+    try {
+      let params = `${options.isCityCode ? "citycode=" : ""}${code}&type=municipality`;
+      logger.debug(`[Adresse API] Searching municipality with parameters ${params}...`);
+      const response = await axios.get(`${apiEndpoint}/search/?limit=1&q=${params}`);
+      return response.data;
+    } catch (e) {
+      throw new ApiError("Api Entreprise", e.message, e.code);
     }
   }
 }
