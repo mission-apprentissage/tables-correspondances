@@ -177,6 +177,12 @@ const etablissementSchema = {
     description: "UAI de l'établissement",
   },
 
+  uais_potentiels: {
+    type: [String],
+    default: [],
+    description: "UAIs potentiels de l'établissement",
+  },
+
   //////////////
   info_depp: {
     type: Number,
