@@ -41,6 +41,8 @@ const removeDuplicates = async (merged, rest) => {
     });
     merged.last_update_at = Date.now();
 
+    merged.tags = compact(uniq([...merged.tags, duplicateToRemove.tags]));
+
     merged.uais_potentiels = compact(uniq([...merged.uais_potentiels, duplicateToRemove.uai]));
 
     await merged.save({ validateBeforeSave: false });
