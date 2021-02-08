@@ -13,7 +13,6 @@ module.exports = (stream) => {
         uai: data.numero_uai,
         siret: data.numero_siren_siret_uai,
         nom: data.patronyme_uai,
-        referentiel: "depp",
       };
     }),
     { promisify: false }

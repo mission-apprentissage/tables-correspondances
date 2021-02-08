@@ -1,6 +1,7 @@
 const axios = require("axios");
 const config = require("config");
 const logger = require("../logger");
+const ApiError = require("./ApiError");
 
 // Cf Documentation : https://doc.entreprise.api.gouv.fr/#param-tres-obligatoires
 const apiEndpoint = "https://entreprise.api.gouv.fr/v2";
@@ -15,20 +16,28 @@ class ApiEntreprise {
   constructor() {}
 
   async getEntreprise(siren) {
-    logger.debug(`[Entreprise API] Fetching entreprise ${siren}...`);
-    let response = await axios.get(`${apiEndpoint}/entreprises/${siren}`, {
-      params: apiParams,
-    });
-    return response.data.entreprise;
+    try {
+      logger.debug(`[Entreprise API] Fetching entreprise ${siren}...`);
+      let response = await axios.get(`${apiEndpoint}/entreprises/${siren}`, {
+        params: apiParams,
+      });
+      return response.data.entreprise;
+    } catch (e) {
+      throw new ApiError("Api Entreprise", e.message, e.code);
+    }
   }
 
   async getEtablissement(siret) {
-    logger.debug(`[Entreprise API] Fetching etablissement ${siret}...`);
-    let response = await axios.get(`${apiEndpoint}/etablissements/${siret}`, {
-      params: apiParams,
-    });
+    try {
+      logger.debug(`[Entreprise API] Fetching etablissement ${siret}...`);
+      let response = await axios.get(`${apiEndpoint}/etablissements/${siret}`, {
+        params: apiParams,
+      });
 
-    return response.data.etablissement;
+      return response.data.etablissement;
+    } catch (e) {
+      throw new ApiError("Api Entreprise", e.message, e.code);
+    }
   }
 }
 

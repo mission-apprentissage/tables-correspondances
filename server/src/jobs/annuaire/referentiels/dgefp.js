@@ -13,7 +13,6 @@ module.exports = (stream) => {
       return {
         siret: `${data.siren}${data.num_etablissement}`,
         nom: `${data.raison_sociale}`,
-        referentiel: "dgefp",
       };
     }),
     { promisify: false }

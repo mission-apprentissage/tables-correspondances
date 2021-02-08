@@ -1,12 +1,10 @@
 const { program: cli } = require("commander");
 const { createWriteStream } = require("fs");
-const { range } = require("lodash");
-const faker = require("faker"); // eslint-disable-line node/no-unpublished-require
 const { stdoutStream } = require("oleoduc");
 const { createReadStream } = require("fs");
 const { runScript } = require("../scriptWrapper");
-const { Annuaire } = require("../../common/model");
 const apiEntreprise = require("../../common/apis/apiEntreprise");
+const apiGeoAdresse = require("../../common/apis/apiGeoAdresse");
 const { createSource, getDefaultSources } = require("./sources/sources");
 const { createReferentiel, getDefaultReferentiels } = require("./referentiels/referentiels");
 const cleanAll = require("./cleanAll");
@@ -38,7 +36,9 @@ cli
 
       return Promise.all(
         referentiels.map(async (referentiel) => {
-          return { [referentiel.type]: await importReferentiel(referentiel, apiEntreprise) };
+          return {
+            [referentiel.type]: await importReferentiel(referentiel, apiEntreprise, apiGeoAdresse),
+          };
         })
       );
     });
@@ -76,34 +76,6 @@ cli
       let output = out || stdoutStream();
 
       return exportAll(output, { format });
-    });
-  });
-
-cli
-  .command("dataset")
-  .description("Génère un jeu de données")
-  .action(() => {
-    runScript(async () => {
-      let nbElements = 50;
-      // TODO reuse fixture
-      await Promise.all(
-        range(0, nbElements).map((value) => {
-          return new Annuaire({
-            uai: faker.helpers.replaceSymbols("#######?"),
-            siret: faker.helpers.replaceSymbols("#########00015"),
-            nom: faker.company.companyName(),
-            uais_secondaires: value % 2 ? [{ uai: faker.helpers.replaceSymbols("#######?"), type: "test" }] : [],
-            region: "11",
-            siegeSocial: true,
-            dateCreation: new Date("2020-11-26T23:00:00.000Z"),
-            statut: "actif",
-          }).save();
-        })
-      );
-
-      return {
-        inserted: nbElements,
-      };
     });
   });
 

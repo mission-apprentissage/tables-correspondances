@@ -1,7 +1,7 @@
 const fs = require("fs");
 const { getOvhFileAsStream } = require("../../../common/ovhStorage");
 
-let referentiels = fs.readdirSync(__dirname).reduce((acc, filename) => {
+const referentiels = fs.readdirSync(__dirname).reduce((acc, filename) => {
   let type = filename.split(".")[0];
 
   return {
@@ -10,11 +10,12 @@ let referentiels = fs.readdirSync(__dirname).reduce((acc, filename) => {
   };
 }, {});
 
-let createReferentiel = (type, ...args) => {
+const createReferentiel = (type, ...args) => {
   let referentiel = referentiels[type](...args);
   referentiel.type = type;
   return referentiel;
 };
+
 module.exports = {
   createReferentiel,
   getDefaultReferentiels: () => {
