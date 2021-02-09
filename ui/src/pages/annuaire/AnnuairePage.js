@@ -96,11 +96,10 @@ export default () => {
                   <Table>
                     <Table.Header>
                       <Table.Row>
-                        <Table.ColHeader>Uai</Table.ColHeader>
                         <Table.ColHeader>Siret</Table.ColHeader>
+                        <Table.ColHeader>Uai</Table.ColHeader>
                         <Table.ColHeader>Nom</Table.ColHeader>
                         <Table.ColHeader>Uai secondaires</Table.ColHeader>
-                        <Table.ColHeader>Siège social</Table.ColHeader>
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -112,10 +111,8 @@ export default () => {
                         data.etablissements.map((e) => {
                           return (
                             <Table.Row key={e.uai}>
-                              <Table.Col>
-                                <b>{e.uai}</b>
-                              </Table.Col>
                               <Table.Col>{e.siret}</Table.Col>
+                              <Table.Col>{e.uai}</Table.Col>
                               <Table.Col>{e.nom}</Table.Col>
                               <Table.Col>
                                 {e.uais_secondaires.map((u) => {
@@ -127,7 +124,6 @@ export default () => {
                                   );
                                 })}
                               </Table.Col>
-                              <Table.Col>{e.siegeSocial ? "Oui" : "Non"}</Table.Col>
                             </Table.Row>
                           );
                         })

@@ -1,4 +1,5 @@
 const express = require("express");
+const Boom = require("boom");
 const Joi = require("joi");
 const { oleoduc, jsonStream } = require("oleoduc");
 const { Annuaire } = require("../../common/model");
@@ -35,6 +36,24 @@ module.exports = () => {
         }),
         res
       );
+    })
+  );
+
+  router.get(
+    "/etablissements/:siret",
+    tryCatch(async (req, res) => {
+      let { siret } = await Joi.object({
+        siret: Joi.string()
+          .pattern(/^[0-9]{14}$/)
+          .required(),
+      }).validateAsync(req.params, { abortEarly: false });
+
+      let etablissement = await Annuaire.findOne({ siret }, { _id: 0, __v: 0 }).lean();
+      if (!etablissement) {
+        throw Boom.notFound("Siret inconnu");
+      }
+
+      return res.json(etablissement);
     })
   );
 
