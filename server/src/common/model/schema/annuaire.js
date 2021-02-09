@@ -9,14 +9,12 @@ const annuaireSchema = {
   },
   uai: {
     type: String,
-    default: undefined,
     description: "L'UAI de l'établissement",
     unique: true,
     sparse: true,
   },
   nom: {
     type: String,
-    default: undefined,
     description: "Le nom de l'établissement",
   },
   referentiel: {
@@ -71,35 +69,31 @@ const annuaireSchema = {
     {
       label: {
         type: String,
-        default: undefined,
+        required: true,
       },
       numero_voie: {
         type: String,
-        default: undefined,
       },
       type_voie: {
         type: String,
-        default: undefined,
       },
       nom_voie: {
         type: String,
-        default: undefined,
       },
       code_postal: {
         type: String,
-        default: undefined,
+        required: true,
       },
       code_insee: {
         type: String,
-        default: undefined,
+        required: true,
       },
       cedex: {
         type: String,
-        default: undefined,
       },
       localite: {
         type: String,
-        default: undefined,
+        required: true,
       },
       geojson: new Schema(
         {
