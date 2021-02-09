@@ -70,17 +70,20 @@ module.exports = async (referentiel, apiEntreprise, apiGeoAddresse) => {
 
   await oleoduc(
     referentiel,
-    transformData(async (data) => {
-      if (isEmpty(data.siret)) {
-        return new Error(`Siret invalide ${data.siret}`);
-      }
+    transformData(
+      async (data) => {
+        if (isEmpty(data.siret)) {
+          return new Error(`Siret invalide ${data.siret}`);
+        }
 
-      try {
-        return await buildEtablissement(data);
-      } catch (err) {
-        return err;
-      }
-    }),
+        try {
+          return await buildEtablissement(data);
+        } catch (err) {
+          return err;
+        }
+      },
+      { parallel: 2 }
+    ),
     writeData(async (etab) => {
       stats.total++;
       if (etab instanceof Error) {
