@@ -112,4 +112,61 @@ httpTests(__filename, ({ startServer }) => {
     strictEqual(response.status, 400);
     deepStrictEqual(response.data.details[0].path[0], "invalid");
   });
+
+  it("Vérifie qu'on peut obtenir un établissement", async () => {
+    const { httpClient } = await startServer();
+    await createAnnuaire({
+      uai: "0010856A",
+      siret: "11111111111111",
+      nom: "Centre de formation",
+      uais_secondaires: [],
+    }).save();
+
+    const response = await httpClient.get("/api/v1/annuaire/etablissements/11111111111111");
+
+    strictEqual(response.status, 200);
+    deepStrictEqual(response.data, {
+      uai: "0010856A",
+      siret: "11111111111111",
+      nom: "Centre de formation",
+      uais_secondaires: [],
+      filiations: [],
+      siegeSocial: true,
+      statut: "actif",
+      referentiel: "test",
+      adresse: {
+        geojson: {
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [2.396444, 48.879706],
+          },
+          properties: {
+            score: 0.88,
+          },
+        },
+        label: "31 rue des lilas Paris 75019",
+        numero_voie: "31",
+        type_voie: "RUE",
+        nom_voie: "31",
+        code_postal: "75001",
+        code_insee: "75000",
+        localite: "PARIS",
+        cedex: null,
+      },
+    });
+  });
+
+  it("Vérifie qu'on renvoie une 404 si le siret n'est pas connu", async () => {
+    const { httpClient } = await startServer();
+
+    const response = await httpClient.get("/api/v1/annuaire/etablissements/11111111111111");
+
+    strictEqual(response.status, 404);
+    deepStrictEqual(response.data, {
+      error: "Not Found",
+      message: "Siret inconnu",
+      statusCode: 404,
+    });
+  });
 });
