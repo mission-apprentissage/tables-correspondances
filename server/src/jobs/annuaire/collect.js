@@ -5,7 +5,7 @@ const { validateUAI } = require("../../common/utils/uaiUtils");
 const logger = require("../../common/logger");
 
 const shouldAddUAIs = (etablissement, uai) => {
-  return uai && etablissement.uai !== uai && !etablissement.uais_secondaires.find(({ uai }) => uai === uai);
+  return uai && etablissement.uai !== uai && !etablissement.uais_secondaires.find((sec) => sec.uai === uai);
 };
 
 module.exports = async (source) => {
