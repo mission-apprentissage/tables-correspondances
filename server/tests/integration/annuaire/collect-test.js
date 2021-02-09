@@ -55,7 +55,7 @@ integrationTests(__filename, () => {
     let results = await collect(source);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires, [
+    assert.deepStrictEqual(found.uaisSecondaires, [
       {
         type: "test",
         uai: "0011073L",
@@ -79,7 +79,7 @@ integrationTests(__filename, () => {
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires[0], {
+    assert.deepStrictEqual(found.uaisSecondaires[0], {
       type: "test",
       uai: "093XXXT",
       valide: false,
@@ -101,7 +101,7 @@ integrationTests(__filename, () => {
     let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires, []);
+    assert.deepStrictEqual(found.uaisSecondaires, []);
     assert.deepStrictEqual(stats, {
       total: 1,
       failed: 0,
@@ -117,7 +117,7 @@ integrationTests(__filename, () => {
     await createAnnuaire({
       uai: "0011058V",
       siret: "11111111111111",
-      uais_secondaires: [
+      uaisSecondaires: [
         {
           type: "test",
           uai: "0011073L",
@@ -129,7 +129,7 @@ integrationTests(__filename, () => {
     let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires, [
+    assert.deepStrictEqual(found.uaisSecondaires, [
       {
         type: "test",
         uai: "0011073L",
@@ -153,7 +153,7 @@ integrationTests(__filename, () => {
     let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires, []);
+    assert.deepStrictEqual(found.uaisSecondaires, []);
     assert.deepStrictEqual(stats, {
       total: 1,
       failed: 0,

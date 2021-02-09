@@ -10,9 +10,9 @@ module.exports = {
             UAI: (a) => a.uai,
             Siret: (a) => a.siret,
             "Raison sociale": (a) => a.raisonSociale,
-            "UAIs secondaires disponibles": (a) => (a.uais_secondaires.length > 0 ? "Oui" : "Non"),
+            "UAIs secondaires disponibles": (a) => (a.uaisSecondaires.length > 0 ? "Oui" : "Non"),
             "UAI secondaires": (a) =>
-              a.uais_secondaires
+              a.uaisSecondaires
                 .map(({ uai, type }) => {
                   return `${uai}_${type}`;
                 })

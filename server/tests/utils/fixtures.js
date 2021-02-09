@@ -13,7 +13,7 @@ module.exports = {
       uai: faker.helpers.replaceSymbols("#######?"),
       siret: faker.helpers.replaceSymbols("#########00015"),
       raisonSociale: faker.company.companyName(),
-      uais_secondaires: [],
+      uaisSecondaires: [],
       liens: [],
       referentiel: "test",
       siegeSocial: true,

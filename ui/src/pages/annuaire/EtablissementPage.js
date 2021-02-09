@@ -38,7 +38,7 @@ export default () => {
                       title: "UAI secondaires",
                       content: (
                         <div>
-                          {etablissement.uais_secondaires.map((u) => {
+                          {etablissement.uaisSecondaires.map((u) => {
                             return <UaiSecondaire item={u} />;
                           })}
                         </div>

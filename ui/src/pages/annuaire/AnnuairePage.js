@@ -120,7 +120,7 @@ export default () => {
                               </Table.Col>
                               <Table.Col>{e.uai}</Table.Col>
                               <Table.Col>{e.raisonSociale}</Table.Col>
-                              <Table.Col>{e.uais_secondaires.length}</Table.Col>
+                              <Table.Col>{e.uaisSecondaires.length}</Table.Col>
                               <Table.Col>{e.liens.length}</Table.Col>
                             </Table.Row>
                           );

@@ -89,7 +89,7 @@ const annuaireSchema = {
     },
     { _id: false }
   ),
-  uais_secondaires: {
+  uaisSecondaires: {
     type: Array,
     default: [],
     required: true,

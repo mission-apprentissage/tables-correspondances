@@ -39,7 +39,7 @@ integrationTests(__filename, () => {
       siret: "11111111111111",
       raisonSociale: "Centre de formation",
       referentiel: "test",
-      uais_secondaires: [],
+      uaisSecondaires: [],
       liens: [],
     });
     assert.deepStrictEqual(results, {
@@ -103,7 +103,7 @@ integrationTests(__filename, () => {
       siret: "11111111111111",
       raisonSociale: "Centre de formation",
       referentiel: "depp",
-      uais_secondaires: [],
+      uaisSecondaires: [],
       liens: [],
     });
     assert.deepStrictEqual(results, {
@@ -132,7 +132,7 @@ integrationTests(__filename, () => {
       siret: "11111111111111",
       raisonSociale: "Centre de formation",
       referentiel: "dgefp",
-      uais_secondaires: [],
+      uaisSecondaires: [],
       liens: [],
     });
     assert.deepStrictEqual(results, {

@@ -9,7 +9,7 @@ httpTests(__filename, ({ startServer }) => {
       uai: "0010856A",
       siret: "11111111111111",
       raisonSociale: "Centre de formation",
-      uais_secondaires: [],
+      uaisSecondaires: [],
     }).save();
 
     const response = await httpClient.get("/api/v1/annuaire/etablissements");
@@ -21,7 +21,7 @@ httpTests(__filename, ({ startServer }) => {
           uai: "0010856A",
           siret: "11111111111111",
           raisonSociale: "Centre de formation",
-          uais_secondaires: [],
+          uaisSecondaires: [],
           liens: [],
           siegeSocial: true,
           statut: "actif",
@@ -63,7 +63,7 @@ httpTests(__filename, ({ startServer }) => {
       uai: "0010856A",
       siret: "11111111111111",
       raisonSociale: "Centre de formation",
-      uais_secondaires: [],
+      uaisSecondaires: [],
     }).save();
 
     const response = await httpClient.get("/api/v1/annuaire/etablissements?filter=0010856A");
@@ -78,7 +78,7 @@ httpTests(__filename, ({ startServer }) => {
       uai: "0010856A",
       siret: "11111111111111",
       raisonSociale: "Centre de formation",
-      uais_secondaires: [],
+      uaisSecondaires: [],
     }).save();
 
     const response = await httpClient.get("/api/v1/annuaire/etablissements?filter=11111111111111");
@@ -119,7 +119,7 @@ httpTests(__filename, ({ startServer }) => {
       uai: "0010856A",
       siret: "11111111111111",
       raisonSociale: "Centre de formation",
-      uais_secondaires: [],
+      uaisSecondaires: [],
     }).save();
 
     const response = await httpClient.get("/api/v1/annuaire/etablissements/11111111111111");
@@ -129,7 +129,7 @@ httpTests(__filename, ({ startServer }) => {
       uai: "0010856A",
       siret: "11111111111111",
       raisonSociale: "Centre de formation",
-      uais_secondaires: [],
+      uaisSecondaires: [],
       liens: [],
       siegeSocial: true,
       statut: "actif",
