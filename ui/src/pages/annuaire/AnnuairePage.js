@@ -4,11 +4,12 @@ import * as Yup from "yup";
 import { Button, Card, Form as TablerForm, Grid, Page, Table, Badge } from "tabler-react";
 import { Field, Form, Formik } from "formik";
 import FormError from "../../common/components/FormError";
-import Pagination from "./Pagination";
+import Pagination from "./components/Pagination";
 import FormMessage from "../../common/components/FormMessage";
 import { useFetch } from "../../common/hooks/useFetch";
 import queryString from "query-string";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import UaiSecondaire from "./components/UaiSecondaire";
 
 const buildQuery = (elements = {}) => {
   return `${queryString.stringify(elements, { skipNull: true, skipEmptyString: true })}`;
@@ -29,7 +30,7 @@ export default () => {
 
   let search = async (options = {}) => {
     let keys = Object.keys(options);
-    history.push(`/annuaire?${buildQuery({ ...omit(query, keys), ...options })}`);
+    history.push(`/annuaire?${buildQuery({ ...omit(query, keys), page: 1, ...options })}`);
   };
 
   let showError = (meta) => {
@@ -45,7 +46,9 @@ export default () => {
     <Page>
       <Page.Main>
         <Page.Content>
-          <Page.Header>Annuaire</Page.Header>
+          <Page.Header>
+            <Link to={`/annuaire`}>Annuaire</Link>
+          </Page.Header>
           <Grid.Row>
             <Grid.Col>
               <Card>
@@ -100,6 +103,7 @@ export default () => {
                         <Table.ColHeader>Uai</Table.ColHeader>
                         <Table.ColHeader>Nom</Table.ColHeader>
                         <Table.ColHeader>Uai secondaires</Table.ColHeader>
+                        <Table.ColHeader>Filiations</Table.ColHeader>
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -111,19 +115,13 @@ export default () => {
                         data.etablissements.map((e) => {
                           return (
                             <Table.Row key={e.uai}>
-                              <Table.Col>{e.siret}</Table.Col>
+                              <Table.Col>
+                                <Link to={`/annuaire/${e.siret}`}>{e.siret}</Link>
+                              </Table.Col>
                               <Table.Col>{e.uai}</Table.Col>
                               <Table.Col>{e.nom}</Table.Col>
-                              <Table.Col>
-                                {e.uais_secondaires.map((u) => {
-                                  return (
-                                    <div>
-                                      <span style={{ paddingRight: "1rem" }}>{u.uai}</span>
-                                      <Badge>{u.type}</Badge>
-                                    </div>
-                                  );
-                                })}
-                              </Table.Col>
+                              <Table.Col>{e.uais_secondaires.length}</Table.Col>
+                              <Table.Col>{e.filiations.length}</Table.Col>
                             </Table.Row>
                           );
                         })

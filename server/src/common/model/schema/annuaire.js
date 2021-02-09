@@ -22,39 +22,6 @@ const annuaireSchema = {
     required: true,
     description: "Le nom du référentiel depuis lequel a été importé l'établissement",
   },
-  uais_secondaires: {
-    type: Array,
-    default: [],
-    required: true,
-    description: "La liste de tous les uais connus pour cet établissement",
-  },
-  filiations: {
-    type: [
-      new Schema(
-        {
-          siret: {
-            type: String,
-            required: true,
-          },
-          type: {
-            type: String,
-            required: true,
-          },
-          statut: {
-            type: String,
-            required: true,
-          },
-          exists: {
-            type: Boolean,
-            required: true,
-          },
-        },
-        { _id: false }
-      ),
-    ],
-    default: [],
-    description: "La liste des établissements liés",
-  },
   siegeSocial: {
     type: Boolean,
     required: true,
@@ -69,7 +36,6 @@ const annuaireSchema = {
     {
       label: {
         type: String,
-        required: true,
       },
       numero_voie: {
         type: String,
@@ -123,6 +89,39 @@ const annuaireSchema = {
     },
     { _id: false }
   ),
+  uais_secondaires: {
+    type: Array,
+    default: [],
+    required: true,
+    description: "La liste de tous les uais connus pour cet établissement",
+  },
+  filiations: {
+    type: [
+      new Schema(
+        {
+          siret: {
+            type: String,
+            required: true,
+          },
+          type: {
+            type: String,
+            required: true,
+          },
+          statut: {
+            type: String,
+            required: true,
+          },
+          exists: {
+            type: Boolean,
+            required: true,
+          },
+        },
+        { _id: false }
+      ),
+    ],
+    default: [],
+    description: "La liste des établissements liés",
+  },
 };
 
 module.exports = annuaireSchema;
