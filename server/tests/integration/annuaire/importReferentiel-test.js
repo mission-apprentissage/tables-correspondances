@@ -40,7 +40,7 @@ integrationTests(__filename, () => {
       raisonSociale: "Centre de formation",
       referentiel: "test",
       uais_secondaires: [],
-      filiations: [],
+      liens: [],
     });
     assert.deepStrictEqual(results, {
       total: 1,
@@ -104,7 +104,7 @@ integrationTests(__filename, () => {
       raisonSociale: "Centre de formation",
       referentiel: "depp",
       uais_secondaires: [],
-      filiations: [],
+      liens: [],
     });
     assert.deepStrictEqual(results, {
       total: 1,
@@ -133,7 +133,7 @@ integrationTests(__filename, () => {
       raisonSociale: "Centre de formation",
       referentiel: "dgefp",
       uais_secondaires: [],
-      filiations: [],
+      liens: [],
     });
     assert.deepStrictEqual(results, {
       total: 1,

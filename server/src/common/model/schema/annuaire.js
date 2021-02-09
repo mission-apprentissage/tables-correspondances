@@ -95,7 +95,7 @@ const annuaireSchema = {
     required: true,
     description: "La liste de tous les uais connus pour cet établissement",
   },
-  filiations: {
+  liens: {
     type: [
       new Schema(
         {

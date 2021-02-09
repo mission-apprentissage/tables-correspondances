@@ -14,7 +14,7 @@ module.exports = {
       siret: faker.helpers.replaceSymbols("#########00015"),
       raisonSociale: faker.company.companyName(),
       uais_secondaires: [],
-      filiations: [],
+      liens: [],
       referentiel: "test",
       siegeSocial: true,
       statut: "actif",

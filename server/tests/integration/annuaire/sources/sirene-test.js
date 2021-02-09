@@ -44,7 +44,7 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on peut collecter des informations de filiations (établissement)", async () => {
+  it("Vérifie qu'on peut collecter des informations de liens (établissement)", async () => {
     await importReferentiel();
     let source = await createSource("sirene", {
       apiSirene: createApiSireneMock(
@@ -58,7 +58,7 @@ integrationTests(__filename, () => {
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(found.filiations, [
+    assert.deepStrictEqual(found.liens, [
       {
         type: "établissement",
         siret: "11111111122222",
@@ -73,7 +73,7 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on peut collecter des informations de filiations (siège+exists)", async () => {
+  it("Vérifie qu'on peut collecter des informations de liens (siège+exists)", async () => {
     await importReferentiel();
     await createAnnuaire({ siret: "11111111122222" }).save();
     let source = await createSource("sirene", {
@@ -88,7 +88,7 @@ integrationTests(__filename, () => {
     await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(found.filiations, [
+    assert.deepStrictEqual(found.liens, [
       {
         type: "siege",
         siret: "11111111122222",

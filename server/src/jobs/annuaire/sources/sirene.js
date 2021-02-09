@@ -15,7 +15,7 @@ module.exports = async (options = {}) => {
         let uniteLegale = await api.getUniteLegale(siren);
         let data = uniteLegale.etablissements.find((e) => e.siret === siret);
         let siegeSocial = data.etablissement_siege === "true";
-        let filiations = await Promise.all(
+        let liens = await Promise.all(
           uniteLegale.etablissements
             .filter((e) => e.siret !== siret)
             .map(async (e) => {
@@ -31,7 +31,7 @@ module.exports = async (options = {}) => {
         return {
           siret,
           data: {
-            filiations,
+            liens,
             siegeSocial: siegeSocial,
             statut: data.etat_administratif === "A" ? "actif" : "fermé",
             adresse: {

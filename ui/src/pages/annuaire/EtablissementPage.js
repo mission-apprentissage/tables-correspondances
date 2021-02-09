@@ -3,7 +3,7 @@ import { Card, ContactCard, Grid, Page } from "tabler-react";
 import { useFetch } from "../../common/hooks/useFetch";
 import { Link, useParams } from "react-router-dom";
 import UaiSecondaire from "./components/UaiSecondaire";
-import Filiation from "./components/Filiation";
+import Liens from "./components/Liens";
 import FormError from "../../common/components/FormError";
 
 export default () => {
@@ -46,11 +46,11 @@ export default () => {
                     },
                     { title: "Siège social", content: etablissement.siegeSocial ? "Oui" : "Non" },
                     {
-                      title: "Filiations",
+                      title: "Liens",
                       content: (
                         <div>
-                          {etablissement.filiations.map((u) => {
-                            return <Filiation item={u} />;
+                          {etablissement.liens.map((u) => {
+                            return <Liens item={u} />;
                           })}
                         </div>
                       ),

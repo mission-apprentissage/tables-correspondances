@@ -103,7 +103,7 @@ export default () => {
                         <Table.ColHeader>Uai</Table.ColHeader>
                         <Table.ColHeader>Nom</Table.ColHeader>
                         <Table.ColHeader>Uai secondaires</Table.ColHeader>
-                        <Table.ColHeader>Filiations</Table.ColHeader>
+                        <Table.ColHeader>Liens</Table.ColHeader>
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -121,7 +121,7 @@ export default () => {
                               <Table.Col>{e.uai}</Table.Col>
                               <Table.Col>{e.raisonSociale}</Table.Col>
                               <Table.Col>{e.uais_secondaires.length}</Table.Col>
-                              <Table.Col>{e.filiations.length}</Table.Col>
+                              <Table.Col>{e.liens.length}</Table.Col>
                             </Table.Row>
                           );
                         })
