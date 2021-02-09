@@ -14,6 +14,10 @@ module.exports = async (options = {}) => {
         let siren = siret.substring(0, 9);
         let uniteLegale = await api.getUniteLegale(siren);
         let data = uniteLegale.etablissements.find((e) => e.siret === siret);
+        if (!data) {
+          return { siret, error: "Etablissement inconnu" };
+        }
+
         let siegeSocial = data.etablissement_siege === "true";
         let liens = await Promise.all(
           uniteLegale.etablissements

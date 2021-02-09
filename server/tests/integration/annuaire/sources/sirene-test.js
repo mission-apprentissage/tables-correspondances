@@ -109,8 +109,8 @@ integrationTests(__filename, () => {
 
     let results = await collect(source);
 
-    let count = await Annuaire.count({ siret: "11111111111111" });
-    assert.deepStrictEqual(count, 1);
+    let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
+    assert.deepStrictEqual(found._meta._errors[0].reason, "HTTP error");
     assert.deepStrictEqual(results, {
       total: 1,
       updated: 0,

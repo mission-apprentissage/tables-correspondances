@@ -26,6 +26,7 @@ module.exports = () => {
           .select({
             _id: 0,
             __v: 0,
+            _meta: 0,
           })
           .cursor(),
         jsonStream({
@@ -48,7 +49,7 @@ module.exports = () => {
           .required(),
       }).validateAsync(req.params, { abortEarly: false });
 
-      let etablissement = await Annuaire.findOne({ siret }, { _id: 0, __v: 0 }).lean();
+      let etablissement = await Annuaire.findOne({ siret }, { _id: 0, __v: 0, _meta: 0 }).lean();
       if (!etablissement) {
         throw Boom.notFound("Siret inconnu");
       }
