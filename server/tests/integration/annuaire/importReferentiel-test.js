@@ -27,7 +27,7 @@ integrationTests(__filename, () => {
     let apiEntreprise = createApiEntrepriseMock();
     let apiGeoAddresse = createaApiGeoAddresseMock();
     let referentiel = createFakeReferentiel(
-      `"uai";"siret";"nom"
+      `"uai";"siret";"raisonSociale"
 "0011058V";"11111111111111";"Centre de formation"`
     );
 
@@ -37,7 +37,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found, {
       uai: "0011058V",
       siret: "11111111111111",
-      nom: "Centre de formation",
+      raisonSociale: "Centre de formation",
       referentiel: "test",
       uais_secondaires: [],
       filiations: [],
@@ -53,7 +53,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on ignore les établissements en double", async () => {
     let apiEntreprise = createApiEntrepriseMock();
     let apiGeoAddresse = createaApiGeoAddresseMock();
-    let referentiel = createFakeReferentiel(`"uai";"siret";"nom"
+    let referentiel = createFakeReferentiel(`"uai";"siret";"raisonSociale"
 "0011058V";"11111111111111";"Centre de formation"
 "0011058V";"11111111111111";"Centre de formation"`);
 
@@ -71,7 +71,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut ignorer un établissement avec un siret vide", async () => {
     let apiEntreprise = createApiEntrepriseMock();
     let apiGeoAddresse = createaApiGeoAddresseMock();
-    let referentiel = createFakeReferentiel(`"uai";"siret";"nom"
+    let referentiel = createFakeReferentiel(`"uai";"siret";"raisonSociale"
 "0011058V";"";"Centre de formation"`);
 
     let results = await importReferentiel(referentiel, apiEntreprise, apiGeoAddresse);
@@ -101,7 +101,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found, {
       uai: "0011058V",
       siret: "11111111111111",
-      nom: "Centre de formation",
+      raisonSociale: "Centre de formation",
       referentiel: "depp",
       uais_secondaires: [],
       filiations: [],
@@ -130,7 +130,7 @@ integrationTests(__filename, () => {
     assert.strictEqual(docs.length, 1);
     assert.deepStrictEqual(docs[0], {
       siret: "11111111111111",
-      nom: "Centre de formation",
+      raisonSociale: "Centre de formation",
       referentiel: "dgefp",
       uais_secondaires: [],
       filiations: [],

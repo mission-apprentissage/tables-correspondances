@@ -119,7 +119,7 @@ export default () => {
                                 <Link to={`/annuaire/${e.siret}`}>{e.siret}</Link>
                               </Table.Col>
                               <Table.Col>{e.uai}</Table.Col>
-                              <Table.Col>{e.nom}</Table.Col>
+                              <Table.Col>{e.raisonSociale}</Table.Col>
                               <Table.Col>{e.uais_secondaires.length}</Table.Col>
                               <Table.Col>{e.filiations.length}</Table.Col>
                             </Table.Row>

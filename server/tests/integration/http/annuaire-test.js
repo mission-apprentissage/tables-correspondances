@@ -8,7 +8,7 @@ httpTests(__filename, ({ startServer }) => {
     await createAnnuaire({
       uai: "0010856A",
       siret: "11111111111111",
-      nom: "Centre de formation",
+      raisonSociale: "Centre de formation",
       uais_secondaires: [],
     }).save();
 
@@ -20,7 +20,7 @@ httpTests(__filename, ({ startServer }) => {
         {
           uai: "0010856A",
           siret: "11111111111111",
-          nom: "Centre de formation",
+          raisonSociale: "Centre de formation",
           uais_secondaires: [],
           filiations: [],
           siegeSocial: true,
@@ -62,7 +62,7 @@ httpTests(__filename, ({ startServer }) => {
     await createAnnuaire({
       uai: "0010856A",
       siret: "11111111111111",
-      nom: "Centre de formation",
+      raisonSociale: "Centre de formation",
       uais_secondaires: [],
     }).save();
 
@@ -77,7 +77,7 @@ httpTests(__filename, ({ startServer }) => {
     await createAnnuaire({
       uai: "0010856A",
       siret: "11111111111111",
-      nom: "Centre de formation",
+      raisonSociale: "Centre de formation",
       uais_secondaires: [],
     }).save();
 
@@ -118,7 +118,7 @@ httpTests(__filename, ({ startServer }) => {
     await createAnnuaire({
       uai: "0010856A",
       siret: "11111111111111",
-      nom: "Centre de formation",
+      raisonSociale: "Centre de formation",
       uais_secondaires: [],
     }).save();
 
@@ -128,7 +128,7 @@ httpTests(__filename, ({ startServer }) => {
     deepStrictEqual(response.data, {
       uai: "0010856A",
       siret: "11111111111111",
-      nom: "Centre de formation",
+      raisonSociale: "Centre de formation",
       uais_secondaires: [],
       filiations: [],
       siegeSocial: true,

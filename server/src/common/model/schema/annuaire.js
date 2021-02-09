@@ -13,9 +13,9 @@ const annuaireSchema = {
     unique: true,
     sparse: true,
   },
-  nom: {
+  raisonSociale: {
     type: String,
-    description: "Le nom de l'établissement",
+    description: "La raison sociale de l'établissement",
   },
   referentiel: {
     type: String,

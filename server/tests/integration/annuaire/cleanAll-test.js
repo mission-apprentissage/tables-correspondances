@@ -9,7 +9,7 @@ integrationTests(__filename, () => {
     await createAnnuaire({
       uai: "0011058V",
       siret: "11111111111111",
-      nom: "Centre de formation",
+      raisonSociale: "Centre de formation",
       uais_secondaires: [],
     }).save();
 

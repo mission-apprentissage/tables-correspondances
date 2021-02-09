@@ -12,7 +12,7 @@ module.exports = {
     return new Annuaire({
       uai: faker.helpers.replaceSymbols("#######?"),
       siret: faker.helpers.replaceSymbols("#########00015"),
-      nom: faker.company.companyName(),
+      raisonSociale: faker.company.companyName(),
       uais_secondaires: [],
       filiations: [],
       referentiel: "test",

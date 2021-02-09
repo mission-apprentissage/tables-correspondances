@@ -13,7 +13,7 @@ module.exports = (stream) => {
     transformData((data) => {
       return {
         siret: `${data.siren}${data.num_etablissement}`,
-        nom: `${data.raison_sociale}`,
+        raisonSociale: `${data.raison_sociale}`,
       };
     }),
     { promisify: false }
