@@ -9,14 +9,12 @@ const annuaireSchema = {
   },
   uai: {
     type: String,
-    default: undefined,
     description: "L'UAI de l'établissement",
     unique: true,
     sparse: true,
   },
   nom: {
     type: String,
-    default: undefined,
     description: "Le nom de l'établissement",
   },
   referentiel: {
@@ -27,7 +25,35 @@ const annuaireSchema = {
   uais_secondaires: {
     type: Array,
     default: [],
+    required: true,
     description: "La liste de tous les uais connus pour cet établissement",
+  },
+  filiations: {
+    type: [
+      new Schema(
+        {
+          siret: {
+            type: String,
+            required: true,
+          },
+          type: {
+            type: String,
+            required: true,
+          },
+          statut: {
+            type: String,
+            required: true,
+          },
+          exists: {
+            type: Boolean,
+            required: true,
+          },
+        },
+        { _id: false }
+      ),
+    ],
+    default: [],
+    description: "La liste des établissements liés",
   },
   siegeSocial: {
     type: Boolean,
@@ -41,45 +67,41 @@ const annuaireSchema = {
   },
   adresse: new Schema(
     {
-      postale: {
+      label: {
         type: String,
         required: true,
       },
       numero_voie: {
         type: String,
-        default: undefined,
       },
       type_voie: {
         type: String,
-        default: undefined,
       },
       nom_voie: {
         type: String,
-        default: undefined,
       },
       code_postal: {
         type: String,
-        default: undefined,
+        required: true,
       },
       code_insee: {
         type: String,
-        default: undefined,
+        required: true,
       },
       cedex: {
         type: String,
-        default: undefined,
       },
       localite: {
         type: String,
         required: true,
       },
-      region: {
-        type: String,
-        required: true,
-      },
-      geocoding: new Schema(
+      geojson: new Schema(
         {
-          position: new Schema(
+          type: {
+            type: String,
+            required: true,
+          },
+          geometry: new Schema(
             {
               type: {
                 type: String,
@@ -92,9 +114,8 @@ const annuaireSchema = {
             },
             { _id: false }
           ),
-          description: {
-            type: String,
-            required: true,
+          properties: {
+            type: Object,
           },
         },
         { _id: false }

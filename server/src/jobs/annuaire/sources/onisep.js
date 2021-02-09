@@ -12,7 +12,9 @@ module.exports = (stream) => {
     transformData((data) => {
       return {
         siret: data["n° SIRET"],
-        uai: data["code UAI"],
+        data: {
+          uai: data["code UAI"],
+        },
       };
     }),
     { promisify: false }

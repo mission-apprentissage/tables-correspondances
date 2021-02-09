@@ -1,5 +1,4 @@
 const { oleoduc, writeData } = require("oleoduc");
-const { omit } = require("lodash");
 const { Annuaire } = require("../../common/model");
 const { getNbModifiedDocuments } = require("../../common/utils/mongooseUtils");
 const { validateUAI } = require("../../common/utils/uaiUtils");
@@ -8,6 +7,7 @@ const logger = require("../../common/logger");
 const shouldAddUAIs = (etablissement, uai) => {
   return uai && etablissement.uai !== uai && !etablissement.uais_secondaires.find(({ uai }) => uai === uai);
 };
+
 module.exports = async (source) => {
   let stats = {
     total: 0,
@@ -23,34 +23,36 @@ module.exports = async (source) => {
 
   await oleoduc(
     source,
-    writeData(async (current) => {
-      let siret = current.siret;
+    writeData(async ({ siret, error, data }) => {
       stats.total++;
+      if (error) {
+        logger.error(`[Collect] Erreur lors de la collecte pour l'établissement ${siret}.`, error);
+        stats.failed++;
+        return;
+      }
 
       try {
-        if (current.error instanceof Error) {
-          return handleError(current.error);
-        }
-
-        let etablissement = await Annuaire.findOne({ siret: siret });
+        let etablissement = await Annuaire.findOne({ siret });
         if (!etablissement) {
           return;
         }
 
+        let { uai, ...rest } = data;
         let res = await Annuaire.updateOne(
-          { _id: etablissement._id },
+          { siret },
           {
             $set: {
-              ...omit(current, ["uai", "siret", "nom"]),
+              ...rest,
             },
-            ...(shouldAddUAIs(etablissement, current.uai)
+            ...(shouldAddUAIs(etablissement, uai)
               ? {
                   $push: {
-                    uais_secondaires: { type: source.type, uai: current.uai, valide: validateUAI(current.uai) },
+                    uais_secondaires: { type: source.type, uai, valide: validateUAI(uai) },
                   },
                 }
               : {}),
-          }
+          },
+          { runValidators: true }
         );
         stats.updated += getNbModifiedDocuments(res);
       } catch (e) {

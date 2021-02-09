@@ -22,16 +22,22 @@ httpTests(__filename, ({ startServer }) => {
           siret: "11111111111111",
           nom: "Centre de formation",
           uais_secondaires: [],
+          filiations: [],
           siegeSocial: true,
           statut: "actif",
           referentiel: "test",
           adresse: {
-            geocoding: {
-              position: { coordinates: [2.396444, 48.879706], type: "Point" },
-              description: "31 Rue des Lilas 75019 Paris",
+            geojson: {
+              type: "Feature",
+              geometry: {
+                type: "Point",
+                coordinates: [2.396444, 48.879706],
+              },
+              properties: {
+                score: 0.88,
+              },
             },
-            postale: "NOMAYO\n31 RUE DES LILAS\n75001 PARIS\nFRANCE",
-            region: "11",
+            label: "31 rue des lilas Paris 75019",
             numero_voie: "31",
             type_voie: "RUE",
             nom_voie: "31",
