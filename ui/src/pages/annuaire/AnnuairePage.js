@@ -10,14 +10,22 @@ import { useFetch } from "../../common/hooks/useFetch";
 import queryString from "query-string";
 import { Link, useHistory } from "react-router-dom";
 import SortButton from "./components/SortButton";
+import styled from "styled-components";
 
-const buildQuery = (elements = {}) => {
+const Header = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+function buildQuery(elements = {}) {
   return `${queryString.stringify(elements, { skipNull: true, skipEmptyString: true })}`;
-};
+}
 
 export default () => {
   let history = useHistory();
-  let query = { page: 1, limit: 25, ...queryString.parse(window.location.search) };
+  let query = { page: 1, order: -1, limit: 25, ...queryString.parse(window.location.search), erreurs: false };
   let [data, loading, error] = useFetch(`/api/v1/annuaire/etablissements?${buildQuery(query)}`, {
     etablissements: [],
     pagination: {
@@ -28,26 +36,31 @@ export default () => {
     },
   });
 
-  let search = async (options = {}) => {
+  function search(options = {}) {
     let keys = Object.keys(options);
     history.push(`/annuaire?${buildQuery({ ...omit(query, keys), ...options })}`);
-  };
+  }
 
-  let showError = (meta) => {
+  function showError(meta) {
     return meta.touched && meta.error
       ? {
           feedback: meta.error,
           invalid: true,
         }
       : {};
-  };
+  }
 
   return (
     <Page>
       <Page.Main>
         <Page.Content>
           <Page.Header>
-            <Link to={`/annuaire`}>Annuaire</Link>
+            <Header>
+              <Link to={`/annuaire`}>Annuaire</Link>
+              <Button color={"danger"} onClick={() => history.push("/annuaire/erreurs")}>
+                Voir le rapport d'erreurs >
+              </Button>
+            </Header>
           </Page.Header>
           <Grid.Row>
             <Grid.Col>
@@ -68,7 +81,7 @@ export default () => {
                     {({ status = {} }) => {
                       return (
                         <Form>
-                          <TablerForm.Group label="Siret ou UAI">
+                          <TablerForm.Group label="Raison sociale, siret ou UAI">
                             <Field name="text">
                               {({ field, meta }) => {
                                 return <TablerForm.Input placeholder="..." {...field} {...showError(meta)} />;
@@ -121,7 +134,7 @@ export default () => {
                           return (
                             <Table.Row key={e.uai}>
                               <Table.Col>
-                                <Link to={`/annuaire/${e.siret}`}>{e.siret}</Link>
+                                <Link to={`/annuaire/etablissements/${e.siret}`}>{e.siret}</Link>
                               </Table.Col>
                               <Table.Col>{e.uai}</Table.Col>
                               <Table.Col>{e.raisonSociale}</Table.Col>
