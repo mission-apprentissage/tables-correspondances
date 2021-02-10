@@ -9,6 +9,10 @@ httpTests(__filename, ({ startServer }) => {
       uai: "0010856A",
       siret: "11111111111111",
       raisonSociale: "Centre de formation",
+      _meta: {
+        _errors: [],
+        lastUpdate: new Date("2021-02-10T16:39:13.064Z"),
+      },
     }).save();
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements");
@@ -45,6 +49,10 @@ httpTests(__filename, ({ startServer }) => {
             localite: "PARIS",
             cedex: null,
           },
+          _meta: {
+            _errors: [],
+            lastUpdate: "2021-02-10T16:39:13.064Z",
+          },
         },
       ],
       pagination: {
@@ -60,9 +68,6 @@ httpTests(__filename, ({ startServer }) => {
     const { httpClient } = await startServer();
     await createAnnuaire({
       uai: "0010856A",
-      siret: "11111111111111",
-      raisonSociale: "Centre de formation",
-      uaisSecondaires: [],
     }).save();
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements?text=0010856A");
@@ -74,10 +79,7 @@ httpTests(__filename, ({ startServer }) => {
   it("Vérifie qu'on peut rechercher des établissements à partir d'un siret", async () => {
     const { httpClient } = await startServer();
     await createAnnuaire({
-      uai: "0010856A",
       siret: "11111111111111",
-      raisonSociale: "Centre de formation",
-      uaisSecondaires: [],
     }).save();
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements?text=11111111111111");
@@ -91,7 +93,6 @@ httpTests(__filename, ({ startServer }) => {
     await Promise.all([
       createAnnuaire({
         siret: "11111111111111",
-        raisonSociale: "Centre de formation",
         liens: [
           {
             siret: "22222222222222",
@@ -103,7 +104,6 @@ httpTests(__filename, ({ startServer }) => {
       }).save(),
       createAnnuaire({
         siret: "33333333333333",
-        raisonSociale: "Centre de formation",
         liens: [
           {
             siret: "11111111111111",
@@ -137,7 +137,6 @@ httpTests(__filename, ({ startServer }) => {
     await Promise.all([
       createAnnuaire({
         siret: "11111111111111",
-        raisonSociale: "Centre de formation",
         uaisSecondaires: [
           {
             type: "catalogue",
@@ -148,7 +147,6 @@ httpTests(__filename, ({ startServer }) => {
       }).save(),
       createAnnuaire({
         siret: "33333333333333",
-        raisonSociale: "Centre de formation",
         uaisSecondaires: [
           {
             type: "catalogue",
@@ -173,6 +171,40 @@ httpTests(__filename, ({ startServer }) => {
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "11111111111111");
     strictEqual(response.data.etablissements[1].siret, "33333333333333");
+  });
+
+  it("Vérifie qu'on peut filtrer les établissements en erreur", async () => {
+    const { httpClient } = await startServer();
+    await Promise.all([
+      createAnnuaire({
+        siret: "11111111111111",
+        _meta: {
+          _errors: [
+            {
+              type: "collect",
+              source: "sirene",
+              reason: "Etablissement inconnu",
+              date: new Date("2021-02-10T08:31:58.572Z"),
+            },
+          ],
+        },
+      }).save(),
+      createAnnuaire({
+        siret: "333333333333333",
+      }).save(),
+    ]);
+
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?erreurs=true");
+    strictEqual(response.status, 200);
+    strictEqual(response.data.etablissements[0].siret, "11111111111111");
+
+    response = await httpClient.get("/api/v1/annuaire/etablissements?erreurs=false");
+    strictEqual(response.status, 200);
+    strictEqual(response.data.etablissements[0].siret, "333333333333333");
+
+    response = await httpClient.get("/api/v1/annuaire/etablissements");
+    strictEqual(response.status, 200);
+    strictEqual(response.data.etablissements.length, 2);
   });
 
   it("Vérifie que le service retourne une liste vide quand aucun etablissement ne correspond", async () => {
@@ -207,7 +239,6 @@ httpTests(__filename, ({ startServer }) => {
       uai: "0010856A",
       siret: "11111111111111",
       raisonSociale: "Centre de formation",
-      uaisSecondaires: [],
     }).save();
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements/11111111111111");
