@@ -9,7 +9,6 @@ httpTests(__filename, ({ startServer }) => {
       uai: "0010856A",
       siret: "11111111111111",
       raisonSociale: "Centre de formation",
-      uaisSecondaires: [],
     }).save();
 
     const response = await httpClient.get("/api/v1/annuaire/etablissements");
@@ -85,6 +84,48 @@ httpTests(__filename, ({ startServer }) => {
 
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "11111111111111");
+  });
+
+  it("Vérifie qu'on peut trier les établissements par nombre de liens", async () => {
+    const { httpClient } = await startServer();
+    await Promise.all([
+      createAnnuaire({
+        siret: "11111111111111",
+        raisonSociale: "Centre de formation",
+        liens: [
+          {
+            siret: "22222222222222",
+            type: "sirene",
+            statut: "actif",
+            exists: true,
+          },
+        ],
+      }).save(),
+      createAnnuaire({
+        siret: "33333333333333",
+        raisonSociale: "Centre de formation",
+        liens: [
+          {
+            siret: "11111111111111",
+            type: "sirene",
+            statut: "actif",
+            exists: true,
+          },
+          {
+            siret: "22222222222222",
+            type: "sirene",
+            statut: "actif",
+            exists: true,
+          },
+        ],
+      }).save(),
+    ]);
+
+    const response = await httpClient.get("/api/v1/annuaire/etablissements?sortBy=liens");
+
+    strictEqual(response.status, 200);
+    strictEqual(response.data.etablissements[0].siret, "33333333333333");
+    strictEqual(response.data.etablissements[1].siret, "11111111111111");
   });
 
   it("Vérifie que le service retourne une liste vide quand aucun etablissement ne correspond", async () => {

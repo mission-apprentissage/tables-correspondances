@@ -1,7 +1,7 @@
 import React from "react";
 import { omit } from "lodash-es";
 import * as Yup from "yup";
-import { Button, Card, Form as TablerForm, Grid, Page, Table, Badge } from "tabler-react";
+import { Button, Card, Form as TablerForm, Grid, Page, Table } from "tabler-react";
 import { Field, Form, Formik } from "formik";
 import FormError from "../../common/components/FormError";
 import Pagination from "./components/Pagination";
@@ -9,7 +9,6 @@ import FormMessage from "../../common/components/FormMessage";
 import { useFetch } from "../../common/hooks/useFetch";
 import queryString from "query-string";
 import { Link, useHistory } from "react-router-dom";
-import UaiSecondaire from "./components/UaiSecondaire";
 
 const buildQuery = (elements = {}) => {
   return `${queryString.stringify(elements, { skipNull: true, skipEmptyString: true })}`;
