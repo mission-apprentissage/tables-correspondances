@@ -8,8 +8,8 @@ httpTests(__filename, ({ startServer }) => {
     await createAnnuaire({
       uai: "0010856A",
       siret: "11111111111111",
-      nom: "Centre de formation",
-      uais_secondaires: [],
+      raisonSociale: "Centre de formation",
+      uaisSecondaires: [],
     }).save();
 
     const response = await httpClient.get("/api/v1/annuaire/etablissements");
@@ -20,9 +20,9 @@ httpTests(__filename, ({ startServer }) => {
         {
           uai: "0010856A",
           siret: "11111111111111",
-          nom: "Centre de formation",
-          uais_secondaires: [],
-          filiations: [],
+          raisonSociale: "Centre de formation",
+          uaisSecondaires: [],
+          liens: [],
           siegeSocial: true,
           statut: "actif",
           referentiel: "test",
@@ -62,8 +62,8 @@ httpTests(__filename, ({ startServer }) => {
     await createAnnuaire({
       uai: "0010856A",
       siret: "11111111111111",
-      nom: "Centre de formation",
-      uais_secondaires: [],
+      raisonSociale: "Centre de formation",
+      uaisSecondaires: [],
     }).save();
 
     const response = await httpClient.get("/api/v1/annuaire/etablissements?filter=0010856A");
@@ -77,8 +77,8 @@ httpTests(__filename, ({ startServer }) => {
     await createAnnuaire({
       uai: "0010856A",
       siret: "11111111111111",
-      nom: "Centre de formation",
-      uais_secondaires: [],
+      raisonSociale: "Centre de formation",
+      uaisSecondaires: [],
     }).save();
 
     const response = await httpClient.get("/api/v1/annuaire/etablissements?filter=11111111111111");
@@ -118,8 +118,8 @@ httpTests(__filename, ({ startServer }) => {
     await createAnnuaire({
       uai: "0010856A",
       siret: "11111111111111",
-      nom: "Centre de formation",
-      uais_secondaires: [],
+      raisonSociale: "Centre de formation",
+      uaisSecondaires: [],
     }).save();
 
     const response = await httpClient.get("/api/v1/annuaire/etablissements/11111111111111");
@@ -128,9 +128,9 @@ httpTests(__filename, ({ startServer }) => {
     deepStrictEqual(response.data, {
       uai: "0010856A",
       siret: "11111111111111",
-      nom: "Centre de formation",
-      uais_secondaires: [],
-      filiations: [],
+      raisonSociale: "Centre de formation",
+      uaisSecondaires: [],
+      liens: [],
       siegeSocial: true,
       statut: "actif",
       referentiel: "test",
