@@ -132,6 +132,49 @@ httpTests(__filename, ({ startServer }) => {
     strictEqual(response.data.etablissements[1].siret, "33333333333333");
   });
 
+  it("Vérifie qu'on peut trier les établissements par nombre d'uais secondaires", async () => {
+    const { httpClient } = await startServer();
+    await Promise.all([
+      createAnnuaire({
+        siret: "11111111111111",
+        raisonSociale: "Centre de formation",
+        uaisSecondaires: [
+          {
+            type: "catalogue",
+            uai: "1111111S",
+            valide: true,
+          },
+        ],
+      }).save(),
+      createAnnuaire({
+        siret: "33333333333333",
+        raisonSociale: "Centre de formation",
+        uaisSecondaires: [
+          {
+            type: "catalogue",
+            uai: "1111111S",
+            valide: true,
+          },
+          {
+            type: "catalogue",
+            uai: "2222222S",
+            valide: true,
+          },
+        ],
+      }).save(),
+    ]);
+
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?sortBy=uaisSecondaires&order=-1");
+    strictEqual(response.status, 200);
+    strictEqual(response.data.etablissements[0].siret, "33333333333333");
+    strictEqual(response.data.etablissements[1].siret, "11111111111111");
+
+    response = await httpClient.get("/api/v1/annuaire/etablissements?sortBy=uaisSecondaires&order=1");
+    strictEqual(response.status, 200);
+    strictEqual(response.data.etablissements[0].siret, "11111111111111");
+    strictEqual(response.data.etablissements[1].siret, "33333333333333");
+  });
+
   it("Vérifie que le service retourne une liste vide quand aucun etablissement ne correspond", async () => {
     const { httpClient } = await startServer();
 
