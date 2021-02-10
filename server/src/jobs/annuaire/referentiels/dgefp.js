@@ -5,6 +5,7 @@ module.exports = (stream) => {
   return oleoduc(
     stream,
     csv({
+      trim: true,
       delimiter: ";",
       columns: (header) => header.map((column) => column.replace(/ /g, "")),
     }),

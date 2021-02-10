@@ -40,103 +40,8 @@ integrationTests(__filename, () => {
       nom: "Centre de formation",
       referentiel: "test",
       uais_secondaires: [],
-      siegeSocial: true,
-      statut: "actif",
-      adresse: {
-        geocoding: {
-          position: { coordinates: [2.396444, 48.879706], type: "Point" },
-          description: "31 Rue des Lilas 75019 Paris",
-        },
-        postale: "NOMAYO\n31 RUE DES LILAS\n75001 PARIS\nFRANCE",
-        region: "11",
-        numero_voie: "31",
-        type_voie: "RUE",
-        nom_voie: "31",
-        code_postal: "75001",
-        code_insee: "75000",
-        localite: "PARIS",
-        cedex: null,
-      },
+      filiations: [],
     });
-    assert.deepStrictEqual(results, {
-      total: 1,
-      created: 1,
-      updated: 0,
-      failed: 0,
-    });
-  });
-
-  it("Vérifie qu'on gère une erreur lors de la récupération des informations de l'entreprise", async () => {
-    let apiGeoAddresse = createaApiGeoAddresseMock();
-    let failingApiEntreprise = {
-      getEtablissement: () => {
-        throw new Error("HTTP error");
-      },
-    };
-    let referentiel = createFakeReferentiel(
-      `"uai";"siret";"nom"
-"0011058V";"11111111111111";"Centre de formation"`
-    );
-
-    let results = await importReferentiel(referentiel, failingApiEntreprise, apiGeoAddresse);
-
-    let count = await Annuaire.count({ siret: "11111111111111" });
-    assert.deepStrictEqual(count, 0);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      created: 0,
-      updated: 0,
-      failed: 1,
-    });
-  });
-
-  it("Vérifie qu'on ignore une erreur lors de la récupération de l'adresse", async () => {
-    let apiGeoAddresse = {
-      search: () => {
-        throw new Error("HTTP error");
-      },
-    };
-    let referentiel = createFakeReferentiel(
-      `"uai";"siret";"nom"
-"0011058V";"11111111111111";"Centre de formation"`
-    );
-
-    let results = await importReferentiel(referentiel, createApiEntrepriseMock(), apiGeoAddresse);
-
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.ok(!found.adresse.geocoding);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      created: 1,
-      updated: 0,
-      failed: 0,
-    });
-  });
-
-  it("Vérifie qu'on gère une adresse mal noté", async () => {
-    let apiGeoAddresse = {
-      search: () => {
-        return {
-          features: [
-            {
-              type: "Feature",
-              properties: {
-                score: 0.5,
-              },
-            },
-          ],
-        };
-      },
-    };
-    let referentiel = createFakeReferentiel(
-      `"uai";"siret";"nom"
-"0011058V";"11111111111111";"Centre de formation"`
-    );
-
-    let results = await importReferentiel(referentiel, createApiEntrepriseMock(), apiGeoAddresse);
-
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.ok(!found.adresse.geocoding);
     assert.deepStrictEqual(results, {
       total: 1,
       created: 1,
@@ -199,23 +104,7 @@ integrationTests(__filename, () => {
       nom: "Centre de formation",
       referentiel: "depp",
       uais_secondaires: [],
-      siegeSocial: true,
-      statut: "actif",
-      adresse: {
-        geocoding: {
-          position: { coordinates: [2.396444, 48.879706], type: "Point" },
-          description: "31 Rue des Lilas 75019 Paris",
-        },
-        postale: "NOMAYO\n31 RUE DES LILAS\n75001 PARIS\nFRANCE",
-        region: "11",
-        numero_voie: "31",
-        type_voie: "RUE",
-        nom_voie: "31",
-        code_postal: "75001",
-        code_insee: "75000",
-        localite: "PARIS",
-        cedex: null,
-      },
+      filiations: [],
     });
     assert.deepStrictEqual(results, {
       total: 1,
@@ -244,23 +133,7 @@ integrationTests(__filename, () => {
       nom: "Centre de formation",
       referentiel: "dgefp",
       uais_secondaires: [],
-      siegeSocial: true,
-      statut: "actif",
-      adresse: {
-        geocoding: {
-          position: { coordinates: [2.396444, 48.879706], type: "Point" },
-          description: "31 Rue des Lilas 75019 Paris",
-        },
-        postale: "NOMAYO\n31 RUE DES LILAS\n75001 PARIS\nFRANCE",
-        region: "11",
-        numero_voie: "31",
-        type_voie: "RUE",
-        nom_voie: "31",
-        code_postal: "75001",
-        code_insee: "75000",
-        localite: "PARIS",
-        cedex: null,
-      },
+      filiations: [],
     });
     assert.deepStrictEqual(results, {
       total: 1,
