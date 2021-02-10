@@ -65,7 +65,7 @@ httpTests(__filename, ({ startServer }) => {
       uaisSecondaires: [],
     }).save();
 
-    const response = await httpClient.get("/api/v1/annuaire/etablissements?filter=0010856A");
+    const response = await httpClient.get("/api/v1/annuaire/etablissements?text=0010856A");
 
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].uai, "0010856A");
@@ -80,7 +80,7 @@ httpTests(__filename, ({ startServer }) => {
       uaisSecondaires: [],
     }).save();
 
-    const response = await httpClient.get("/api/v1/annuaire/etablissements?filter=11111111111111");
+    const response = await httpClient.get("/api/v1/annuaire/etablissements?text=11111111111111");
 
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "11111111111111");
@@ -131,7 +131,7 @@ httpTests(__filename, ({ startServer }) => {
   it("Vérifie que le service retourne une liste vide quand aucun etablissement ne correspond", async () => {
     const { httpClient } = await startServer();
 
-    const response = await httpClient.get("/api/v1/annuaire/etablissements?filter=XXX");
+    const response = await httpClient.get("/api/v1/annuaire/etablissements?text=XXX");
 
     strictEqual(response.status, 200);
     deepStrictEqual(response.data, {

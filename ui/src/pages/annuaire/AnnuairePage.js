@@ -57,10 +57,10 @@ export default () => {
                 <Card.Body>
                   <Formik
                     initialValues={{
-                      filter: "",
+                      text: "",
                     }}
                     validationSchema={Yup.object().shape({
-                      filter: Yup.string(),
+                      text: Yup.string(),
                     })}
                     onSubmit={search}
                   >
@@ -68,7 +68,7 @@ export default () => {
                       return (
                         <Form>
                           <TablerForm.Group label="Siret ou UAI">
-                            <Field name="filter">
+                            <Field name="text">
                               {({ field, meta }) => {
                                 return <TablerForm.Input placeholder="..." {...field} {...showError(meta)} />;
                               }}

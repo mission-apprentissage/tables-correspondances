@@ -11,14 +11,14 @@ module.exports = () => {
   router.get(
     "/etablissements",
     tryCatch(async (req, res) => {
-      let { filter, page, limit, sortBy } = await Joi.object({
-        filter: Joi.string(),
+      let { text, page, limit, sortBy } = await Joi.object({
+        text: Joi.string(),
         page: Joi.number().default(1),
         limit: Joi.number().default(10),
         sortBy: Joi.string().allow("uaisSecondaires", "liens"),
       }).validateAsync(req.query, { abortEarly: false });
 
-      let query = filter ? { $text: { $search: filter } } : {};
+      let query = text ? { $text: { $search: text } } : {};
       let sort = sortBy && [
         {
           $addFields: {
