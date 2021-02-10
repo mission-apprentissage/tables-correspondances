@@ -49,4 +49,37 @@ module.exports = {
       },
     };
   },
+  paginateAggregationWithCursor: async (Model, pipeline, options = {}) => {
+    let page = options.page || 1;
+    let limit = options.limit || 10;
+    let skip = (page - 1) * limit;
+
+    // FIXME Check if it is possible to use $facet with cursor
+    let results = await Promise.all([
+      Model.aggregate([...pipeline, { $skip: skip }, { $limit: limit }])
+        .cursor()
+        .exec(),
+      Model.aggregate([
+        ...pipeline,
+        { $count: "total" },
+        {
+          $addFields: {
+            page,
+            resultats_par_page: limit,
+            nombre_de_page: { $ceil: { $divide: ["$total", limit] } },
+          },
+        },
+      ]),
+    ]);
+
+    return {
+      cursor: results[0],
+      pagination: results[1][0] || {
+        nombre_de_page: 1,
+        page: 1,
+        resultats_par_page: 10,
+        total: 0,
+      },
+    };
+  },
 };

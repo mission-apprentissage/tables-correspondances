@@ -1,8 +1,9 @@
 const express = require("express");
 const Boom = require("boom");
+const { oleoduc, jsonStream } = require("oleoduc");
 const Joi = require("joi");
 const { Annuaire } = require("../../common/model");
-const { paginateAggregation } = require("../../common/utils/mongooseUtils");
+const { paginateAggregationWithCursor } = require("../../common/utils/mongooseUtils");
 const tryCatch = require("../middlewares/tryCatchMiddleware");
 
 module.exports = () => {
@@ -20,7 +21,7 @@ module.exports = () => {
         sortBy: Joi.string().allow("uaisSecondaires", "liens"),
       }).validateAsync(req.query, { abortEarly: false });
 
-      let { data: etablissements, pagination } = await paginateAggregation(
+      let { cursor, pagination } = await paginateAggregationWithCursor(
         Annuaire,
         [
           {
@@ -52,10 +53,16 @@ module.exports = () => {
         { page, limit }
       );
 
-      return res.json({
-        etablissements,
-        pagination,
-      });
+      oleoduc(
+        cursor,
+        jsonStream({
+          arrayPropertyName: "etablissements",
+          arrayWrapper: {
+            pagination,
+          },
+        }),
+        res
+      );
     })
   );
 
