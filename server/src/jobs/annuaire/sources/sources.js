@@ -24,6 +24,9 @@ module.exports = {
         () => {
           return createSource("catalogue");
         },
+        () => {
+          return createSource("sirene");
+        },
         async () => {
           let stream = await getOvhFileAsStream("annuaire/ONISEP-ideo-structures_denseignement_secondaire.csv");
           return createSource("onisep", stream);
