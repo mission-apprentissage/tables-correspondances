@@ -1,7 +1,7 @@
 import React from "react";
 import { omit } from "lodash-es";
 import * as Yup from "yup";
-import { Button, Card, Form as TablerForm, Grid, Page, Table, Badge } from "tabler-react";
+import { Button, Card, Form as TablerForm, Grid, Page, Table } from "tabler-react";
 import { Field, Form, Formik } from "formik";
 import FormError from "../../common/components/FormError";
 import Pagination from "./components/Pagination";
@@ -9,7 +9,7 @@ import FormMessage from "../../common/components/FormMessage";
 import { useFetch } from "../../common/hooks/useFetch";
 import queryString from "query-string";
 import { Link, useHistory } from "react-router-dom";
-import UaiSecondaire from "./components/UaiSecondaire";
+import SortButton from "./components/SortButton";
 
 const buildQuery = (elements = {}) => {
   return `${queryString.stringify(elements, { skipNull: true, skipEmptyString: true })}`;
@@ -30,7 +30,7 @@ export default () => {
 
   let search = async (options = {}) => {
     let keys = Object.keys(options);
-    history.push(`/annuaire?${buildQuery({ ...omit(query, keys), page: 1, ...options })}`);
+    history.push(`/annuaire?${buildQuery({ ...omit(query, keys), ...options })}`);
   };
 
   let showError = (meta) => {
@@ -58,18 +58,18 @@ export default () => {
                 <Card.Body>
                   <Formik
                     initialValues={{
-                      filter: "",
+                      text: "",
                     }}
                     validationSchema={Yup.object().shape({
-                      filter: Yup.string(),
+                      text: Yup.string(),
                     })}
-                    onSubmit={search}
+                    onSubmit={(values) => search({ page: 1, ...values })}
                   >
                     {({ status = {} }) => {
                       return (
                         <Form>
                           <TablerForm.Group label="Siret ou UAI">
-                            <Field name="filter">
+                            <Field name="text">
                               {({ field, meta }) => {
                                 return <TablerForm.Input placeholder="..." {...field} {...showError(meta)} />;
                               }}
@@ -102,8 +102,13 @@ export default () => {
                         <Table.ColHeader>Siret</Table.ColHeader>
                         <Table.ColHeader>Uai</Table.ColHeader>
                         <Table.ColHeader>Nom</Table.ColHeader>
-                        <Table.ColHeader>Uai secondaires</Table.ColHeader>
-                        <Table.ColHeader>Liens</Table.ColHeader>
+                        <Table.ColHeader>
+                          Uai secondaires
+                          <SortButton onClick={(order) => search({ page: 1, sortBy: "uaisSecondaires", order })} />
+                        </Table.ColHeader>
+                        <Table.ColHeader>
+                          Liens <SortButton onClick={(order) => search({ page: 1, sortBy: "liens", order })} />
+                        </Table.ColHeader>
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
