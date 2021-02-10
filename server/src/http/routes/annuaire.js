@@ -19,7 +19,6 @@ module.exports = () => {
         sortBy: Joi.string().allow("uaisSecondaires", "liens"),
       }).validateAsync(req.query, { abortEarly: false });
 
-      let query = text ? { $text: { $search: text } } : {};
       let sort = sortBy
         ? [
             {
@@ -35,7 +34,7 @@ module.exports = () => {
       let { data: etablissements, pagination } = await paginateAggregation(
         Annuaire,
         [
-          { $match: query },
+          { $match: text ? { $text: { $search: text } } : {} },
           ...sort,
           {
             $project: {
