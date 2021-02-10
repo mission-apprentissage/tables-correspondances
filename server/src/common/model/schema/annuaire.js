@@ -13,9 +13,9 @@ const annuaireSchema = {
     unique: true,
     sparse: true,
   },
-  nom: {
+  raisonSociale: {
     type: String,
-    description: "Le nom de l'établissement",
+    description: "La raison sociale de l'établissement",
   },
   referentiel: {
     type: String,
@@ -32,70 +32,96 @@ const annuaireSchema = {
     required: true,
     description: "Statut de l'entreprise",
   },
-  adresse: new Schema(
-    {
-      label: {
-        type: String,
-      },
-      numero_voie: {
-        type: String,
-      },
-      type_voie: {
-        type: String,
-      },
-      nom_voie: {
-        type: String,
-      },
-      code_postal: {
-        type: String,
-        required: true,
-      },
-      code_insee: {
-        type: String,
-        required: true,
-      },
-      cedex: {
-        type: String,
-      },
-      localite: {
-        type: String,
-        required: true,
-      },
-      geojson: new Schema(
-        {
-          type: {
-            type: String,
-            required: true,
-          },
-          geometry: new Schema(
+  adresse: {
+    type: new Schema(
+      {
+        label: {
+          type: String,
+        },
+        numero_voie: {
+          type: String,
+        },
+        type_voie: {
+          type: String,
+        },
+        nom_voie: {
+          type: String,
+        },
+        code_postal: {
+          type: String,
+          required: true,
+        },
+        code_insee: {
+          type: String,
+          required: true,
+        },
+        cedex: {
+          type: String,
+        },
+        localite: {
+          type: String,
+          required: true,
+        },
+        geojson: {
+          type: new Schema(
             {
               type: {
                 type: String,
                 required: true,
               },
-              coordinates: {
-                type: Array,
-                required: true,
+              geometry: {
+                type: new Schema(
+                  {
+                    type: {
+                      type: String,
+                      required: true,
+                    },
+                    coordinates: {
+                      type: Array,
+                      required: true,
+                    },
+                  },
+                  { _id: false }
+                ),
+              },
+              properties: {
+                type: Object,
               },
             },
             { _id: false }
           ),
-          properties: {
-            type: Object,
+        },
+      },
+      { _id: false }
+    ),
+  },
+  uaisSecondaires: {
+    description: "La liste de tous les uais connus pour cet établissement",
+    required: true,
+    type: [
+      new Schema(
+        {
+          type: {
+            type: String,
+            required: true,
+          },
+          uai: {
+            type: String,
+            required: true,
+          },
+          valide: {
+            type: Boolean,
+            required: true,
           },
         },
         { _id: false }
       ),
-    },
-    { _id: false }
-  ),
-  uais_secondaires: {
-    type: Array,
-    default: [],
-    required: true,
-    description: "La liste de tous les uais connus pour cet établissement",
+    ],
   },
-  filiations: {
+  liens: {
+    description: "La liste des établissements liés",
+    required: true,
+    default: [],
     type: [
       new Schema(
         {
@@ -119,8 +145,48 @@ const annuaireSchema = {
         { _id: false }
       ),
     ],
-    default: [],
-    description: "La liste des établissements liés",
+  },
+  _meta: {
+    required: true,
+    default: {},
+    type: new Schema(
+      {
+        lastUpdate: {
+          description: "Dernière date de mise à jour du document",
+          type: Date,
+          required: true,
+          default: () => new Date(),
+        },
+        _errors: {
+          description: "La liste de tous les uais connus pour cet établissement",
+          required: true,
+          type: [
+            new Schema(
+              {
+                type: {
+                  type: String,
+                  required: true,
+                },
+                source: {
+                  type: String,
+                  required: true,
+                },
+                reason: {
+                  type: String,
+                },
+                date: {
+                  type: Date,
+                  default: () => new Date(),
+                  required: true,
+                },
+              },
+              { _id: false }
+            ),
+          ],
+        },
+      },
+      { _id: false }
+    ),
   },
 };
 

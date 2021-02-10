@@ -10,6 +10,7 @@ import useAuth from "./common/hooks/useAuth";
 import HomePage from "./pages/HomePage";
 import ResetPasswordPage from "./pages/password/ResetPasswordPage";
 import ForgottenPasswordPage from "./pages/password/ForgottenPasswordPage";
+import ErreursPage from "./pages/annuaire/ErreursPage";
 
 function PrivateRoute({ children, ...rest }) {
   let [auth] = useAuth();
@@ -39,7 +40,8 @@ export default () => {
           <Route exact path="/forgotten-password" component={ForgottenPasswordPage} />
           <Layout>
             <Route exact path="/annuaire" component={AnnuairePage} />
-            <Route exact path="/annuaire/:siret" component={EtablissementPage} />
+            <Route exact path="/annuaire/erreurs" component={ErreursPage} />
+            <Route exact path="/annuaire/etablissements/:siret" component={EtablissementPage} />
           </Layout>
         </Switch>
       </Router>

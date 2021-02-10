@@ -1,7 +1,7 @@
 import React from "react";
 import { omit } from "lodash-es";
 import * as Yup from "yup";
-import { Button, Card, Form as TablerForm, Grid, Page, Table, Badge } from "tabler-react";
+import { Button, Card, Form as TablerForm, Grid, Page, Table } from "tabler-react";
 import { Field, Form, Formik } from "formik";
 import FormError from "../../common/components/FormError";
 import Pagination from "./components/Pagination";
@@ -9,15 +9,23 @@ import FormMessage from "../../common/components/FormMessage";
 import { useFetch } from "../../common/hooks/useFetch";
 import queryString from "query-string";
 import { Link, useHistory } from "react-router-dom";
-import UaiSecondaire from "./components/UaiSecondaire";
+import SortButton from "./components/SortButton";
+import styled from "styled-components";
 
-const buildQuery = (elements = {}) => {
+const Header = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+function buildQuery(elements = {}) {
   return `${queryString.stringify(elements, { skipNull: true, skipEmptyString: true })}`;
-};
+}
 
 export default () => {
   let history = useHistory();
-  let query = { page: 1, limit: 25, ...queryString.parse(window.location.search) };
+  let query = { page: 1, order: -1, limit: 25, ...queryString.parse(window.location.search), erreurs: false };
   let [data, loading, error] = useFetch(`/api/v1/annuaire/etablissements?${buildQuery(query)}`, {
     etablissements: [],
     pagination: {
@@ -28,26 +36,31 @@ export default () => {
     },
   });
 
-  let search = async (options = {}) => {
+  function search(options = {}) {
     let keys = Object.keys(options);
-    history.push(`/annuaire?${buildQuery({ ...omit(query, keys), page: 1, ...options })}`);
-  };
+    history.push(`/annuaire?${buildQuery({ ...omit(query, keys), ...options })}`);
+  }
 
-  let showError = (meta) => {
+  function showError(meta) {
     return meta.touched && meta.error
       ? {
           feedback: meta.error,
           invalid: true,
         }
       : {};
-  };
+  }
 
   return (
     <Page>
       <Page.Main>
         <Page.Content>
           <Page.Header>
-            <Link to={`/annuaire`}>Annuaire</Link>
+            <Header>
+              <Link to={`/annuaire`}>Annuaire</Link>
+              <Button color={"danger"} onClick={() => history.push("/annuaire/erreurs")}>
+                Voir le rapport d'erreurs >
+              </Button>
+            </Header>
           </Page.Header>
           <Grid.Row>
             <Grid.Col>
@@ -58,18 +71,18 @@ export default () => {
                 <Card.Body>
                   <Formik
                     initialValues={{
-                      filter: "",
+                      text: "",
                     }}
                     validationSchema={Yup.object().shape({
-                      filter: Yup.string(),
+                      text: Yup.string(),
                     })}
-                    onSubmit={search}
+                    onSubmit={(values) => search({ page: 1, ...values })}
                   >
                     {({ status = {} }) => {
                       return (
                         <Form>
-                          <TablerForm.Group label="Siret ou UAI">
-                            <Field name="filter">
+                          <TablerForm.Group label="Raison sociale, siret ou UAI">
+                            <Field name="text">
                               {({ field, meta }) => {
                                 return <TablerForm.Input placeholder="..." {...field} {...showError(meta)} />;
                               }}
@@ -102,8 +115,13 @@ export default () => {
                         <Table.ColHeader>Siret</Table.ColHeader>
                         <Table.ColHeader>Uai</Table.ColHeader>
                         <Table.ColHeader>Nom</Table.ColHeader>
-                        <Table.ColHeader>Uai secondaires</Table.ColHeader>
-                        <Table.ColHeader>Filiations</Table.ColHeader>
+                        <Table.ColHeader>
+                          Uai secondaires
+                          <SortButton onClick={(order) => search({ page: 1, sortBy: "uaisSecondaires", order })} />
+                        </Table.ColHeader>
+                        <Table.ColHeader>
+                          Liens <SortButton onClick={(order) => search({ page: 1, sortBy: "liens", order })} />
+                        </Table.ColHeader>
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -116,12 +134,12 @@ export default () => {
                           return (
                             <Table.Row key={e.uai}>
                               <Table.Col>
-                                <Link to={`/annuaire/${e.siret}`}>{e.siret}</Link>
+                                <Link to={`/annuaire/etablissements/${e.siret}`}>{e.siret}</Link>
                               </Table.Col>
                               <Table.Col>{e.uai}</Table.Col>
-                              <Table.Col>{e.nom}</Table.Col>
-                              <Table.Col>{e.uais_secondaires.length}</Table.Col>
-                              <Table.Col>{e.filiations.length}</Table.Col>
+                              <Table.Col>{e.raisonSociale}</Table.Col>
+                              <Table.Col>{e.uaisSecondaires.length}</Table.Col>
+                              <Table.Col>{e.liens.length}</Table.Col>
                             </Table.Row>
                           );
                         })

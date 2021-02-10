@@ -5,33 +5,46 @@ const { validateUAI } = require("../../common/utils/uaiUtils");
 const logger = require("../../common/logger");
 
 const shouldAddUAIs = (etablissement, uai) => {
-  return uai && etablissement.uai !== uai && !etablissement.uais_secondaires.find((sec) => sec.uai === uai);
+  return uai && etablissement.uai !== uai && !etablissement.uaisSecondaires.find((sec) => sec.uai === uai);
 };
 
 module.exports = async (source) => {
+  let type = source.type;
   let stats = {
     total: 0,
     updated: 0,
     failed: 0,
   };
 
-  let handleError = (e, options) => {
+  let handleError = async (error, siret) => {
     stats.failed++;
-    let extra = options ? `[${JSON.stringify(options)}]` : "";
-    logger.error(`Unable to collect informations for source '${source.type}' ${extra}`, e);
+    logger.error(`[Collect][${type}] Erreur lors de la collecte pour l'établissement ${siret}.`, error);
+    await Annuaire.updateOne(
+      { siret },
+      {
+        $push: {
+          "_meta._errors": {
+            $each: [{ type: "collect", source: source.type, reason: error.message || error, date: new Date() }],
+            // Max 10 elements ordered by date
+            $slice: 10,
+            $sort: { date: -1 },
+          },
+        },
+      },
+      { runValidators: true }
+    );
   };
 
-  await oleoduc(
-    source,
-    writeData(async ({ siret, error, data }) => {
-      stats.total++;
-      if (error) {
-        logger.error(`[Collect] Erreur lors de la collecte pour l'établissement ${siret}.`, error);
-        stats.failed++;
-        return;
-      }
+  try {
+    await oleoduc(
+      source,
+      writeData(async ({ siret, error, data }) => {
+        stats.total++;
+        if (error) {
+          await handleError(error, siret);
+          return;
+        }
 
-      try {
         let etablissement = await Annuaire.findOne({ siret });
         if (!etablissement) {
           return;
@@ -47,7 +60,7 @@ module.exports = async (source) => {
             ...(shouldAddUAIs(etablissement, uai)
               ? {
                   $push: {
-                    uais_secondaires: { type: source.type, uai, valide: validateUAI(uai) },
+                    uaisSecondaires: { type, uai, valide: validateUAI(uai) },
                   },
                 }
               : {}),
@@ -55,11 +68,11 @@ module.exports = async (source) => {
           { runValidators: true }
         );
         stats.updated += getNbModifiedDocuments(res);
-      } catch (e) {
-        handleError(e, siret);
-      }
-    })
-  );
-
+      })
+    );
+  } catch (e) {
+    stats.failed++;
+    logger.error(`[Collect][${type}] Erreur lors de la collecte.`, e);
+  }
   return stats;
 };

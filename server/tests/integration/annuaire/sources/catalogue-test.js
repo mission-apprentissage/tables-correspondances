@@ -18,7 +18,7 @@ integrationTests(__filename, () => {
     let results = await collect(source);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires, [
+    assert.deepStrictEqual(found.uaisSecondaires, [
       {
         type: "catalogue",
         uai: "0011073L",
