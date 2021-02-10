@@ -11,29 +11,32 @@ module.exports = () => {
   router.get(
     "/etablissements",
     tryCatch(async (req, res) => {
-      let { text, page, limit, sortBy } = await Joi.object({
+      let { text, page, limit, sortBy, order } = await Joi.object({
         text: Joi.string(),
         page: Joi.number().default(1),
         limit: Joi.number().default(10),
+        order: Joi.number().allow(1, -1).default(-1),
         sortBy: Joi.string().allow("uaisSecondaires", "liens"),
       }).validateAsync(req.query, { abortEarly: false });
 
       let query = text ? { $text: { $search: text } } : {};
-      let sort = sortBy && [
-        {
-          $addFields: {
-            ...(sortBy === "uaisSecondaires" ? { nb_uaisSecondaires: { $size: "$uaisSecondaires" } } : {}),
-            ...(sortBy === "liens" ? { nb_liens: { $size: "$liens" } } : {}),
-          },
-        },
-        { $sort: { [`nb_${sortBy}`]: -1 } },
-      ];
+      let sort = sortBy
+        ? [
+            {
+              $addFields: {
+                nb_uaisSecondaires: { $size: "$uaisSecondaires" },
+                nb_liens: { $size: "$liens" },
+              },
+            },
+            { $sort: { [`nb_${sortBy}`]: order } },
+          ]
+        : [{ $sort: { [`_meta.lastUpdate`]: -1 } }];
 
       let { data: etablissements, pagination } = await paginateAggregation(
         Annuaire,
         [
           { $match: query },
-          ...(sort ? sort : []),
+          ...sort,
           {
             $project: {
               nb_uaisSecondaires: 0,

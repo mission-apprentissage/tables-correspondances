@@ -9,6 +9,7 @@ import FormMessage from "../../common/components/FormMessage";
 import { useFetch } from "../../common/hooks/useFetch";
 import queryString from "query-string";
 import { Link, useHistory } from "react-router-dom";
+import SortButton from "./components/SortButton";
 
 const buildQuery = (elements = {}) => {
   return `${queryString.stringify(elements, { skipNull: true, skipEmptyString: true })}`;
@@ -29,7 +30,7 @@ export default () => {
 
   let search = async (options = {}) => {
     let keys = Object.keys(options);
-    history.push(`/annuaire?${buildQuery({ ...omit(query, keys), page: 1, ...options })}`);
+    history.push(`/annuaire?${buildQuery({ ...omit(query, keys), ...options })}`);
   };
 
   let showError = (meta) => {
@@ -62,7 +63,7 @@ export default () => {
                     validationSchema={Yup.object().shape({
                       text: Yup.string(),
                     })}
-                    onSubmit={search}
+                    onSubmit={(values) => search({ page: 1, ...values })}
                   >
                     {({ status = {} }) => {
                       return (
@@ -101,8 +102,13 @@ export default () => {
                         <Table.ColHeader>Siret</Table.ColHeader>
                         <Table.ColHeader>Uai</Table.ColHeader>
                         <Table.ColHeader>Nom</Table.ColHeader>
-                        <Table.ColHeader>Uai secondaires</Table.ColHeader>
-                        <Table.ColHeader>Liens</Table.ColHeader>
+                        <Table.ColHeader>
+                          Uai secondaires
+                          <SortButton onClick={(order) => search({ page: 1, sortBy: "uaisSecondaires", order })} />
+                        </Table.ColHeader>
+                        <Table.ColHeader>
+                          Liens <SortButton onClick={(order) => search({ page: 1, sortBy: "liens", order })} />
+                        </Table.ColHeader>
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
