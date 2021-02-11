@@ -10,7 +10,7 @@ httpTests(__filename, ({ startServer }) => {
       siret: "11111111111111",
       raisonSociale: "Centre de formation",
       _meta: {
-        incidents: [],
+        anomalies: [],
         lastUpdate: new Date("2021-02-10T16:39:13.064Z"),
       },
     }).save();
@@ -50,7 +50,7 @@ httpTests(__filename, ({ startServer }) => {
             cedex: null,
           },
           _meta: {
-            incidents: [],
+            anomalies: [],
             lastUpdate: "2021-02-10T16:39:13.064Z",
           },
         },
@@ -173,13 +173,13 @@ httpTests(__filename, ({ startServer }) => {
     strictEqual(response.data.etablissements[1].siret, "33333333333333");
   });
 
-  it("Vérifie qu'on peut filtrer les établissements en erreur", async () => {
+  it("Vérifie qu'on peut filtrer les établissements avec des anomalies", async () => {
     const { httpClient } = await startServer();
     await Promise.all([
       createAnnuaire({
         siret: "11111111111111",
         _meta: {
-          incidents: [
+          anomalies: [
             {
               type: "collect",
               source: "sirene",
@@ -194,11 +194,11 @@ httpTests(__filename, ({ startServer }) => {
       }).save(),
     ]);
 
-    let response = await httpClient.get("/api/v1/annuaire/etablissements?erreurs=true");
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?anomalies=true");
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "11111111111111");
 
-    response = await httpClient.get("/api/v1/annuaire/etablissements?erreurs=false");
+    response = await httpClient.get("/api/v1/annuaire/etablissements?anomalies=false");
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "333333333333333");
 

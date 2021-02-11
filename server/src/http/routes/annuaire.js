@@ -11,9 +11,9 @@ module.exports = () => {
   router.get(
     "/etablissements",
     tryCatch(async (req, res) => {
-      let { text, erreurs, page, limit, sortBy, order } = await Joi.object({
+      let { text, anomalies, page, limit, sortBy, order } = await Joi.object({
         text: Joi.string(),
-        erreurs: Joi.boolean().default(null),
+        anomalies: Joi.boolean().default(null),
         page: Joi.number().default(1),
         limit: Joi.number().default(10),
         order: Joi.number().allow(1, -1).default(-1),
@@ -26,7 +26,7 @@ module.exports = () => {
           {
             $match: {
               ...(text ? { $text: { $search: text } } : {}),
-              ...(erreurs !== null ? { "_meta.incidents.0": { $exists: erreurs } } : {}),
+              ...(anomalies !== null ? { "_meta.anomalies.0": { $exists: anomalies } } : {}),
             },
           },
           ...(sortBy
