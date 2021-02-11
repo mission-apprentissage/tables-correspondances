@@ -39,7 +39,7 @@ export default () => {
                     <Title>
                       <span>Etablissement {siret}</span>
                       <span>
-                        {etablissement.statut === "actif" && <Badge color="danger">{etablissement.statut}</Badge>}
+                        {etablissement.statut === "fermé" && <Badge color="danger">{etablissement.statut}</Badge>}
                       </span>
                     </Title>
                   }
@@ -48,7 +48,7 @@ export default () => {
                   alt={siret}
                   name={etablissement.nom}
                   address={{
-                    line1: adresse.label || `${adresse.code_postal} ${adresse.localite}`,
+                    line1: !adresse ? "" : adresse.label || `${adresse.code_postal} ${adresse.localite}`,
                   }}
                   details={[
                     { title: "UAI", content: etablissement.uai },
@@ -67,9 +67,10 @@ export default () => {
                       title: "Liens",
                       content: (
                         <div>
-                          {etablissement.liens.map((u) => {
-                            return <Liens item={u} />;
-                          })}
+                          {etablissement.liens &&
+                            etablissement.liens.map((u) => {
+                              return <Liens item={u} />;
+                            })}
                         </div>
                       ),
                     },

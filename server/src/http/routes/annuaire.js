@@ -17,7 +17,7 @@ module.exports = () => {
         page: Joi.number().default(1),
         limit: Joi.number().default(10),
         order: Joi.number().allow(1, -1).default(-1),
-        sortBy: Joi.string().allow("uaisSecondaires", "liens"),
+        sortBy: Joi.string().allow("uaisSecondaires", "relations"),
       }).validateAsync(req.query, { abortEarly: false });
 
       let { data: etablissements, pagination } = await paginateAggregation(
@@ -34,7 +34,7 @@ module.exports = () => {
                 {
                   $addFields: {
                     nb_uaisSecondaires: { $size: "$uaisSecondaires" },
-                    nb_liens: { $size: "$liens" },
+                    nb_relations: { $size: "$relations" },
                   },
                 },
                 { $sort: { [`nb_${sortBy}`]: order } },
@@ -43,7 +43,7 @@ module.exports = () => {
           {
             $project: {
               nb_uaisSecondaires: 0,
-              nb_liens: 0,
+              nb_relations: 0,
               _id: 0,
               __v: 0,
             },

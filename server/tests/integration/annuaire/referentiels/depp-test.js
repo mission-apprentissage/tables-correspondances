@@ -26,7 +26,7 @@ integrationTests(__filename, () => {
       raisonSociale: "Centre de formation",
       referentiel: "depp",
       uaisSecondaires: [],
-      liens: [],
+      relations: [],
     });
     assert.deepStrictEqual(results, {
       total: 1,

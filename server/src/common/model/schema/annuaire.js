@@ -118,7 +118,7 @@ const annuaireSchema = {
       ),
     ],
   },
-  liens: {
+  relations: {
     description: "La liste des établissements liés",
     required: true,
     default: [],
@@ -126,6 +126,10 @@ const annuaireSchema = {
       new Schema(
         {
           siret: {
+            type: String,
+            required: true,
+          },
+          raisonSociale: {
             type: String,
             required: true,
           },
