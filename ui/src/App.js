@@ -10,7 +10,7 @@ import useAuth from "./common/hooks/useAuth";
 import HomePage from "./pages/HomePage";
 import ResetPasswordPage from "./pages/password/ResetPasswordPage";
 import ForgottenPasswordPage from "./pages/password/ForgottenPasswordPage";
-import ErreursPage from "./pages/annuaire/ErreursPage";
+import ErreursPage from "./pages/annuaire/IncidentsPage";
 
 function PrivateRoute({ children, ...rest }) {
   let [auth] = useAuth();

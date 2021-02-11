@@ -26,7 +26,7 @@ module.exports = () => {
           {
             $match: {
               ...(text ? { $text: { $search: text } } : {}),
-              ...(erreurs !== null ? { "_meta._errors.0": { $exists: erreurs } } : {}),
+              ...(erreurs !== null ? { "_meta.incidents.0": { $exists: erreurs } } : {}),
             },
           },
           ...(sortBy

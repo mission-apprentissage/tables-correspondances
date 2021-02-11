@@ -23,7 +23,7 @@ module.exports = async (source) => {
       { siret },
       {
         $push: {
-          "_meta._errors": {
+          "_meta.incidents": {
             $each: [{ type: "collect", source: source.type, reason: error.message || error, date: new Date() }],
             // Max 10 elements ordered by date
             $slice: 10,

@@ -44,7 +44,7 @@ integrationTests(__filename, () => {
     });
     assert.ok(found._meta.lastUpdate);
     assert.deepStrictEqual(omit(found._meta, ["lastUpdate"]), {
-      _errors: [],
+      incidents: [],
     });
     assert.deepStrictEqual(results, {
       total: 1,

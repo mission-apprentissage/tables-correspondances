@@ -10,7 +10,7 @@ function buildQuery(elements = {}) {
   return `${queryString.stringify(elements, { skipNull: true, skipEmptyString: true })}`;
 }
 
-const ErreursTable = ({ errors }) => {
+const IncidentsTable = ({ errors }) => {
   return (
     <Table>
       <Table.Header>
@@ -38,7 +38,7 @@ const ErreursTable = ({ errors }) => {
 };
 export default () => {
   let history = useHistory();
-  let query = { page: 1, order: -1, limit: 25, ...queryString.parse(window.location.search), erreurs: true };
+  let query = { page: 1, order: -1, limit: 25, ...queryString.parse(window.location.search), incidents: true };
   let [data, loading, error] = useFetch(`/api/v1/annuaire/etablissements?${buildQuery(query)}`, {
     etablissements: [],
     pagination: {
@@ -59,13 +59,13 @@ export default () => {
       <Page.Main>
         <Page.Content>
           <Page.Header>
-            <Link to={`/annuaire`}>Annuaire</Link>> Rapport d'erreurs
+            <Link to={`/annuaire`}>Annuaire</Link>> Rapport d'incidents
           </Page.Header>
           <Grid.Row>
             <Grid.Col>
               <Card>
                 <Card.Header>
-                  <Card.Title>Etablissements en erreur</Card.Title>
+                  <Card.Title>Etablissements ayant rencontrés un incident durant la collecte</Card.Title>
                 </Card.Header>
                 <Card.Body>
                   <Table>
@@ -73,7 +73,7 @@ export default () => {
                       <Table.Row>
                         <Table.ColHeader>Siret</Table.ColHeader>
                         <Table.ColHeader>Nom</Table.ColHeader>
-                        <Table.ColHeader>Erreurs</Table.ColHeader>
+                        <Table.ColHeader>Incidents</Table.ColHeader>
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -91,7 +91,7 @@ export default () => {
                               </Table.Col>
                               <Table.Col>{e.uai}</Table.Col>
                               <Table.Col>
-                                <ErreursTable errors={errors} />
+                                <IncidentsTable errors={errors} />
                               </Table.Col>
                             </Table.Row>
                           );

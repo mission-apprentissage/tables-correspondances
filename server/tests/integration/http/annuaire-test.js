@@ -10,7 +10,7 @@ httpTests(__filename, ({ startServer }) => {
       siret: "11111111111111",
       raisonSociale: "Centre de formation",
       _meta: {
-        _errors: [],
+        incidents: [],
         lastUpdate: new Date("2021-02-10T16:39:13.064Z"),
       },
     }).save();
@@ -50,7 +50,7 @@ httpTests(__filename, ({ startServer }) => {
             cedex: null,
           },
           _meta: {
-            _errors: [],
+            incidents: [],
             lastUpdate: "2021-02-10T16:39:13.064Z",
           },
         },
@@ -179,7 +179,7 @@ httpTests(__filename, ({ startServer }) => {
       createAnnuaire({
         siret: "11111111111111",
         _meta: {
-          _errors: [
+          incidents: [
             {
               type: "collect",
               source: "sirene",

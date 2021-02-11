@@ -157,8 +157,8 @@ const annuaireSchema = {
           required: true,
           default: () => new Date(),
         },
-        _errors: {
-          description: "La liste de tous les uais connus pour cet établissement",
+        incidents: {
+          description: "La liste des incidents surevnus durant la collecte",
           required: true,
           type: [
             new Schema(
