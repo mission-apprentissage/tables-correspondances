@@ -70,10 +70,11 @@ export default () => {
                       title: "Relations",
                       content: (
                         <div>
-                          {etablissement.relations &&
-                            etablissement.relations.map((u) => {
-                              return <Relations item={u} />;
-                            })}
+                          {etablissement.relations.length === 0
+                            ? "-"
+                            : etablissement.relations.map((u) => {
+                                return <Relations item={u} />;
+                              })}
                         </div>
                       ),
                     },

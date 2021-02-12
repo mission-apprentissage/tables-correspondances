@@ -1,16 +1,21 @@
 const { merge, mergeWith, isArray } = require("lodash");
 
-const mergeDeep = (...args) =>
+const arrayMerger = (strategy) => (...args) =>
   mergeWith(...args, function (a, b) {
     if (isArray(a)) {
-      return b.concat(a);
+      switch (strategy) {
+        case "merge":
+          return merge(a, b);
+        default:
+          return b.concat(a);
+      }
     }
   });
 
 module.exports = {
   createaApiGeoAddresseMock: (custom = {}) => {
     return {
-      search: () => {
+      search() {
         return merge(
           {},
           {
@@ -54,7 +59,7 @@ module.exports = {
   },
   createApiEntrepriseMock: (custom = {}) => {
     return {
-      getEtablissement: () => {
+      getEtablissement() {
         return merge(
           {},
           {
@@ -113,9 +118,9 @@ module.exports = {
     };
   },
   createApiSireneMock: (custom = {}, options = {}) => {
-    let mergeMockedData = options.mergeArray ? mergeDeep : merge;
+    let mergeMockedData = options.array ? arrayMerger(options.array) : merge;
     return {
-      getUniteLegale: () => {
+      getUniteLegale() {
         return mergeMockedData(
           {},
           {
@@ -239,7 +244,7 @@ module.exports = {
                 indice_repetition: "B",
                 type_voie: "RUE",
                 libelle_voie: "DES LILAS",
-                code_postal: "75019",
+                code_postal: "75001",
                 libelle_commune: "PARIS",
                 libelle_commune_etranger: null,
                 distribution_speciale: null,
@@ -275,8 +280,8 @@ module.exports = {
                 latitude: "48.880391",
                 geo_score: "0.88",
                 geo_type: "housenumber",
-                geo_adresse: "31 rue des lilas Paris 75019",
-                geo_id: "75019_1475_00031_bis",
+                geo_adresse: "31 rue des lilas Paris 75001",
+                geo_id: "75001_1475_00031_bis",
                 geo_ligne: "G",
                 geo_l4: "31 RUE DES LILAS",
                 geo_l5: null,
@@ -289,7 +294,7 @@ module.exports = {
           custom
         );
       },
-      getEtablissement: () => {
+      getEtablissement() {
         return mergeMockedData(
           {},
           {

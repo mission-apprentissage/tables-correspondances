@@ -28,11 +28,11 @@ integrationTests(__filename, () => {
           score: 0.88,
         },
       },
-      label: "31 rue des lilas Paris 75019",
+      label: "31 rue des lilas Paris 75001",
       numeroVoie: "31",
       typeVoie: "RUE",
       nomVoie: "DES LILAS",
-      codePostal: "75019",
+      codePostal: "75001",
       codeInsee: "75000",
       localite: "PARIS",
       cedex: null,
@@ -47,12 +47,27 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations sur les relations (établissement)", async () => {
     await importReferentiel();
     let source = await createSource("sirene", {
-      apiSirene: createApiSireneMock(
-        {
-          etablissements: [{ siret: "11111111122222", etat_administratif: "A", etablissement_siege: "false" }],
-        },
-        { mergeArray: true }
-      ),
+      apiSirene: createApiSireneMock({
+        etablissements: [
+          {
+            siret: "11111111111111",
+            etat_administratif: "A",
+            etablissement_siege: "true",
+            libelle_voie: "DES LILAS",
+            code_postal: "75019",
+            libelle_commune: "PARIS",
+          },
+          {
+            siret: "11111111122222",
+            denomination_usuelle: "NOMAYO2",
+            etat_administratif: "A",
+            etablissement_siege: "false",
+            libelle_voie: "DES LILAS",
+            code_postal: "75001",
+            libelle_commune: "PARIS",
+          },
+        ],
+      }),
     });
 
     let results = await collect(source);
@@ -62,10 +77,10 @@ integrationTests(__filename, () => {
       {
         type: "établissement",
         siret: "11111111122222",
-        raisonSociale: "NOMAYO",
+        raisonSociale: "NOMAYO2",
         statut: "actif",
         adresse: {
-          codePostal: "75019",
+          codePostal: "75001",
           localite: "PARIS",
         },
         annuaire: false,
@@ -78,16 +93,30 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on peut collecter des informations sur les relations (siège+annuaire)", async () => {
+  it("Vérifie qu'on peut détecter des relations qui existent dans l'annuaire", async () => {
     await importReferentiel();
     await createAnnuaire({ siret: "11111111122222" }).save();
     let source = await createSource("sirene", {
-      apiSirene: createApiSireneMock(
-        {
-          etablissements: [{ siret: "11111111122222", etat_administratif: "A", etablissement_siege: "true" }],
-        },
-        { mergeArray: true }
-      ),
+      apiSirene: createApiSireneMock({
+        etablissements: [
+          {
+            siret: "11111111111111",
+            etat_administratif: "A",
+            etablissement_siege: "true",
+            libelle_voie: "DES LILAS",
+            code_postal: "75019",
+            libelle_commune: "PARIS",
+          },
+          {
+            siret: "11111111122222",
+            denomination_usuelle: "NOMAYO2",
+            etat_administratif: "A",
+            etablissement_siege: "true",
+            code_postal: "75001",
+            libelle_commune: "PARIS",
+          },
+        ],
+      }),
     });
 
     await collect(source);
@@ -97,10 +126,10 @@ integrationTests(__filename, () => {
       {
         type: "siege",
         siret: "11111111122222",
-        raisonSociale: "NOMAYO",
+        raisonSociale: "NOMAYO2",
         statut: "actif",
         adresse: {
-          codePostal: "75019",
+          codePostal: "75001",
           localite: "PARIS",
         },
         annuaire: true,

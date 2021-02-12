@@ -40,8 +40,8 @@ module.exports = async (options = {}) => {
                 raisonSociale: getRaisonSociale(e, uniteLegale),
                 statut: e.etat_administratif === "A" ? "actif" : "fermé",
                 adresse: {
-                  codePostal: data.code_postal,
-                  localite: data.libelle_commune,
+                  codePostal: e.code_postal,
+                  localite: e.libelle_commune,
                 },
               };
             })
