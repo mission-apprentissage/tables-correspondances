@@ -29,11 +29,11 @@ integrationTests(__filename, () => {
         },
       },
       label: "31 rue des lilas Paris 75019",
-      numero_voie: "31",
-      type_voie: "RUE",
-      nom_voie: "DES LILAS",
-      code_postal: "75019",
-      code_insee: "75000",
+      numeroVoie: "31",
+      typeVoie: "RUE",
+      nomVoie: "DES LILAS",
+      codePostal: "75019",
+      codeInsee: "75000",
       localite: "PARIS",
       cedex: null,
     });
@@ -64,7 +64,11 @@ integrationTests(__filename, () => {
         siret: "11111111122222",
         raisonSociale: "NOMAYO",
         statut: "actif",
-        exists: false,
+        adresse: {
+          codePostal: "75019",
+          localite: "PARIS",
+        },
+        annuaire: false,
       },
     ]);
     assert.deepStrictEqual(results, {
@@ -74,7 +78,7 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on peut collecter des informations sur les relations (siège+exists)", async () => {
+  it("Vérifie qu'on peut collecter des informations sur les relations (siège+annuaire)", async () => {
     await importReferentiel();
     await createAnnuaire({ siret: "11111111122222" }).save();
     let source = await createSource("sirene", {
@@ -95,7 +99,11 @@ integrationTests(__filename, () => {
         siret: "11111111122222",
         raisonSociale: "NOMAYO",
         statut: "actif",
-        exists: true,
+        adresse: {
+          codePostal: "75019",
+          localite: "PARIS",
+        },
+        annuaire: true,
       },
     ]);
   });

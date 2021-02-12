@@ -38,20 +38,20 @@ const annuaireSchema = {
         label: {
           type: String,
         },
-        numero_voie: {
+        numeroVoie: {
           type: String,
         },
-        type_voie: {
+        typeVoie: {
           type: String,
         },
-        nom_voie: {
+        nomVoie: {
           type: String,
         },
-        code_postal: {
+        codePostal: {
           type: String,
           required: true,
         },
-        code_insee: {
+        codeInsee: {
           type: String,
           required: true,
         },
@@ -125,6 +125,14 @@ const annuaireSchema = {
     type: [
       new Schema(
         {
+          type: {
+            type: String,
+            required: true,
+          },
+          annuaire: {
+            type: Boolean,
+            required: true,
+          },
           siret: {
             type: String,
             required: true,
@@ -133,18 +141,23 @@ const annuaireSchema = {
             type: String,
             required: true,
           },
-          type: {
-            type: String,
-            required: true,
-          },
           statut: {
             type: String,
             required: true,
           },
-          exists: {
-            type: Boolean,
-            required: true,
-          },
+          adresse: new Schema(
+            {
+              codePostal: {
+                type: String,
+                required: true,
+              },
+              localite: {
+                type: String,
+                required: true,
+              },
+            },
+            { _id: false }
+          ),
         },
         { _id: false }
       ),

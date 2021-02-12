@@ -2,7 +2,7 @@ const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
 const apiSirene = require("../../../common/apis/apiSirene");
 
-const getRaisonSociale = (e, uniteLegale) => {
+function getRaisonSociale(e, uniteLegale) {
   return (
     e.denomination_usuelle ||
     uniteLegale.denomination ||
@@ -10,7 +10,7 @@ const getRaisonSociale = (e, uniteLegale) => {
     uniteLegale.denomination_usuelle_2 ||
     uniteLegale.denomination_usuelle_3
   );
-};
+}
 
 module.exports = async (options = {}) => {
   let api = options.apiSirene || apiSirene;
@@ -35,10 +35,14 @@ module.exports = async (options = {}) => {
             .map(async (e) => {
               return {
                 type: e.etablissement_siege === "true" ? "siege" : "établissement",
+                annuaire: (await Annuaire.countDocuments({ siret: e.siret })) > 0,
                 siret: e.siret,
                 raisonSociale: getRaisonSociale(e, uniteLegale),
                 statut: e.etat_administratif === "A" ? "actif" : "fermé",
-                exists: (await Annuaire.countDocuments({ siret: e.siret })) > 0,
+                adresse: {
+                  codePostal: data.code_postal,
+                  localite: data.libelle_commune,
+                },
               };
             })
         );
@@ -61,11 +65,11 @@ module.exports = async (options = {}) => {
                 },
               },
               label: data.geo_adresse,
-              numero_voie: data.numero_voie,
-              type_voie: data.type_voie,
-              nom_voie: data.libelle_voie,
-              code_postal: data.code_postal,
-              code_insee: data.code_commune,
+              numeroVoie: data.numero_voie,
+              typeVoie: data.type_voie,
+              nomVoie: data.libelle_voie,
+              codePostal: data.code_postal,
+              codeInsee: data.code_commune,
               localite: data.libelle_commune,
               cedex: data.code_cedex,
             },
