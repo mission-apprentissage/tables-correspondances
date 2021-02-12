@@ -10,15 +10,15 @@ function buildQuery(elements = {}) {
   return `${queryString.stringify(elements, { skipNull: true, skipEmptyString: true })}`;
 }
 
-const ErreursTable = ({ errors }) => {
+const AnomaliesTable = ({ errors }) => {
   return (
     <Table>
       <Table.Header>
         <Table.Row>
           <Table.ColHeader>Type</Table.ColHeader>
           <Table.ColHeader>Source</Table.ColHeader>
+          <Table.ColHeader>Date</Table.ColHeader>
           <Table.ColHeader>Message</Table.ColHeader>
-          <Table.ColHeader>Dated</Table.ColHeader>
         </Table.Row>
       </Table.Header>
       <Table.Body>
@@ -27,8 +27,8 @@ const ErreursTable = ({ errors }) => {
             <Table.Row>
               <Table.Col>{err.type}</Table.Col>
               <Table.Col>{err.source}</Table.Col>
-              <Table.Col>{err.reason}</Table.Col>
               <Table.Col>{err.date}</Table.Col>
+              <Table.Col>{err.reason}</Table.Col>
             </Table.Row>
           );
         })}
@@ -38,7 +38,7 @@ const ErreursTable = ({ errors }) => {
 };
 export default () => {
   let history = useHistory();
-  let query = { page: 1, order: -1, limit: 25, ...queryString.parse(window.location.search), erreurs: true };
+  let query = { page: 1, order: -1, limit: 25, ...queryString.parse(window.location.search), anomalies: true };
   let [data, loading, error] = useFetch(`/api/v1/annuaire/etablissements?${buildQuery(query)}`, {
     etablissements: [],
     pagination: {
@@ -59,13 +59,13 @@ export default () => {
       <Page.Main>
         <Page.Content>
           <Page.Header>
-            <Link to={`/annuaire`}>Annuaire</Link>> Rapport d'erreurs
+            <Link to={`/annuaire`}>Annuaire</Link>> Rapport d'anomalies
           </Page.Header>
           <Grid.Row>
             <Grid.Col>
               <Card>
                 <Card.Header>
-                  <Card.Title>Etablissements en erreur</Card.Title>
+                  <Card.Title>Etablissements ayant rencontrés une anomalie durant la collecte</Card.Title>
                 </Card.Header>
                 <Card.Body>
                   <Table>
@@ -73,7 +73,7 @@ export default () => {
                       <Table.Row>
                         <Table.ColHeader>Siret</Table.ColHeader>
                         <Table.ColHeader>Nom</Table.ColHeader>
-                        <Table.ColHeader>Erreurs</Table.ColHeader>
+                        <Table.ColHeader>Anomalies</Table.ColHeader>
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -83,7 +83,7 @@ export default () => {
                         </Table.Row>
                       ) : (
                         data.etablissements.map((e) => {
-                          let errors = e._meta._errors;
+                          let errors = e._meta.anomalies;
                           return (
                             <Table.Row key={e.uai}>
                               <Table.Col>
@@ -91,7 +91,7 @@ export default () => {
                               </Table.Col>
                               <Table.Col>{e.uai}</Table.Col>
                               <Table.Col>
-                                <ErreursTable errors={errors} />
+                                <AnomaliesTable errors={errors} />
                               </Table.Col>
                             </Table.Row>
                           );

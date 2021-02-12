@@ -40,11 +40,11 @@ integrationTests(__filename, () => {
       raisonSociale: "Centre de formation",
       referentiel: "test",
       uaisSecondaires: [],
-      liens: [],
+      relations: [],
     });
     assert.ok(found._meta.lastUpdate);
     assert.deepStrictEqual(omit(found._meta, ["lastUpdate"]), {
-      _errors: [],
+      anomalies: [],
     });
     assert.deepStrictEqual(results, {
       total: 1,

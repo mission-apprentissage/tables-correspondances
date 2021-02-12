@@ -19,13 +19,14 @@ module.exports = async (options = {}) => {
         }
 
         let siegeSocial = data.etablissement_siege === "true";
-        let liens = await Promise.all(
+        let relations = await Promise.all(
           uniteLegale.etablissements
             .filter((e) => e.siret !== siret)
             .map(async (e) => {
               return {
                 type: e.etablissement_siege === "true" ? "siege" : "établissement",
                 siret: e.siret,
+                raisonSociale: e.denomination_usuelle || uniteLegale.denomination,
                 statut: e.etat_administratif === "A" ? "actif" : "fermé",
                 exists: (await Annuaire.countDocuments({ siret: e.siret })) > 0,
               };
@@ -35,7 +36,7 @@ module.exports = async (options = {}) => {
         return {
           siret,
           data: {
-            liens,
+            relations,
             siegeSocial: siegeSocial,
             statut: data.etat_administratif === "A" ? "actif" : "fermé",
             adresse: {
