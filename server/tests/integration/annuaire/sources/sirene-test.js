@@ -1,4 +1,5 @@
 const assert = require("assert");
+const ApiError = require("../../../../src/common/apis/ApiError");
 const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
 const { createApiSireneMock } = require("../../../utils/mocks");
@@ -155,5 +156,37 @@ integrationTests(__filename, () => {
       updated: 0,
       failed: 1,
     });
+  });
+
+  it("Vérifie qu'on gère une erreur spécifique quand l'établissement n'existe pas", async () => {
+    await importReferentiel();
+    let failingApi = {
+      getUniteLegale: () => {
+        return {
+          etablissements: [],
+        };
+      },
+    };
+    let source = await createSource("sirene", { apiSirene: failingApi });
+
+    await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
+    assert.deepStrictEqual(found._meta.anomalies[0].reason, "Etablissement inconnu pour l'entreprise 111111111");
+  });
+
+  it("Vérifie qu'on gère une erreur spécifique quand l'entreprise n'existe pas", async () => {
+    await importReferentiel();
+    let failingApi = {
+      getUniteLegale: () => {
+        throw new ApiError("sirene", "mocked", 404);
+      },
+    };
+    let source = await createSource("sirene", { apiSirene: failingApi });
+
+    await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
+    assert.deepStrictEqual(found._meta.anomalies[0].reason, "Entreprise inconnue");
   });
 });
