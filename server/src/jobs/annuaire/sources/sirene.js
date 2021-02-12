@@ -25,7 +25,7 @@ module.exports = async (options = {}) => {
         let uniteLegale = await api.getUniteLegale(siren);
         let data = uniteLegale.etablissements.find((e) => e.siret === siret);
         if (!data) {
-          return { siret, error: "Etablissement inconnu" };
+          return { siret, error: `Etablissement inconnu pour l'entreprise ${siren}` };
         }
 
         let siegeSocial = data.etablissement_siege === "true";
@@ -76,7 +76,7 @@ module.exports = async (options = {}) => {
           },
         };
       } catch (e) {
-        return { siret, error: e };
+        return { siret, error: e.reason === 404 ? "Entreprise inconnue" : e };
       }
     }),
     { promisify: false, parallel: 5 }
