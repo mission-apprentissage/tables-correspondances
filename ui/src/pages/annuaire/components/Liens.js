@@ -12,7 +12,11 @@ export default ({ item }) => {
   return (
     <div>
       <Siret>
-        {item.exists ? <Link to={`/annuaire/${item.siret}`}>{item.siret}</Link> : <span>{item.siret}</span>}
+        {item.exists ? (
+          <Link to={`/annuaire/etablissements/${item.siret}`}>{item.siret}</Link>
+        ) : (
+          <span>{item.siret}</span>
+        )}
       </Siret>
       <span style={{ paddingRight: "1rem" }}>
         {item.statut === "fermé" ? <Badge color="danger">{item.statut}</Badge> : <span />}
