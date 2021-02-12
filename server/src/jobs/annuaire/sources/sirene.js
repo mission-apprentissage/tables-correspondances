@@ -2,6 +2,16 @@ const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
 const apiSirene = require("../../../common/apis/apiSirene");
 
+const getRaisonSociale = (e, uniteLegale) => {
+  return (
+    e.denomination_usuelle ||
+    uniteLegale.denomination ||
+    uniteLegale.denomination_usuelle_1 ||
+    uniteLegale.denomination_usuelle_2 ||
+    uniteLegale.denomination_usuelle_3
+  );
+};
+
 module.exports = async (options = {}) => {
   let api = options.apiSirene || apiSirene;
 
@@ -26,7 +36,7 @@ module.exports = async (options = {}) => {
               return {
                 type: e.etablissement_siege === "true" ? "siege" : "établissement",
                 siret: e.siret,
-                raisonSociale: e.denomination_usuelle || uniteLegale.denomination,
+                raisonSociale: getRaisonSociale(e, uniteLegale),
                 statut: e.etat_administratif === "A" ? "actif" : "fermé",
                 exists: (await Annuaire.countDocuments({ siret: e.siret })) > 0,
               };
