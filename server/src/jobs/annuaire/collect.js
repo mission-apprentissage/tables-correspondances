@@ -45,29 +45,33 @@ module.exports = async (source) => {
           return;
         }
 
-        let etablissement = await Annuaire.findOne({ siret });
-        if (!etablissement) {
-          return;
-        }
+        try {
+          let etablissement = await Annuaire.findOne({ siret });
+          if (!etablissement) {
+            return;
+          }
 
-        let { uai, ...rest } = data;
-        let res = await Annuaire.updateOne(
-          { siret },
-          {
-            $set: {
-              ...rest,
+          let { uai, ...rest } = data;
+          let res = await Annuaire.updateOne(
+            { siret },
+            {
+              $set: {
+                ...rest,
+              },
+              ...(shouldAddUAIs(etablissement, uai)
+                ? {
+                    $push: {
+                      uaisSecondaires: { type, uai, valide: validateUAI(uai) },
+                    },
+                  }
+                : {}),
             },
-            ...(shouldAddUAIs(etablissement, uai)
-              ? {
-                  $push: {
-                    uaisSecondaires: { type, uai, valide: validateUAI(uai) },
-                  },
-                }
-              : {}),
-          },
-          { runValidators: true }
-        );
-        stats.updated += getNbModifiedDocuments(res);
+            { runValidators: true }
+          );
+          stats.updated += getNbModifiedDocuments(res);
+        } catch (e) {
+          await handleError(e, siret);
+        }
       })
     );
   } catch (e) {
