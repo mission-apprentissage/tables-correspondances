@@ -14,6 +14,7 @@ const SortButton = styled(Button)`
 
 export default ({ onClick }) => {
   const [order, setOrder] = useState(-1);
+
   function toggleOrder() {
     let newValue = order * -1;
     setOrder(newValue);

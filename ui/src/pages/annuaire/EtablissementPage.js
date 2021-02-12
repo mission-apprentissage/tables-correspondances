@@ -12,6 +12,7 @@ const Title = styled.div`
   width: 100%;
   justify-content: space-between;
   align-items: center;
+
   span {
     padding-right: 0.5rem;
   }
