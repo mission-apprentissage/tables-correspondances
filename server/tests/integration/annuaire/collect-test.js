@@ -124,7 +124,7 @@ integrationTests(__filename, () => {
           valide: true,
         },
       ],
-    }).save();
+    });
 
     let stats = await collect(source);
 

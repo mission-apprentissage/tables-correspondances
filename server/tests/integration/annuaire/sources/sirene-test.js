@@ -95,7 +95,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on peut détecter des relations qui existent dans l'annuaire", async () => {
     await importReferentiel();
-    await createAnnuaire({ siret: "11111111122222" }).save();
+    await createAnnuaire({ siret: "11111111122222" });
     let source = await createSource("sirene", {
       apiSirene: createApiSireneMock({
         etablissements: [

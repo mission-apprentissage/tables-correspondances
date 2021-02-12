@@ -9,7 +9,7 @@ module.exports = {
     },
   },
   createAnnuaire: (custom) => {
-    return new Annuaire({
+    return Annuaire.create({
       uai: faker.helpers.replaceSymbols("#######?"),
       siret: faker.helpers.replaceSymbols("#########00015"),
       raisonSociale: faker.company.companyName(),

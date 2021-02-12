@@ -13,7 +13,7 @@ httpTests(__filename, ({ startServer }) => {
         anomalies: [],
         lastUpdate: new Date("2021-02-10T16:39:13.064Z"),
       },
-    }).save();
+    });
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements");
 
@@ -68,7 +68,7 @@ httpTests(__filename, ({ startServer }) => {
     const { httpClient } = await startServer();
     await createAnnuaire({
       uai: "0010856A",
-    }).save();
+    });
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements?text=0010856A");
 
@@ -80,7 +80,7 @@ httpTests(__filename, ({ startServer }) => {
     const { httpClient } = await startServer();
     await createAnnuaire({
       siret: "11111111111111",
-    }).save();
+    });
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements?text=11111111111111");
 
@@ -102,7 +102,7 @@ httpTests(__filename, ({ startServer }) => {
             annuaire: true,
           },
         ],
-      }).save(),
+      }),
       createAnnuaire({
         siret: "33333333333333",
         relations: [
@@ -121,7 +121,7 @@ httpTests(__filename, ({ startServer }) => {
             annuaire: true,
           },
         ],
-      }).save(),
+      }),
     ]);
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements?sortBy=relations&order=-1");
@@ -147,7 +147,7 @@ httpTests(__filename, ({ startServer }) => {
             valide: true,
           },
         ],
-      }).save(),
+      }),
       createAnnuaire({
         siret: "33333333333333",
         uaisSecondaires: [
@@ -162,7 +162,7 @@ httpTests(__filename, ({ startServer }) => {
             valide: true,
           },
         ],
-      }).save(),
+      }),
     ]);
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements?sortBy=uaisSecondaires&order=-1");
@@ -191,10 +191,10 @@ httpTests(__filename, ({ startServer }) => {
             },
           ],
         },
-      }).save(),
+      }),
       createAnnuaire({
         siret: "333333333333333",
-      }).save(),
+      }),
     ]);
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements?anomalies=true");
@@ -242,7 +242,7 @@ httpTests(__filename, ({ startServer }) => {
       uai: "0010856A",
       siret: "11111111111111",
       raisonSociale: "Centre de formation",
-    }).save();
+    });
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements/11111111111111");
 

@@ -11,7 +11,7 @@ integrationTests(__filename, () => {
       siret: "11111111111111",
       raisonSociale: "Centre de formation",
       uaisSecondaires: [],
-    }).save();
+    });
 
     let stats = await cleanAll();
 
