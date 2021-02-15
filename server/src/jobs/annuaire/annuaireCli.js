@@ -4,8 +4,8 @@ const { createWriteStream } = require("fs");
 const { stdoutStream } = require("oleoduc");
 const { createReadStream } = require("fs");
 const { runScript } = require("../scriptWrapper");
-const { createSource, getSourcesChunks } = require("./sources/sources");
 const { createReferentiel, getReferentiels } = require("./referentiels/referentiels");
+const { createSource, getSourcesGroups } = require("./sources/sources");
 const cleanAll = require("./cleanAll");
 const importReferentiel = require("./importReferentiel");
 const collect = require("./collect");
@@ -26,20 +26,20 @@ cli
   .action((type, file) => {
     runScript(async () => {
       if (type) {
-        let stream = file ? createReadStream(file) : undefined;
+        let stream = file ? createReadStream(file) : process.stdin;
         let referentiel = createReferentiel(type, stream);
         return importReferentiel(referentiel);
       } else {
         let referentiels = await getReferentiels();
-        let stats = {};
+        let stats = [];
+
         await asyncForEach(referentiels, async (builder) => {
           //Handle each referentiel sequentially
           let referentiel = await builder();
-          stats = {
-            ...stats,
-            [referentiel.type]: await collect(referentiel),
-          };
+          let res = { [referentiel.type]: await importReferentiel(referentiel) };
+          stats.push(res);
         });
+
         return stats;
       }
     });
@@ -51,24 +51,23 @@ cli
   .action((type, file) => {
     runScript(async () => {
       if (type) {
-        let stream = file ? createReadStream(file) : undefined;
+        let stream = file ? createReadStream(file) : process.stdin;
         let source = await createSource(type, stream);
         return collect(source);
       } else {
-        let chunks = getSourcesChunks();
+        let groups = getSourcesGroups();
+        let stats = [];
 
-        let stats = {};
-        await asyncForEach(chunks, (array) => {
-          return Promise.all(
-            array.map(async (builder) => {
-              let source = await builder();
-              stats = {
-                ...stats,
-                [source.type]: await collect(source),
-              };
-            })
-          );
+        await asyncForEach(groups, async (group) => {
+          let promises = group.map(async (builder) => {
+            let source = await builder();
+            return { [source.type]: await collect(source) };
+          });
+
+          let results = await Promise.all(promises);
+          stats.push(results);
         });
+
         return stats;
       }
     });

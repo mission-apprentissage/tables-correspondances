@@ -18,7 +18,7 @@ async function createSource(type, ...args) {
 
 module.exports = {
   createSource,
-  getSourcesChunks: () => {
+  getSourcesGroups() {
     return [
       [
         () => {
@@ -51,7 +51,7 @@ module.exports = {
         },
       ],
       [
-        //Second chunk with sources that need data from the previous chunk
+        //Second group contains sources that need data from the previous group
         () => {
           return createSource("academie");
         },
