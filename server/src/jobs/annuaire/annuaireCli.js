@@ -5,7 +5,7 @@ const { stdoutStream } = require("oleoduc");
 const { createReadStream } = require("fs");
 const { runScript } = require("../scriptWrapper");
 const { createSource, getSourcesChunks } = require("./sources/sources");
-const { createReferentiel, getDefaultReferentiels } = require("./referentiels/referentiels");
+const { createReferentiel, getReferentiels } = require("./referentiels/referentiels");
 const cleanAll = require("./cleanAll");
 const importReferentiel = require("./importReferentiel");
 const collect = require("./collect");
@@ -30,14 +30,17 @@ cli
         let referentiel = createReferentiel(type, stream);
         return importReferentiel(referentiel);
       } else {
-        let referentiels = await getDefaultReferentiels();
-        return Promise.all(
-          referentiels.map(async (referentiel) => {
-            return {
-              [referentiel.type]: await importReferentiel(referentiel),
-            };
-          })
-        );
+        let referentiels = await getReferentiels();
+        let stats = {};
+        await asyncForEach(referentiels, async (builder) => {
+          //Handle each referentiel sequentially
+          let referentiel = await builder();
+          stats = {
+            ...stats,
+            [referentiel.type]: await collect(referentiel),
+          };
+        });
+        return stats;
       }
     });
   });
@@ -53,12 +56,12 @@ cli
         return collect(source);
       } else {
         let chunks = getSourcesChunks();
-        let stats = {};
 
-        await asyncForEach(chunks, (chunk) => {
+        let stats = {};
+        await asyncForEach(chunks, (array) => {
           return Promise.all(
-            chunk.map(async (callback) => {
-              let source = await callback();
+            array.map(async (builder) => {
+              let source = await builder();
               stats = {
                 ...stats,
                 [source.type]: await collect(source),
@@ -66,7 +69,6 @@ cli
             })
           );
         });
-
         return stats;
       }
     });

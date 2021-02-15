@@ -51,7 +51,7 @@ module.exports = {
         },
       ],
       [
-        //Second chunks with sources that need data from the previous chunk
+        //Second chunk with sources that need data from the previous chunk
         () => {
           return createSource("academie");
         },
