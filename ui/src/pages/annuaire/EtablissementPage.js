@@ -2,10 +2,60 @@ import React from "react";
 import { Badge, Card, ContactCard, Grid, Page } from "tabler-react";
 import { useFetch } from "../../common/hooks/useFetch";
 import { Link, useParams } from "react-router-dom";
-import UaiSecondaire from "./components/UaiSecondaire";
-import Relations from "./components/Relations";
 import FormError from "../../common/components/FormError";
 import styled from "styled-components";
+
+function UaiSecondaires({ items }) {
+  return (
+    <div>
+      {items.length === 0
+        ? "-"
+        : items.map((item) => {
+            return (
+              <div>
+                <span style={{ paddingRight: "0.5rem" }}>{item.uai}</span>
+                <span>(source : {item.type})</span>
+              </div>
+            );
+          })}
+    </div>
+  );
+}
+
+const Relation = styled.div`
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 1rem;
+  span {
+    padding-right: 0.5rem;
+  }
+`;
+
+function Relations({ items }) {
+  return (
+    <div>
+      {items.length === 0
+        ? "-"
+        : items.map((item) => {
+            return (
+              <Relation>
+                {item.annuaire ? (
+                  <Link style={{ width: "25%" }} to={`/annuaire/etablissements/${item.siret}`}>
+                    {item.siret}
+                  </Link>
+                ) : (
+                  <span style={{ width: "25%" }}>{item.siret}</span>
+                )}
+                <span style={{ width: "65%" }}>{item.details}</span>
+                <span style={{ width: "10%", textAlign: "right" }}>
+                  {item.statut === "fermé" ? <Badge color="danger">{item.statut}</Badge> : <span />}
+                </span>
+              </Relation>
+            );
+          })}
+    </div>
+  );
+}
 
 const Title = styled.div`
   display: flex;
@@ -56,27 +106,11 @@ export default () => {
                     { title: "Siège social", content: etablissement.siegeSocial ? "Oui" : "Non" },
                     {
                       title: "UAI secondaires",
-                      content: (
-                        <div>
-                          {etablissement.uaisSecondaires.length === 0
-                            ? "-"
-                            : etablissement.uaisSecondaires.map((u) => {
-                                return <UaiSecondaire item={u} />;
-                              })}
-                        </div>
-                      ),
+                      content: <UaiSecondaires items={etablissement.uaisSecondaires} />,
                     },
                     {
                       title: "Relations",
-                      content: (
-                        <div>
-                          {etablissement.relations.length === 0
-                            ? "-"
-                            : etablissement.relations.map((u) => {
-                                return <Relations item={u} />;
-                              })}
-                        </div>
-                      ),
+                      content: <Relations items={etablissement.relations} />,
                     },
                   ]}
                 />

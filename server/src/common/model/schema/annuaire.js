@@ -137,27 +137,14 @@ const annuaireSchema = {
             type: String,
             required: true,
           },
-          raisonSociale: {
-            type: String,
-            required: true,
-          },
           statut: {
             type: String,
             required: true,
           },
-          adresse: new Schema(
-            {
-              codePostal: {
-                type: String,
-                required: true,
-              },
-              localite: {
-                type: String,
-                required: true,
-              },
-            },
-            { _id: false }
-          ),
+          details: {
+            type: String,
+            default: undefined,
+          },
         },
         { _id: false }
       ),
@@ -188,7 +175,7 @@ const annuaireSchema = {
                   type: String,
                   required: true,
                 },
-                reason: {
+                details: {
                   type: String,
                 },
                 date: {

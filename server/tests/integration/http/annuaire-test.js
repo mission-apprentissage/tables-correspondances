@@ -96,7 +96,7 @@ httpTests(__filename, ({ startServer }) => {
         relations: [
           {
             siret: "22222222222222",
-            raisonSociale: "NOMAYO",
+            nom: "NOMAYO",
             type: "sirene",
             statut: "actif",
             annuaire: true,
@@ -108,14 +108,14 @@ httpTests(__filename, ({ startServer }) => {
         relations: [
           {
             siret: "11111111111111",
-            raisonSociale: "NOMAYO",
+            nom: "NOMAYO",
             type: "sirene",
             statut: "actif",
             annuaire: true,
           },
           {
             siret: "22222222222222",
-            raisonSociale: "NOMAYO",
+            nom: "NOMAYO",
             type: "sirene",
             statut: "actif",
             annuaire: true,

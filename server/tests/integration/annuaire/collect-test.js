@@ -35,9 +35,7 @@ integrationTests(__filename, () => {
       transformData((data) => {
         return {
           siret: data.siret,
-          data: {
-            uai: data.uai,
-          },
+          uais: [data.uai],
         };
       })
     );
@@ -169,7 +167,7 @@ integrationTests(__filename, () => {
 "";"11111111111111"`
       ),
       transformData(() => {
-        return { error: new Error("Erreur"), siret: "11111111111111" };
+        return { anomalies: [new Error("Erreur")], siret: "11111111111111" };
       })
     );
     source.type = "test";
@@ -180,7 +178,7 @@ integrationTests(__filename, () => {
     let errors = found._meta.anomalies;
     assert.ok(errors[0].date);
     assert.deepStrictEqual(omit(errors[0], ["date"]), {
-      reason: "Erreur",
+      details: "Erreur",
       source: "test",
       type: "collect",
     });

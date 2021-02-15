@@ -78,12 +78,8 @@ integrationTests(__filename, () => {
       {
         type: "établissement",
         siret: "11111111122222",
-        raisonSociale: "NOMAYO2",
         statut: "actif",
-        adresse: {
-          codePostal: "75001",
-          localite: "PARIS",
-        },
+        details: "NOMAYO2 75001 PARIS",
         annuaire: false,
       },
     ]);
@@ -127,12 +123,8 @@ integrationTests(__filename, () => {
       {
         type: "siege",
         siret: "11111111122222",
-        raisonSociale: "NOMAYO2",
         statut: "actif",
-        adresse: {
-          codePostal: "75001",
-          localite: "PARIS",
-        },
+        details: "NOMAYO2 75001 PARIS",
         annuaire: true,
       },
     ]);
@@ -150,7 +142,7 @@ integrationTests(__filename, () => {
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
-    assert.deepStrictEqual(found._meta.anomalies[0].reason, "HTTP error");
+    assert.deepStrictEqual(found._meta.anomalies[0].details, "HTTP error");
     assert.deepStrictEqual(results, {
       total: 1,
       updated: 0,
@@ -172,7 +164,7 @@ integrationTests(__filename, () => {
     await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
-    assert.deepStrictEqual(found._meta.anomalies[0].reason, "Etablissement inconnu pour l'entreprise 111111111");
+    assert.deepStrictEqual(found._meta.anomalies[0].details, "Etablissement inconnu pour l'entreprise 111111111");
   });
 
   it("Vérifie qu'on gère une erreur spécifique quand l'entreprise n'existe pas", async () => {
@@ -187,6 +179,6 @@ integrationTests(__filename, () => {
     await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
-    assert.deepStrictEqual(found._meta.anomalies[0].reason, "Entreprise inconnue");
+    assert.deepStrictEqual(found._meta.anomalies[0].details, "Entreprise inconnue");
   });
 });
