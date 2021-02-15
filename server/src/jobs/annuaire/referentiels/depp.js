@@ -13,7 +13,7 @@ module.exports = (stream) => {
       return {
         uai: data.numero_uai,
         siret: data.numero_siren_siret_uai,
-        raisonSociale: data.patronyme_uai,
+        raison_sociale: data.patronyme_uai,
       };
     }),
     { promisify: false }

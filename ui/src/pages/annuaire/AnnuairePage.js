@@ -4,13 +4,13 @@ import * as Yup from "yup";
 import { Button, Card, Form as TablerForm, Grid, Page, Table } from "tabler-react";
 import { Field, Form, Formik } from "formik";
 import FormError from "../../common/components/FormError";
-import Pagination from "./components/Pagination";
 import FormMessage from "../../common/components/FormMessage";
 import { useFetch } from "../../common/hooks/useFetch";
 import queryString from "query-string";
 import { Link, useHistory } from "react-router-dom";
 import SortButton from "./components/SortButton";
 import styled from "styled-components";
+import Pagination from "./components/Pagination";
 
 const Header = styled.div`
   display: flex;
@@ -117,10 +117,10 @@ export default () => {
                         <Table.ColHeader>Nom</Table.ColHeader>
                         <Table.ColHeader>
                           Uai secondaires
-                          <SortButton onClick={(order) => search({ page: 1, sortBy: "uaisSecondaires", order })} />
+                          <SortButton onClick={(order) => search({ page: 1, sortBy: "uais_secondaires", order })} />
                         </Table.ColHeader>
                         <Table.ColHeader>
-                          Liens <SortButton onClick={(order) => search({ page: 1, sortBy: "liens", order })} />
+                          Relations <SortButton onClick={(order) => search({ page: 1, sortBy: "relations", order })} />
                         </Table.ColHeader>
                       </Table.Row>
                     </Table.Header>
@@ -137,9 +137,9 @@ export default () => {
                                 <Link to={`/annuaire/etablissements/${e.siret}`}>{e.siret}</Link>
                               </Table.Col>
                               <Table.Col>{e.uai}</Table.Col>
-                              <Table.Col>{e.raisonSociale}</Table.Col>
-                              <Table.Col>{e.uaisSecondaires.length}</Table.Col>
-                              <Table.Col>{e.liens.length}</Table.Col>
+                              <Table.Col>{e.raison_sociale}</Table.Col>
+                              <Table.Col>{e.uais_secondaires.length}</Table.Col>
+                              <Table.Col>{e.relations.length}</Table.Col>
                             </Table.Row>
                           );
                         })

@@ -9,10 +9,10 @@ module.exports = {
           columns: {
             UAI: (a) => a.uai,
             Siret: (a) => a.siret,
-            "Raison sociale": (a) => a.raisonSociale,
-            "UAIs secondaires disponibles": (a) => (a.uaisSecondaires.length > 0 ? "Oui" : "Non"),
+            "Raison sociale": (a) => a.raison_sociale,
+            "UAIs secondaires disponibles": (a) => (a.uais_secondaires.length > 0 ? "Oui" : "Non"),
             "UAI secondaires": (a) =>
-              a.uaisSecondaires
+              a.uais_secondaires
                 .map(({ uai, type }) => {
                   return `${uai}_${type}`;
                 })

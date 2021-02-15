@@ -4,8 +4,8 @@ const { getNbModifiedDocuments } = require("../../common/utils/mongooseUtils");
 const { validateUAI } = require("../../common/utils/uaiUtils");
 const logger = require("../../common/logger");
 
-const shouldAddUAIs = (etablissement, uai) => {
-  return uai && etablissement.uai !== uai && !etablissement.uaisSecondaires.find((sec) => sec.uai === uai);
+const shouldAddUAI = (etablissement, uai) => {
+  return uai && etablissement.uai !== uai && !etablissement.uais_secondaires.find((sec) => sec.uai === uai);
 };
 
 module.exports = async (source) => {
@@ -16,15 +16,20 @@ module.exports = async (source) => {
     failed: 0,
   };
 
-  let handleError = async (error, siret) => {
+  async function handleAnomalies(siret, anomalies) {
     stats.failed++;
-    logger.error(`[Collect][${type}] Erreur lors de la collecte pour l'établissement ${siret}.`, error);
+    logger.error(`[Collect][${type}] Erreur lors de la collecte pour l'établissement ${siret}.`, anomalies);
     await Annuaire.updateOne(
       { siret },
       {
         $push: {
           "_meta.anomalies": {
-            $each: [{ type: "collect", source: source.type, reason: error.message || error, date: new Date() }],
+            $each: anomalies.map((a) => ({
+              type: "collect",
+              source: source.type,
+              date: new Date(),
+              details: a.message || a,
+            })),
             // Max 10 elements ordered by date
             $slice: 10,
             $sort: { date: -1 },
@@ -33,17 +38,13 @@ module.exports = async (source) => {
       },
       { runValidators: true }
     );
-  };
+  }
 
   try {
     await oleoduc(
       source,
-      writeData(async ({ siret, error, data }) => {
+      writeData(async ({ siret, anomalies = [], uais = [], data }) => {
         stats.total++;
-        if (error) {
-          await handleError(error, siret);
-          return;
-        }
 
         try {
           let etablissement = await Annuaire.findOne({ siret });
@@ -51,26 +52,35 @@ module.exports = async (source) => {
             return;
           }
 
-          let { uai, ...rest } = data;
-          let res = await Annuaire.updateOne(
-            { siret },
-            {
-              $set: {
-                ...rest,
+          if (anomalies.length > 0) {
+            await handleAnomalies(siret, anomalies);
+          }
+
+          if (data || uais.length > 0) {
+            let res = await Annuaire.updateOne(
+              { siret },
+              {
+                $set: data || {},
+                ...(uais.length === 0
+                  ? {}
+                  : {
+                      $push: {
+                        uais_secondaires: {
+                          $each: uais
+                            .filter((uai) => shouldAddUAI(etablissement, uai))
+                            .map((uai) => {
+                              return { type, uai, valide: validateUAI(uai) };
+                            }),
+                        },
+                      },
+                    }),
               },
-              ...(shouldAddUAIs(etablissement, uai)
-                ? {
-                    $push: {
-                      uaisSecondaires: { type, uai, valide: validateUAI(uai) },
-                    },
-                  }
-                : {}),
-            },
-            { runValidators: true }
-          );
-          stats.updated += getNbModifiedDocuments(res);
+              { runValidators: true }
+            );
+            stats.updated += getNbModifiedDocuments(res);
+          }
         } catch (e) {
-          await handleError(e, siret);
+          await handleAnomalies(siret, [e]);
         }
       })
     );
