@@ -20,9 +20,9 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(omit(found, ["_meta"]), {
       uai: "0011058V",
       siret: "11111111111111",
-      raisonSociale: "Centre de formation",
+      raison_sociale: "Centre de formation",
       referentiel: "depp",
-      uaisSecondaires: [],
+      uais_secondaires: [],
       relations: [],
     });
     assert.deepStrictEqual(results, {

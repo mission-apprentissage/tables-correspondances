@@ -13,7 +13,7 @@ const annuaireSchema = {
     unique: true,
     sparse: true,
   },
-  raisonSociale: {
+  raison_sociale: {
     type: String,
     description: "La raison sociale de l'établissement",
   },
@@ -22,7 +22,7 @@ const annuaireSchema = {
     required: true,
     description: "Le nom du référentiel depuis lequel a été importé l'établissement",
   },
-  siegeSocial: {
+  siege_social: {
     type: Boolean,
     required: true,
     description: "Le siège social",
@@ -38,20 +38,20 @@ const annuaireSchema = {
         label: {
           type: String,
         },
-        numeroVoie: {
+        numero_voie: {
           type: String,
         },
-        typeVoie: {
+        type_voie: {
           type: String,
         },
-        nomVoie: {
+        nom_voie: {
           type: String,
         },
-        codePostal: {
+        code_postal: {
           type: String,
           required: true,
         },
-        codeInsee: {
+        code_insee: {
           type: String,
           required: true,
         },
@@ -95,7 +95,7 @@ const annuaireSchema = {
       { _id: false }
     ),
   },
-  uaisSecondaires: {
+  uais_secondaires: {
     description: "La liste de tous les uais connus pour cet établissement",
     required: true,
     type: [
@@ -155,7 +155,7 @@ const annuaireSchema = {
     default: {},
     type: new Schema(
       {
-        lastUpdate: {
+        last_update: {
           description: "Dernière date de mise à jour du document",
           type: Date,
           required: true,

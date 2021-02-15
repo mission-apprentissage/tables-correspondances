@@ -21,9 +21,9 @@ integrationTests(__filename, () => {
     assert.strictEqual(docs.length, 1);
     assert.deepStrictEqual(omit(docs[0], ["_meta"]), {
       siret: "11111111111111",
-      raisonSociale: "Centre de formation",
+      raison_sociale: "Centre de formation",
       referentiel: "dgefp",
-      uaisSecondaires: [],
+      uais_secondaires: [],
       relations: [],
     });
     assert.deepStrictEqual(results, {

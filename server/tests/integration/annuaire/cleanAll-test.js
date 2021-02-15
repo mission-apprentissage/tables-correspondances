@@ -9,8 +9,8 @@ integrationTests(__filename, () => {
     await createAnnuaire({
       uai: "0011058V",
       siret: "11111111111111",
-      raisonSociale: "Centre de formation",
-      uaisSecondaires: [],
+      raison_sociale: "Centre de formation",
+      uais_secondaires: [],
     });
 
     let stats = await cleanAll();

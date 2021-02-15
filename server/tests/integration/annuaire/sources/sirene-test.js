@@ -16,7 +16,7 @@ integrationTests(__filename, () => {
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.strictEqual(found.siegeSocial, true);
+    assert.strictEqual(found.siege_social, true);
     assert.deepStrictEqual(found.statut, "actif");
     assert.deepStrictEqual(found.adresse, {
       geojson: {
@@ -30,11 +30,11 @@ integrationTests(__filename, () => {
         },
       },
       label: "31 rue des lilas Paris 75001",
-      numeroVoie: "31",
-      typeVoie: "RUE",
-      nomVoie: "DES LILAS",
-      codePostal: "75001",
-      codeInsee: "75000",
+      numero_voie: "31",
+      type_voie: "RUE",
+      nom_voie: "DES LILAS",
+      code_postal: "75001",
+      code_insee: "75000",
       localite: "PARIS",
       cedex: null,
     });

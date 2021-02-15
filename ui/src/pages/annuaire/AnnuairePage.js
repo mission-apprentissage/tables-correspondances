@@ -117,7 +117,7 @@ export default () => {
                         <Table.ColHeader>Nom</Table.ColHeader>
                         <Table.ColHeader>
                           Uai secondaires
-                          <SortButton onClick={(order) => search({ page: 1, sortBy: "uaisSecondaires", order })} />
+                          <SortButton onClick={(order) => search({ page: 1, sortBy: "uais_secondaires", order })} />
                         </Table.ColHeader>
                         <Table.ColHeader>
                           Relations <SortButton onClick={(order) => search({ page: 1, sortBy: "relations", order })} />
@@ -137,8 +137,8 @@ export default () => {
                                 <Link to={`/annuaire/etablissements/${e.siret}`}>{e.siret}</Link>
                               </Table.Col>
                               <Table.Col>{e.uai}</Table.Col>
-                              <Table.Col>{e.raisonSociale}</Table.Col>
-                              <Table.Col>{e.uaisSecondaires.length}</Table.Col>
+                              <Table.Col>{e.raison_sociale}</Table.Col>
+                              <Table.Col>{e.uais_secondaires.length}</Table.Col>
                               <Table.Col>{e.relations.length}</Table.Col>
                             </Table.Row>
                           );

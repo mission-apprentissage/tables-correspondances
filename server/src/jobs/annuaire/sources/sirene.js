@@ -40,7 +40,7 @@ module.exports = async (options = {}) => {
           return { siret, anomalies: [`Etablissement inconnu pour l'entreprise ${siren}`] };
         }
 
-        let siegeSocial = data.etablissement_siege === "true";
+        let siege_social = data.etablissement_siege === "true";
         let relations = await Promise.all(
           uniteLegale.etablissements
             .filter((e) => e.siret !== siret)
@@ -59,7 +59,7 @@ module.exports = async (options = {}) => {
           siret,
           data: {
             relations,
-            siegeSocial,
+            siege_social,
             statut: data.etat_administratif === "A" ? "actif" : "fermé",
             adresse: {
               geojson: {
@@ -73,11 +73,11 @@ module.exports = async (options = {}) => {
                 },
               },
               label: data.geo_adresse,
-              numeroVoie: data.numero_voie,
-              typeVoie: data.type_voie,
-              nomVoie: data.libelle_voie,
-              codePostal: data.code_postal,
-              codeInsee: data.code_commune,
+              numero_voie: data.numero_voie,
+              type_voie: data.type_voie,
+              nom_voie: data.libelle_voie,
+              code_postal: data.code_postal,
+              code_insee: data.code_commune,
               localite: data.libelle_commune,
               cedex: data.code_cedex,
             },

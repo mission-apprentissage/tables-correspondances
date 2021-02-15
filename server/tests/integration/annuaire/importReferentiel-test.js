@@ -24,7 +24,7 @@ const createFakeReferentiel = (content) => {
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut initialiser un annuaire à partir d'un référentiel", async () => {
     let referentiel = createFakeReferentiel(
-      `"uai";"siret";"raisonSociale"
+      `"uai";"siret";"raison_sociale"
 "0011058V";"11111111111111";"Centre de formation"`
     );
 
@@ -34,13 +34,13 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(omit(found, ["_meta"]), {
       uai: "0011058V",
       siret: "11111111111111",
-      raisonSociale: "Centre de formation",
+      raison_sociale: "Centre de formation",
       referentiel: "test",
-      uaisSecondaires: [],
+      uais_secondaires: [],
       relations: [],
     });
-    assert.ok(found._meta.lastUpdate);
-    assert.deepStrictEqual(omit(found._meta, ["lastUpdate"]), {
+    assert.ok(found._meta.last_update);
+    assert.deepStrictEqual(omit(found._meta, ["last_update"]), {
       anomalies: [],
     });
     assert.deepStrictEqual(results, {
@@ -52,7 +52,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on ignore les établissements en double", async () => {
-    let referentiel = createFakeReferentiel(`"uai";"siret";"raisonSociale"
+    let referentiel = createFakeReferentiel(`"uai";"siret";"raison_sociale"
 "0011058V";"11111111111111";"Centre de formation"
 "0011058V";"11111111111111";"Centre de formation"`);
 
@@ -68,7 +68,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut ignorer un établissement avec un siret vide", async () => {
-    let referentiel = createFakeReferentiel(`"uai";"siret";"raisonSociale"
+    let referentiel = createFakeReferentiel(`"uai";"siret";"raison_sociale"
 "0011058V";"";"Centre de formation"`);
 
     let results = await importReferentiel(referentiel);
