@@ -10,16 +10,16 @@ let sources = fs.readdirSync(__dirname).reduce((acc, filename) => {
   };
 }, {});
 
-let createSource = async (type, ...args) => {
+async function createSource(type, ...args) {
   let source = await sources[type](...args);
   source.type = type;
   return source;
-};
+}
 
 module.exports = {
   createSource,
-  getDefaultSources: () => {
-    return Promise.all(
+  getSourcesChunks: () => {
+    return [
       [
         () => {
           return createSource("catalogue");
@@ -49,7 +49,13 @@ module.exports = {
           );
           return createSource("opcoep", stream);
         },
-      ].map((build) => build())
-    );
+      ],
+      [
+        //Second chunks with sources that need data from the previous chunk
+        () => {
+          return createSource("academie");
+        },
+      ],
+    ];
   },
 };

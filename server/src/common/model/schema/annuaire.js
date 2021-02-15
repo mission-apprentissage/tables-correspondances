@@ -32,6 +32,21 @@ const annuaireSchema = {
     required: true,
     description: "Statut de l'entreprise",
   },
+  academie: {
+    type: new Schema(
+      {
+        code: {
+          type: String,
+          required: true,
+        },
+        nom: {
+          type: String,
+          required: true,
+        },
+      },
+      { _id: false }
+    ),
+  },
   adresse: {
     type: new Schema(
       {

@@ -1,9 +1,10 @@
 const { program: cli } = require("commander");
+const { asyncForEach } = require("../../common/utils/asyncUtils");
 const { createWriteStream } = require("fs");
 const { stdoutStream } = require("oleoduc");
 const { createReadStream } = require("fs");
 const { runScript } = require("../scriptWrapper");
-const { createSource, getDefaultSources } = require("./sources/sources");
+const { createSource, getSourcesChunks } = require("./sources/sources");
 const { createReferentiel, getDefaultReferentiels } = require("./referentiels/referentiels");
 const cleanAll = require("./cleanAll");
 const importReferentiel = require("./importReferentiel");
@@ -24,21 +25,20 @@ cli
   .description("Importe les établissements contenus dans le ou les référentiels")
   .action((type, file) => {
     runScript(async () => {
-      let referentiels = [];
       if (type) {
         let stream = file ? createReadStream(file) : undefined;
-        referentiels.push(createReferentiel(type, stream));
+        let referentiel = createReferentiel(type, stream);
+        return importReferentiel(referentiel);
       } else {
-        referentiels = await getDefaultReferentiels();
+        let referentiels = await getDefaultReferentiels();
+        return Promise.all(
+          referentiels.map(async (referentiel) => {
+            return {
+              [referentiel.type]: await importReferentiel(referentiel),
+            };
+          })
+        );
       }
-
-      return Promise.all(
-        referentiels.map(async (referentiel) => {
-          return {
-            [referentiel.type]: await importReferentiel(referentiel),
-          };
-        })
-      );
     });
   });
 
@@ -47,19 +47,28 @@ cli
   .description("Parcoure la ou les sources pour trouver des données complémentaires")
   .action((type, file) => {
     runScript(async () => {
-      let sources = [];
       if (type) {
         let stream = file ? createReadStream(file) : undefined;
-        sources.push(await createSource(type, stream));
+        let source = await createSource(type, stream);
+        return collect(source);
       } else {
-        sources = await getDefaultSources();
-      }
+        let chunks = getSourcesChunks();
+        let stats = {};
 
-      return Promise.all(
-        sources.map(async (source) => {
-          return { [source.type]: await collect(source) };
-        })
-      );
+        await asyncForEach(chunks, (chunk) => {
+          return Promise.all(
+            chunk.map(async (callback) => {
+              let source = await callback();
+              stats = {
+                ...stats,
+                [source.type]: await collect(source),
+              };
+            })
+          );
+        });
+
+        return stats;
+      }
     });
   });
 

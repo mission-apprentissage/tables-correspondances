@@ -19,7 +19,7 @@ class ApiSirene {
         let response = await axios.get(`${apiEndpoint}/unites_legales/${siren}`);
         return response.data.unite_legale;
       } catch (e) {
-        throw new ApiError("Api Sirene", e.message, e.code);
+        throw new ApiError("Api Sirene", e.message, e.response.status);
       }
     });
   }

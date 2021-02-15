@@ -32,7 +32,7 @@ class ApiEntreprise {
         }
         return response.data.entreprise;
       } catch (e) {
-        throw new ApiError("Api Entreprise", e.message, e.code);
+        throw new ApiError("Api Entreprise", e.message, e.response.status);
       }
     });
   }
@@ -49,7 +49,7 @@ class ApiEntreprise {
         }
         return response.data.etablissement;
       } catch (e) {
-        throw new ApiError("Api Entreprise", e.message, e.code);
+        throw new ApiError("Api Entreprise", e.message, e.response.status);
       }
     });
   }
