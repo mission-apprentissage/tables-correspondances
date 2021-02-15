@@ -118,7 +118,7 @@ const annuaireSchema = {
       ),
     ],
   },
-  liens: {
+  relations: {
     description: "La liste des établissements liés",
     required: true,
     default: [],
@@ -126,6 +126,10 @@ const annuaireSchema = {
       new Schema(
         {
           siret: {
+            type: String,
+            required: true,
+          },
+          raisonSociale: {
             type: String,
             required: true,
           },
@@ -157,8 +161,8 @@ const annuaireSchema = {
           required: true,
           default: () => new Date(),
         },
-        _errors: {
-          description: "La liste de tous les uais connus pour cet établissement",
+        anomalies: {
+          description: "La liste des anomalies survenues durant la collecte",
           required: true,
           type: [
             new Schema(

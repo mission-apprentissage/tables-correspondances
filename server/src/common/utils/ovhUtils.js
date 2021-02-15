@@ -1,8 +1,6 @@
 const axios = require("axios");
-const https = require("https");
 const config = require("config");
-const logger = require("./logger");
-const { parse: parseUrl } = require("url"); // eslint-disable-line node/no-deprecated-api
+const { getFileAsStream } = require("./httpUtils");
 
 let getAuth = async (uri) => {
   let regExp = new RegExp(/^(https:\/\/)(.+):(.+):(.+)@(.*)$/);
@@ -42,26 +40,12 @@ module.exports = {
     let storage = "mna-tables-correspondances";
     let { token, baseUrl } = await getAuth(config.ovh.storage.uri);
 
-    return new Promise((resolve, reject) => {
-      let fullPath = encodeURI(`${baseUrl}/${storage}/${relativePath}`);
-      let options = {
-        ...parseUrl(fullPath),
-        method: "GET",
-        headers: {
-          "X-Auth-Token": token,
-          Accept: "application/json",
-        },
-      };
-
-      logger.info(`Downloading ${fullPath} from OVH...`);
-      let req = https.request(options, (res) => {
-        if (res.statusCode >= 400) {
-          reject(new Error(`Unable to request OVH Storage. Status code ${res.statusCode}. Path ${fullPath}`));
-        }
-
-        resolve(res);
-      });
-      req.end();
+    let fullPath = encodeURI(`${baseUrl}/${storage}/${relativePath}`);
+    return getFileAsStream(fullPath, {
+      headers: {
+        "X-Auth-Token": token,
+        Accept: "application/json",
+      },
     });
   },
 };

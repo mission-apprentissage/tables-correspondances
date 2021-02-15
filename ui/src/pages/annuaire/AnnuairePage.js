@@ -25,7 +25,7 @@ function buildQuery(elements = {}) {
 
 export default () => {
   let history = useHistory();
-  let query = { page: 1, order: -1, limit: 25, ...queryString.parse(window.location.search), erreurs: false };
+  let query = { page: 1, order: -1, limit: 25, ...queryString.parse(window.location.search), anomalies: false };
   let [data, loading, error] = useFetch(`/api/v1/annuaire/etablissements?${buildQuery(query)}`, {
     etablissements: [],
     pagination: {
@@ -57,8 +57,8 @@ export default () => {
           <Page.Header>
             <Header>
               <Link to={`/annuaire`}>Annuaire</Link>
-              <Button color={"danger"} onClick={() => history.push("/annuaire/erreurs")}>
-                Voir le rapport d'erreurs >
+              <Button color={"danger"} onClick={() => history.push("/annuaire/anomalies")}>
+                Voir le rapport d'anomalies >
               </Button>
             </Header>
           </Page.Header>

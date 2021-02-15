@@ -10,7 +10,7 @@ httpTests(__filename, ({ startServer }) => {
       siret: "11111111111111",
       raisonSociale: "Centre de formation",
       _meta: {
-        _errors: [],
+        anomalies: [],
         lastUpdate: new Date("2021-02-10T16:39:13.064Z"),
       },
     }).save();
@@ -25,7 +25,7 @@ httpTests(__filename, ({ startServer }) => {
           siret: "11111111111111",
           raisonSociale: "Centre de formation",
           uaisSecondaires: [],
-          liens: [],
+          relations: [],
           siegeSocial: true,
           statut: "actif",
           referentiel: "test",
@@ -50,7 +50,7 @@ httpTests(__filename, ({ startServer }) => {
             cedex: null,
           },
           _meta: {
-            _errors: [],
+            anomalies: [],
             lastUpdate: "2021-02-10T16:39:13.064Z",
           },
         },
@@ -88,14 +88,15 @@ httpTests(__filename, ({ startServer }) => {
     strictEqual(response.data.etablissements[0].siret, "11111111111111");
   });
 
-  it("Vérifie qu'on peut trier les établissements par nombre de liens", async () => {
+  it("Vérifie qu'on peut trier les établissements par nombre de relations", async () => {
     const { httpClient } = await startServer();
     await Promise.all([
       createAnnuaire({
         siret: "11111111111111",
-        liens: [
+        relations: [
           {
             siret: "22222222222222",
+            raisonSociale: "NOMAYO",
             type: "sirene",
             statut: "actif",
             exists: true,
@@ -104,15 +105,17 @@ httpTests(__filename, ({ startServer }) => {
       }).save(),
       createAnnuaire({
         siret: "33333333333333",
-        liens: [
+        relations: [
           {
             siret: "11111111111111",
+            raisonSociale: "NOMAYO",
             type: "sirene",
             statut: "actif",
             exists: true,
           },
           {
             siret: "22222222222222",
+            raisonSociale: "NOMAYO",
             type: "sirene",
             statut: "actif",
             exists: true,
@@ -121,12 +124,12 @@ httpTests(__filename, ({ startServer }) => {
       }).save(),
     ]);
 
-    let response = await httpClient.get("/api/v1/annuaire/etablissements?sortBy=liens&order=-1");
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?sortBy=relations&order=-1");
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "33333333333333");
     strictEqual(response.data.etablissements[1].siret, "11111111111111");
 
-    response = await httpClient.get("/api/v1/annuaire/etablissements?sortBy=liens&order=1");
+    response = await httpClient.get("/api/v1/annuaire/etablissements?sortBy=relations&order=1");
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "11111111111111");
     strictEqual(response.data.etablissements[1].siret, "33333333333333");
@@ -173,13 +176,13 @@ httpTests(__filename, ({ startServer }) => {
     strictEqual(response.data.etablissements[1].siret, "33333333333333");
   });
 
-  it("Vérifie qu'on peut filtrer les établissements en erreur", async () => {
+  it("Vérifie qu'on peut filtrer les établissements avec des anomalies", async () => {
     const { httpClient } = await startServer();
     await Promise.all([
       createAnnuaire({
         siret: "11111111111111",
         _meta: {
-          _errors: [
+          anomalies: [
             {
               type: "collect",
               source: "sirene",
@@ -194,11 +197,11 @@ httpTests(__filename, ({ startServer }) => {
       }).save(),
     ]);
 
-    let response = await httpClient.get("/api/v1/annuaire/etablissements?erreurs=true");
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?anomalies=true");
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "11111111111111");
 
-    response = await httpClient.get("/api/v1/annuaire/etablissements?erreurs=false");
+    response = await httpClient.get("/api/v1/annuaire/etablissements?anomalies=false");
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "333333333333333");
 
@@ -249,7 +252,7 @@ httpTests(__filename, ({ startServer }) => {
       siret: "11111111111111",
       raisonSociale: "Centre de formation",
       uaisSecondaires: [],
-      liens: [],
+      relations: [],
       siegeSocial: true,
       statut: "actif",
       referentiel: "test",

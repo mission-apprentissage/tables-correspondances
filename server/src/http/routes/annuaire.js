@@ -1,8 +1,9 @@
 const express = require("express");
 const Boom = require("boom");
+const { oleoduc, jsonStream } = require("oleoduc");
 const Joi = require("joi");
 const { Annuaire } = require("../../common/model");
-const { paginateAggregation } = require("../../common/utils/mongooseUtils");
+const { paginateAggregationWithCursor } = require("../../common/utils/mongooseUtils");
 const tryCatch = require("../middlewares/tryCatchMiddleware");
 
 module.exports = () => {
@@ -11,22 +12,22 @@ module.exports = () => {
   router.get(
     "/etablissements",
     tryCatch(async (req, res) => {
-      let { text, erreurs, page, limit, sortBy, order } = await Joi.object({
+      let { text, anomalies, page, limit, sortBy, order } = await Joi.object({
         text: Joi.string(),
-        erreurs: Joi.boolean().default(null),
+        anomalies: Joi.boolean().default(null),
         page: Joi.number().default(1),
         limit: Joi.number().default(10),
         order: Joi.number().allow(1, -1).default(-1),
-        sortBy: Joi.string().allow("uaisSecondaires", "liens"),
+        sortBy: Joi.string().allow("uaisSecondaires", "relations"),
       }).validateAsync(req.query, { abortEarly: false });
 
-      let { data: etablissements, pagination } = await paginateAggregation(
+      let { cursor, pagination } = await paginateAggregationWithCursor(
         Annuaire,
         [
           {
             $match: {
               ...(text ? { $text: { $search: text } } : {}),
-              ...(erreurs !== null ? { "_meta._errors.0": { $exists: erreurs } } : {}),
+              ...(anomalies !== null ? { "_meta.anomalies.0": { $exists: anomalies } } : {}),
             },
           },
           ...(sortBy
@@ -34,7 +35,7 @@ module.exports = () => {
                 {
                   $addFields: {
                     nb_uaisSecondaires: { $size: "$uaisSecondaires" },
-                    nb_liens: { $size: "$liens" },
+                    nb_relations: { $size: "$relations" },
                   },
                 },
                 { $sort: { [`nb_${sortBy}`]: order } },
@@ -43,7 +44,7 @@ module.exports = () => {
           {
             $project: {
               nb_uaisSecondaires: 0,
-              nb_liens: 0,
+              nb_relations: 0,
               _id: 0,
               __v: 0,
             },
@@ -52,10 +53,16 @@ module.exports = () => {
         { page, limit }
       );
 
-      return res.json({
-        etablissements,
-        pagination,
-      });
+      oleoduc(
+        cursor,
+        jsonStream({
+          arrayPropertyName: "etablissements",
+          arrayWrapper: {
+            pagination,
+          },
+        }),
+        res
+      );
     })
   );
 
