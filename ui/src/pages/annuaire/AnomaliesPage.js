@@ -10,7 +10,7 @@ function buildQuery(elements = {}) {
   return `${queryString.stringify(elements, { skipNull: true, skipEmptyString: true })}`;
 }
 
-const AnomaliesTable = ({ errors }) => {
+const AnomaliesTable = ({ anomalies }) => {
   return (
     <Table>
       <Table.Header>
@@ -22,13 +22,13 @@ const AnomaliesTable = ({ errors }) => {
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {errors.map((err) => {
+        {anomalies.map((ano) => {
           return (
             <Table.Row>
-              <Table.Col>{err.type}</Table.Col>
-              <Table.Col>{err.source}</Table.Col>
-              <Table.Col>{err.date}</Table.Col>
-              <Table.Col>{err.reason}</Table.Col>
+              <Table.Col>{ano.type}</Table.Col>
+              <Table.Col>{ano.source}</Table.Col>
+              <Table.Col>{ano.date}</Table.Col>
+              <Table.Col>{ano.details}</Table.Col>
             </Table.Row>
           );
         })}
@@ -83,7 +83,7 @@ export default () => {
                         </Table.Row>
                       ) : (
                         data.etablissements.map((e) => {
-                          let errors = e._meta.anomalies;
+                          let anomalies = e._meta.anomalies;
                           return (
                             <Table.Row key={e.uai}>
                               <Table.Col>
@@ -91,7 +91,7 @@ export default () => {
                               </Table.Col>
                               <Table.Col>{e.uai}</Table.Col>
                               <Table.Col>
-                                <AnomaliesTable errors={errors} />
+                                <AnomaliesTable anomalies={anomalies} />
                               </Table.Col>
                             </Table.Row>
                           );

@@ -13,7 +13,7 @@ const annuaireSchema = {
     unique: true,
     sparse: true,
   },
-  raisonSociale: {
+  raison_sociale: {
     type: String,
     description: "La raison sociale de l'établissement",
   },
@@ -22,7 +22,7 @@ const annuaireSchema = {
     required: true,
     description: "Le nom du référentiel depuis lequel a été importé l'établissement",
   },
-  siegeSocial: {
+  siege_social: {
     type: Boolean,
     required: true,
     description: "Le siège social",
@@ -95,7 +95,7 @@ const annuaireSchema = {
       { _id: false }
     ),
   },
-  uaisSecondaires: {
+  uais_secondaires: {
     description: "La liste de tous les uais connus pour cet établissement",
     required: true,
     type: [
@@ -125,15 +125,15 @@ const annuaireSchema = {
     type: [
       new Schema(
         {
-          siret: {
-            type: String,
-            required: true,
-          },
-          raisonSociale: {
-            type: String,
-            required: true,
-          },
           type: {
+            type: String,
+            required: true,
+          },
+          annuaire: {
+            type: Boolean,
+            required: true,
+          },
+          siret: {
             type: String,
             required: true,
           },
@@ -141,9 +141,9 @@ const annuaireSchema = {
             type: String,
             required: true,
           },
-          exists: {
-            type: Boolean,
-            required: true,
+          details: {
+            type: String,
+            default: undefined,
           },
         },
         { _id: false }
@@ -155,7 +155,7 @@ const annuaireSchema = {
     default: {},
     type: new Schema(
       {
-        lastUpdate: {
+        last_update: {
           description: "Dernière date de mise à jour du document",
           type: Date,
           required: true,
@@ -175,7 +175,7 @@ const annuaireSchema = {
                   type: String,
                   required: true,
                 },
-                reason: {
+                details: {
                   type: String,
                 },
                 date: {

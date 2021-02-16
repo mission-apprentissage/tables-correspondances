@@ -1,4 +1,5 @@
 const assert = require("assert");
+const ApiError = require("../../../../src/common/apis/ApiError");
 const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
 const { createApiSireneMock } = require("../../../utils/mocks");
@@ -15,7 +16,7 @@ integrationTests(__filename, () => {
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.strictEqual(found.siegeSocial, true);
+    assert.strictEqual(found.siege_social, true);
     assert.deepStrictEqual(found.statut, "actif");
     assert.deepStrictEqual(found.adresse, {
       geojson: {
@@ -28,11 +29,11 @@ integrationTests(__filename, () => {
           score: 0.88,
         },
       },
-      label: "31 rue des lilas Paris 75019",
+      label: "31 rue des lilas Paris 75001",
       numero_voie: "31",
       type_voie: "RUE",
       nom_voie: "DES LILAS",
-      code_postal: "75019",
+      code_postal: "75001",
       code_insee: "75000",
       localite: "PARIS",
       cedex: null,
@@ -47,12 +48,27 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations sur les relations (établissement)", async () => {
     await importReferentiel();
     let source = await createSource("sirene", {
-      apiSirene: createApiSireneMock(
-        {
-          etablissements: [{ siret: "11111111122222", etat_administratif: "A", etablissement_siege: "false" }],
-        },
-        { mergeArray: true }
-      ),
+      apiSirene: createApiSireneMock({
+        etablissements: [
+          {
+            siret: "11111111111111",
+            etat_administratif: "A",
+            etablissement_siege: "true",
+            libelle_voie: "DES LILAS",
+            code_postal: "75019",
+            libelle_commune: "PARIS",
+          },
+          {
+            siret: "11111111122222",
+            denomination_usuelle: "NOMAYO2",
+            etat_administratif: "A",
+            etablissement_siege: "false",
+            libelle_voie: "DES LILAS",
+            code_postal: "75001",
+            libelle_commune: "PARIS",
+          },
+        ],
+      }),
     });
 
     let results = await collect(source);
@@ -62,9 +78,9 @@ integrationTests(__filename, () => {
       {
         type: "établissement",
         siret: "11111111122222",
-        raisonSociale: "NOMAYO",
         statut: "actif",
-        exists: false,
+        details: "NOMAYO2 75001 PARIS",
+        annuaire: false,
       },
     ]);
     assert.deepStrictEqual(results, {
@@ -74,16 +90,30 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on peut collecter des informations sur les relations (siège+exists)", async () => {
+  it("Vérifie qu'on peut détecter des relations qui existent dans l'annuaire", async () => {
     await importReferentiel();
-    await createAnnuaire({ siret: "11111111122222" }).save();
+    await createAnnuaire({ siret: "11111111122222" });
     let source = await createSource("sirene", {
-      apiSirene: createApiSireneMock(
-        {
-          etablissements: [{ siret: "11111111122222", etat_administratif: "A", etablissement_siege: "true" }],
-        },
-        { mergeArray: true }
-      ),
+      apiSirene: createApiSireneMock({
+        etablissements: [
+          {
+            siret: "11111111111111",
+            etat_administratif: "A",
+            etablissement_siege: "true",
+            libelle_voie: "DES LILAS",
+            code_postal: "75019",
+            libelle_commune: "PARIS",
+          },
+          {
+            siret: "11111111122222",
+            denomination_usuelle: "NOMAYO2",
+            etat_administratif: "A",
+            etablissement_siege: "true",
+            code_postal: "75001",
+            libelle_commune: "PARIS",
+          },
+        ],
+      }),
     });
 
     await collect(source);
@@ -93,9 +123,9 @@ integrationTests(__filename, () => {
       {
         type: "siege",
         siret: "11111111122222",
-        raisonSociale: "NOMAYO",
         statut: "actif",
-        exists: true,
+        details: "NOMAYO2 75001 PARIS",
+        annuaire: true,
       },
     ]);
   });
@@ -112,11 +142,43 @@ integrationTests(__filename, () => {
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
-    assert.deepStrictEqual(found._meta.anomalies[0].reason, "HTTP error");
+    assert.deepStrictEqual(found._meta.anomalies[0].details, "HTTP error");
     assert.deepStrictEqual(results, {
       total: 1,
       updated: 0,
       failed: 1,
     });
+  });
+
+  it("Vérifie qu'on gère une erreur spécifique quand l'établissement n'existe pas", async () => {
+    await importReferentiel();
+    let failingApi = {
+      getUniteLegale: () => {
+        return {
+          etablissements: [],
+        };
+      },
+    };
+    let source = await createSource("sirene", { apiSirene: failingApi });
+
+    await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
+    assert.deepStrictEqual(found._meta.anomalies[0].details, "Etablissement inconnu pour l'entreprise 111111111");
+  });
+
+  it("Vérifie qu'on gère une erreur spécifique quand l'entreprise n'existe pas", async () => {
+    await importReferentiel();
+    let failingApi = {
+      getUniteLegale: () => {
+        throw new ApiError("sirene", "mocked", 404);
+      },
+    };
+    let source = await createSource("sirene", { apiSirene: failingApi });
+
+    await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
+    assert.deepStrictEqual(found._meta.anomalies[0].details, "Entreprise inconnue");
   });
 });
