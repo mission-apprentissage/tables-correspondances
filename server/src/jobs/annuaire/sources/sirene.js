@@ -2,6 +2,28 @@ const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
 const apiSirene = require("../../../common/apis/apiSirene");
 
+function getRelationDetails(e, uniteLegale) {
+  let nom =
+    e.enseigne_1 ||
+    e.enseigne_2 ||
+    e.enseigne_3 ||
+    e.denomination_usuelle ||
+    uniteLegale.denomination ||
+    uniteLegale.denomination_usuelle_1 ||
+    uniteLegale.denomination_usuelle_2 ||
+    uniteLegale.denomination_usuelle_3 ||
+    uniteLegale.nom;
+
+  let localisation;
+  if (e.code_postal) {
+    localisation = `${e.numero_voie || ""} ${e.code_postal || ""} ${e.libelle_commune || ""}`;
+  } else {
+    localisation = `${e.libelle_commune_etranger || ""} ${e.code_pays_etranger || ""} ${e.libelle_pays_etranger || ""}`;
+  }
+
+  return `${nom} ${localisation}`.replace(/ +/g, " ").trim();
+}
+
 module.exports = async (options = {}) => {
   let api = options.apiSirene || apiSirene;
 
@@ -14,16 +36,21 @@ module.exports = async (options = {}) => {
         let siren = siret.substring(0, 9);
         let uniteLegale = await api.getUniteLegale(siren);
         let data = uniteLegale.etablissements.find((e) => e.siret === siret);
-        let siegeSocial = data.etablissement_siege === "true";
-        let filiations = await Promise.all(
+        if (!data) {
+          return { siret, anomalies: [`Etablissement inconnu pour l'entreprise ${siren}`] };
+        }
+
+        let siege_social = data.etablissement_siege === "true";
+        let relations = await Promise.all(
           uniteLegale.etablissements
             .filter((e) => e.siret !== siret)
             .map(async (e) => {
               return {
                 type: e.etablissement_siege === "true" ? "siege" : "établissement",
+                annuaire: (await Annuaire.countDocuments({ siret: e.siret })) > 0,
                 siret: e.siret,
+                details: getRelationDetails(e, uniteLegale),
                 statut: e.etat_administratif === "A" ? "actif" : "fermé",
-                exists: (await Annuaire.countDocuments({ siret: e.siret })) > 0,
               };
             })
         );
@@ -31,8 +58,8 @@ module.exports = async (options = {}) => {
         return {
           siret,
           data: {
-            filiations,
-            siegeSocial: siegeSocial,
+            relations,
+            siege_social,
             statut: data.etat_administratif === "A" ? "actif" : "fermé",
             adresse: {
               geojson: {
@@ -57,7 +84,7 @@ module.exports = async (options = {}) => {
           },
         };
       } catch (e) {
-        return { siret, error: e };
+        return { siret, anomalies: [e.reason === 404 ? "Entreprise inconnue" : e] };
       }
     }),
     { promisify: false, parallel: 5 }

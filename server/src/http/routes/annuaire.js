@@ -1,9 +1,9 @@
 const express = require("express");
 const Boom = require("boom");
-const Joi = require("joi");
 const { oleoduc, jsonStream } = require("oleoduc");
+const Joi = require("joi");
 const { Annuaire } = require("../../common/model");
-const { paginate } = require("../../common/utils/mongooseUtils");
+const { paginateAggregationWithCursor } = require("../../common/utils/mongooseUtils");
 const tryCatch = require("../middlewares/tryCatchMiddleware");
 
 module.exports = () => {
@@ -12,22 +12,49 @@ module.exports = () => {
   router.get(
     "/etablissements",
     tryCatch(async (req, res) => {
-      let { filter, page, limit } = await Joi.object({
-        filter: Joi.string(),
+      let { text, anomalies, page, limit, sortBy, order } = await Joi.object({
+        text: Joi.string(),
+        anomalies: Joi.boolean().default(null),
         page: Joi.number().default(1),
         limit: Joi.number().default(10),
+        order: Joi.number().allow(1, -1).default(-1),
+        sortBy: Joi.string().allow("uais_secondaires", "relations"),
       }).validateAsync(req.query, { abortEarly: false });
 
-      let query = filter ? { $text: { $search: filter } } : {};
-      let { find, pagination } = await paginate(Annuaire, query, { page, limit });
+      let { cursor, pagination } = await paginateAggregationWithCursor(
+        Annuaire,
+        [
+          {
+            $match: {
+              ...(text ? { $text: { $search: text } } : {}),
+              ...(anomalies !== null ? { "_meta.anomalies.0": { $exists: anomalies } } : {}),
+            },
+          },
+          ...(sortBy
+            ? [
+                {
+                  $addFields: {
+                    nb_uais_secondaires: { $size: "$uais_secondaires" },
+                    nb_relations: { $size: "$relations" },
+                  },
+                },
+                { $sort: { [`nb_${sortBy}`]: order } },
+              ]
+            : [{ $sort: { [`_meta.lastUpdate`]: -1 } }]),
+          {
+            $project: {
+              nb_uais_secondaires: 0,
+              nb_relations: 0,
+              _id: 0,
+              __v: 0,
+            },
+          },
+        ],
+        { page, limit }
+      );
 
-      await oleoduc(
-        find
-          .select({
-            _id: 0,
-            __v: 0,
-          })
-          .cursor(),
+      oleoduc(
+        cursor,
         jsonStream({
           arrayPropertyName: "etablissements",
           arrayWrapper: {
@@ -48,7 +75,7 @@ module.exports = () => {
           .required(),
       }).validateAsync(req.params, { abortEarly: false });
 
-      let etablissement = await Annuaire.findOne({ siret }, { _id: 0, __v: 0 }).lean();
+      let etablissement = await Annuaire.findOne({ siret }, { _id: 0, __v: 0, _meta: 0 }).lean();
       if (!etablissement) {
         throw Boom.notFound("Siret inconnu");
       }

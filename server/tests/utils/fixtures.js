@@ -9,14 +9,14 @@ module.exports = {
     },
   },
   createAnnuaire: (custom) => {
-    return new Annuaire({
+    return Annuaire.create({
       uai: faker.helpers.replaceSymbols("#######?"),
       siret: faker.helpers.replaceSymbols("#########00015"),
-      nom: faker.company.companyName(),
+      raison_sociale: faker.company.companyName(),
       uais_secondaires: [],
-      filiations: [],
+      relations: [],
       referentiel: "test",
-      siegeSocial: true,
+      siege_social: true,
       statut: "actif",
       adresse: {
         geojson: {

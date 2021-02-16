@@ -10,6 +10,8 @@ import useAuth from "./common/hooks/useAuth";
 import HomePage from "./pages/HomePage";
 import ResetPasswordPage from "./pages/password/ResetPasswordPage";
 import ForgottenPasswordPage from "./pages/password/ForgottenPasswordPage";
+import ErreursPage from "./pages/annuaire/AnomaliesPage";
+import ScrollToTop from "./common/components/ScrollToTop";
 
 function PrivateRoute({ children, ...rest }) {
   let [auth] = useAuth();
@@ -30,6 +32,7 @@ export default () => {
   return (
     <div className="App">
       <Router>
+        <ScrollToTop />
         <Switch>
           <PrivateRoute exact path="/">
             <Layout>{auth && auth.permissions.isAdmin ? <DashboardPage /> : <HomePage />}</Layout>
@@ -39,7 +42,8 @@ export default () => {
           <Route exact path="/forgotten-password" component={ForgottenPasswordPage} />
           <Layout>
             <Route exact path="/annuaire" component={AnnuairePage} />
-            <Route exact path="/annuaire/:siret" component={EtablissementPage} />
+            <Route exact path="/annuaire/anomalies" component={ErreursPage} />
+            <Route exact path="/annuaire/etablissements/:siret" component={EtablissementPage} />
           </Layout>
         </Switch>
       </Router>

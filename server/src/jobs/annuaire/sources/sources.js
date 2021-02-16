@@ -1,5 +1,5 @@
 const fs = require("fs");
-const { getOvhFileAsStream } = require("../../../common/ovhStorage");
+const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
 let sources = fs.readdirSync(__dirname).reduce((acc, filename) => {
   let type = filename.split(".")[0];

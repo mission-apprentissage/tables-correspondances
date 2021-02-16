@@ -7,9 +7,9 @@ module.exports = {
       ? jsonStream()
       : csvStream({
           columns: {
-            uai: (a) => a.uai,
-            siret: (a) => a.siret,
-            nom: (a) => a.nom,
+            UAI: (a) => a.uai,
+            Siret: (a) => a.siret,
+            "Raison sociale": (a) => a.raison_sociale,
             "UAIs secondaires disponibles": (a) => (a.uais_secondaires.length > 0 ? "Oui" : "Non"),
             "UAI secondaires": (a) =>
               a.uais_secondaires

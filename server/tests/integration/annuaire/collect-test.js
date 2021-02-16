@@ -1,4 +1,5 @@
 const assert = require("assert");
+const { omit } = require("lodash");
 const { oleoduc, transformData } = require("oleoduc");
 const csv = require("csv-parse");
 const { Annuaire } = require("../../../src/common/model");
@@ -24,9 +25,8 @@ integrationTests(__filename, () => {
   };
 
   const createTestSource = (content) => {
-    let stream = createStream(content);
     let source = oleoduc(
-      stream,
+      createStream(content),
       csv({
         delimiter: ";",
         bom: true,
@@ -35,9 +35,7 @@ integrationTests(__filename, () => {
       transformData((data) => {
         return {
           siret: data.siret,
-          data: {
-            uai: data.uai,
-          },
+          uais: [data.uai],
         };
       })
     );
@@ -48,8 +46,8 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter un uai", async () => {
     await prepareAnnuaire();
     let source = createTestSource(
-      `"uai";"siret";"nom"
-"0011073L";"11111111111111";"Centre de formation"`
+      `"uai";"siret"
+0011073L;11111111111111`
     );
 
     let results = await collect(source);
@@ -72,8 +70,8 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on teste la validité d'un UAI", async () => {
     await prepareAnnuaire();
     let source = createTestSource(
-      `"uai";"siret";"nom"
-"093XXXT";"11111111111111";"Centre de formation"`
+      `"uai";"siret"
+093XXXT;11111111111111`
     );
 
     let results = await collect(source);
@@ -94,8 +92,8 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on ignore un uai quand il existe en tant qu'uai principal", async () => {
     await prepareAnnuaire();
     let source = createTestSource(
-      `"uai";"siret";"nom"
-"0011058V";"11111111111111";"Centre de formation"`
+      `"uai";"siret"
+"0011058V";"11111111111111"`
     );
 
     let stats = await collect(source);
@@ -111,8 +109,8 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on ignore un uai quand il existe déjà en tant qu'uai secondaire", async () => {
     let source = createTestSource(
-      `"uai";"siret";"nom"
-"0011073L";"11111111111111";"Centre de formation"`
+      `"uai";"siret"
+0011073L;11111111111111`
     );
     await createAnnuaire({
       uai: "0011058V",
@@ -124,7 +122,7 @@ integrationTests(__filename, () => {
           valide: true,
         },
       ],
-    }).save();
+    });
 
     let stats = await collect(source);
 
@@ -146,8 +144,8 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on ignore un uai vide", async () => {
     await prepareAnnuaire();
     let source = createTestSource(
-      `"uai";"siret";"nom"
-"";"11111111111111";"Centre de formation"`
+      `"uai";"siret"
+"";"11111111111111"`
     );
 
     let stats = await collect(source);
@@ -157,6 +155,36 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(stats, {
       total: 1,
       failed: 0,
+      updated: 0,
+    });
+  });
+
+  it("Vérifie qu'on stocke une erreur survenue durant une collecte", async () => {
+    await prepareAnnuaire();
+    let source = oleoduc(
+      createTestSource(
+        `"uai";"siret"
+"";"11111111111111"`
+      ),
+      transformData(() => {
+        return { anomalies: [new Error("Erreur")], siret: "11111111111111" };
+      })
+    );
+    source.type = "test";
+
+    let stats = await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let errors = found._meta.anomalies;
+    assert.ok(errors[0].date);
+    assert.deepStrictEqual(omit(errors[0], ["date"]), {
+      details: "Erreur",
+      source: "test",
+      type: "collect",
+    });
+    assert.deepStrictEqual(stats, {
+      total: 1,
+      failed: 1,
       updated: 0,
     });
   });
