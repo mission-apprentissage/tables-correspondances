@@ -1,7 +1,7 @@
 const _ = require("lodash");
 const { Transform } = require("stream");
 const { LineStream } = require("byline");
-const logger = require("../../common/logger");
+// const logger = require("../../common/logger");
 const util = require("util");
 const xml2js = require("xml2js");
 const { pipeline, transformObject, accumulate, ignoreEmpty, decodeStream } = require("../../common/utils/streamUtils");
@@ -86,7 +86,7 @@ module.exports = async (inputStream) => {
         stats.total++;
         return json;
       } catch (e) {
-        logger.warn(`Unable to load fiche from xml due to ${e.message}`);
+        // logger.warn(`Unable to load fiche from xml due to ${e.message}`);
         stats.errors++;
         return {};
       }
