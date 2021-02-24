@@ -28,8 +28,8 @@ module.exports = () => {
 
       let hasRightToEdit = user.isAdmin;
       if (!hasRightToEdit) {
-        const listAcademie = user.academie.split(",");
-        hasRightToEdit = listAcademie.includes(`${body.num_academie}`);
+        const listAcademie = user.academie.split(",").map((academieStr) => Number(academieStr));
+        hasRightToEdit = listAcademie.includes(-1) || listAcademie.includes(Number(body.num_academie));
       }
       if (!hasRightToEdit) {
         throw Boom.unauthorized();
@@ -63,8 +63,8 @@ module.exports = () => {
       const etablissement = await Etablissement.findById(itemId);
       let hasRightToEdit = user.isAdmin;
       if (!hasRightToEdit) {
-        const listAcademie = user.academie.split(",");
-        hasRightToEdit = listAcademie.includes(`${etablissement.num_academie}`);
+        const listAcademie = user.academie.split(",").map((academieStr) => Number(academieStr));
+        hasRightToEdit = listAcademie.includes(-1) || listAcademie.includes(Number(etablissement.num_academie));
       }
       if (!hasRightToEdit) {
         throw Boom.unauthorized();
@@ -87,8 +87,8 @@ module.exports = () => {
       const etablissement = await Etablissement.findById(itemId);
       let hasRightToEdit = user.isAdmin;
       if (!hasRightToEdit) {
-        const listAcademie = user.academie.split(",");
-        hasRightToEdit = listAcademie.includes(`${etablissement.num_academie}`);
+        const listAcademie = user.academie.split(",").map((academieStr) => Number(academieStr));
+        hasRightToEdit = listAcademie.includes(-1) || listAcademie.includes(Number(etablissement.num_academie));
       }
       if (!hasRightToEdit) {
         throw Boom.unauthorized();
