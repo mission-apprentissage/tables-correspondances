@@ -13,7 +13,7 @@ const arrayMerger = (strategy) => (...args) =>
   });
 
 module.exports = {
-  createaApiGeoAddresseMock: (custom = {}) => {
+  createApiGeoAddresseMock: (custom = {}) => {
     return {
       search() {
         return merge(
@@ -111,6 +111,86 @@ module.exports = {
               value: "A",
               date_fermeture: null,
             },
+          },
+          custom
+        );
+      },
+    };
+  },
+  createApiEsSup: (custom = {}) => {
+    return {
+      async fetchInfoFromCodeCommune() {
+        return merge(
+          {},
+          {
+            nhits: 1,
+            parameters: {
+              dataset: "fr-esr-referentiel-geographique",
+              refine: {
+                com_code: "75001",
+              },
+              timezone: "UTC",
+              rows: 1,
+              start: 0,
+              format: "json",
+            },
+            records: [
+              {
+                datasetid: "fr-esr-referentiel-geographique",
+                recordid: "68784c1099e186e3aa8a3ed72d84d350e4d97bea",
+                fields: {
+                  com_code2: "75001",
+                  reg_id_old: "R11",
+                  com_code1: "75001",
+                  au_code: "SO",
+                  uucr_id: "SO",
+                  aca_nom: "Paris",
+                  com_nom_maj_court: "ALFORTVILLE",
+                  uu_id_99: "SO",
+                  regrgp_nom: "Île-de-France",
+                  dep_code: "75",
+                  au_id: "SO",
+                  uu_id_10: "SO",
+                  com_code: "75001",
+                  aca_code: "01",
+                  reg_code_old: "11",
+                  dep_nom: "Paris",
+                  aca_id: "A01",
+                  com_nom_maj: "ALFORTVILLE",
+                  com_nom: "Alfortville",
+                  fr_id: "FR11",
+                  reg_nom_old: "Île-de-France",
+                  auc_nom: "SO",
+                  com_id: "C75001",
+                  fe_id: "FE1",
+                  ze_id: "SO",
+                  uucr_nom: "Alfortville",
+                  fd_id: "FD111",
+                  reg_code: "11",
+                  dep_nom_num: "Paris (75)",
+                  dep_num_nom: "75 - Paris",
+                  reg_nom: "Île-de-France",
+                  reg_id: "R11",
+                  auc_id: "SO",
+                  dep_id: "D075",
+                  uu_id: "SO",
+                },
+                record_timestamp: "2020-11-23T13:58:15.677000+00:00",
+              },
+            ],
+            facet_groups: [
+              {
+                facets: [
+                  {
+                    count: 1,
+                    path: "75001",
+                    state: "refined",
+                    name: "75001",
+                  },
+                ],
+                name: "com_code",
+              },
+            ],
           },
           custom
         );
