@@ -1,11 +1,34 @@
 const { oleoduc, transformData, filterData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
 const apiEsSup = require("../../../common/apis/apiEsSup");
+const logger = require("../../../common/logger");
+
+class Cache {
+  constructor(cacheName) {
+    this.name = cacheName;
+    this.cache = {};
+  }
+
+  get(key) {
+    return this.cache[key];
+  }
+
+  add(key, value) {
+    logger.debug(`Key '${key}' added to cache ${this.name}`);
+    this.cache[key] = value;
+  }
+
+  flush() {
+    logger.debug(`Cache '${this.name} ' flushed`);
+    this.cache = {};
+  }
+}
 
 module.exports = async (options = {}) => {
   let api = options.apiEsSup || apiEsSup;
+  let cache = new Cache("academie");
 
-  return oleoduc(
+  let stream = oleoduc(
     Annuaire.find().cursor(),
     filterData((e) => !!e.adresse),
     transformData(async (etablissement) => {
@@ -13,7 +36,13 @@ module.exports = async (options = {}) => {
       let codeInsee = etablissement.adresse.code_insee;
 
       try {
-        let { records } = await api.fetchInfoFromCodeCommune(codeInsee);
+        let records = cache.get(codeInsee);
+        if (!records) {
+          let fetched = await api.fetchInfoFromCodeCommune(codeInsee);
+          records = fetched.records;
+          cache.add(codeInsee, records);
+        }
+
         let data = records.length > 0 ? records[0].fields : null;
 
         return {
@@ -37,4 +66,8 @@ module.exports = async (options = {}) => {
     }),
     { promisify: false, parallel: 5 }
   );
+
+  stream.on("finish", () => cache.flush());
+
+  return stream;
 };
