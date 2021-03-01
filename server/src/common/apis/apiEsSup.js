@@ -108,7 +108,7 @@ class EsSupApi {
 
   /**
    * Get the numAcademie from codeCommune
-   * @param {*} nomAcademie
+   * @param {*} codeCommune
    */
   async getNumAcademieInfoFromCodeCommune(codeCommune) {
     try {
@@ -161,23 +161,18 @@ class EsSupApi {
     }
   }
 
-  async fetchInfoFromNumDepartement(numDepartement) {
-    logger.debug(`[Enseignement supérieur API] Fetching info for departement ${numDepartement}...`);
-    let response = await axios.get(
-      `${endpoint}?dataset=fr-esr-referentiel-geographique&refine.dep_code=${numDepartement}&rows=1`
-    );
-    return response.data;
-  }
-
   /**
    * Get data from NumDepartement
+   * @param {*} numDepartement
    */
   async getInfoFromNumDepartement(numDepartement) {
     try {
-      const { records } = await this.fetchInfoFromNumDepartement(numDepartement);
+      const response = await axios.get(
+        `${endpoint}?dataset=fr-esr-referentiel-geographique&refine.dep_code=${numDepartement}&rows=1`
+      );
 
-      if (records && records.length > 0) {
-        return records[0].fields;
+      if (response.data && response.data.records.length > 0) {
+        return response.data.records[0].fields;
       }
 
       console.error(`No data found for ${numDepartement}`);
