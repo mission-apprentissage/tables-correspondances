@@ -138,7 +138,7 @@ class EsSupApi {
       );
       return response.data;
     } catch (e) {
-      throw new ApiError("Api EsSup", e.message, e.response.status);
+      throw new ApiError("Api EsSup", e.message, e.code || e.response.status);
     }
   }
 
