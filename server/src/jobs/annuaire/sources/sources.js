@@ -20,7 +20,7 @@ module.exports = {
   getDefaultSourcesGroupedByPriority() {
     return [
       [
-        (options) => createSource("catalogue", options),
+        (options) => createSource("etablissements", options),
         (options) => createSource("sirene", options),
         (options) => createSource("onisep", options),
         (options) => createSource("onisepStructure", options),
