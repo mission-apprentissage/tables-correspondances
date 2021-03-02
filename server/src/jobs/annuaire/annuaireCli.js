@@ -9,7 +9,7 @@ const { createSource, getSourcesGroups } = require("./sources/sources");
 const cleanAll = require("./cleanAll");
 const importReferentiel = require("./importReferentiel");
 const collect = require("./collect");
-const { exportAll } = require("./exports");
+const { exportAnnuaire } = require("./exports");
 
 cli
   .command("clean")
@@ -75,15 +75,16 @@ cli
 
 cli
   .command("export")
-  .command("all")
   .description("Exporte l'annuaire")
+  .option("--filter <filter>", "Filtre au format json", JSON.parse)
+  .option("--limit <limit>", "Nombre maximum d'éléments à exporter", parseInt)
   .option("--out <out>", "Fichier cible dans lequel sera stocké l'export (defaut: stdout)", createWriteStream)
   .option("--format <format>", "Format : json|csv(défaut)")
-  .action(({ out, format }) => {
+  .action(({ filter, limit, out, format }) => {
     runScript(() => {
       let output = out || stdoutStream();
 
-      return exportAll(output, { format });
+      return exportAnnuaire(output, { filter, limit, format });
     });
   });
 
