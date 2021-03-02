@@ -27,9 +27,12 @@ class ApiEntreprise {
         let response = await axios.get(`${apiEndpoint}/entreprises/${siren}`, {
           params: apiParams,
         });
+        if (!response?.data?.entreprise) {
+          throw new ApiError("Api Entreprise", "No entreprise data received");
+        }
         return response.data.entreprise;
       } catch (e) {
-        throw new ApiError("Api Entreprise", e.message, e.code);
+        throw new ApiError("Api Entreprise", e.message, e.code || e.response.status);
       }
     });
   }
@@ -41,10 +44,12 @@ class ApiEntreprise {
         let response = await axios.get(`${apiEndpoint}/etablissements/${siret}`, {
           params: apiParams,
         });
-
+        if (!response?.data?.etablissement) {
+          throw new ApiError("Api Entreprise", "No etablissement data received");
+        }
         return response.data.etablissement;
       } catch (e) {
-        throw new ApiError("Api Entreprise", e.message, e.code);
+        throw new ApiError("Api Entreprise", e.message, e.code || e.response.status);
       }
     });
   }
