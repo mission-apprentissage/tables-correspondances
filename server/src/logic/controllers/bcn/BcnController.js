@@ -316,7 +316,7 @@ class BcnController {
 
   findNiveau(codeEducNat) {
     let code = codeEducNat.startsWith("010") ? codeEducNat.substring(0, 4) : codeEducNat.substring(0, 1);
-    let foundNiveau = mappingNiveauCodeEn[code];
+    let foundNiveau = mappingNiveauCodeEn[codeEducNat] ?? mappingNiveauCodeEn[code];
 
     if (foundNiveau) {
       const toText = niveaux[parseInt(foundNiveau) - 3];
