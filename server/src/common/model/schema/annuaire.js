@@ -153,10 +153,6 @@ const annuaireSchema = {
             type: String,
             required: true,
           },
-          statut: {
-            type: String,
-            required: true,
-          },
           details: {
             type: String,
             default: undefined,

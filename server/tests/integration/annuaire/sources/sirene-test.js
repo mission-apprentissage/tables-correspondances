@@ -45,7 +45,7 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on peut collecter des informations sur les relations (établissement)", async () => {
+  it("Vérifie qu'on peut collecter des relations", async () => {
     await importReferentiel();
     let source = await createSource("sirene", {
       apiSirene: createApiSireneMock({
@@ -78,7 +78,6 @@ integrationTests(__filename, () => {
       {
         type: "établissement",
         siret: "11111111122222",
-        statut: "actif",
         details: "NOMAYO2 75001 PARIS",
         annuaire: false,
       },
@@ -106,7 +105,39 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on peut détecter des relations qui existent dans l'annuaire", async () => {
+  it("Vérifie qu'on ignore les relations pour des établissements fermés", async () => {
+    await importReferentiel();
+    let source = await createSource("sirene", {
+      apiSirene: createApiSireneMock({
+        etablissements: [
+          {
+            siret: "11111111111111",
+            etat_administratif: "A",
+            etablissement_siege: "true",
+            libelle_voie: "DES LILAS",
+            code_postal: "75019",
+            libelle_commune: "PARIS",
+          },
+          {
+            siret: "11111111122222",
+            denomination_usuelle: "NOMAYO2",
+            etat_administratif: "F",
+            etablissement_siege: "false",
+            libelle_voie: "DES LILAS",
+            code_postal: "75001",
+            libelle_commune: "PARIS",
+          },
+        ],
+      }),
+    });
+
+    await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found.relations, []);
+  });
+
+  it("Vérifie qu'on peut détecter des relations entre établissements de l'annuaire", async () => {
     await importReferentiel();
     await createAnnuaire({ siret: "11111111122222" });
     let source = await createSource("sirene", {
@@ -139,7 +170,6 @@ integrationTests(__filename, () => {
       {
         type: "siege",
         siret: "11111111122222",
-        statut: "actif",
         details: "NOMAYO2 75001 PARIS",
         annuaire: true,
       },

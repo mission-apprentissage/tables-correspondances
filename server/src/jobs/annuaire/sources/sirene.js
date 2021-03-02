@@ -43,14 +43,13 @@ module.exports = async (options = {}) => {
 
         let relations = await Promise.all(
           uniteLegale.etablissements
-            .filter((e) => e.siret !== siret)
+            .filter((e) => e.siret !== siret && e.etat_administratif === "A")
             .map(async (e) => {
               return {
                 type: e.etablissement_siege === "true" ? "siege" : "établissement",
                 annuaire: (await Annuaire.countDocuments({ siret: e.siret })) > 0,
                 siret: e.siret,
                 details: getRelationDetails(e, uniteLegale),
-                statut: e.etat_administratif === "A" ? "actif" : "fermé",
               };
             })
         );
