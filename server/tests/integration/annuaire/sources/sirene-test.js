@@ -76,9 +76,8 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.relations, [
       {
-        type: "établissement",
         siret: "11111111122222",
-        details: "NOMAYO2 75001 PARIS",
+        label: "NOMAYO2 75001 PARIS",
         annuaire: false,
       },
     ]);
@@ -168,9 +167,8 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.relations, [
       {
-        type: "siege",
         siret: "11111111122222",
-        details: "NOMAYO2 75001 PARIS",
+        label: "NOMAYO2 75001 PARIS",
         annuaire: true,
       },
     ]);
@@ -180,7 +178,7 @@ integrationTests(__filename, () => {
     await importReferentiel();
     let failingApi = {
       getUniteLegale: () => {
-        throw new Error("HTTP error");
+        throw new ApiError("api", "HTTP error");
       },
     };
     let source = await createSource("sirene", { apiSirene: failingApi });
@@ -188,7 +186,7 @@ integrationTests(__filename, () => {
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
-    assert.deepStrictEqual(found._meta.anomalies[0].details, "HTTP error");
+    assert.deepStrictEqual(found._meta.anomalies[0].details, "[api] HTTP error");
     assert.deepStrictEqual(results, {
       total: 1,
       updated: 0,

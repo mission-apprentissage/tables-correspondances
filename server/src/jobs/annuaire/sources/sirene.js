@@ -2,7 +2,7 @@ const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
 const apiSirene = require("../../../common/apis/apiSirene");
 
-function getRelationDetails(e, uniteLegale) {
+function getRelationLabel(e, uniteLegale) {
   let nom =
     e.enseigne_1 ||
     e.enseigne_2 ||
@@ -46,10 +46,9 @@ module.exports = async (options = {}) => {
             .filter((e) => e.siret !== siret && e.etat_administratif === "A")
             .map(async (e) => {
               return {
-                type: e.etablissement_siege === "true" ? "siege" : "établissement",
-                annuaire: (await Annuaire.countDocuments({ siret: e.siret })) > 0,
                 siret: e.siret,
-                details: getRelationDetails(e, uniteLegale),
+                label: getRelationLabel(e, uniteLegale),
+                annuaire: (await Annuaire.countDocuments({ siret: e.siret })) > 0,
               };
             })
         );
