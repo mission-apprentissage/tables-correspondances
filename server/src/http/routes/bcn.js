@@ -31,6 +31,9 @@ module.exports = () => {
    *             query:
    *               type: string
    *               example: "{\"FORMATION_DIPLOME\": \"01022404\"}"
+   *             queryAsRegex:
+   *               type: string
+   *               example: "{\"FORMATION_DIPLOME\": \"^01022404$\"}"
    *             page:
    *               type: number
    *               example: 1
@@ -69,7 +72,17 @@ module.exports = () => {
       const page = qs && qs.page ? qs.page : 1;
       const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 10;
 
-      const allData = await BcnFormationDiplome.paginate(query, { page, limit });
+      let queryAsRegex = qs && qs.queryAsRegex ? JSON.parse(qs.queryAsRegex) : {};
+      for (const prop in queryAsRegex) {
+        queryAsRegex[prop] = new RegExp(queryAsRegex[prop]);
+      }
+
+      const mQuery = {
+        ...query,
+        ...queryAsRegex,
+      };
+
+      const allData = await BcnFormationDiplome.paginate(mQuery, { page, limit });
       return res.json({
         formationsDiplomes: allData.docs,
         pagination: {
