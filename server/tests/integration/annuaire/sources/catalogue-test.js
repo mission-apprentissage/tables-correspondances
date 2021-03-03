@@ -31,4 +31,24 @@ integrationTests(__filename, () => {
       failed: 0,
     });
   });
+
+  it("Vérifie qu'on peut filter par siret", async () => {
+    await importReferentiel();
+    await Etablissement.create({
+      uai: "0011073L",
+      siret: "11111111111111",
+      entreprise_raison_sociale: "Centre de formation",
+    });
+    let source = await createSource("academie", {
+      filters: { siret: "33333333333333" },
+    });
+
+    let results = await collect(source);
+
+    assert.deepStrictEqual(results, {
+      total: 0,
+      updated: 0,
+      failed: 0,
+    });
+  });
 });

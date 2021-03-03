@@ -26,10 +26,11 @@ class Cache {
 
 module.exports = async (options = {}) => {
   let api = options.apiEsSup || apiEsSup;
+  let filters = options.filters || {};
   let cache = new Cache("academie");
 
   let stream = oleoduc(
-    Annuaire.find().cursor(),
+    Annuaire.find(filters).cursor(),
     filterData((e) => !!e.adresse),
     transformData(async (etablissement) => {
       let siret = etablissement.siret;

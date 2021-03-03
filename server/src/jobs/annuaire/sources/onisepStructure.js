@@ -1,7 +1,9 @@
-const { oleoduc, transformData } = require("oleoduc");
+const { oleoduc, transformData, filterData } = require("oleoduc");
 const csv = require("csv-parse");
 
-module.exports = (stream) => {
+module.exports = (stream, options = {}) => {
+  let filters = options.filters || {};
+
   return oleoduc(
     stream,
     csv({
@@ -14,6 +16,9 @@ module.exports = (stream) => {
         siret: data["STRUCT SIRET"],
         uais: [data["STRUCT UAI"]],
       };
+    }),
+    filterData((data) => {
+      return filters.siret ? filters.siret === data.siret : !!data;
     }),
     { promisify: false }
   );

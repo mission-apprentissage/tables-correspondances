@@ -90,6 +90,22 @@ integrationTests(__filename, () => {
     });
   });
 
+  it("Vérifie qu'on peut filter par siret", async () => {
+    await importReferentiel();
+    let source = await createSource("sirene", {
+      apiSirene: createApiSireneMock(),
+      filters: { siret: "33333333333333" },
+    });
+
+    let results = await collect(source);
+
+    assert.deepStrictEqual(results, {
+      total: 0,
+      updated: 0,
+      failed: 0,
+    });
+  });
+
   it("Vérifie qu'on peut détecter des relations qui existent dans l'annuaire", async () => {
     await importReferentiel();
     await createAnnuaire({ siret: "11111111122222" });

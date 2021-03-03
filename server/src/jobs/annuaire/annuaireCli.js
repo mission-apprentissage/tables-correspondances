@@ -47,15 +47,18 @@ cli
 
 cli
   .command("collect [type] [file]")
+  .option("--siret <siret>", "Limite la collecte pour le siret")
   .description("Parcoure la ou les sources pour trouver des données complémentaires")
-  .action((type, file) => {
+  .action((type, file, { siret }) => {
     runScript(async () => {
+      let options = siret ? { filters: { siret } } : {};
+
       if (type) {
         let stream = file ? createReadStream(file) : process.stdin;
-        let source = await createSource(type, stream);
+        let source = await createSource(type, stream, options);
         return collect(source);
       } else {
-        let groups = getSourcesGroups();
+        let groups = getSourcesGroups(options);
         let stats = [];
 
         await asyncForEach(groups, async (group) => {

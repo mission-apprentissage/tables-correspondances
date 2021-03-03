@@ -11,7 +11,7 @@ let sources = fs.readdirSync(__dirname).reduce((acc, filename) => {
 }, {});
 
 async function createSource(type, ...args) {
-  let source = await sources[type](...args);
+  let source = await sources[type](...args.filter((a) => !!a));
   source.type = type;
   return source;
 }
@@ -21,39 +21,39 @@ module.exports = {
   getSourcesGroups() {
     return [
       [
-        () => {
-          return createSource("catalogue");
+        (options) => {
+          return createSource("catalogue", options);
         },
-        () => {
-          return createSource("sirene");
+        (options) => {
+          return createSource("sirene", options);
         },
-        async () => {
+        async (options) => {
           let stream = await getOvhFileAsStream("annuaire/ONISEP-ideo-structures_denseignement_secondaire.csv");
-          return createSource("onisep", stream);
+          return createSource("onisep", stream, options);
         },
-        async () => {
+        async (options) => {
           let stream = await getOvhFileAsStream("annuaire/ONISEP-ideo-structures_denseignement_superieur.csv");
-          return createSource("onisep", stream);
+          return createSource("onisep", stream, options);
         },
-        async () => {
+        async (options) => {
           let stream = await getOvhFileAsStream("annuaire/ONISEP-Structures-20012021PL.csv");
-          return createSource("onisepStructure", stream);
+          return createSource("onisepStructure", stream, options);
         },
-        async () => {
+        async (options) => {
           let stream = await getOvhFileAsStream("annuaire/REFEA-liste-uai-avec-coordonnees.csv");
-          return createSource("refea", stream);
+          return createSource("refea", stream, options);
         },
-        async () => {
+        async (options) => {
           let stream = await getOvhFileAsStream(
             "annuaire/OPCO EP-20201202 OPCO EP - Jeunes sans contrat par CFA, région et formation au 26 nov.csv"
           );
-          return createSource("opcoep", stream);
+          return createSource("opcoep", stream, options);
         },
       ],
       [
         //Second group contains sources that need data from the previous group
-        () => {
-          return createSource("academie");
+        (options) => {
+          return createSource("academie", options);
         },
       ],
     ];
