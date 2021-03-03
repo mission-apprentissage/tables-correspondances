@@ -18,18 +18,16 @@ const createReferentiel = (type, ...args) => {
 
 module.exports = {
   createReferentiel,
-  getDefaultReferentiels: () => {
-    return Promise.all(
-      [
-        async () => {
-          let stream = await getOvhFileAsStream("annuaire/DEPP-CFASousConvRegionale_17122020_1.csv");
-          return createReferentiel("depp", stream);
-        },
-        async () => {
-          let stream = await getOvhFileAsStream("annuaire/DGEFP-20210105_public_ofs.csv");
-          return createReferentiel("dgefp", stream);
-        },
-      ].map((build) => build())
-    );
+  getReferentiels: () => {
+    return [
+      async () => {
+        let stream = await getOvhFileAsStream("annuaire/DEPP-CFASousConvRegionale_17122020_1.csv");
+        return createReferentiel("depp", stream);
+      },
+      async () => {
+        let stream = await getOvhFileAsStream("annuaire/DGEFP-20210105_public_ofs.csv");
+        return createReferentiel("dgefp", stream);
+      },
+    ];
   },
 };

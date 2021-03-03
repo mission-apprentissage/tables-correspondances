@@ -16,7 +16,7 @@ class ApiGeoAdresse {
       const response = await axios.get(`${apiEndpoint}/search/?${params}`);
       return response.data;
     } catch (e) {
-      throw new ApiError("Api Entreprise", e.message, e.code);
+      throw new ApiError("Api Entreprise", e.message, e.code || e.response.status);
     }
   }
 
@@ -27,7 +27,7 @@ class ApiGeoAdresse {
       logger.debug(`[Adresse API] Searching Postcode with parameters ${params}...`);
       return response.data;
     } catch (e) {
-      throw new ApiError("Api Entreprise", e.message, e.code);
+      throw new ApiError("Api Entreprise", e.message, e.code || e.response.status);
     }
   }
 
@@ -38,7 +38,7 @@ class ApiGeoAdresse {
       const response = await axios.get(`${apiEndpoint}/search/?limit=1&q=${params}`);
       return response.data;
     } catch (e) {
-      throw new ApiError("Api Entreprise", e.message, e.code);
+      throw new ApiError("Api Entreprise", e.message, e.code || e.response.status);
     }
   }
 }
