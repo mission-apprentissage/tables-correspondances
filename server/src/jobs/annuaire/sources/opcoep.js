@@ -14,6 +14,7 @@ module.exports = async (options = {}) => {
     stream,
     csv({
       delimiter: ";",
+      trim: true,
       bom: true,
       columns: true,
     }),

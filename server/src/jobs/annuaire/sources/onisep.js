@@ -8,6 +8,7 @@ function parse(stream) {
     stream,
     csv({
       delimiter: ";",
+      trim: true,
       bom: true,
       columns: true,
     })
