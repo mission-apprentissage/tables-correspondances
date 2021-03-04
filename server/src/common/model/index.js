@@ -1,8 +1,11 @@
-const { mongoose } = require("../mongodb");
+const { getMongooseInstance } = require("../mongodb");
 const { mongoosastic, getElasticInstance } = require("../esClient");
 const schema = require("../model/schema");
 
+const mongoose = getMongooseInstance();
+
 const createModel = (modelName, descriptor, options = {}) => {
+  try {
   const schema = new mongoose.Schema(descriptor, options.schemaOptions || {});
   if (options.esIndexName) {
     schema.plugin(mongoosastic, { esClient: getElasticInstance(), index: options.esIndexName });
@@ -12,6 +15,14 @@ const createModel = (modelName, descriptor, options = {}) => {
     options.createMongoDBIndexes(schema);
   }
   return mongoose.model(modelName, schema, options.collectionName);
+  } catch (error) {
+    if (error.name === "OverwriteModelError") {
+      console.log(`Model ${modelName} seems to be already declared`);
+      return mongoose.models[modelName];
+    } else {
+      console.log(error);
+    }
+  }
 };
 
 module.exports = {

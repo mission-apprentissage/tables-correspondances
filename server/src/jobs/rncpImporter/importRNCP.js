@@ -1,4 +1,4 @@
-// const logger = require("../../common/logger");
+const logger = require("../../common/logger");
 const parseFichesFile = require("./parseFichesFile");
 const kitApprentissageController = require("./kitApprentissage/kitApprentissageController");
 const { asyncForEach } = require("../../common/utils/asyncUtils");
@@ -96,10 +96,9 @@ const loadXmlFile = async (ficheInputStream) => {
 };
 
 module.exports = async (ficheInputStream) => {
-  // logger.info("Loading RNCP referentiel (Fiches + Code Diplômes)...");
+  logger.info("Loading RNCP referentiel (Fiches + Code Diplômes)...");
   const fichesRncp = await loadXmlFile(ficheInputStream);
-  console.log("Add fiches...");
-  // logger.info("Add fiches...");
+  logger.info("Add fiches...");
 
   try {
     await asyncForEach(fichesRncp, async (fiche) => {
@@ -108,23 +107,20 @@ module.exports = async (ficheInputStream) => {
         const exist = await FicheRncp.findOne({ code_rncp: fiche.code_rncp });
         if (exist) {
           await FicheRncp.findOneAndUpdate({ _id: exist._id }, { ...fiche, last_update_at: Date.now() }, { new: true });
-          // logger.info(`RNCP fiche '${fiche.code_rncp}' successfully updated in db`);
-          console.log(`RNCP fiche '${fiche.code_rncp}' successfully updated in db`);
+          logger.info(`RNCP fiche '${fiche.code_rncp}' successfully updated in db`);
         } else {
-          // logger.info(`RNCP fiche '${fiche.code_rncp}' not found`);
-          console.log(`RNCP fiche '${fiche.code_rncp}' not found`);
+          logger.info(`RNCP fiche '${fiche.code_rncp}' not found`);
           const ficheRncpToAdd = new FicheRncp(fiche);
           await ficheRncpToAdd.save();
-          // logger.info(`Fiche Rncp '${ficheRncpToAdd.id}' successfully added`);
+          logger.info(`Fiche Rncp '${ficheRncpToAdd.id}' successfully added`);
         }
       } catch (error) {
         console.log(error);
       }
     });
-    // logger.info(`Importing RNCP fiches table Succeed`);
+    logger.info(`Importing RNCP fiches table Succeed`);
   } catch (error) {
-    // logger.error(error);
-    // logger.error(`Importing RNCP fiches  table Failed`);
-    console.log(`Importing RNCP fiches  table Failed`);
+    logger.error(error);
+    logger.error(`Importing RNCP fiches  table Failed`);
   }
 };
