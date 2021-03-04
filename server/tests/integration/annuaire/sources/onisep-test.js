@@ -8,13 +8,12 @@ const { importReferentiel, createStream } = require("../../../utils/testUtils");
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier ONISEP", async () => {
     await importReferentiel();
-    let source = await createSource(
-      "onisep",
-      createStream(
+    let source = await createSource("onisep", {
+      input: createStream(
         `"code UAI";"n° SIRET";"nom"
 "0011073L";"11111111111111";"Centre de formation"`
-      )
-    );
+      ),
+    });
 
     let results = await collect(source);
 
@@ -35,15 +34,14 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on peut filter par siret", async () => {
     await importReferentiel();
-    let source = await createSource(
-      "onisep",
-      createStream(
+    let source = await createSource("onisep", {
+      filters: { siret: "33333333333333" },
+      input: createStream(
         `"code UAI";"n° SIRET";"nom"
 "0011073L";"11111111111111";"Centre de formation"
 "0011073L";"33333333333333";"Centre de formation"`
       ),
-      { filters: { siret: "33333333333333" } }
-    );
+    });
 
     let results = await collect(source);
 

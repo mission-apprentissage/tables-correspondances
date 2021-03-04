@@ -1,8 +1,14 @@
 const { oleoduc, transformData, filterData } = require("oleoduc");
 const csv = require("csv-parse");
+const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
-module.exports = (stream, options = {}) => {
+module.exports = async (options = {}) => {
   let filters = options.filters || {};
+  let stream =
+    options.input ||
+    (await getOvhFileAsStream(
+      "annuaire/OPCO EP-20201202 OPCO EP - Jeunes sans contrat par CFA, région et formation au 26 nov.csv"
+    ));
 
   return oleoduc(
     stream,

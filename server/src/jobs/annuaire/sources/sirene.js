@@ -1,4 +1,4 @@
-const { oleoduc, transformData } = require("oleoduc");
+const { oleoduc, transformData, filterData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
 const apiSirene = require("../../../common/apis/apiSirene");
 
@@ -27,12 +27,13 @@ function getRelationDetails(e, uniteLegale) {
 module.exports = async (options = {}) => {
   let api = options.apiSirene || apiSirene;
   let filters = options.filters || {};
+  let stream = options.input || Annuaire.find().cursor();
 
   return oleoduc(
-    Annuaire.find(filters).cursor(),
+    stream,
+    filterData((e) => (filters.siret ? filters.siret === e.siret : !!e)),
     transformData(async (etablissement) => {
       let siret = etablissement.siret;
-      console.log(siret);
 
       try {
         let siren = siret.substring(0, 9);

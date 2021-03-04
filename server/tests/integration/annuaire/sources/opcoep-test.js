@@ -8,13 +8,12 @@ const collect = require("../../../../src/jobs/annuaire/collect");
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier OPCO EP", async () => {
     await importReferentiel();
-    let source = await createSource(
-      "opcoep",
-      createStream(
+    let source = await createSource("opcoep", {
+      input: createStream(
         `SIRET CFA;N UAI CFA;Nom CFA
 "11111111111111";"0011073L";"Centre de formation"`
-      )
-    );
+      ),
+    });
 
     let results = await collect(source);
 
@@ -35,15 +34,14 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on peut filter par siret", async () => {
     await importReferentiel();
-    let source = await createSource(
-      "opcoep",
-      createStream(
+    let source = await createSource("opcoep", {
+      filters: { siret: "33333333333333" },
+      input: createStream(
         `SIRET CFA;N UAI CFA;Nom CFA
 "11111111111111";"0011073L";"Centre de formation"
 "33333333333333";"0011073L";"Centre de formation"`
       ),
-      { filters: { siret: "33333333333333" } }
-    );
+    });
 
     let results = await collect(source);
 

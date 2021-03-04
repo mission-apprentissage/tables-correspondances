@@ -1,8 +1,10 @@
 const { oleoduc, transformData, filterData } = require("oleoduc");
 const csv = require("csv-parse");
+const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
-module.exports = (stream, options = {}) => {
+module.exports = async (options = {}) => {
   let filters = options.filters || {};
+  let stream = options.input || (await getOvhFileAsStream("annuaire/ONISEP-Structures-20012021PL.csv"));
 
   return oleoduc(
     stream,

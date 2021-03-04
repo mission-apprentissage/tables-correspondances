@@ -1,8 +1,10 @@
 const { oleoduc, transformData, filterData } = require("oleoduc");
 const csv = require("csv-parse");
+const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
-module.exports = (stream, options = {}) => {
+module.exports = async (options = {}) => {
   let filters = options.filters || {};
+  let stream = options.input || (await getOvhFileAsStream("annuaire/REFEA-liste-uai-avec-coordonnees.csv"));
 
   return oleoduc(
     stream,
