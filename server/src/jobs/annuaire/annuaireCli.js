@@ -26,8 +26,8 @@ cli
   .action((type, file) => {
     runScript(async () => {
       if (type) {
-        let stream = file ? createReadStream(file) : process.stdin;
-        let referentiel = createReferentiel(type, stream);
+        let input = file ? createReadStream(file) : process.stdin;
+        let referentiel = await createReferentiel(type, { input });
         return importReferentiel(referentiel);
       } else {
         let referentiels = await getReferentiels();

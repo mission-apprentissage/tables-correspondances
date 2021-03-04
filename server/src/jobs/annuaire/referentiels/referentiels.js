@@ -1,5 +1,4 @@
 const fs = require("fs");
-const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
 const referentiels = fs.readdirSync(__dirname).reduce((acc, filename) => {
   let type = filename.split(".")[0];
@@ -10,24 +9,18 @@ const referentiels = fs.readdirSync(__dirname).reduce((acc, filename) => {
   };
 }, {});
 
-const createReferentiel = (type, ...args) => {
-  let referentiel = referentiels[type](...args);
+async function createReferentiel(type, ...args) {
+  let referentiel = await referentiels[type](...args);
   referentiel.type = type;
   return referentiel;
-};
+}
 
 module.exports = {
   createReferentiel,
   getReferentiels: () => {
     return [
-      async () => {
-        let stream = await getOvhFileAsStream("annuaire/DEPP-CFASousConvRegionale_17122020_1.csv");
-        return createReferentiel("depp", stream);
-      },
-      async () => {
-        let stream = await getOvhFileAsStream("annuaire/DGEFP-20210105_public_ofs.csv");
-        return createReferentiel("dgefp", stream);
-      },
+      async (options) => createReferentiel("depp", options),
+      async (options) => createReferentiel("dgefp", options),
     ];
   },
 };

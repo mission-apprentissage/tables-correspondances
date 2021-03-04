@@ -36,15 +36,14 @@ module.exports = {
     return Promise.all([emptyDir(testDataDir), ...Object.values(models).map((m) => m.deleteMany())]);
   },
   createStream,
-  importReferentiel: (content) => {
-    let referentiel = createReferentiel(
-      "depp",
-      createStream(
+  importReferentiel: async (content) => {
+    let referentiel = await createReferentiel("depp", {
+      input: createStream(
         content ||
           `"numero_uai";"numero_siren_siret_uai";"patronyme_uai"
 "0011058V";"11111111111111";"Centre de formation"`
-      )
-    );
+      ),
+    });
 
     return importReferentiel(referentiel);
   },

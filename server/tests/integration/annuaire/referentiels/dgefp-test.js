@@ -8,12 +8,11 @@ const { createStream } = require("../../../utils/testUtils");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut ajouter le référentiel de la DGEFP", async () => {
-    let referentiel = createReferentiel(
-      "dgefp",
-      createStream(`"raison_sociale";"siren";"num_etablissement";"cfa"
+    let referentiel = await createReferentiel("dgefp", {
+      input: createStream(`"raison_sociale";"siren";"num_etablissement";"cfa"
 "Centre de formation";"111111111";"11111";"Oui"
-"Centre de formation 2";"222222222";"22222";"Non"`)
-    );
+"Centre de formation 2";"222222222";"22222";"Non"`),
+    });
 
     let results = await importReferentiel(referentiel);
 
