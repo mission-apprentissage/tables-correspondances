@@ -26,9 +26,10 @@ function getRelationDetails(e, uniteLegale) {
 
 module.exports = async (options = {}) => {
   let api = options.apiSirene || apiSirene;
+  let filters = options.filters || {};
 
   return oleoduc(
-    Annuaire.find().cursor(),
+    Annuaire.find(filters).cursor(),
     transformData(async (etablissement) => {
       let siret = etablissement.siret;
 

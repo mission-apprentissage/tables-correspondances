@@ -4,8 +4,8 @@ const { createWriteStream } = require("fs");
 const { stdoutStream } = require("oleoduc");
 const { createReadStream } = require("fs");
 const { runScript } = require("../scriptWrapper");
-const { createReferentiel, getReferentiels } = require("./referentiels/referentiels");
-const { createSource, getSourcesGroups } = require("./sources/sources");
+const { createReferentiel, getDefaultReferentiels } = require("./referentiels/referentiels");
+const { createSource, getDefaultSourcesGroupedByPriority } = require("./sources/sources");
 const cleanAll = require("./cleanAll");
 const importReferentiel = require("./importReferentiel");
 const collect = require("./collect");
@@ -26,11 +26,11 @@ cli
   .action((type, file) => {
     runScript(async () => {
       if (type) {
-        let stream = file ? createReadStream(file) : process.stdin;
-        let referentiel = createReferentiel(type, stream);
+        let input = file ? createReadStream(file) : process.stdin;
+        let referentiel = await createReferentiel(type, { input });
         return importReferentiel(referentiel);
       } else {
-        let referentiels = await getReferentiels();
+        let referentiels = await getDefaultReferentiels();
         let stats = [];
 
         await asyncForEach(referentiels, async (builder) => {
@@ -47,20 +47,23 @@ cli
 
 cli
   .command("collect [type] [file]")
+  .option("--siret <siret>", "Limite la collecte pour le siret")
   .description("Parcoure la ou les sources pour trouver des données complémentaires")
-  .action((type, file) => {
+  .action((type, file, { siret }) => {
     runScript(async () => {
+      let options = siret ? { filters: { siret } } : {};
+
       if (type) {
-        let stream = file ? createReadStream(file) : process.stdin;
-        let source = await createSource(type, stream);
+        let input = file ? createReadStream(file) : process.stdin;
+        let source = await createSource(type, { ...options, input });
         return collect(source);
       } else {
-        let groups = getSourcesGroups();
+        let groups = getDefaultSourcesGroupedByPriority();
         let stats = [];
 
         await asyncForEach(groups, async (group) => {
           let promises = group.map(async (builder) => {
-            let source = await builder();
+            let source = await builder(options);
             return { [source.type]: await collect(source) };
           });
 

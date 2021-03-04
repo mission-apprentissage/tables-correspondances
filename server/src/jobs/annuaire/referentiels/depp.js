@@ -1,7 +1,10 @@
 const { oleoduc, transformData } = require("oleoduc");
 const csv = require("csv-parse");
+const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
-module.exports = (stream) => {
+module.exports = async (options = {}) => {
+  let stream = options.input || (await getOvhFileAsStream("annuaire/DEPP-CFASousConvRegionale_17122020_1.csv"));
+
   return oleoduc(
     stream,
     csv({

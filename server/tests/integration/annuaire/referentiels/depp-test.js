@@ -8,11 +8,10 @@ const { createStream } = require("../../../utils/testUtils");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut ajouter le référentiel de la DEPP", async () => {
-    let referentiel = createReferentiel(
-      "depp",
-      createStream(`"numero_uai";"numero_siren_siret_uai";"patronyme_uai"
-"0011058V";"11111111111111";"Centre de formation"`)
-    );
+    let referentiel = await createReferentiel("depp", {
+      input: createStream(`"numero_uai";"numero_siren_siret_uai";"patronyme_uai"
+"0011058V";"11111111111111";"Centre de formation"`),
+    });
 
     let results = await importReferentiel(referentiel);
 
