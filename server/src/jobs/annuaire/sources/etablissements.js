@@ -5,7 +5,7 @@ module.exports = (options = {}) => {
   let filters = options.filters || {};
 
   return oleoduc(
-    Etablissement.find(filters).cursor(),
+    Etablissement.find(filters).lean().cursor(),
     transformData((etablissement) => {
       return {
         siret: etablissement.siret,

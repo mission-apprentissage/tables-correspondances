@@ -190,8 +190,8 @@ integrationTests(__filename, () => {
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.relations.length, 2);
-    assert.deepStrictEqual(found.relations[0].siret, "33333333333333");
-    assert.deepStrictEqual(found.relations[1].siret, "22222222222222");
+    assert.deepStrictEqual(found.relations[0].siret, "22222222222222");
+    assert.deepStrictEqual(found.relations[1].siret, "33333333333333");
   });
 
   it("Vérifie qu'on gère une erreur lors de la récupération des formations", async () => {

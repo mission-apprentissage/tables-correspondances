@@ -29,7 +29,7 @@ module.exports = async (options = {}) => {
   let filters = options.filters || {};
 
   return oleoduc(
-    Annuaire.find(filters).cursor(),
+    Annuaire.find(filters).lean().cursor(),
     transformData(async (etablissement) => {
       let siret = etablissement.siret;
 

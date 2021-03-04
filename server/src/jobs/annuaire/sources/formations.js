@@ -1,3 +1,4 @@
+const { uniqBy } = require("lodash");
 const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
 const apiCatalogue = require("../../../common/apis/apiCatalogue");
@@ -7,7 +8,7 @@ module.exports = async (options = {}) => {
   let filters = options.filters || {};
 
   return oleoduc(
-    Annuaire.find(filters).cursor(),
+    Annuaire.find(filters).lean().cursor(),
     transformData(async (etablissement) => {
       let siret = etablissement.siret;
 
@@ -23,11 +24,11 @@ module.exports = async (options = {}) => {
               etablissement_formateur_siret: 1,
               etablissement_formateur_entreprise_raison_sociale: 1,
             },
-            resultats_par_page: 1000, // no pagination needed
+            resultats_par_page: 600, // no pagination needed for the moment
           }
         );
 
-        let relations = await Promise.all(
+        let relationsFromFormations = await Promise.all(
           formations
             .filter((f) => f.etablissement_gestionnaire_siret !== f.etablissement_formateur_siret)
             .map(async (f) => {
@@ -49,19 +50,19 @@ module.exports = async (options = {}) => {
             })
         );
 
+        let previousRelations = etablissement.relations.map((relation) => {
+          let found = relationsFromFormations.find((r) => r.siret === relation.siret);
+          return found ? { ...found, ...relation } : relation;
+        });
+
+        let newRelations = relationsFromFormations.filter(
+          (r) => !previousRelations.map((pr) => pr.siret).includes(r.siret)
+        );
+
         return {
           siret,
           data: {
-            relations: relations.reduce((acc, current) => {
-              let already = etablissement.relations.find((r) => r.siret === current.siret);
-              if (already) {
-                already.type = current.type;
-                acc.push(already);
-              } else if (!acc.find((r) => r.siret === current.siret)) {
-                acc.push(current);
-              }
-              return acc;
-            }, []),
+            relations: uniqBy([...previousRelations, ...newRelations], "siret"),
           },
         };
       } catch (e) {

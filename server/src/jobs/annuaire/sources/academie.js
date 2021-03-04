@@ -30,7 +30,9 @@ module.exports = async (options = {}) => {
   let cache = new Cache("academie");
 
   let stream = oleoduc(
-    Annuaire.find({ ...filters, $and: [{ adresse: { $exists: true } }, { adresse: { $ne: null } }] }).cursor(),
+    Annuaire.find({ ...filters, $and: [{ adresse: { $exists: true } }, { adresse: { $ne: null } }] })
+      .lean()
+      .cursor(),
     transformData(async (etablissement) => {
       let siret = etablissement.siret;
       let codeInsee = etablissement.adresse.code_insee;
