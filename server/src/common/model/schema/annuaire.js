@@ -157,6 +157,10 @@ const annuaireSchema = {
             type: String,
             default: undefined,
           },
+          sources: {
+            type: Array,
+            default: [],
+          },
         },
         { _id: false }
       ),

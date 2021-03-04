@@ -213,6 +213,7 @@ integrationTests(__filename, () => {
         annuaire: false,
         label: "test",
         type: "gestionnaire",
+        sources: ["test"],
       },
     ]);
   });
@@ -228,6 +229,7 @@ integrationTests(__filename, () => {
               siret: "22222222222222",
               annuaire: false,
               label: "test",
+              sources: ["test"],
             },
           ],
         },

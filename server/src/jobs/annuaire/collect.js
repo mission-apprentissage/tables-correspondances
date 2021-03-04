@@ -14,13 +14,17 @@ function getNewUAIs(type, etablissement, uais) {
     });
 }
 
-function getRelations(etablissement, relations) {
+function getRelations(type, etablissement, relations) {
   let previousRelations = etablissement.relations.map((relation) => {
     let found = relations.find((r) => r.siret === relation.siret);
-    return found ? { ...found, ...relation } : relation;
+    return found ? { ...found, ...relation, sources: [...relation.sources, type] } : relation;
   });
 
-  let newRelations = relations.filter((r) => !previousRelations.map((pr) => pr.siret).includes(r.siret));
+  let newRelations = relations
+    .filter((r) => !previousRelations.map((pr) => pr.siret).includes(r.siret))
+    .map((r) => {
+      return { ...r, sources: [type] };
+    });
 
   return [...previousRelations, ...newRelations];
 }
@@ -78,7 +82,7 @@ module.exports = async (source) => {
             {
               $set: {
                 ...data,
-                relations: getRelations(etablissement, relations),
+                relations: getRelations(type, etablissement, relations),
               },
               $push: {
                 uais_secondaires: {
