@@ -14,7 +14,7 @@ const rncpImporter = async () => {
   logger.warn(`[RCNP importer] Ended`);
 };
 
-module.exports = rncpImporter;
+module.exports.rncpImporter = rncpImporter;
 
 // if (process.env.run) {
 //   runScript(async () => {

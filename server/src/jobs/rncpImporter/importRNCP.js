@@ -102,7 +102,6 @@ module.exports = async (ficheInputStream) => {
 
   try {
     await asyncForEach(fichesRncp, async (fiche) => {
-      console.log("Test");
       try {
         const exist = await FicheRncp.findOne({ code_rncp: fiche.code_rncp });
         if (exist) {

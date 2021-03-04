@@ -15,11 +15,20 @@ mongooseInstanceFromParentProject: any
     setMongooseInstance(mongooseInstanceFromParentProject);
     mongooseInstanceShared = true;
   } catch (error) {
-    console.error(error);
-    console.error(`init: something went wrong!`);
+    console.error(`init: something went wrong!`, error);
     return null;
   }
 }
+
+// export async function tcoJobs(): Promise<any> {
+//   isSdkReady();
+//   try {
+//     // TODO
+//   } catch (error) {
+//     console.error(`tcoJobs: something went wrong!`);
+//     return null;
+//   }
+// }
 
 export async function getCpInfo(
   codePostal: string,
@@ -30,28 +39,33 @@ export async function getCpInfo(
     const result = await getDataFromCP(codePostal);
     return result;
   } catch (error) {
-    console.error(`getCpInfo: something went wrong!`);
+    console.error(`getCpInfo: something went wrong!`, error);
     return null;
   }
 }
 
-
-export async function tcoJobs(): Promise<any> {
+export async function getRncpInfo(
+  codeRncp: string,
+): Promise<any> {
   isSdkReady();
   try {
-    
+    let { getDataFromRncp } = await import("../../logic/handlers/rncpHandler");
+    const result = await getDataFromRncp(codeRncp); // TODO si aucun documents TypeError: Cannot read property '_doc' of null
+    return result;
   } catch (error) {
-    console.error(`tco-sdk: something went wrong!`);
+    console.error(`getRncpInfo: something went wrong!`, error);
     return null;
   }
 }
 
-
-// TODO later
-
-// import rncpImporter from "../../jobs/rncpImporter";
-// import {ficheRncpSchema} from "../../common/model/schema";s
-    // const FicheRncp = createModel("ficherncp", ficheRncpSchema);
-    // const exist = await FicheRncp.findOne({ code_rncp: "RNCP" });
-    // console.log(exist);
-    // await rncpImporter();
+export async function rncpImporter(): Promise<any> {
+  isSdkReady();
+  try {
+    let { rncpImporter: importer } = await import("../../jobs/rncpImporter");
+    // @ts-ignore
+    await importer();
+  } catch (error) {
+    console.error(`rncpImporter: something went wrong!`, error);
+    return null;
+  }
+}
