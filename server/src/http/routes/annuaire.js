@@ -1,6 +1,6 @@
 const express = require("express");
 const Boom = require("boom");
-const { oleoduc, jsonStream } = require("oleoduc");
+const { oleoduc, transformIntoJSON } = require("oleoduc");
 const Joi = require("joi");
 const { Annuaire } = require("../../common/model");
 const { paginateAggregationWithCursor } = require("../../common/utils/mongooseUtils");
@@ -55,7 +55,7 @@ module.exports = () => {
 
       oleoduc(
         cursor,
-        jsonStream({
+        transformIntoJSON({
           arrayPropertyName: "etablissements",
           arrayWrapper: {
             pagination,
