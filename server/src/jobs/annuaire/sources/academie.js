@@ -1,4 +1,4 @@
-const { oleoduc, transformData, filterData } = require("oleoduc");
+const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
 const apiEsSup = require("../../../common/apis/apiEsSup");
 const logger = require("../../../common/logger");
@@ -30,8 +30,7 @@ module.exports = async (options = {}) => {
   let cache = new Cache("academie");
 
   let stream = oleoduc(
-    options.input || Annuaire.find(filters).cursor(),
-    filterData((e) => (!!e.adresse && filters.siret ? filters.siret === e.siret : !!e)),
+    Annuaire.find({ ...filters, $and: [{ adresse: { $exists: true } }, { adresse: { $ne: null } }] }).cursor(),
     transformData(async (etablissement) => {
       let siret = etablissement.siret;
       let codeInsee = etablissement.adresse.code_insee;

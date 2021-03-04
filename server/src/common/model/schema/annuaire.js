@@ -48,6 +48,7 @@ const annuaireSchema = {
     ),
   },
   adresse: {
+    default: undefined,
     type: new Schema(
       {
         label: {

@@ -58,12 +58,12 @@ cli
         let source = await createSource(type, { ...options, input });
         return collect(source);
       } else {
-        let groups = getSourcesGroups(options);
+        let groups = getSourcesGroups();
         let stats = [];
 
         await asyncForEach(groups, async (group) => {
           let promises = group.map(async (builder) => {
-            let source = await builder();
+            let source = await builder(options);
             return { [source.type]: await collect(source) };
           });
 

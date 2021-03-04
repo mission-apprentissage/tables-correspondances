@@ -1,13 +1,11 @@
-const { oleoduc, transformData, filterData } = require("oleoduc");
+const { oleoduc, transformData } = require("oleoduc");
 const { Etablissement } = require("../../../common/model");
 
 module.exports = (options = {}) => {
   let filters = options.filters || {};
-  let stream = options.input || Etablissement.find().cursor();
 
   return oleoduc(
-    stream,
-    filterData((e) => (filters.siret ? filters.siret === e.siret : !!e)),
+    Etablissement.find(filters).cursor(),
     transformData((etablissement) => {
       return {
         siret: etablissement.siret,
