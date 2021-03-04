@@ -4,9 +4,10 @@ const apiCatalogue = require("../../../common/apis/apiCatalogue");
 
 module.exports = async (options = {}) => {
   let api = options.apiCatalogue || apiCatalogue;
+  let filters = options.filters || {};
 
   return oleoduc(
-    Annuaire.find().cursor(),
+    Annuaire.find(filters).cursor(),
     transformData(async (etablissement) => {
       let siret = etablissement.siret;
 
@@ -56,7 +57,7 @@ module.exports = async (options = {}) => {
               if (already) {
                 already.type = current.type;
                 acc.push(already);
-              } else {
+              } else if (!acc.find((r) => r.siret === current.siret)) {
                 acc.push(current);
               }
               return acc;

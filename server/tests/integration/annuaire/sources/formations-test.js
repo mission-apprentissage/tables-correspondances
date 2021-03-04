@@ -73,6 +73,24 @@ integrationTests(__filename, () => {
     ]);
   });
 
+  it("Vérifie qu'on peut filter par siret", async () => {
+    await createAnnuaire({
+      siret: "11111111100000",
+    });
+    let source = await createSource("academie", {
+      filters: { siret: "33333333333333" },
+      apiCatalogue: createApiCatalogueMock(),
+    });
+
+    let results = await collect(source);
+
+    assert.deepStrictEqual(results, {
+      total: 0,
+      updated: 0,
+      failed: 0,
+    });
+  });
+
   it("Vérifie qu'on peut détecter des relations avec des établissements déjà dans l'annuaire", async () => {
     await importReferentiel();
     await createAnnuaire({ siret: "22222222222222", raison_sociale: "Mon centre de formation" });
@@ -92,14 +110,7 @@ integrationTests(__filename, () => {
     await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(found.relations, [
-      {
-        siret: "22222222222222",
-        label: "Mon centre de formation",
-        annuaire: true,
-        type: "formateur",
-      },
-    ]);
+    assert.strictEqual(found.relations[0].annuaire, true);
   });
 
   it("Vérifie qu'on peut mettre à jour des relations existantes", async () => {
@@ -137,6 +148,50 @@ integrationTests(__filename, () => {
         type: "formateur",
       },
     ]);
+  });
+
+  it("Vérifie qu'on peut ne duplique pas les relations", async () => {
+    await createAnnuaire({
+      siret: "11111111111111",
+      relations: [
+        {
+          siret: "22222222222222",
+          label: "Mon centre de formation",
+          annuaire: false,
+        },
+      ],
+    });
+    let source = await createSource("formations", {
+      apiCatalogue: createApiCatalogueMock({
+        formations: [
+          {
+            etablissement_gestionnaire_siret: "11111111111111",
+            etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
+            etablissement_formateur_siret: "33333333333333",
+            etablissement_formateur_entreprise_raison_sociale: "Etablissement",
+          },
+          {
+            etablissement_gestionnaire_siret: "11111111111111",
+            etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
+            etablissement_formateur_siret: "33333333333333",
+            etablissement_formateur_entreprise_raison_sociale: "Etablissement",
+          },
+          {
+            etablissement_gestionnaire_siret: "11111111111111",
+            etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
+            etablissement_formateur_siret: "22222222222222",
+            etablissement_formateur_entreprise_raison_sociale: "Etablissement",
+          },
+        ],
+      }),
+    });
+
+    await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found.relations.length, 2);
+    assert.deepStrictEqual(found.relations[0].siret, "33333333333333");
+    assert.deepStrictEqual(found.relations[1].siret, "22222222222222");
   });
 
   it("Vérifie qu'on gère une erreur lors de la récupération des formations", async () => {
