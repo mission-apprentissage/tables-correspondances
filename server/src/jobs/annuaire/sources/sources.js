@@ -17,7 +17,7 @@ async function createSource(type, ...args) {
 
 module.exports = {
   createSource,
-  getSourcesGroups() {
+  getDefaultSourcesGroupedByPriority() {
     return [
       [
         (options) => createSource("catalogue", options),

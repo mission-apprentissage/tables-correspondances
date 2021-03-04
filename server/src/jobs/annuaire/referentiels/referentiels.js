@@ -17,7 +17,7 @@ async function createReferentiel(type, ...args) {
 
 module.exports = {
   createReferentiel,
-  getReferentiels: () => {
+  getDefaultReferentiels: () => {
     return [
       async (options) => createReferentiel("depp", options),
       async (options) => createReferentiel("dgefp", options),
