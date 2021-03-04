@@ -16,8 +16,9 @@ integrationTests(__filename, () => {
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    assert.strictEqual(found.raison_sociale, "NOMAYO");
     assert.strictEqual(found.siege_social, true);
-    assert.deepStrictEqual(found.statut, "actif");
+    assert.strictEqual(found.statut, "actif");
     assert.deepStrictEqual(found.adresse, {
       geojson: {
         type: "Feature",
@@ -91,8 +92,8 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut filter par siret", async () => {
-    await importReferentiel(`"numero_uai";"numero_siren_siret_uai";"patronyme_uai"
-"0011058V";"11111111111111";"Centre de formation"`);
+    await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
+"0011058V";"11111111111111"`);
 
     let source = await createSource("sirene", {
       apiSirene: createApiSireneMock(),
@@ -110,8 +111,8 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on ignore les relations qui ne sont pas des organismes de formations", async () => {
-    await importReferentiel(`"numero_uai";"numero_siren_siret_uai";"patronyme_uai"
-"0011058V";"11111111111111";"Centre de formation"`);
+    await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
+"0011058V";"11111111111111"`);
     let source = await createSource("sirene", {
       apiSirene: createApiSireneMock({
         etablissements: [

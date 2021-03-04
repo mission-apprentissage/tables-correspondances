@@ -16,7 +16,6 @@ module.exports = async (options = {}) => {
     transformData((data) => {
       return {
         siret: `${data.siren}${data.num_etablissement}`,
-        raison_sociale: `${data.raison_sociale}`,
       };
     }),
     { promisify: false }

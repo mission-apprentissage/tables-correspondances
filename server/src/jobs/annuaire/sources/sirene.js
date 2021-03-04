@@ -3,8 +3,8 @@ const { Annuaire } = require("../../../common/model");
 const apiSirene = require("../../../common/apis/apiSirene");
 const dgefp = require("../referentiels/dgefp");
 
-function getRelationLabel(e, uniteLegale) {
-  let nom =
+function getEtablissementName(e, uniteLegale) {
+  return (
     e.enseigne_1 ||
     e.enseigne_2 ||
     e.enseigne_3 ||
@@ -13,7 +13,12 @@ function getRelationLabel(e, uniteLegale) {
     uniteLegale.denomination_usuelle_1 ||
     uniteLegale.denomination_usuelle_2 ||
     uniteLegale.denomination_usuelle_3 ||
-    uniteLegale.nom;
+    uniteLegale.nom
+  );
+}
+
+function getRelationLabel(e, uniteLegale) {
+  let nom = getEtablissementName(e, uniteLegale);
 
   let localisation;
   if (e.code_postal) {
@@ -75,6 +80,7 @@ module.exports = async (options = {}) => {
           siret,
           relations,
           data: {
+            raison_sociale: getEtablissementName(data, uniteLegale),
             siege_social: data.etablissement_siege === "true",
             statut: data.etat_administratif === "A" ? "actif" : "fermé",
             adresse: {
