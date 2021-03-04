@@ -1,6 +1,7 @@
-const { oleoduc, transformData } = require("oleoduc");
+const { oleoduc, transformData, accumulateData, writeData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
 const apiSirene = require("../../../common/apis/apiSirene");
+const dgefp = require("../referentiels/dgefp");
 
 function getRelationLabel(e, uniteLegale) {
   let nom =
@@ -24,9 +25,23 @@ function getRelationLabel(e, uniteLegale) {
   return `${nom} ${localisation}`.replace(/ +/g, " ").trim();
 }
 
+async function loadOrganismeDeFormations() {
+  let organismes = [];
+  let referentiel = await dgefp();
+
+  await oleoduc(
+    referentiel,
+    accumulateData((acc, data) => [...acc, data.siret], { accumulator: [] }),
+    writeData((acc) => (organismes = acc))
+  );
+
+  return organismes;
+}
+
 module.exports = async (options = {}) => {
   let api = options.apiSirene || apiSirene;
   let filters = options.filters || {};
+  let organismes = options.organismes || (await loadOrganismeDeFormations());
 
   return oleoduc(
     Annuaire.find(filters).lean().cursor(),
@@ -43,7 +58,9 @@ module.exports = async (options = {}) => {
 
         let relations = await Promise.all(
           uniteLegale.etablissements
-            .filter((e) => e.siret !== siret && e.etat_administratif === "A")
+            .filter((e) => {
+              return e.siret !== siret && e.etat_administratif === "A" && organismes.includes(e.siret);
+            })
             .map(async (e) => {
               return {
                 siret: e.siret,
