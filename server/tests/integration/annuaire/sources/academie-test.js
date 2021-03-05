@@ -34,9 +34,6 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut filter par siret", async () => {
     await createAnnuaire({
       siret: "11111111100000",
-      adresse: {
-        code_insee: "75000",
-      },
     });
     let source = await createSource("academie", {
       apiEsSup: createApiEsSup(),

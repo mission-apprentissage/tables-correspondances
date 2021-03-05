@@ -2,7 +2,7 @@ const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
 const apiSirene = require("../../../common/apis/apiSirene");
 
-function getRelationDetails(e, uniteLegale) {
+function getRelationLabel(e, uniteLegale) {
   let nom =
     e.enseigne_1 ||
     e.enseigne_2 ||
@@ -29,7 +29,7 @@ module.exports = async (options = {}) => {
   let filters = options.filters || {};
 
   return oleoduc(
-    Annuaire.find(filters).cursor(),
+    Annuaire.find(filters).lean().cursor(),
     transformData(async (etablissement) => {
       let siret = etablissement.siret;
 
@@ -43,22 +43,20 @@ module.exports = async (options = {}) => {
 
         let relations = await Promise.all(
           uniteLegale.etablissements
-            .filter((e) => e.siret !== siret)
+            .filter((e) => e.siret !== siret && e.etat_administratif === "A")
             .map(async (e) => {
               return {
-                type: e.etablissement_siege === "true" ? "siege" : "établissement",
-                annuaire: (await Annuaire.countDocuments({ siret: e.siret })) > 0,
                 siret: e.siret,
-                details: getRelationDetails(e, uniteLegale),
-                statut: e.etat_administratif === "A" ? "actif" : "fermé",
+                label: getRelationLabel(e, uniteLegale),
+                annuaire: (await Annuaire.countDocuments({ siret: e.siret })) > 0,
               };
             })
         );
 
         return {
           siret,
+          relations,
           data: {
-            relations,
             siege_social: data.etablissement_siege === "true",
             statut: data.etat_administratif === "A" ? "actif" : "fermé",
             adresse: {

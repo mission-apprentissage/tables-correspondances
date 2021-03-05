@@ -141,7 +141,7 @@ const annuaireSchema = {
     type: [
       new Schema(
         {
-          type: {
+          siret: {
             type: String,
             required: true,
           },
@@ -149,15 +149,11 @@ const annuaireSchema = {
             type: Boolean,
             required: true,
           },
-          siret: {
+          label: {
             type: String,
-            required: true,
+            default: undefined,
           },
-          statut: {
-            type: String,
-            required: true,
-          },
-          details: {
+          type: {
             type: String,
             default: undefined,
           },
