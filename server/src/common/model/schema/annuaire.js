@@ -171,7 +171,7 @@ const annuaireSchema = {
     default: {},
     type: new Schema(
       {
-        last_update: {
+        created_at: {
           description: "Dernière date de mise à jour du document",
           type: Date,
           required: true,
