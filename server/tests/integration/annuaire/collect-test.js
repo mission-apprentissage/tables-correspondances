@@ -2,7 +2,6 @@ const assert = require("assert");
 const { omit } = require("lodash");
 const { Readable } = require("stream");
 const { oleoduc, transformData } = require("oleoduc");
-const csv = require("csv-parse");
 const { Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
 const { createReferentiel } = require("../../../src/jobs/annuaire/referentiels/referentiels");
@@ -24,26 +23,7 @@ integrationTests(__filename, () => {
     return importReferentiel(referentiel);
   };
 
-  const createTestSource = (content) => {
-    let source = oleoduc(
-      createStream(content),
-      csv({
-        delimiter: ";",
-        bom: true,
-        columns: true,
-      }),
-      transformData((data) => {
-        return {
-          siret: data.siret,
-          uais: [data.uai],
-        };
-      })
-    );
-    source.type = "test";
-    return source;
-  };
-
-  const createTestSource2 = (array) => {
+  const createTestSource = (array) => {
     let source = Readable.from(array);
     source.type = "test";
     return source;
@@ -51,10 +31,12 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on peut collecter un uai", async () => {
     await prepareAnnuaire();
-    let source = createTestSource(
-      `"uai";"siret"
-0011073L;111111111111111`
-    );
+    let source = createTestSource([
+      {
+        siret: "111111111111111",
+        uais: ["0011073L"],
+      },
+    ]);
 
     let results = await collect(source);
 
@@ -75,10 +57,12 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on teste la validité d'un UAI", async () => {
     await prepareAnnuaire();
-    let source = createTestSource(
-      `"uai";"siret"
-093XXXT;111111111111111`
-    );
+    let source = createTestSource([
+      {
+        siret: "111111111111111",
+        uais: ["093XXXT"],
+      },
+    ]);
 
     let results = await collect(source);
 
@@ -97,10 +81,12 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on ignore un uai quand il existe en tant qu'uai principal", async () => {
     await prepareAnnuaire();
-    let source = createTestSource(
-      `"uai";"siret"
-"0011058V";"111111111111111"`
-    );
+    let source = createTestSource([
+      {
+        siret: "111111111111111",
+        uais: ["0011058V"],
+      },
+    ]);
 
     let stats = await collect(source);
 
@@ -114,10 +100,12 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on ignore un uai quand il existe déjà en tant qu'uai secondaire", async () => {
-    let source = createTestSource(
-      `"uai";"siret"
-0011073L;111111111111111`
-    );
+    let source = createTestSource([
+      {
+        siret: "111111111111111",
+        uais: ["0011073L"],
+      },
+    ]);
     await createAnnuaire({
       uai: "0011058V",
       siret: "111111111111111",
@@ -149,10 +137,12 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on ignore un uai vide", async () => {
     await prepareAnnuaire();
-    let source = createTestSource(
-      `"uai";"siret"
-"";"111111111111111"`
-    );
+    let source = createTestSource([
+      {
+        siret: "111111111111111",
+        uais: [],
+      },
+    ]);
 
     let stats = await collect(source);
 
@@ -168,10 +158,12 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on stocke une erreur survenue durant une collecte", async () => {
     await prepareAnnuaire();
     let source = oleoduc(
-      createTestSource(
-        `"uai";"siret"
-"";"111111111111111"`
-      ),
+      createTestSource([
+        {
+          siret: "111111111111111",
+          uais: [],
+        },
+      ]),
       transformData(() => {
         return { anomalies: [new Error("Erreur")], siret: "111111111111111" };
       })
@@ -197,7 +189,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on peut collecter des relations", async () => {
     await prepareAnnuaire();
-    let source = createTestSource2([
+    let source = createTestSource([
       {
         siret: "111111111111111",
         relations: [{ siret: "22222222222222", annuaire: false, label: "test", type: "gestionnaire" }],
@@ -235,7 +227,7 @@ integrationTests(__filename, () => {
         },
       }
     );
-    let source = createTestSource2([
+    let source = createTestSource([
       {
         siret: "111111111111111",
         relations: [{ siret: "22222222222222", annuaire: false, label: "test", type: "gestionnaire" }],
