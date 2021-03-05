@@ -32,7 +32,7 @@ function getRelationLabel(e, uniteLegale) {
 
 async function loadOrganismeDeFormations() {
   let organismes = [];
-  let referentiel = await dgefp();
+  let referentiel = await dgefp(() => true);
 
   await oleoduc(
     referentiel,
