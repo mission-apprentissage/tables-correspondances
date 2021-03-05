@@ -28,7 +28,7 @@ module.exports = async (options = {}) => {
           }
         );
 
-        let relationsFromFormations = await Promise.all(
+        let relations = await Promise.all(
           formations
             .filter((f) => f.etablissement_gestionnaire_siret !== f.etablissement_formateur_siret)
             .map(async (f) => {
@@ -50,20 +50,9 @@ module.exports = async (options = {}) => {
             })
         );
 
-        let previousRelations = etablissement.relations.map((relation) => {
-          let found = relationsFromFormations.find((r) => r.siret === relation.siret);
-          return found ? { ...found, ...relation } : relation;
-        });
-
-        let newRelations = relationsFromFormations.filter(
-          (r) => !previousRelations.map((pr) => pr.siret).includes(r.siret)
-        );
-
         return {
           siret,
-          data: {
-            relations: uniqBy([...previousRelations, ...newRelations], "siret"),
-          },
+          relations: uniqBy(relations, "siret"),
         };
       } catch (e) {
         return { siret, anomalies: [e.reason === 404 ? "Entreprise inconnue" : e] };

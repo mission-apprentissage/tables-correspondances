@@ -55,8 +55,8 @@ module.exports = async (options = {}) => {
 
         return {
           siret,
+          relations,
           data: {
-            relations,
             siege_social: data.etablissement_siege === "true",
             statut: data.etat_administratif === "A" ? "actif" : "fermé",
             adresse: {
