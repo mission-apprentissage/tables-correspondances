@@ -54,7 +54,7 @@ cli
       let options = siret ? { filters: { siret } } : {};
 
       if (type) {
-        let input = file ? createReadStream(file) : process.stdin;
+        let input = file ? createReadStream(file) : null;
         let source = await createSource(type, { ...options, input });
         return collect(source);
       } else {
