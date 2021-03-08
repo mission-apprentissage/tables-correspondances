@@ -15,7 +15,6 @@ module.exports = async (options = {}) => {
     transformData((data) => {
       return {
         siret: data.numero_siren_siret_uai,
-        raison_sociale: data.patronyme_uai,
         uai: data.numero_uai,
       };
     }),

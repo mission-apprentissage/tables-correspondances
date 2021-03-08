@@ -40,8 +40,8 @@ module.exports = {
     let referentiel = await createReferentiel("depp", {
       input: createStream(
         content ||
-          `"numero_uai";"numero_siren_siret_uai";"patronyme_uai"
-"0011058V";"11111111111111";"Centre de formation"`
+          `"numero_uai";"numero_siren_siret_uai"
+"0011058V";"11111111111111"`
       ),
     });
 

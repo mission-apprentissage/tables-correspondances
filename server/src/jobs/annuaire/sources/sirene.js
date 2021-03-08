@@ -1,9 +1,10 @@
-const { oleoduc, transformData } = require("oleoduc");
+const { oleoduc, transformData, accumulateData, writeData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
 const apiSirene = require("../../../common/apis/apiSirene");
+const dgefp = require("../referentiels/dgefp");
 
-function getRelationLabel(e, uniteLegale) {
-  let nom =
+function getEtablissementName(e, uniteLegale) {
+  return (
     e.enseigne_1 ||
     e.enseigne_2 ||
     e.enseigne_3 ||
@@ -12,7 +13,12 @@ function getRelationLabel(e, uniteLegale) {
     uniteLegale.denomination_usuelle_1 ||
     uniteLegale.denomination_usuelle_2 ||
     uniteLegale.denomination_usuelle_3 ||
-    uniteLegale.nom;
+    uniteLegale.nom
+  );
+}
+
+function getRelationLabel(e, uniteLegale) {
+  let nom = getEtablissementName(e, uniteLegale);
 
   let localisation;
   if (e.code_postal) {
@@ -24,9 +30,23 @@ function getRelationLabel(e, uniteLegale) {
   return `${nom} ${localisation}`.replace(/ +/g, " ").trim();
 }
 
+async function loadOrganismeDeFormations() {
+  let organismes = [];
+  let referentiel = await dgefp(() => true);
+
+  await oleoduc(
+    referentiel,
+    accumulateData((acc, data) => [...acc, data.siret], { accumulator: [] }),
+    writeData((acc) => (organismes = acc))
+  );
+
+  return organismes;
+}
+
 module.exports = async (options = {}) => {
   let api = options.apiSirene || apiSirene;
   let filters = options.filters || {};
+  let organismes = options.organismes || (await loadOrganismeDeFormations());
 
   return oleoduc(
     Annuaire.find(filters).lean().cursor(),
@@ -43,12 +63,15 @@ module.exports = async (options = {}) => {
 
         let relations = await Promise.all(
           uniteLegale.etablissements
-            .filter((e) => e.siret !== siret && e.etat_administratif === "A")
+            .filter((e) => {
+              return e.siret !== siret && e.etat_administratif === "A" && organismes.includes(e.siret);
+            })
             .map(async (e) => {
               return {
                 siret: e.siret,
                 label: getRelationLabel(e, uniteLegale),
                 annuaire: (await Annuaire.countDocuments({ siret: e.siret })) > 0,
+                sources: ["sirene"],
               };
             })
         );
@@ -57,6 +80,7 @@ module.exports = async (options = {}) => {
           siret,
           relations,
           data: {
+            raison_sociale: getEtablissementName(data, uniteLegale),
             siege_social: data.etablissement_siege === "true",
             statut: data.etat_administratif === "A" ? "actif" : "fermé",
             adresse: {
