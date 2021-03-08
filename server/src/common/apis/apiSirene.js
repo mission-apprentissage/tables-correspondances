@@ -24,7 +24,7 @@ class ApiSirene {
     });
   }
 
-  async getEtablissement(siret) {
+  getEtablissement(siret) {
     return executeWithRateLimiting(async () => {
       try {
         logger.debug(`[Sirene API] Fetching etablissement ${siret}...`);
@@ -38,5 +38,4 @@ class ApiSirene {
   }
 }
 
-const apiEntreprise = new ApiSirene();
-module.exports = apiEntreprise;
+module.exports = new ApiSirene();

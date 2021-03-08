@@ -1,4 +1,4 @@
-const { oleoduc, csvStream, jsonStream } = require("oleoduc");
+const { oleoduc, transformIntoCSV, transformIntoJSON } = require("oleoduc");
 const { Annuaire } = require("../../common/model");
 
 module.exports = {
@@ -6,8 +6,8 @@ module.exports = {
     let filter = options.filter || {};
     let limit = options.limit || Number.MAX_SAFE_INTEGER;
     let formatter = options.json
-      ? jsonStream()
-      : csvStream({
+      ? transformIntoJSON()
+      : transformIntoCSV({
           columns: {
             Siret: (a) => a.siret,
             "Raison sociale": (a) => a.raison_sociale,

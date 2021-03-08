@@ -11,7 +11,7 @@ httpTests(__filename, ({ startServer }) => {
       raison_sociale: "Centre de formation",
       _meta: {
         anomalies: [],
-        last_update: new Date("2021-02-10T16:39:13.064Z"),
+        created_at: new Date("2021-02-10T16:39:13.064Z"),
       },
     });
 
@@ -51,7 +51,7 @@ httpTests(__filename, ({ startServer }) => {
           },
           _meta: {
             anomalies: [],
-            last_update: "2021-02-10T16:39:13.064Z",
+            created_at: "2021-02-10T16:39:13.064Z",
           },
         },
       ],
@@ -96,9 +96,7 @@ httpTests(__filename, ({ startServer }) => {
         relations: [
           {
             siret: "22222222222222",
-            nom: "NOMAYO",
-            type: "sirene",
-            statut: "actif",
+            label: "NOMAYO",
             annuaire: true,
           },
         ],
@@ -108,16 +106,12 @@ httpTests(__filename, ({ startServer }) => {
         relations: [
           {
             siret: "11111111111111",
-            nom: "NOMAYO",
-            type: "sirene",
-            statut: "actif",
+            label: "NOMAYO",
             annuaire: true,
           },
           {
             siret: "22222222222222",
-            nom: "NOMAYO",
-            type: "sirene",
-            statut: "actif",
+            label: "NOMAYO",
             annuaire: true,
           },
         ],

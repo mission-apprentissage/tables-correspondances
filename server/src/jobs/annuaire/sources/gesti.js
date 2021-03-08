@@ -1,27 +1,25 @@
 const { oleoduc, transformData, filterData } = require("oleoduc");
 const csv = require("csv-parse");
+const { decodeStream } = require("iconv-lite");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
 module.exports = async (options = {}) => {
   let filters = options.filters || {};
   let stream =
-    options.input ||
-    (await getOvhFileAsStream(
-      "annuaire/OPCO EP-20201202 OPCO EP - Jeunes sans contrat par CFA, région et formation au 26 nov.csv"
-    ));
+    options.input || (await getOvhFileAsStream("cfas-clients-erps/referentielCfas_gesti.csv", { storage: "mna-flux" }));
 
   return oleoduc(
     stream,
+    decodeStream("iso-8859-1"),
     csv({
       delimiter: ";",
       trim: true,
-      bom: true,
       columns: true,
     }),
     transformData((data) => {
       return {
-        siret: data["SIRET CFA"],
-        uais: [data["N UAI CFA"]],
+        siret: data["siret"],
+        uais: [data["uai_code_educnationale"]],
       };
     }),
     filterData((data) => {

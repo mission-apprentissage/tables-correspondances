@@ -46,10 +46,8 @@ function Relations({ items }) {
                 ) : (
                   <span style={{ width: "25%" }}>{item.siret}</span>
                 )}
-                <span style={{ width: "65%" }}>{item.details}</span>
-                <span style={{ width: "10%", textAlign: "right" }}>
-                  {item.statut === "fermé" ? <Badge color="danger">{item.statut}</Badge> : <span />}
-                </span>
+                <span style={{ width: "60%" }}>{item.label}</span>
+                <span style={{ width: "20%", textAlign: "right" }}>{item.type}</span>
               </Relation>
             );
           })}

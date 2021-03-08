@@ -1,6 +1,6 @@
 const express = require("express");
 const Joi = require("joi");
-const { oleoduc, jsonStream } = require("oleoduc");
+const { oleoduc, transformIntoJSON } = require("oleoduc");
 const tryCatch = require("../middlewares/tryCatchMiddleware");
 const { sendJsonStream } = require("../utils/httpUtils");
 const { paginate } = require("../../common/utils/mongooseUtils");
@@ -89,7 +89,7 @@ module.exports = () => {
       let { find, pagination } = await paginate(Etablissement, json, { page, limit });
       let stream = oleoduc(
         find.cursor(),
-        jsonStream({
+        transformIntoJSON({
           arrayWrapper: {
             pagination,
           },

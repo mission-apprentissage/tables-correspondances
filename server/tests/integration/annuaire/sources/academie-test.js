@@ -31,6 +31,40 @@ integrationTests(__filename, () => {
     });
   });
 
+  it("Vérifie qu'on peut filter par siret", async () => {
+    await createAnnuaire({
+      siret: "11111111100000",
+    });
+    let source = await createSource("academie", {
+      apiEsSup: createApiEsSup(),
+      filters: { siret: "33333333333333" },
+    });
+
+    let results = await collect(source);
+
+    assert.deepStrictEqual(results, {
+      total: 0,
+      updated: 0,
+      failed: 0,
+    });
+  });
+
+  it("Vérifie qu'on ignore les établissements sans adresse", async () => {
+    await createAnnuaire({
+      siret: "11111111100000",
+      adresse: null,
+    });
+    let source = await createSource("academie", { apiEsSup: createApiEsSup() });
+
+    let results = await collect(source);
+
+    assert.deepStrictEqual(results, {
+      total: 0,
+      updated: 0,
+      failed: 0,
+    });
+  });
+
   it("Vérifie qu'on gère une anomalie quand on ne peut pas collecter d'informations", async () => {
     await createAnnuaire({
       siret: "11111111100000",

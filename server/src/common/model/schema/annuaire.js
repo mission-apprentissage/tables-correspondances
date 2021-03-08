@@ -48,6 +48,7 @@ const annuaireSchema = {
     ),
   },
   adresse: {
+    default: undefined,
     type: new Schema(
       {
         label: {
@@ -140,7 +141,7 @@ const annuaireSchema = {
     type: [
       new Schema(
         {
-          type: {
+          siret: {
             type: String,
             required: true,
           },
@@ -148,17 +149,17 @@ const annuaireSchema = {
             type: Boolean,
             required: true,
           },
-          siret: {
-            type: String,
-            required: true,
-          },
-          statut: {
-            type: String,
-            required: true,
-          },
-          details: {
+          label: {
             type: String,
             default: undefined,
+          },
+          type: {
+            type: String,
+            default: undefined,
+          },
+          sources: {
+            type: Array,
+            default: [],
           },
         },
         { _id: false }
@@ -170,7 +171,7 @@ const annuaireSchema = {
     default: {},
     type: new Schema(
       {
-        last_update: {
+        created_at: {
           description: "Dernière date de mise à jour du document",
           type: Date,
           required: true,

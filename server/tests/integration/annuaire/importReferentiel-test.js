@@ -39,10 +39,8 @@ integrationTests(__filename, () => {
       uais_secondaires: [],
       relations: [],
     });
-    assert.ok(found._meta.last_update);
-    assert.deepStrictEqual(omit(found._meta, ["last_update"]), {
-      anomalies: [],
-    });
+    assert.ok(found._meta.created_at);
+    assert.deepStrictEqual(found._meta.anomalies, []);
     assert.deepStrictEqual(results, {
       total: 1,
       created: 1,
