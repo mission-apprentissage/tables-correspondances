@@ -4,11 +4,9 @@ const { getNbModifiedDocuments } = require("../../common/utils/mongooseUtils");
 const { validateUAI } = require("../../common/utils/uaiUtils");
 const logger = require("../../common/logger");
 
-function getNewUAIs(type, etablissement, uais) {
+function getUAIsSecondaires(type, etablissement, uais) {
   return uais
-    .filter((uai) => {
-      return uai && etablissement.uai !== uai && !etablissement.uais_secondaires.find((sec) => sec.uai === uai);
-    })
+    .filter((uai) => uai && etablissement.uai !== uai)
     .map((uai) => {
       return { type, uai, valide: validateUAI(uai) };
     });
@@ -84,9 +82,9 @@ module.exports = async (source) => {
                 ...data,
                 relations: getRelations(type, etablissement, relations),
               },
-              $push: {
+              $addToSet: {
                 uais_secondaires: {
-                  $each: getNewUAIs(type, etablissement, uais),
+                  $each: getUAIsSecondaires(type, etablissement, uais),
                 },
               },
             },
