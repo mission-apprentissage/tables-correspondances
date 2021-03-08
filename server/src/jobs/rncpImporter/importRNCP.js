@@ -1,6 +1,6 @@
 const logger = require("../../common/logger");
 const parseFichesFile = require("./parseFichesFile");
-const kitApprentissageController = require("./kitApprentissage/kitApprentissageController");
+const kitApprentissageController = require("./kitApprentissageController");
 const { asyncForEach } = require("../../common/utils/asyncUtils");
 const merge = require("deepmerge");
 const { diff } = require("deep-object-diff");
