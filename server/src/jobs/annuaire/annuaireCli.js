@@ -1,7 +1,7 @@
 const { program: cli } = require("commander");
 const { asyncForEach } = require("../../common/utils/asyncUtils");
 const { createWriteStream } = require("fs");
-const { stdoutStream } = require("oleoduc");
+const { writeToStdout } = require("oleoduc");
 const { createReadStream } = require("fs");
 const { runScript } = require("../scriptWrapper");
 const { createReferentiel, getDefaultReferentiels } = require("./referentiels/referentiels");
@@ -85,7 +85,7 @@ cli
   .option("--format <format>", "Format : json|csv(défaut)")
   .action(({ filter, limit, out, format }) => {
     runScript(() => {
-      let output = out || stdoutStream();
+      let output = out || writeToStdout();
 
       return exportAnnuaire(output, { filter, limit, format });
     });

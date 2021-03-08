@@ -31,8 +31,9 @@ module.exports = {
       [
         //Second group contains sources that need data from the previous group
         (options) => createSource("academie", options),
-        (options) => createSource("formations", options),
+        (options) => createSource("ideo2", options),
       ],
+      [(options) => createSource("formations", options)],
     ];
   },
 };
