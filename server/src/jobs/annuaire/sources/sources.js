@@ -28,6 +28,7 @@ module.exports = {
         (options) => createSource("refea", options),
         (options) => createSource("gesti", options),
         (options) => createSource("ymag", options),
+        (options) => createSource("agri", options),
       ],
       [
         //Second group contains sources that need data from the previous group
