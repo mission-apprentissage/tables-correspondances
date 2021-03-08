@@ -31,6 +31,7 @@ module.exports = {
         (options) => createSource("agri", options),
         (options) => createSource("anasup", options),
         (options) => createSource("compagnons-du-devoir", options),
+        (options) => createSource("promotrans", options),
       ],
       [
         //Second group contains sources that need data from the previous group
