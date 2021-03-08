@@ -19,7 +19,6 @@ module.exports = async (options = {}) => {
         siret: data["siret"],
         uais: [data["uai"]],
         reseaux: ["agri"],
-        data: {},
       };
     }),
     filterData((data) => {

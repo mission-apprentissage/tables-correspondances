@@ -6,7 +6,7 @@ const logger = require("../../common/logger");
 
 function getUAIsSecondaires(type, etablissement, uais) {
   return uais
-    .filter((uai) => uai && etablissement.uai !== uai)
+    .filter((uai) => uai && uai !== "NULL" && etablissement.uai !== uai)
     .map((uai) => {
       return { type, uai, valide: validateUAI(uai) };
     });

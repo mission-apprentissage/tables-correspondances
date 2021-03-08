@@ -135,12 +135,12 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on ignore un uai vide", async () => {
+  it("Vérifie qu'on ignore un uai avec une donnée invalide", async () => {
     await prepareAnnuaire();
     let source = createTestSource([
       {
         siret: "111111111111111",
-        uais: [],
+        uais: ["", null, "NULL"],
       },
     ]);
 
