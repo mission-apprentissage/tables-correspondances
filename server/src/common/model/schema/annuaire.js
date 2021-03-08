@@ -32,6 +32,11 @@ const annuaireSchema = {
     required: true,
     description: "Statut de l'entreprise",
   },
+  reseaux: {
+    type: Array,
+    default: [],
+    description: "Les réseaux auquels appartient l'établissement",
+  },
   academie: {
     type: new Schema(
       {

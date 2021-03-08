@@ -23,6 +23,7 @@ integrationTests(__filename, () => {
       referentiel: "dgefp",
       uais_secondaires: [],
       relations: [],
+      reseaux: [],
     });
     assert.deepStrictEqual(results, {
       total: 1,

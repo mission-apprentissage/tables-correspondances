@@ -62,7 +62,7 @@ module.exports = async (source) => {
   try {
     await oleoduc(
       source,
-      writeData(async ({ siret, uais = [], relations = [], data = {}, anomalies = [] }) => {
+      writeData(async ({ siret, uais = [], relations = [], reseaux = [], data = {}, anomalies = [] }) => {
         stats.total++;
 
         try {
@@ -83,6 +83,9 @@ module.exports = async (source) => {
                 relations: getRelations(type, etablissement, relations),
               },
               $addToSet: {
+                reseaux: {
+                  $each: reseaux,
+                },
                 uais_secondaires: {
                   $each: getUAIsSecondaires(type, etablissement, uais),
                 },
