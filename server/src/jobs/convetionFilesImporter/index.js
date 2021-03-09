@@ -28,7 +28,7 @@ const conventionFilesImporter = async (db) => {
 
   // Xlsx import
   const datadock = await downloadXlsxAndGetJson("BaseDataDock-latest.xlsx");
-  const depp = await downloadXlsxAndGetJson("CFASousConvRegionale_02122019.xlsx");
+  const depp = await downloadXlsxAndGetJson("CFASousConvRegionale_latest.xlsx");
   const dgefp = await downloadXlsxAndGetJson("DGEFP - Extraction au 10 01 2020.xlsx");
 
   // Push into Db
