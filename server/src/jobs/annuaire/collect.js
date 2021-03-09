@@ -1,8 +1,12 @@
-const { oleoduc, writeData } = require("oleoduc");
+const { oleoduc, writeData, filterData } = require("oleoduc");
 const { Annuaire } = require("../../common/model");
 const { getNbModifiedDocuments } = require("../../common/utils/mongooseUtils");
 const { validateUAI } = require("../../common/utils/uaiUtils");
 const logger = require("../../common/logger");
+
+function buildSelectorQuery(selector) {
+  return { $or: [{ siret: selector }, { uai: selector }, { "uais_secondaires.uai": selector }] };
+}
 
 function getUAIsSecondaires(type, etablissement, uais) {
   return uais
@@ -27,7 +31,8 @@ function getRelations(type, etablissement, relations) {
   return [...previousRelations, ...newRelations];
 }
 
-module.exports = async (source) => {
+module.exports = async (source, options = {}) => {
+  let filters = options.filters || {};
   let type = source.type;
   let stats = {
     total: 0,
@@ -35,11 +40,13 @@ module.exports = async (source) => {
     failed: 0,
   };
 
-  async function handleAnomalies(siret, anomalies) {
+  async function handleAnomalies(selector, anomalies) {
     stats.failed++;
-    logger.error(`[Collect][${type}] Erreur lors de la collecte pour l'établissement ${siret}.`, anomalies);
+    logger.error(`[Collect][${type}] Erreur lors de la collecte pour l'établissement ${selector}.`, anomalies);
+    let query = buildSelectorQuery(selector);
+
     await Annuaire.updateOne(
-      { siret },
+      query,
       {
         $push: {
           "_meta.anomalies": {
@@ -60,23 +67,29 @@ module.exports = async (source) => {
   }
 
   try {
+    let stream = await source.stream({ filters });
+
     await oleoduc(
-      source,
-      writeData(async ({ siret, uais = [], relations = [], reseaux = [], data = {}, anomalies = [] }) => {
+      stream,
+      filterData((data) => {
+        return filters.siret ? filters.siret === data.selector : !!data;
+      }),
+      writeData(async ({ selector, uais = [], relations = [], reseaux = [], data = {}, anomalies = [] }) => {
         stats.total++;
+        let query = buildSelectorQuery(selector);
 
         try {
-          let etablissement = await Annuaire.findOne({ siret }).lean();
+          let etablissement = await Annuaire.findOne(query).lean();
           if (!etablissement) {
             return;
           }
 
           if (anomalies.length > 0) {
-            await handleAnomalies(siret, anomalies);
+            await handleAnomalies(selector, anomalies);
           }
 
           let res = await Annuaire.updateOne(
-            { siret },
+            query,
             {
               $set: {
                 ...data,
@@ -95,7 +108,7 @@ module.exports = async (source) => {
           );
           stats.updated += getNbModifiedDocuments(res);
         } catch (e) {
-          await handleAnomalies(siret, [e]);
+          await handleAnomalies(selector, [e]);
         }
       })
     );

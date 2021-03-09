@@ -31,24 +31,4 @@ integrationTests(__filename, () => {
       failed: 0,
     });
   });
-
-  it("Vérifie qu'on peut filter par siret", async () => {
-    await importReferentiel();
-    let source = await createSource("onisepStructure", {
-      filters: { siret: "33333333333333" },
-      input: createStream(
-        `STRUCT SIRET;STRUCT UAI;STRUCT Libellé Amétys
-"11111111111111";"0011073L";"Centre de formation"
-"33333333333333";"0011073";"Centre de formation"`
-      ),
-    });
-
-    let results = await collect(source);
-
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 0,
-      failed: 0,
-    });
-  });
 });

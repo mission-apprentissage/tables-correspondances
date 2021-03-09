@@ -33,23 +33,4 @@ integrationTests(__filename, () => {
       failed: 0,
     });
   });
-
-  it("Vérifie qu'on peut filter par siret", async () => {
-    await createAnnuaire({ siret: "11111111111111" });
-    let source = await createSource("anasup", {
-      filters: { siret: "33333333333333" },
-      input: createStream(
-        `siret;uai
-"11111111111111";"0011073L"`
-      ),
-    });
-
-    let results = await collect(source);
-
-    assert.deepStrictEqual(results, {
-      total: 0,
-      updated: 0,
-      failed: 0,
-    });
-  });
 });
