@@ -1,11 +1,12 @@
 const mongoose = require("mongoose");
 const config = require("config");
 
+let mongooseInstance = mongoose;
 module.exports.connectToMongo = (mongoUri = config.mongodb.uri, mongooseInst = null) => {
   return new Promise((resolve, reject) => {
     console.error(`MongoDB: Connection to ${mongoUri}`);
 
-    const mI = mongooseInst || mongoose;
+    const mI = mongooseInst || mongooseInstance;
     // Set up default mongoose connection
     mI.connect(mongoUri, {
       useNewUrlParser: true,
@@ -50,11 +51,12 @@ module.exports.connectToMongo = (mongoUri = config.mongodb.uri, mongooseInst = n
     });
 
     db.once("open", () => {
-      console.error("MongoDB: Connected");
+      console.log("MongoDB: Connected");
       resolve({ db });
     });
   });
 };
 
-module.exports.mongoose = mongoose;
+module.exports.setMongooseInstance = (mongooseInst = mongoose) => (mongooseInstance = mongooseInst);
+module.exports.getMongooseInstance = () => mongooseInstance;
 module.exports.closeMongoConnection = (mongooseInst = mongoose) => mongooseInst.disconnect();
