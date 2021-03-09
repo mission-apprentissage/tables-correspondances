@@ -31,24 +31,4 @@ integrationTests(__filename, () => {
       failed: 0,
     });
   });
-
-  it("Vérifie qu'on peut filter par siret", async () => {
-    await importReferentiel();
-    let source = await createSource("onisep", {
-      filters: { siret: "33333333333333" },
-      input: createStream(
-        `"code UAI";"n° SIRET";"nom"
-"0011073L";"11111111111111";"Centre de formation"
-"0011073L";"33333333333333";"Centre de formation"`
-      ),
-    });
-
-    let results = await collect(source);
-
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 0,
-      failed: 0,
-    });
-  });
 });

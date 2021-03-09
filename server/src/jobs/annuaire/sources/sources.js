@@ -20,20 +20,25 @@ module.exports = {
   getDefaultSourcesGroupedByPriority() {
     return [
       [
-        (options) => createSource("etablissements", options),
-        (options) => createSource("sirene", options),
-        (options) => createSource("onisep", options),
-        (options) => createSource("onisepStructure", options),
-        (options) => createSource("opcoep", options),
-        (options) => createSource("refea", options),
-        (options) => createSource("gesti", options),
+        () => createSource("etablissements"),
+        () => createSource("sirene"),
+        () => createSource("onisep"),
+        () => createSource("onisepStructure"),
+        () => createSource("opcoep"),
+        () => createSource("refea"),
+        () => createSource("gesti"),
+        () => createSource("ymag"),
+        () => createSource("agri"),
+        () => createSource("anasup"),
+        () => createSource("compagnons-du-devoir"),
+        () => createSource("promotrans"),
       ],
       [
         //Second group contains sources that need data from the previous group
-        (options) => createSource("academie", options),
-        (options) => createSource("ideo2", options),
+        () => createSource("academie"),
+        () => createSource("ideo2"),
       ],
-      [(options) => createSource("formations", options)],
+      [() => createSource("formations")],
     ];
   },
 };

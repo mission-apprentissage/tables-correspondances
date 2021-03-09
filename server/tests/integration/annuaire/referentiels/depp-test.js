@@ -22,6 +22,7 @@ integrationTests(__filename, () => {
       referentiel: "depp",
       uais_secondaires: [],
       relations: [],
+      reseaux: [],
     });
     assert.deepStrictEqual(results, {
       total: 1,
