@@ -2,11 +2,14 @@ const { uniq, compact } = require("lodash");
 const path = require("path");
 const XLSX = require("xlsx");
 const { readXLSXFile } = require("../../common/utils/fileUtils");
+const { downloadAndSaveFileFromS3 } = require("../../common/utils/awsUtils");
 
+const FILE_LOCAL_PATH = path.join(__dirname, "./assets", "KitApprentissage.latest.xlsx");
 class KitApprentissageController {
-  constructor() {
-    const kitApprentissagePath = path.join(__dirname, "../assets", "Kit référentiel Apprentissage et RNCP v1.5.xlsx");
-    const { sheet_name_list, workbook } = readXLSXFile(kitApprentissagePath);
+  async init() {
+    await downloadAndSaveFileFromS3("mna-services/features/rncp/KitApprentissage.latest.xlsx", FILE_LOCAL_PATH);
+
+    const { sheet_name_list, workbook } = readXLSXFile(FILE_LOCAL_PATH);
 
     // Sheet 1 === CodeDiplome_RNCP{Version}
     const worksheetCodeDiplome = workbook.Sheets[sheet_name_list[1]];
@@ -14,7 +17,7 @@ class KitApprentissageController {
 
     // Sheet 3 === RNCP{date}
     const worksheetInfoRNCP = workbook.Sheets[sheet_name_list[3]];
-    this.referentielRNCP = XLSX.utils.sheet_to_json(worksheetInfoRNCP, { range: 0, raw: false });
+    this.referentielRncp = XLSX.utils.sheet_to_json(worksheetInfoRNCP, { range: 0, raw: false });
 
     // Sheet 4 === RNCPCertificateurs
     const worksheetRNCPCertificateurs = workbook.Sheets[sheet_name_list[4]];
@@ -86,6 +89,7 @@ class KitApprentissageController {
       romes: romesUpdated.value,
       blocs_competences: blocUpdated.value,
       voix_acces: voixAccesUpdated.value,
+      si_jury_ca: voixAccesUpdated.si_jury_ca,
       partenaires: partenairesUpdated.value,
       cfds: cfdsUpdated.value,
     };
@@ -224,8 +228,8 @@ class KitApprentissageController {
     }
     if (info.length > 1) {
       info = info.map((m) => ({
-        certificateur: m.Nom_Certificateur,
-        siret_certificateur: m.Siret_Certificateur,
+        certificateur: m.Nom_Certificateur || "",
+        siret_certificateur: m.Siret_Certificateur || "",
       }));
       return { info: "Code Rncp trouvé plusieurs fois", value: info };
     }
@@ -234,8 +238,8 @@ class KitApprentissageController {
       info: "Ok",
       value: [
         {
-          certificateur: info[0].Nom_Certificateur,
-          siret_certificateur: info[0].Siret_Certificateur,
+          certificateur: info[0].Nom_Certificateur || "",
+          siret_certificateur: info[0].Siret_Certificateur || "",
         },
       ],
     };
@@ -244,19 +248,26 @@ class KitApprentissageController {
   findVoixAccesFromRncp(rncp_code) {
     let info = this.referentielVoixAcces.filter((x) => x.Numero_Fiche === rncp_code);
     if (info.length === 0) {
-      return { info: "Erreur: Non trouvé", value: [] };
+      return { info: "Erreur: Non trouvé", si_jury_ca: false, value: [] };
     }
 
+    let si_jury_ca = false;
     if (info.length > 1) {
-      info = info.map((m) => ({
-        code_libelle: m.code_libelle,
-        si_jury: m.Si_Jury,
-      }));
-      return { info: "Code Rncp trouvé plusieurs fois", value: info };
+      info = info.map((m) => {
+        if (m.Si_Jury === "En contrat d’apprentissage") si_jury_ca = true;
+        return {
+          code_libelle: m.code_libelle,
+          si_jury: m.Si_Jury,
+        };
+      });
+      return { info: "Code Rncp trouvé plusieurs fois", si_jury_ca, value: info };
     }
+
+    if (info[0].Si_Jury === "En contrat d’apprentissage") si_jury_ca = true;
 
     return {
       info: "Ok",
+      si_jury_ca,
       value: [
         {
           code_libelle: info[0].code_libelle,
