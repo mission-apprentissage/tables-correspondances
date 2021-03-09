@@ -1,18 +1,15 @@
 const { program: cli } = require("commander");
+const { asyncForEach } = require("../../common/utils/asyncUtils");
 const { createWriteStream } = require("fs");
-const { range } = require("lodash");
-const faker = require("faker"); // eslint-disable-line node/no-unpublished-require
-const { stdoutStream } = require("oleoduc");
+const { writeToStdout } = require("oleoduc");
 const { createReadStream } = require("fs");
 const { runScript } = require("../scriptWrapper");
-const { Annuaire } = require("../../common/model");
-const apiEntreprise = require("../../common/apis/apiEntreprise");
-const { createSource, getDefaultSources } = require("./sources/sources");
 const { createReferentiel, getDefaultReferentiels } = require("./referentiels/referentiels");
+const { createSource, getDefaultSourcesGroupedByPriority } = require("./sources/sources");
 const cleanAll = require("./cleanAll");
 const importReferentiel = require("./importReferentiel");
 const collect = require("./collect");
-const { exportAll } = require("./exports");
+const { exportAnnuaire } = require("./exports");
 
 cli
   .command("clean")
@@ -28,82 +25,69 @@ cli
   .description("Importe les établissements contenus dans le ou les référentiels")
   .action((type, file) => {
     runScript(async () => {
-      let referentiels = [];
       if (type) {
-        let stream = file ? createReadStream(file) : null;
-        referentiels.push(createReferentiel(type, stream));
+        let input = file ? createReadStream(file) : process.stdin;
+        let referentiel = await createReferentiel(type, { input });
+        return importReferentiel(referentiel);
       } else {
-        referentiels = await getDefaultReferentiels();
-      }
+        let referentiels = await getDefaultReferentiels();
+        let stats = [];
 
-      return Promise.all(
-        referentiels.map(async (referentiel) => {
-          return { [referentiel.type]: await importReferentiel(referentiel, apiEntreprise) };
-        })
-      );
+        await asyncForEach(referentiels, async (builder) => {
+          //Handle each referentiel sequentially
+          let referentiel = await builder();
+          let res = { [referentiel.type]: await importReferentiel(referentiel) };
+          stats.push(res);
+        });
+
+        return stats;
+      }
     });
   });
 
 cli
   .command("collect [type] [file]")
+  .option("--siret <siret>", "Limite la collecte pour le siret")
   .description("Parcoure la ou les sources pour trouver des données complémentaires")
-  .action((type, file) => {
+  .action((type, file, { siret }) => {
     runScript(async () => {
-      let sources = [];
-      if (type) {
-        let stream = file ? createReadStream(file) : null;
-        sources.push(await createSource(type, stream));
-      } else {
-        sources = await getDefaultSources();
-      }
+      let options = siret ? { filters: { siret } } : {};
 
-      return Promise.all(
-        sources.map(async (source) => {
-          return { [source.type]: await collect(source) };
-        })
-      );
+      if (type) {
+        let input = file ? createReadStream(file) : null;
+        let source = await createSource(type, { ...options, input });
+        return collect(source);
+      } else {
+        let groups = getDefaultSourcesGroupedByPriority();
+        let stats = [];
+
+        await asyncForEach(groups, async (group) => {
+          let promises = group.map(async (builder) => {
+            let source = await builder(options);
+            return { [source.type]: await collect(source) };
+          });
+
+          let results = await Promise.all(promises);
+          stats.push(results);
+        });
+
+        return stats;
+      }
     });
   });
 
 cli
   .command("export")
-  .command("all")
   .description("Exporte l'annuaire")
+  .option("--filter <filter>", "Filtre au format json", JSON.parse)
+  .option("--limit <limit>", "Nombre maximum d'éléments à exporter", parseInt)
   .option("--out <out>", "Fichier cible dans lequel sera stocké l'export (defaut: stdout)", createWriteStream)
   .option("--format <format>", "Format : json|csv(défaut)")
-  .action(({ out, format }) => {
+  .action(({ filter, limit, out, format }) => {
     runScript(() => {
-      let output = out || stdoutStream();
+      let output = out || writeToStdout();
 
-      return exportAll(output, { format });
-    });
-  });
-
-cli
-  .command("dataset")
-  .description("Génère un jeu de données")
-  .action(() => {
-    runScript(async () => {
-      let nbElements = 50;
-      // TODO reuse fixture
-      await Promise.all(
-        range(0, nbElements).map((value) => {
-          return new Annuaire({
-            uai: faker.helpers.replaceSymbols("#######?"),
-            siret: faker.helpers.replaceSymbols("#########00015"),
-            nom: faker.company.companyName(),
-            uais_secondaires: value % 2 ? [{ uai: faker.helpers.replaceSymbols("#######?"), type: "test" }] : [],
-            region: "11",
-            siegeSocial: true,
-            dateCreation: new Date("2020-11-26T23:00:00.000Z"),
-            statut: "actif",
-          }).save();
-        })
-      );
-
-      return {
-        inserted: nbElements,
-      };
+      return exportAnnuaire(output, { filter, limit, format });
     });
   });
 

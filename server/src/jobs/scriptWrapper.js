@@ -1,4 +1,3 @@
-require("dotenv").config();
 const moment = require("moment");
 const { closeMongoConnection } = require("../common/mongodb");
 const createComponents = require("../common/components/components");

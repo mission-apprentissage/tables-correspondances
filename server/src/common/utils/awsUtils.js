@@ -24,6 +24,7 @@ const downloadAndSaveFileFromS3 = (from, to) => {
     getFileFromS3(from)
       .pipe(fs.createWriteStream(to))
       .on("close", () => {
+        logger.info(`Download done...`);
         r();
       });
   });

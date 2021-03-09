@@ -1,10 +1,9 @@
 const assert = require("assert");
-const { oleoduc } = require("oleoduc");
-const csv = require("csv-parse");
-const { Etablissement, Annuaire } = require("../../../src/common/model");
+const { omit } = require("lodash");
+const { Readable } = require("stream");
+const { oleoduc, transformData } = require("oleoduc");
+const { Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
-const { createApiEntrepriseMock } = require("../../utils/mocks");
-const { createSource } = require("../../../src/jobs/annuaire/sources/sources");
 const { createReferentiel } = require("../../../src/jobs/annuaire/referentiels/referentiels");
 const { createAnnuaire } = require("../../utils/fixtures");
 const importReferentiel = require("../../../src/jobs/annuaire/importReferentiel");
@@ -12,37 +11,33 @@ const collect = require("../../../src/jobs/annuaire/collect");
 const { createStream } = require("../../utils/testUtils");
 
 integrationTests(__filename, () => {
-  const createDeppReferentiel = (content) => {
-    let args = createStream(
-      content ||
-        `"numero_uai";"numero_siren_siret_uai";"patronyme_uai"
-"0011058V";"11111111111111";"Centre de formation"`
-    );
+  const prepareAnnuaire = async (content) => {
+    let referentiel = await createReferentiel("depp", {
+      input: createStream(
+        content ||
+          `"numero_uai";"numero_siren_siret_uai"
+"0011058V";"111111111111111"`
+      ),
+    });
 
-    return createReferentiel("depp", args);
+    return importReferentiel(referentiel);
   };
 
-  const createTestSource = (content) => {
-    let stream = createStream(content);
-    let source = oleoduc(
-      stream,
-      csv({
-        delimiter: ";",
-        bom: true,
-        columns: true,
-      })
-    );
+  const createTestSource = (array) => {
+    let source = Readable.from(array);
     source.type = "test";
     return source;
   };
 
   it("Vérifie qu'on peut collecter un uai", async () => {
-    let source = createTestSource(
-      `"uai";"siret";"nom"
-"0011073L";"11111111111111";"Centre de formation"`
-    );
+    await prepareAnnuaire();
+    let source = createTestSource([
+      {
+        siret: "111111111111111",
+        uais: ["0011073L"],
+      },
+    ]);
 
-    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let results = await collect(source);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
@@ -61,15 +56,17 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on teste la validité d'un UAI", async () => {
-    let source = createTestSource(
-      `"uai";"siret";"nom"
-"093XXXT";"11111111111111";"Centre de formation"`
-    );
+    await prepareAnnuaire();
+    let source = createTestSource([
+      {
+        siret: "111111111111111",
+        uais: ["093XXXT"],
+      },
+    ]);
 
-    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let results = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires[0], {
       type: "test",
       uai: "093XXXT",
@@ -83,15 +80,17 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on ignore un uai quand il existe en tant qu'uai principal", async () => {
-    let source = createTestSource(
-      `"uai";"siret";"nom"
-"0011058V";"11111111111111";"Centre de formation"`
-    );
+    await prepareAnnuaire();
+    let source = createTestSource([
+      {
+        siret: "111111111111111",
+        uais: ["0011058V"],
+      },
+    ]);
 
-    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let stats = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, []);
     assert.deepStrictEqual(stats, {
       total: 1,
@@ -101,13 +100,15 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on ignore un uai quand il existe déjà en tant qu'uai secondaire", async () => {
-    let source = createTestSource(
-      `"uai";"siret";"nom"
-"0011073L";"11111111111111";"Centre de formation"`
-    );
+    let source = createTestSource([
+      {
+        siret: "111111111111111",
+        uais: ["0011073L"],
+      },
+    ]);
     await createAnnuaire({
       uai: "0011058V",
-      siret: "11111111111111",
+      siret: "111111111111111",
       uais_secondaires: [
         {
           type: "test",
@@ -115,11 +116,11 @@ integrationTests(__filename, () => {
           valide: true,
         },
       ],
-    }).save();
+    });
 
     let stats = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, [
       {
         type: "test",
@@ -135,15 +136,17 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on ignore un uai vide", async () => {
-    let source = createTestSource(
-      `"uai";"siret";"nom"
-"";"11111111111111";"Centre de formation"`
-    );
+    await prepareAnnuaire();
+    let source = createTestSource([
+      {
+        siret: "111111111111111",
+        uais: [],
+      },
+    ]);
 
-    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
     let stats = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, []);
     assert.deepStrictEqual(stats, {
       total: 1,
@@ -152,137 +155,90 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on peut collecter des informations du fichier ONISEP", async () => {
-    let source = await createSource(
-      "onisep",
-      createStream(
-        `"code UAI";"n° SIRET";"nom"
-"0011073L";"11111111111111";"Centre de formation"`
-      )
+  it("Vérifie qu'on stocke une erreur survenue durant une collecte", async () => {
+    await prepareAnnuaire();
+    let source = oleoduc(
+      createTestSource([
+        {
+          siret: "111111111111111",
+          uais: [],
+        },
+      ]),
+      transformData(() => {
+        return { anomalies: [new Error("Erreur")], siret: "111111111111111" };
+      })
     );
+    source.type = "test";
 
-    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
-    let results = await collect(source);
+    let stats = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires, [
-      {
-        type: "onisep",
-        uai: "0011073L",
-        valide: true,
-      },
-    ]);
-    assert.deepStrictEqual(results, {
+    let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0, __v: 0 }).lean();
+    let errors = found._meta.anomalies;
+    assert.ok(errors[0].date);
+    assert.deepStrictEqual(omit(errors[0], ["date"]), {
+      details: "Erreur",
+      source: "test",
+      type: "collect",
+    });
+    assert.deepStrictEqual(stats, {
       total: 1,
-      updated: 1,
-      failed: 0,
+      failed: 1,
+      updated: 0,
     });
   });
 
-  it("Vérifie qu'on peut collecter des informations du fichier ONISEP (structure)", async () => {
-    let source = await createSource(
-      "onisepStructure",
-      createStream(
-        `STRUCT SIRET;STRUCT UAI;STRUCT Libellé Amétys
-"11111111111111";"0011073L";"Centre de formation"`
-      )
-    );
-
-    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
-    let results = await collect(source);
-
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires, [
+  it("Vérifie qu'on peut collecter des relations", async () => {
+    await prepareAnnuaire();
+    let source = createTestSource([
       {
-        type: "onisepStructure",
-        uai: "0011073L",
-        valide: true,
+        siret: "111111111111111",
+        relations: [{ siret: "22222222222222", annuaire: false, label: "test", type: "gestionnaire" }],
       },
     ]);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 0,
-    });
-  });
 
-  it("Vérifie qu'on peut collecter des informations du fichier REFEA", async () => {
-    let source = await createSource(
-      "refea",
-      createStream(
-        `uai_code_siret;uai_code_educnationale;uai_libelle_educnationale
-"11111111111111";"0011073L";"Centre de formation"`
-      )
-    );
-
-    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
-    let results = await collect(source);
-
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires, [
-      {
-        type: "refea",
-        uai: "0011073L",
-        valide: true,
-      },
-    ]);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 0,
-    });
-  });
-
-  it("Vérifie qu'on peut collecter des informations de la base catalogue", async () => {
-    await Etablissement.create({
-      uai: "0011073L",
-      siret: "11111111111111",
-      entreprise_raison_sociale: "Centre de formation",
-    });
-    let source = await createSource("catalogue");
-
-    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
-    let results = await collect(source);
+    await collect(source);
 
     let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires, [
+    assert.deepStrictEqual(found.relations, [
       {
-        type: "catalogue",
-        uai: "0011073L",
-        valide: true,
+        siret: "22222222222222",
+        annuaire: false,
+        label: "test",
+        type: "gestionnaire",
+        sources: ["test"],
       },
     ]);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 0,
-    });
   });
 
-  it("Vérifie qu'on peut collecter des informations du fichier OPCO EP", async () => {
-    let source = await createSource(
-      "opcoep",
-      createStream(
-        `SIRET CFA;N UAI CFA;Nom CFA
-"11111111111111";"0011073L";"Centre de formation"`
-      )
-    );
-
-    await importReferentiel(createDeppReferentiel(), createApiEntrepriseMock());
-    let results = await collect(source);
-
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires, [
+  it("Vérifie qu'on met à jour les relations existantes sans les dupliquer", async () => {
+    await prepareAnnuaire();
+    await Annuaire.updateOne(
+      { siret: "111111111111111" },
       {
-        type: "opcoep",
-        uai: "0011073L",
-        valide: true,
+        $set: {
+          relations: [
+            {
+              siret: "22222222222222",
+              annuaire: false,
+              label: "test",
+              sources: ["test"],
+            },
+          ],
+        },
+      }
+    );
+    let source = createTestSource([
+      {
+        siret: "111111111111111",
+        relations: [{ siret: "22222222222222", annuaire: false, label: "test", type: "gestionnaire" }],
       },
     ]);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 0,
-    });
+
+    await collect(source);
+
+    let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
+    assert.strictEqual(found.relations.length, 1);
+    assert.strictEqual(found.relations[0].siret, "22222222222222");
+    assert.strictEqual(found.relations[0].type, "gestionnaire");
   });
 });

@@ -6,20 +6,13 @@ const findOpcosFromIdccs = async (idccs = []) => {
 };
 
 const findIdccsFromCfd = async (cfd) => {
-  let result = [];
-
-  const found = await CodeEnCodesIdcc.find({ cfd: cfd, statut: "CPNE" }, { _id: 0, __v: 0 }).lean();
-  if (found.length > 0) {
-    // Joining all idccs in one list without empty spaces
-    const allIdccs = found
-      .map(({ codeIDCC }) => codeIDCC)
-      .join(",")
-      .replace(/\s/g, "")
-      .split(",");
-
-    result = [...new Set(allIdccs)]; // return all uniques idccs
+  const codesIdcc = await CodeEnCodesIdcc.distinct("codeIDCC", { cfd: cfd, statut: "CPNE" });
+  if (codesIdcc.length > 0) {
+    const result = codesIdcc.join(",").replace(/\s/g, "").split(",");
+    return [...new Set(result)];
   }
-  return result;
+
+  return [];
 };
 
 const findOpcosFromCfd = async (cfd) => {

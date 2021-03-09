@@ -1,31 +1,7 @@
 const apiEntreprise = require("../../common/apis/apiEntreprise");
 
-const errors = {
-  451: "indisponible",
-  404: "inconnu",
-  422: "invalide",
-};
-
 class EntrepriseApiData {
   constructor() {}
-
-  async getEtablissementStatut(siret, options = {}) {
-    let api = options.apiEntreprise || apiEntreprise;
-    if (!siret) {
-      return "invalide";
-    }
-
-    try {
-      const etablissement = await api.getEtablissement(siret);
-      return etablissement.etat_administratif.value === "A" ? "actif" : "fermé";
-    } catch (e) {
-      let statut = errors[e.response.status];
-      if (!statut) {
-        throw e;
-      }
-      return statut;
-    }
-  }
 
   async findDataFromSiret(providedSiret) {
     if (!providedSiret || !/^[0-9]{14}$/g.test(providedSiret.trim())) {
@@ -89,8 +65,8 @@ class EntrepriseApiData {
         code_insee_localite: etablissementApiInfo.adresse.code_insee_localite,
         cedex: etablissementApiInfo.adresse.cedex,
 
-        date_fermeture: etablissementApiInfo.etat_administratif.date_fermeture,
-        ferme: etablissementApiInfo.etat_administratif.value === "C",
+        date_fermeture: new Date(etablissementApiInfo.etat_administratif.date_fermeture * 1000),
+        ferme: etablissementApiInfo.etat_administratif.value !== "A",
 
         region_implantation_code: etablissementApiInfo.region_implantation.code,
         region_implantation_nom: etablissementApiInfo.region_implantation.value,

@@ -1,4 +1,6 @@
 const axios = require("axios");
+const ApiError = require("./ApiError");
+const logger = require("../logger");
 const endpoint = "https://data.enseignementsup-recherche.gouv.fr/api/records/1.0/search/";
 const titleCase = require("title-case").titleCase;
 
@@ -106,7 +108,7 @@ class EsSupApi {
 
   /**
    * Get the numAcademie from codeCommune
-   * @param {*} nomAcademie
+   * @param {*} codeCommune
    */
   async getNumAcademieInfoFromCodeCommune(codeCommune) {
     try {
@@ -128,18 +130,27 @@ class EsSupApi {
 
   // #region Get Infos Methods
 
+  async fetchInfoFromCodeCommune(codeCommune) {
+    try {
+      logger.debug(`[Enseignement supérieur API] Fetching info for code commune ${codeCommune}...`);
+      let response = await axios.get(
+        `${endpoint}?dataset=fr-esr-referentiel-geographique&refine.com_code=${codeCommune}&rows=1`
+      );
+      return response.data;
+    } catch (e) {
+      throw new ApiError("Api EsSup", e.message, e.code || e.response.status);
+    }
+  }
+
   /**
    * Get data from Code commune  insee
    * @param {*} codeCommune
    */
   async getInfoFromCodeCommune(codeCommune) {
     try {
-      const response = await axios.get(
-        `${endpoint}?dataset=fr-esr-referentiel-geographique&refine.com_code=${codeCommune}&rows=1`
-      );
-
-      if (response.data && response.data.records.length > 0) {
-        return response.data.records[0].fields;
+      const { records } = await this.fetchInfoFromCodeCommune(codeCommune);
+      if (records && records.length > 0) {
+        return records[0].fields;
       }
 
       console.error(`No data found for ${codeCommune}`);
@@ -152,7 +163,7 @@ class EsSupApi {
 
   /**
    * Get data from NumDepartement
-   * @param {*} codeCommune
+   * @param {*} numDepartement
    */
   async getInfoFromNumDepartement(numDepartement) {
     try {

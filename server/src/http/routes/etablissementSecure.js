@@ -28,32 +28,27 @@ module.exports = () => {
 
       let hasRightToEdit = user.isAdmin;
       if (!hasRightToEdit) {
-        const listAcademie = user.academie.split(",");
-        hasRightToEdit = listAcademie.includes(`${body.num_academie}`);
+        const listAcademie = user.academie.split(",").map((academieStr) => Number(academieStr));
+        hasRightToEdit = listAcademie.includes(-1) || listAcademie.includes(Number(body.num_academie));
       }
       if (!hasRightToEdit) {
         throw Boom.unauthorized();
       }
 
-      // TODO BELOW CHECK IF ALREADY EXIST
-      // const exist = await MnaFormation.findOne({
-      //   cfd: body.cfd,
-      //   code_postal: body.code_postal,
-      //   uai_formation: body.uai_formation,
-      // });
-      // if (exist) {
-      //   Boom.conflict("La formation existe déjà");
-      // }
+      const exist = await Etablissement.findOne({
+        siret: body.siret,
+      });
+      if (exist) {
+        throw Boom.conflict("L'etablissement existe déjà");
+      }
 
-      const item = body;
-      logger.info("Adding new etablissement: ", item);
+      logger.info("Adding new etablissement: ", body);
 
-      const formation = new Etablissement(body);
+      const etablissement = new Etablissement(body);
+      await etablissement.save();
 
-      await formation.save();
-
-      // return new formation
-      res.json(formation);
+      // return new etablissement
+      res.json(etablissement);
     })
   );
 
@@ -65,11 +60,11 @@ module.exports = () => {
     tryCatch(async ({ body, user, params }, res) => {
       const itemId = params.id;
 
-      const formation = await Etablissement.findById(itemId);
+      const etablissement = await Etablissement.findById(itemId);
       let hasRightToEdit = user.isAdmin;
       if (!hasRightToEdit) {
-        const listAcademie = user.academie.split(",");
-        hasRightToEdit = listAcademie.includes(`${formation.num_academie}`);
+        const listAcademie = user.academie.split(",").map((academieStr) => Number(academieStr));
+        hasRightToEdit = listAcademie.includes(-1) || listAcademie.includes(Number(etablissement.num_academie));
       }
       if (!hasRightToEdit) {
         throw Boom.unauthorized();
@@ -89,11 +84,11 @@ module.exports = () => {
     tryCatch(async ({ user, params }, res) => {
       const itemId = params.id;
 
-      const formation = await Etablissement.findById(itemId);
+      const etablissement = await Etablissement.findById(itemId);
       let hasRightToEdit = user.isAdmin;
       if (!hasRightToEdit) {
-        const listAcademie = user.academie.split(",");
-        hasRightToEdit = listAcademie.includes(`${formation.num_academie}`);
+        const listAcademie = user.academie.split(",").map((academieStr) => Number(academieStr));
+        hasRightToEdit = listAcademie.includes(-1) || listAcademie.includes(Number(etablissement.num_academie));
       }
       if (!hasRightToEdit) {
         throw Boom.unauthorized();

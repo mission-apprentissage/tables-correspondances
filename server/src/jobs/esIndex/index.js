@@ -19,7 +19,7 @@ const esIndex = async () => {
 
 module.exports = esIndex;
 
-if (process.env.standalone) {
+if (process.env.run) {
   runScript(async () => {
     await esIndex();
   });

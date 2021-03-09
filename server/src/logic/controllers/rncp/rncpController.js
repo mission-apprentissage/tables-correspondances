@@ -33,7 +33,7 @@ class RncpController {
   async findRncpFromCfd(cfd) {
     const result = await FicheRncp.findOne({ cfds: { $in: [cfd] } });
     if (!result) {
-      return { info: !"Erreur: Non trouvé", value: null };
+      return { info: "Erreur: Non trouvé", value: null };
     }
     return { info: !result.code_rncp ? "Erreur: Non trouvé" : "Ok", value: result.code_rncp };
   }
