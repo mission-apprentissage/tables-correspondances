@@ -38,6 +38,7 @@ integrationTests(__filename, () => {
       referentiel: "test",
       uais_secondaires: [],
       relations: [],
+      reseaux: [],
     });
     assert.ok(found._meta.created_at);
     assert.deepStrictEqual(found._meta.anomalies, []);

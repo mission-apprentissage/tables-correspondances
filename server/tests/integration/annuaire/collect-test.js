@@ -135,12 +135,12 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on ignore un uai vide", async () => {
+  it("Vérifie qu'on ignore un uai avec une donnée invalide", async () => {
     await prepareAnnuaire();
     let source = createTestSource([
       {
         siret: "111111111111111",
-        uais: [],
+        uais: ["", null, "NULL"],
       },
     ]);
 
@@ -240,5 +240,38 @@ integrationTests(__filename, () => {
     assert.strictEqual(found.relations.length, 1);
     assert.strictEqual(found.relations[0].siret, "22222222222222");
     assert.strictEqual(found.relations[0].type, "gestionnaire");
+  });
+
+  it("Vérifie qu'on peut collecter des reseaux", async () => {
+    await prepareAnnuaire();
+    let source = createTestSource([
+      {
+        siret: "111111111111111",
+        reseaux: ["test"],
+      },
+    ]);
+
+    await collect(source);
+
+    let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found.reseaux, ["test"]);
+  });
+
+  it("Vérifie qu'on ne duplique pas les reseaux", async () => {
+    await createAnnuaire({
+      siret: "111111111111111",
+      reseaux: ["test"],
+    });
+    let source = createTestSource([
+      {
+        siret: "111111111111111",
+        reseaux: ["test"],
+      },
+    ]);
+
+    await collect(source);
+
+    let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found.reseaux, ["test"]);
   });
 });
