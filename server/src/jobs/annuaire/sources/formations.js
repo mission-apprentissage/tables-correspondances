@@ -11,10 +11,8 @@ module.exports = async (custom = {}) => {
       let filters = options.filters || {};
 
       return oleoduc(
-        Annuaire.find(filters).lean().cursor(),
-        transformData(async (etablissement) => {
-          let siret = etablissement.siret;
-
+        Annuaire.find(filters, { siret: 1 }).lean().cursor(),
+        transformData(async ({ siret }) => {
           try {
             let { formations } = await api.getFormations(
               {
