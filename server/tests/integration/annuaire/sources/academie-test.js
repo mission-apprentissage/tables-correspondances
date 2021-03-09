@@ -35,12 +35,9 @@ integrationTests(__filename, () => {
     await createAnnuaire({
       siret: "11111111100000",
     });
-    let source = await createSource("academie", {
-      apiEsSup: createApiEsSup(),
-      filters: { siret: "33333333333333" },
-    });
+    let source = await createSource("academie", { apiEsSup: createApiEsSup() });
 
-    let results = await collect(source);
+    let results = await collect(source, { filters: { siret: "33333333333333" } });
 
     assert.deepStrictEqual(results, {
       total: 0,

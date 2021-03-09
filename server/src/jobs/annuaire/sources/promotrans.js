@@ -1,29 +1,29 @@
-const { oleoduc, transformData, filterData } = require("oleoduc");
+const { oleoduc, transformData } = require("oleoduc");
 const csv = require("csv-parse");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
-module.exports = async (options = {}) => {
-  let filters = options.filters || {};
-  let stream = options.input || (await getOvhFileAsStream("cfas-reseaux/cfas-promotrans.csv", { storage: "mna-flux" }));
+module.exports = async (custom = {}) => {
+  let input = custom.input || (await getOvhFileAsStream("cfas-reseaux/cfas-promotrans.csv", { storage: "mna-flux" }));
 
-  return oleoduc(
-    stream,
-    csv({
-      delimiter: ";",
-      trim: true,
-      bom: true,
-      columns: true,
-    }),
-    transformData((data) => {
-      return {
-        siret: data["siret"],
-        uais: [data["uai"]],
-        reseaux: ["promotrans"],
-      };
-    }),
-    filterData((data) => {
-      return filters.siret ? filters.siret === data.siret : !!data;
-    }),
-    { promisify: false }
-  );
+  return {
+    stream() {
+      return oleoduc(
+        input,
+        csv({
+          delimiter: ";",
+          trim: true,
+          bom: true,
+          columns: true,
+        }),
+        transformData((data) => {
+          return {
+            selector: data["siret"],
+            uais: [data["uai"]],
+            reseaux: ["promotrans"],
+          };
+        }),
+        { promisify: false }
+      );
+    },
+  };
 };

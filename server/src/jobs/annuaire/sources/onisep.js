@@ -1,4 +1,4 @@
-const { oleoduc, transformData, filterData } = require("oleoduc");
+const { oleoduc, transformData } = require("oleoduc");
 const csv = require("csv-parse");
 const mergeStream = require("merge-stream");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
@@ -22,19 +22,21 @@ async function defaultStream() {
   );
 }
 
-module.exports = async (options = {}) => {
-  let filters = options.filters || {};
-  let stream = options.input ? parse(options.input) : await defaultStream();
+module.exports = async (custom = {}) => {
+  let input = custom.input ? parse(custom.input) : await defaultStream();
 
-  return oleoduc(
-    stream,
-    transformData((data) => {
-      return {
-        siret: data["n° SIRET"],
-        uais: [data["code UAI"]],
-      };
-    }),
-    filterData((e) => (filters.siret ? filters.siret === e.siret : !!e)),
-    { promisify: false }
-  );
+  return {
+    stream() {
+      return oleoduc(
+        input,
+        transformData((data) => {
+          return {
+            selector: data["n° SIRET"],
+            uais: [data["code UAI"]],
+          };
+        }),
+        { promisify: false }
+      );
+    },
+  };
 };
