@@ -71,7 +71,6 @@ module.exports = async (custom = {}) => {
                   return {
                     siret: e.siret,
                     label: getRelationLabel(e, uniteLegale),
-                    annuaire: (await Annuaire.countDocuments({ siret: e.siret })) > 0,
                   };
                 })
             );

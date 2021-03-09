@@ -16,19 +16,13 @@ function buildNewUAIsSecondaires(type, etablissement, uais) {
     });
 }
 
-function buildRelations(type, etablissement, relations) {
-  let previousRelations = etablissement.relations.map((relation) => {
-    let found = relations.find((r) => r.siret === relation.siret);
-    return found ? { ...found, ...relation, sources: [...relation.sources, type] } : relation;
-  });
-
-  let newRelations = relations
-    .filter((r) => !previousRelations.map((pr) => pr.siret).includes(r.siret))
-    .map((r) => {
-      return { ...r, sources: [type] };
-    });
-
-  return [...previousRelations, ...newRelations];
+async function buildNewRelations(type, relations) {
+  return Promise.all(
+    relations.map(async (r) => {
+      let doc = await Annuaire.findOne({ siret: r.siret });
+      return { ...r, label: doc ? doc.raison_sociale : r.label, annuaire: !!doc, source: type };
+    })
+  );
 }
 
 module.exports = async (source, options = {}) => {
@@ -93,11 +87,13 @@ module.exports = async (source, options = {}) => {
             {
               $set: {
                 ...data,
-                relations: buildRelations(type, etablissement, relations),
               },
               $addToSet: {
                 reseaux: {
                   $each: reseaux,
+                },
+                relations: {
+                  $each: await buildNewRelations(type, relations),
                 },
                 uais_secondaires: {
                   $each: buildNewUAIsSecondaires(type, etablissement, uais),
@@ -107,6 +103,7 @@ module.exports = async (source, options = {}) => {
             { runValidators: true }
           );
           stats.updated += getNbModifiedDocuments(res);
+          logger.info(`[Collect][${type}] Etablissement ${selector} updated`);
         } catch (e) {
           await handleAnomalies(selector, [e]);
         }
