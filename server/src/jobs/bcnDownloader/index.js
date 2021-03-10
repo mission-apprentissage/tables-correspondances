@@ -30,7 +30,7 @@ const downloadBcnTables = async () => {
   logger.warn(`[BCN tables] Download completed`);
 };
 
-module.exports = downloadBcnTables;
+module.exports.downloadBcnTables = downloadBcnTables;
 
 if (process.env.run) {
   runScript(async () => {
