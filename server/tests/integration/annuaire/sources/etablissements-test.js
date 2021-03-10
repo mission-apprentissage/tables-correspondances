@@ -39,11 +39,11 @@ integrationTests(__filename, () => {
       siret: "11111111111111",
       entreprise_raison_sociale: "Centre de formation",
     });
-    let source = await createSource("etablissements", {
+    let source = await createSource("etablissements");
+
+    let results = await collect(source, {
       filters: { siret: "33333333333333" },
     });
-
-    let results = await collect(source);
 
     assert.deepStrictEqual(results, {
       total: 0,

@@ -70,24 +70,4 @@ integrationTests(__filename, () => {
       sources: ["ideo2"],
     });
   });
-
-  it("Vérifie qu'on peut filter par siret", async () => {
-    await createAnnuaire({ siret: "11111111111111" });
-    await createAnnuaire({ siret: "22222222222222" });
-    let source = await createSource("ideo2", {
-      filters: { siret: "33333333333333" },
-      input: createStream(
-        `"UAI_gestionnaire";"SIRET_gestionnaire";"SIRET_lieu_enseignement";"UAI_lieu_enseignement"
-"0011073L";"11111111111111";"22222222222222";"0011073X"`
-      ),
-    });
-
-    let results = await collect(source);
-
-    assert.deepStrictEqual(results, {
-      total: 0,
-      updated: 0,
-      failed: 0,
-    });
-  });
 });

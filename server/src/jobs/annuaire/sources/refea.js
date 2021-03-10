@@ -1,28 +1,28 @@
-const { oleoduc, transformData, filterData } = require("oleoduc");
+const { oleoduc, transformData } = require("oleoduc");
 const csv = require("csv-parse");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
-module.exports = async (options = {}) => {
-  let filters = options.filters || {};
-  let stream = options.input || (await getOvhFileAsStream("annuaire/REFEA-liste-uai-avec-coordonnees.csv"));
+module.exports = async (custom = {}) => {
+  let input = custom.input || (await getOvhFileAsStream("annuaire/REFEA-liste-uai-avec-coordonnees.csv"));
 
-  return oleoduc(
-    stream,
-    csv({
-      delimiter: ";",
-      trim: true,
-      bom: true,
-      columns: true,
-    }),
-    transformData((data) => {
-      return {
-        siret: data["uai_code_siret"],
-        uais: [data["uai_code_educnationale"]],
-      };
-    }),
-    filterData((data) => {
-      return filters.siret ? filters.siret === data.siret : !!data;
-    }),
-    { promisify: false }
-  );
+  return {
+    stream() {
+      return oleoduc(
+        input,
+        csv({
+          delimiter: ";",
+          trim: true,
+          bom: true,
+          columns: true,
+        }),
+        transformData((data) => {
+          return {
+            selector: data["uai_code_siret"],
+            uais: [data["uai_code_educnationale"]],
+          };
+        }),
+        { promisify: false }
+      );
+    },
+  };
 };

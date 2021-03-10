@@ -79,12 +79,9 @@ integrationTests(__filename, () => {
     await createAnnuaire({
       siret: "11111111100000",
     });
-    let source = await createSource("academie", {
-      filters: { siret: "33333333333333" },
-      apiCatalogue: createApiCatalogueMock(),
-    });
+    let source = await createSource("academie", { apiCatalogue: createApiCatalogueMock() });
 
-    let results = await collect(source);
+    let results = await collect(source, { filters: { siret: "33333333333333" } });
 
     assert.deepStrictEqual(results, {
       total: 0,

@@ -19,6 +19,7 @@ module.exports = {
           raison_sociale: faker.company.companyName(),
           uais_secondaires: [],
           relations: [],
+          reseaux: [],
           referentiel: "test",
           siege_social: true,
           statut: "actif",

@@ -3,21 +3,22 @@ const csv = require("csv-parse");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
 module.exports = async (custom = {}) => {
-  let input = custom.input || (await getOvhFileAsStream("annuaire/DEPP-CFASousConvRegionale_17122020_1.csv"));
+  let input = custom.input || (await getOvhFileAsStream("cfas-reseaux/cfas-cma.csv", { storage: "mna-flux" }));
 
   return {
     stream() {
       return oleoduc(
         input,
         csv({
-          trim: true,
           delimiter: ";",
+          trim: true,
+          bom: true,
           columns: true,
         }),
         transformData((data) => {
           return {
-            siret: data.numero_siren_siret_uai,
-            uai: data.numero_uai,
+            selector: data["uai"],
+            reseaux: ["cma"],
           };
         }),
         { promisify: false }

@@ -97,11 +97,10 @@ integrationTests(__filename, () => {
 
     let source = await createSource("sirene", {
       apiSirene: createApiSireneMock(),
-      filters: { siret: "33333333333333" },
       organismes: ["11111111111111"],
     });
 
-    let results = await collect(source);
+    let results = await collect(source, { filters: { siret: "33333333333333" } });
 
     assert.deepStrictEqual(results, {
       total: 0,

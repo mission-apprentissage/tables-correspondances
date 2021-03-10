@@ -55,16 +55,16 @@ cli
 
       if (type) {
         let input = file ? createReadStream(file) : null;
-        let source = await createSource(type, { ...options, input });
-        return collect(source);
+        let source = await createSource(type, { input });
+        return collect(source, options);
       } else {
         let groups = getDefaultSourcesGroupedByPriority();
         let stats = [];
 
         await asyncForEach(groups, async (group) => {
           let promises = group.map(async (builder) => {
-            let source = await builder(options);
-            return { [source.type]: await collect(source) };
+            let source = await builder();
+            return { [source.type]: await collect(source, options) };
           });
 
           let results = await Promise.all(promises);

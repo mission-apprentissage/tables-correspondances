@@ -3,24 +3,26 @@ const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
 const collect = require("../../../../src/jobs/annuaire/collect");
-const { importReferentiel, createStream } = require("../../../utils/testUtils");
+const { createStream } = require("../../../utils/testUtils");
+const { createAnnuaire } = require("../../../utils/fixtures");
 
 integrationTests(__filename, () => {
-  it("Vérifie qu'on peut collecter des informations du fichier REFEA", async () => {
-    await importReferentiel();
-    let source = await createSource("refea", {
+  it("Vérifie qu'on peut collecter des informations du fichier agri", async () => {
+    await createAnnuaire({ siret: "11111111111111", uai: "1111111A" });
+    let source = await createSource("agri", {
       input: createStream(
-        `uai_code_siret;uai_code_educnationale;uai_libelle_educnationale
-"11111111111111";"0011073L";"Centre de formation"`
+        `siret;uai
+"11111111111111";"0011073L"`
       ),
     });
 
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found.reseaux, ["agri"]);
     assert.deepStrictEqual(found.uais_secondaires, [
       {
-        type: "refea",
+        type: "agri",
         uai: "0011073L",
         valide: true,
       },

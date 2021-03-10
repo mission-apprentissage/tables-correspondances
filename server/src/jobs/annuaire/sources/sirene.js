@@ -32,10 +32,10 @@ function getRelationLabel(e, uniteLegale) {
 
 async function loadOrganismeDeFormations() {
   let organismes = [];
-  let referentiel = await dgefp(() => true);
+  let referentiel = await dgefp();
 
   await oleoduc(
-    referentiel,
+    referentiel.stream(),
     accumulateData((acc, data) => [...acc, data.siret], { accumulator: [] }),
     writeData((acc) => (organismes = acc))
   );
@@ -43,71 +43,74 @@ async function loadOrganismeDeFormations() {
   return organismes;
 }
 
-module.exports = async (options = {}) => {
-  let api = options.apiSirene || apiSirene;
-  let filters = options.filters || {};
-  let organismes = options.organismes || (await loadOrganismeDeFormations());
+module.exports = async (custom = {}) => {
+  let api = custom.apiSirene || apiSirene;
+  let organismes = custom.organismes || (await loadOrganismeDeFormations());
 
-  return oleoduc(
-    Annuaire.find(filters).lean().cursor(),
-    transformData(async (etablissement) => {
-      let siret = etablissement.siret;
+  return {
+    stream(options = {}) {
+      let filters = options.filters || {};
 
-      try {
-        let siren = siret.substring(0, 9);
-        let uniteLegale = await api.getUniteLegale(siren);
-        let data = uniteLegale.etablissements.find((e) => e.siret === siret);
-        if (!data) {
-          return { siret, anomalies: [`Etablissement inconnu pour l'entreprise ${siren}`] };
-        }
+      return oleoduc(
+        Annuaire.find(filters, { siret: 1 }).lean().cursor(),
+        transformData(async ({ siret }) => {
+          try {
+            let siren = siret.substring(0, 9);
+            let uniteLegale = await api.getUniteLegale(siren);
+            let data = uniteLegale.etablissements.find((e) => e.siret === siret);
+            if (!data) {
+              return { selector: siret, anomalies: [`Etablissement inconnu pour l'entreprise ${siren}`] };
+            }
 
-        let relations = await Promise.all(
-          uniteLegale.etablissements
-            .filter((e) => {
-              return e.siret !== siret && e.etat_administratif === "A" && organismes.includes(e.siret);
-            })
-            .map(async (e) => {
-              return {
-                siret: e.siret,
-                label: getRelationLabel(e, uniteLegale),
-                annuaire: (await Annuaire.countDocuments({ siret: e.siret })) > 0,
-              };
-            })
-        );
+            let relations = await Promise.all(
+              uniteLegale.etablissements
+                .filter((e) => {
+                  return e.siret !== siret && e.etat_administratif === "A" && organismes.includes(e.siret);
+                })
+                .map(async (e) => {
+                  return {
+                    siret: e.siret,
+                    label: getRelationLabel(e, uniteLegale),
+                    annuaire: (await Annuaire.countDocuments({ siret: e.siret })) > 0,
+                  };
+                })
+            );
 
-        return {
-          siret,
-          relations,
-          data: {
-            raison_sociale: getEtablissementName(data, uniteLegale),
-            siege_social: data.etablissement_siege === "true",
-            statut: data.etat_administratif === "A" ? "actif" : "fermé",
-            adresse: {
-              geojson: {
-                type: "Feature",
-                geometry: {
-                  type: "Point",
-                  coordinates: [parseFloat(data.longitude), parseFloat(data.latitude)],
-                },
-                properties: {
-                  score: parseFloat(data.geo_score),
+            return {
+              selector: siret,
+              relations,
+              data: {
+                raison_sociale: getEtablissementName(data, uniteLegale),
+                siege_social: data.etablissement_siege === "true",
+                statut: data.etat_administratif === "A" ? "actif" : "fermé",
+                adresse: {
+                  geojson: {
+                    type: "Feature",
+                    geometry: {
+                      type: "Point",
+                      coordinates: [parseFloat(data.longitude), parseFloat(data.latitude)],
+                    },
+                    properties: {
+                      score: parseFloat(data.geo_score),
+                    },
+                  },
+                  label: data.geo_adresse,
+                  numero_voie: data.numero_voie,
+                  type_voie: data.type_voie,
+                  nom_voie: data.libelle_voie,
+                  code_postal: data.code_postal,
+                  code_insee: data.code_commune,
+                  localite: data.libelle_commune,
+                  cedex: data.code_cedex,
                 },
               },
-              label: data.geo_adresse,
-              numero_voie: data.numero_voie,
-              type_voie: data.type_voie,
-              nom_voie: data.libelle_voie,
-              code_postal: data.code_postal,
-              code_insee: data.code_commune,
-              localite: data.libelle_commune,
-              cedex: data.code_cedex,
-            },
-          },
-        };
-      } catch (e) {
-        return { siret, anomalies: [e.reason === 404 ? "Entreprise inconnue" : e] };
-      }
-    }),
-    { promisify: false, parallel: 5 }
-  );
+            };
+          } catch (e) {
+            return { selector: siret, anomalies: [e.reason === 404 ? "Entreprise inconnue" : e] };
+          }
+        }),
+        { promisify: false, parallel: 5 }
+      );
+    },
+  };
 };

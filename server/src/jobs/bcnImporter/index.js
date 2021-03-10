@@ -48,7 +48,7 @@ const dbOperations = async (base, db, Entity, description = "") => {
   }
 };
 
-const importBcnTables = async (db) => {
+const importBcnTables = async (db = { name: "" }) => {
   logger.warn(`[BCN tables] Importer`);
   const bases = fileManager.loadBases();
 
@@ -84,7 +84,7 @@ const importBcnTables = async (db) => {
   logger.warn(`[BCN tables] Importer completed`);
 };
 
-module.exports = importBcnTables;
+module.exports.importBcnTables = importBcnTables;
 
 if (process.env.run) {
   runScript(async ({ db }) => {

@@ -1,39 +1,26 @@
 const assert = require("assert");
 const { omit } = require("lodash");
 const { Readable } = require("stream");
-const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
-const { createReferentiel } = require("../../../src/jobs/annuaire/referentiels/referentiels");
 const { createAnnuaire } = require("../../utils/fixtures");
-const importReferentiel = require("../../../src/jobs/annuaire/importReferentiel");
 const collect = require("../../../src/jobs/annuaire/collect");
-const { createStream } = require("../../utils/testUtils");
 
 integrationTests(__filename, () => {
-  const prepareAnnuaire = async (content) => {
-    let referentiel = await createReferentiel("depp", {
-      input: createStream(
-        content ||
-          `"numero_uai";"numero_siren_siret_uai"
-"0011058V";"111111111111111"`
-      ),
-    });
-
-    return importReferentiel(referentiel);
-  };
-
-  const createTestSource = (array) => {
-    let source = Readable.from(array);
-    source.type = "test";
-    return source;
-  };
+  function createTestSource(array) {
+    return {
+      type: "test",
+      stream() {
+        return Readable.from(array);
+      },
+    };
+  }
 
   it("Vérifie qu'on peut collecter un uai", async () => {
-    await prepareAnnuaire();
+    await createAnnuaire({ siret: "111111111111111" });
     let source = createTestSource([
       {
-        siret: "111111111111111",
+        selector: "111111111111111",
         uais: ["0011073L"],
       },
     ]);
@@ -56,10 +43,10 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on teste la validité d'un UAI", async () => {
-    await prepareAnnuaire();
+    await createAnnuaire({ siret: "111111111111111" });
     let source = createTestSource([
       {
-        siret: "111111111111111",
+        selector: "111111111111111",
         uais: ["093XXXT"],
       },
     ]);
@@ -80,10 +67,10 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on ignore un uai quand il existe en tant qu'uai principal", async () => {
-    await prepareAnnuaire();
+    await createAnnuaire({ siret: "111111111111111", uai: "0011058V" });
     let source = createTestSource([
       {
-        siret: "111111111111111",
+        selector: "111111111111111",
         uais: ["0011058V"],
       },
     ]);
@@ -102,7 +89,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on ignore un uai quand il existe déjà en tant qu'uai secondaire", async () => {
     let source = createTestSource([
       {
-        siret: "111111111111111",
+        selector: "111111111111111",
         uais: ["0011073L"],
       },
     ]);
@@ -135,12 +122,12 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on ignore un uai vide", async () => {
-    await prepareAnnuaire();
+  it("Vérifie qu'on ignore un uai avec une donnée invalide", async () => {
+    await createAnnuaire({ siret: "111111111111111" });
     let source = createTestSource([
       {
-        siret: "111111111111111",
-        uais: [],
+        selector: "111111111111111",
+        uais: ["", null, "NULL"],
       },
     ]);
 
@@ -156,19 +143,13 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on stocke une erreur survenue durant une collecte", async () => {
-    await prepareAnnuaire();
-    let source = oleoduc(
-      createTestSource([
-        {
-          siret: "111111111111111",
-          uais: [],
-        },
-      ]),
-      transformData(() => {
-        return { anomalies: [new Error("Erreur")], siret: "111111111111111" };
-      })
-    );
-    source.type = "test";
+    await createAnnuaire({ siret: "111111111111111" });
+    let source = createTestSource([
+      {
+        selector: "111111111111111",
+        anomalies: [new Error("Erreur")],
+      },
+    ]);
 
     let stats = await collect(source);
 
@@ -188,10 +169,10 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut collecter des relations", async () => {
-    await prepareAnnuaire();
+    await createAnnuaire({ siret: "111111111111111" });
     let source = createTestSource([
       {
-        siret: "111111111111111",
+        selector: "111111111111111",
         relations: [{ siret: "22222222222222", annuaire: false, label: "test", type: "gestionnaire" }],
       },
     ]);
@@ -211,7 +192,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on met à jour les relations existantes sans les dupliquer", async () => {
-    await prepareAnnuaire();
+    await createAnnuaire({ siret: "111111111111111" });
     await Annuaire.updateOne(
       { siret: "111111111111111" },
       {
@@ -229,7 +210,7 @@ integrationTests(__filename, () => {
     );
     let source = createTestSource([
       {
-        siret: "111111111111111",
+        selector: "111111111111111",
         relations: [{ siret: "22222222222222", annuaire: false, label: "test", type: "gestionnaire" }],
       },
     ]);
@@ -240,5 +221,106 @@ integrationTests(__filename, () => {
     assert.strictEqual(found.relations.length, 1);
     assert.strictEqual(found.relations[0].siret, "22222222222222");
     assert.strictEqual(found.relations[0].type, "gestionnaire");
+  });
+
+  it("Vérifie qu'on peut collecter des reseaux", async () => {
+    await createAnnuaire({ siret: "111111111111111" });
+    let source = createTestSource([
+      {
+        selector: "111111111111111",
+        reseaux: ["test"],
+      },
+    ]);
+
+    await collect(source);
+
+    let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found.reseaux, ["test"]);
+  });
+
+  it("Vérifie qu'on ne duplique pas les reseaux", async () => {
+    await createAnnuaire({
+      siret: "111111111111111",
+      reseaux: ["test"],
+    });
+    let source = createTestSource([
+      {
+        selector: "111111111111111",
+        reseaux: ["test"],
+      },
+    ]);
+
+    await collect(source);
+
+    let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found.reseaux, ["test"]);
+  });
+
+  it("Vérifie qu'on peut filter par siret", async () => {
+    await createAnnuaire({ siret: "111111111111111" });
+    let source = createTestSource([
+      {
+        selector: "111111111111111",
+        reseaux: ["test"],
+      },
+    ]);
+
+    let results = await collect(source, { filters: { siret: "33333333333333" } });
+
+    assert.deepStrictEqual(results, {
+      total: 0,
+      updated: 0,
+      failed: 0,
+    });
+  });
+
+  it("Vérifie qu'on peut collecter en se basant sur l'uai", async () => {
+    await createAnnuaire({ siret: "111111111111111", uai: "0011073X" });
+    let source = createTestSource([
+      {
+        selector: "0011073X",
+        reseaux: ["test"],
+      },
+    ]);
+
+    let results = await collect(source);
+
+    let found = await Annuaire.findOne({ uai: "0011073X" }, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found.reseaux, ["test"]);
+    assert.deepStrictEqual(results, {
+      total: 1,
+      failed: 0,
+      updated: 1,
+    });
+  });
+
+  it("Vérifie qu'on peut collecter en se basant sur un uai secondaire", async () => {
+    await createAnnuaire({
+      uai: "0011073X",
+      siret: "111111111111111",
+      uais_secondaires: [
+        {
+          type: "test",
+          uai: "SECONDAIRE",
+          valide: true,
+        },
+      ],
+    });
+    let source = createTestSource([
+      {
+        selector: "SECONDAIRE",
+        reseaux: ["test"],
+      },
+    ]);
+
+    let results = await collect(source);
+
+    let found = await Annuaire.findOne({ uai: "0011073X" }, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found.reseaux, ["test"]);
+    assert.deepStrictEqual(results, {
+      total: 1,
+      failed: 0,
+      updated: 1,
+    });
   });
 });
