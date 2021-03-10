@@ -12,7 +12,7 @@ let executeWithRateLimiting = apiRateLimiter("apiCatalogue", {
 });
 
 class ApiCatalogue {
-  getFormations(query, options) {
+  getFormations(query, { annee, ...options }) {
     return executeWithRateLimiting(async () => {
       try {
         let params = queryString.stringify(
@@ -28,8 +28,9 @@ class ApiCatalogue {
           { encode: false }
         );
 
-        logger.debug(`[Catalogue API] Fetching formations with params ${params}...`);
-        let response = await axios.get(`${apiEndpoint}/api/entity/formations2021?${params}`);
+        let version = `${annee || ""}`;
+        logger.debug(`[Catalogue API] Fetching formations ${version} with params ${params}...`);
+        let response = await axios.get(`${apiEndpoint}/api/entity/formations${version}?${params}`);
         return response.data;
       } catch (e) {
         throw new ApiError("Api Catalogue", e.message, e.code || e.response.status);

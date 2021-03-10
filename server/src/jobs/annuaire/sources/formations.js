@@ -3,6 +3,25 @@ const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
 const apiCatalogue = require("../../../common/apis/apiCatalogue");
 
+async function getFormations(api, siret, options = {}) {
+  let res = api.getFormations(
+    {
+      $or: [{ etablissement_formateur_siret: siret }, { etablissement_gestionnaire_siret: siret }],
+    },
+    {
+      select: {
+        etablissement_gestionnaire_siret: 1,
+        etablissement_gestionnaire_entreprise_raison_sociale: 1,
+        etablissement_formateur_siret: 1,
+        etablissement_formateur_entreprise_raison_sociale: 1,
+      },
+      resultats_par_page: 600, // no pagination needed for the moment
+      ...options,
+    }
+  );
+  return res.formations;
+}
+
 module.exports = async (custom = {}) => {
   let api = custom.apiCatalogue || apiCatalogue;
 
@@ -14,37 +33,26 @@ module.exports = async (custom = {}) => {
         Annuaire.find(filters, { siret: 1 }).lean().cursor(),
         transformData(async ({ siret }) => {
           try {
-            let { formations } = await api.getFormations(
-              {
-                $or: [{ etablissement_formateur_siret: siret }, { etablissement_gestionnaire_siret: siret }],
-              },
-              {
-                select: {
-                  etablissement_gestionnaire_siret: 1,
-                  etablissement_gestionnaire_entreprise_raison_sociale: 1,
-                  etablissement_formateur_siret: 1,
-                  etablissement_formateur_entreprise_raison_sociale: 1,
-                },
-                resultats_par_page: 600, // no pagination needed for the moment
-              }
-            );
+            let [_2020, _2021] = await Promise.all([
+              getFormations(api, siret),
+              getFormations(api, siret, { annee: "2021" }),
+            ]);
 
             let relations = await Promise.all(
-              formations
+              [..._2020, ..._2021]
                 .filter((f) => f.etablissement_gestionnaire_siret !== f.etablissement_formateur_siret)
                 .map(async (f) => {
                   let isFormateurType = siret === f.etablissement_gestionnaire_siret;
                   let relationSiret = isFormateurType
                     ? f.etablissement_formateur_siret
                     : f.etablissement_gestionnaire_siret;
-                  let found = await Annuaire.findOne({ siret: relationSiret });
                   let label = isFormateurType
                     ? f.etablissement_formateur_entreprise_raison_sociale
                     : f.etablissement_gestionnaire_entreprise_raison_sociale;
 
                   return {
                     siret: relationSiret,
-                    label: found ? found.raison_sociale : label,
+                    label,
                     type: isFormateurType ? "formateur" : "gestionnaire",
                   };
                 })
