@@ -36,8 +36,8 @@ let getAuth = async (uri) => {
 };
 
 module.exports = {
-  getOvhFileAsStream: async (relativePath) => {
-    let storage = "mna-tables-correspondances";
+  getOvhFileAsStream: async (relativePath, options = {}) => {
+    let storage = options.storage || "mna-tables-correspondances";
     let { token, baseUrl } = await getAuth(config.ovh.storage.uri);
 
     let fullPath = encodeURI(`${baseUrl}/${storage}/${relativePath}`);

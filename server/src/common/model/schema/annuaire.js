@@ -32,6 +32,11 @@ const annuaireSchema = {
     required: true,
     description: "Statut de l'entreprise",
   },
+  reseaux: {
+    type: Array,
+    default: [],
+    description: "Les réseaux auquels appartient l'établissement",
+  },
   academie: {
     type: new Schema(
       {
@@ -48,6 +53,7 @@ const annuaireSchema = {
     ),
   },
   adresse: {
+    default: undefined,
     type: new Schema(
       {
         label: {
@@ -140,7 +146,7 @@ const annuaireSchema = {
     type: [
       new Schema(
         {
-          type: {
+          siret: {
             type: String,
             required: true,
           },
@@ -148,15 +154,15 @@ const annuaireSchema = {
             type: Boolean,
             required: true,
           },
-          siret: {
+          source: {
             type: String,
             required: true,
           },
-          statut: {
+          label: {
             type: String,
-            required: true,
+            default: undefined,
           },
-          details: {
+          type: {
             type: String,
             default: undefined,
           },
@@ -170,7 +176,7 @@ const annuaireSchema = {
     default: {},
     type: new Schema(
       {
-        last_update: {
+        created_at: {
           description: "Dernière date de mise à jour du document",
           type: Date,
           required: true,

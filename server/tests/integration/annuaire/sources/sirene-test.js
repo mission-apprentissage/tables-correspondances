@@ -6,18 +6,18 @@ const { createApiSireneMock } = require("../../../utils/mocks");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
 const collect = require("../../../../src/jobs/annuaire/collect");
 const { importReferentiel } = require("../../../utils/testUtils");
-const { createAnnuaire } = require("../../../utils/fixtures");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations de l'API Sirene", async () => {
     await importReferentiel();
-    let source = await createSource("sirene", { apiSirene: createApiSireneMock() });
+    let source = await createSource("sirene", { apiSirene: createApiSireneMock(), organismes: ["11111111111111"] });
 
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    assert.strictEqual(found.raison_sociale, "NOMAYO");
     assert.strictEqual(found.siege_social, true);
-    assert.deepStrictEqual(found.statut, "actif");
+    assert.strictEqual(found.statut, "actif");
     assert.deepStrictEqual(found.adresse, {
       geojson: {
         type: "Feature",
@@ -45,7 +45,7 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on peut collecter des informations sur les relations (établissement)", async () => {
+  it("Vérifie qu'on peut collecter des relations", async () => {
     await importReferentiel();
     let source = await createSource("sirene", {
       apiSirene: createApiSireneMock({
@@ -69,6 +69,7 @@ integrationTests(__filename, () => {
           },
         ],
       }),
+      organismes: ["11111111111111", "11111111122222"],
     });
 
     let results = await collect(source);
@@ -76,11 +77,10 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.relations, [
       {
-        type: "établissement",
         siret: "11111111122222",
-        statut: "actif",
-        details: "NOMAYO2 75001 PARIS",
+        label: "NOMAYO2 75001 PARIS",
         annuaire: false,
+        source: "sirene",
       },
     ]);
     assert.deepStrictEqual(results, {
@@ -90,9 +90,65 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on peut détecter des relations qui existent dans l'annuaire", async () => {
+  it("Vérifie qu'on peut filter par siret", async () => {
+    await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
+"0011058V";"11111111111111"`);
+
+    let source = await createSource("sirene", {
+      apiSirene: createApiSireneMock(),
+      organismes: ["11111111111111"],
+    });
+
+    let results = await collect(source, { filters: { siret: "33333333333333" } });
+
+    assert.deepStrictEqual(results, {
+      total: 0,
+      updated: 0,
+      failed: 0,
+    });
+  });
+
+  it("Vérifie qu'on ignore les relations qui ne sont pas des organismes de formations", async () => {
+    await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
+"0011058V";"11111111111111"`);
+    let source = await createSource("sirene", {
+      apiSirene: createApiSireneMock({
+        etablissements: [
+          {
+            siret: "11111111111111",
+            etat_administratif: "A",
+            etablissement_siege: "true",
+            libelle_voie: "DES LILAS",
+            code_postal: "75019",
+            libelle_commune: "PARIS",
+          },
+          {
+            siret: "2222222222222222",
+            etat_administratif: "A",
+            etablissement_siege: "true",
+            libelle_voie: "DES LILAS",
+            code_postal: "75019",
+            libelle_commune: "PARIS",
+          },
+        ],
+      }),
+      organismes: ["2222222222222222"],
+    });
+
+    let results = await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    assert.strictEqual(found.relations.length, 1);
+    assert.deepStrictEqual(found.relations[0].siret, "2222222222222222");
+    assert.deepStrictEqual(results, {
+      total: 1,
+      updated: 1,
+      failed: 0,
+    });
+  });
+
+  it("Vérifie qu'on ignore les relations pour des établissements fermés", async () => {
     await importReferentiel();
-    await createAnnuaire({ siret: "11111111122222" });
     let source = await createSource("sirene", {
       apiSirene: createApiSireneMock({
         etablissements: [
@@ -107,42 +163,36 @@ integrationTests(__filename, () => {
           {
             siret: "11111111122222",
             denomination_usuelle: "NOMAYO2",
-            etat_administratif: "A",
-            etablissement_siege: "true",
+            etat_administratif: "F",
+            etablissement_siege: "false",
+            libelle_voie: "DES LILAS",
             code_postal: "75001",
             libelle_commune: "PARIS",
           },
         ],
       }),
+      organismes: ["11111111111111", "11111111122222"],
     });
 
     await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(found.relations, [
-      {
-        type: "siege",
-        siret: "11111111122222",
-        statut: "actif",
-        details: "NOMAYO2 75001 PARIS",
-        annuaire: true,
-      },
-    ]);
+    assert.deepStrictEqual(found.relations, []);
   });
 
   it("Vérifie qu'on gère une erreur lors de la récupération des informations de l'API Sirene", async () => {
     await importReferentiel();
     let failingApi = {
       getUniteLegale: () => {
-        throw new Error("HTTP error");
+        throw new ApiError("api", "HTTP error");
       },
     };
-    let source = await createSource("sirene", { apiSirene: failingApi });
+    let source = await createSource("sirene", { apiSirene: failingApi, organismes: ["11111111111111"] });
 
     let results = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
-    assert.deepStrictEqual(found._meta.anomalies[0].details, "HTTP error");
+    assert.deepStrictEqual(found._meta.anomalies[0].details, "[api] HTTP error");
     assert.deepStrictEqual(results, {
       total: 1,
       updated: 0,
@@ -159,7 +209,7 @@ integrationTests(__filename, () => {
         };
       },
     };
-    let source = await createSource("sirene", { apiSirene: failingApi });
+    let source = await createSource("sirene", { apiSirene: failingApi, organismes: ["11111111111111"] });
 
     await collect(source);
 
@@ -174,7 +224,7 @@ integrationTests(__filename, () => {
         throw new ApiError("sirene", "mocked", 404);
       },
     };
-    let source = await createSource("sirene", { apiSirene: failingApi });
+    let source = await createSource("sirene", { apiSirene: failingApi, organismes: ["11111111111111"] });
 
     await collect(source);
 

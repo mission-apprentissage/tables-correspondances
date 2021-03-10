@@ -1,20 +1,42 @@
 const { oleoduc, transformData } = require("oleoduc");
 const csv = require("csv-parse");
+const mergeStream = require("merge-stream");
+const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
-module.exports = (stream) => {
+function parse(stream) {
   return oleoduc(
     stream,
     csv({
       delimiter: ";",
+      trim: true,
       bom: true,
       columns: true,
-    }),
-    transformData((data) => {
-      return {
-        siret: data["n° SIRET"],
-        uais: [data["code UAI"]],
-      };
-    }),
-    { promisify: false }
+    })
   );
+}
+
+async function defaultStream() {
+  return mergeStream(
+    parse(await getOvhFileAsStream("annuaire/ONISEP-ideo-structures_denseignement_secondaire.csv")),
+    parse(await getOvhFileAsStream("annuaire/ONISEP-ideo-structures_denseignement_superieur.csv"))
+  );
+}
+
+module.exports = async (custom = {}) => {
+  let input = custom.input ? parse(custom.input) : await defaultStream();
+
+  return {
+    stream() {
+      return oleoduc(
+        input,
+        transformData((data) => {
+          return {
+            selector: data["n° SIRET"],
+            uais: [data["code UAI"]],
+          };
+        }),
+        { promisify: false }
+      );
+    },
+  };
 };

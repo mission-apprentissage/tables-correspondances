@@ -1,14 +1,32 @@
-const { oleoduc, writeData } = require("oleoduc");
+const { oleoduc, writeData, filterData } = require("oleoduc");
 const { Annuaire } = require("../../common/model");
 const { getNbModifiedDocuments } = require("../../common/utils/mongooseUtils");
 const { validateUAI } = require("../../common/utils/uaiUtils");
 const logger = require("../../common/logger");
 
-const shouldAddUAI = (etablissement, uai) => {
-  return uai && etablissement.uai !== uai && !etablissement.uais_secondaires.find((sec) => sec.uai === uai);
-};
+function buildSelectorQuery(selector) {
+  return { $or: [{ siret: selector }, { uai: selector }, { "uais_secondaires.uai": selector }] };
+}
 
-module.exports = async (source) => {
+function buildNewUAIsSecondaires(type, etablissement, uais) {
+  return uais
+    .filter((uai) => uai && uai !== "NULL" && etablissement.uai !== uai)
+    .map((uai) => {
+      return { type, uai, valide: validateUAI(uai) };
+    });
+}
+
+async function buildNewRelations(type, relations) {
+  return Promise.all(
+    relations.map(async (r) => {
+      let doc = await Annuaire.findOne({ siret: r.siret });
+      return { ...r, label: doc ? doc.raison_sociale : r.label, annuaire: !!doc, source: type };
+    })
+  );
+}
+
+module.exports = async (source, options = {}) => {
+  let filters = options.filters || {};
   let type = source.type;
   let stats = {
     total: 0,
@@ -16,11 +34,13 @@ module.exports = async (source) => {
     failed: 0,
   };
 
-  async function handleAnomalies(siret, anomalies) {
+  async function handleAnomalies(selector, anomalies) {
     stats.failed++;
-    logger.error(`[Collect][${type}] Erreur lors de la collecte pour l'établissement ${siret}.`, anomalies);
+    logger.error(`[Collect][${type}] Erreur lors de la collecte pour l'établissement ${selector}.`, anomalies);
+    let query = buildSelectorQuery(selector);
+
     await Annuaire.updateOne(
-      { siret },
+      query,
       {
         $push: {
           "_meta.anomalies": {
@@ -41,46 +61,51 @@ module.exports = async (source) => {
   }
 
   try {
+    let stream = await source.stream({ filters });
+
     await oleoduc(
-      source,
-      writeData(async ({ siret, anomalies = [], uais = [], data }) => {
+      stream,
+      filterData((data) => {
+        return filters.siret ? filters.siret === data.selector : !!data;
+      }),
+      writeData(async ({ selector, uais = [], relations = [], reseaux = [], data = {}, anomalies = [] }) => {
         stats.total++;
+        let query = buildSelectorQuery(selector);
 
         try {
-          let etablissement = await Annuaire.findOne({ siret });
+          let etablissement = await Annuaire.findOne(query).lean();
           if (!etablissement) {
             return;
           }
 
           if (anomalies.length > 0) {
-            await handleAnomalies(siret, anomalies);
+            await handleAnomalies(selector, anomalies);
           }
 
-          if (data || uais.length > 0) {
-            let res = await Annuaire.updateOne(
-              { siret },
-              {
-                $set: data || {},
-                ...(uais.length === 0
-                  ? {}
-                  : {
-                      $push: {
-                        uais_secondaires: {
-                          $each: uais
-                            .filter((uai) => shouldAddUAI(etablissement, uai))
-                            .map((uai) => {
-                              return { type, uai, valide: validateUAI(uai) };
-                            }),
-                        },
-                      },
-                    }),
+          let res = await Annuaire.updateOne(
+            query,
+            {
+              $set: {
+                ...data,
               },
-              { runValidators: true }
-            );
-            stats.updated += getNbModifiedDocuments(res);
-          }
+              $addToSet: {
+                reseaux: {
+                  $each: reseaux,
+                },
+                relations: {
+                  $each: await buildNewRelations(type, relations),
+                },
+                uais_secondaires: {
+                  $each: buildNewUAIsSecondaires(type, etablissement, uais),
+                },
+              },
+            },
+            { runValidators: true }
+          );
+          stats.updated += getNbModifiedDocuments(res);
+          logger.info(`[Collect][${type}] Etablissement ${selector} updated`);
         } catch (e) {
-          await handleAnomalies(siret, [e]);
+          await handleAnomalies(selector, [e]);
         }
       })
     );

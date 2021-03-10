@@ -1,4 +1,4 @@
-const { oleoduc, transformData, filterData } = require("oleoduc");
+const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
 const apiEsSup = require("../../../common/apis/apiEsSup");
 const logger = require("../../../common/logger");
@@ -24,50 +24,57 @@ class Cache {
   }
 }
 
-module.exports = async (options = {}) => {
-  let api = options.apiEsSup || apiEsSup;
-  let cache = new Cache("academie");
+module.exports = async (custom = {}) => {
+  let api = custom.apiEsSup || apiEsSup;
 
-  let stream = oleoduc(
-    Annuaire.find().cursor(),
-    filterData((e) => !!e.adresse),
-    transformData(async (etablissement) => {
-      let siret = etablissement.siret;
-      let codeInsee = etablissement.adresse.code_insee;
+  return {
+    stream(options = {}) {
+      let filters = options.filters || {};
+      let cache = new Cache("academie");
 
-      try {
-        let records = cache.get(codeInsee);
-        if (!records) {
-          let fetched = await api.fetchInfoFromCodeCommune(codeInsee);
-          records = fetched.records;
-          cache.add(codeInsee, records);
-        }
+      let stream = oleoduc(
+        Annuaire.find({ ...filters, $and: [{ adresse: { $exists: true } }, { adresse: { $ne: null } }] })
+          .lean()
+          .cursor(),
+        transformData(async (etablissement) => {
+          let siret = etablissement.siret;
+          let codeInsee = etablissement.adresse.code_insee;
 
-        let data = records.length > 0 ? records[0].fields : null;
+          try {
+            let records = cache.get(codeInsee);
+            if (!records) {
+              let fetched = await api.fetchInfoFromCodeCommune(codeInsee);
+              records = fetched.records;
+              cache.add(codeInsee, records);
+            }
 
-        return {
-          siret,
-          ...(data
-            ? {
-                data: {
-                  academie: {
-                    code: data.aca_code,
-                    nom: data.aca_nom,
-                  },
-                },
-              }
-            : {
-                anomalies: [`Impossible de déterminer l'académie pour le code insee ${codeInsee}`],
-              }),
-        };
-      } catch (e) {
-        return { siret, anomalies: [e] };
-      }
-    }),
-    { promisify: false, parallel: 5 }
-  );
+            let data = records.length > 0 ? records[0].fields : null;
 
-  stream.on("finish", () => cache.flush());
+            return {
+              selector: siret,
+              ...(data
+                ? {
+                    data: {
+                      academie: {
+                        code: data.aca_code,
+                        nom: data.aca_nom,
+                      },
+                    },
+                  }
+                : {
+                    anomalies: [`Impossible de déterminer l'académie pour le code insee ${codeInsee}`],
+                  }),
+            };
+          } catch (e) {
+            return { selector: siret, anomalies: [e] };
+          }
+        }),
+        { promisify: false, parallel: 5 }
+      );
 
-  return stream;
+      stream.on("finish", () => cache.flush());
+
+      return stream;
+    },
+  };
 };

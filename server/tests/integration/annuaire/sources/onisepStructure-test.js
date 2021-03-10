@@ -8,13 +8,12 @@ const { importReferentiel, createStream } = require("../../../utils/testUtils");
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier ONISEP (structure)", async () => {
     await importReferentiel();
-    let source = await createSource(
-      "onisepStructure",
-      createStream(
+    let source = await createSource("onisepStructure", {
+      input: createStream(
         `STRUCT SIRET;STRUCT UAI;STRUCT Libellé Amétys
 "11111111111111";"0011073L";"Centre de formation"`
-      )
-    );
+      ),
+    });
 
     let results = await collect(source);
 
