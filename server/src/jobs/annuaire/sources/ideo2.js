@@ -1,7 +1,7 @@
 const { oleoduc, transformData, flattenArray } = require("oleoduc");
 const csv = require("csv-parse");
+const { isEmpty } = require("lodash");
 const { decodeStream } = require("iconv-lite");
-const { Annuaire } = require("../../../common/model");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
 module.exports = async (custom = {}) => {
@@ -18,48 +18,44 @@ module.exports = async (custom = {}) => {
           columns: true,
         }),
         transformData(async (data) => {
-          let [gestionnaire, formateur] = await Promise.all([
-            Annuaire.findOne({ siret: data["SIRET_gestionnaire"] }),
-            Annuaire.findOne({ siret: data["SIRET_lieu_enseignement"] }),
-          ]);
+          let siretFormateur = data["SIRET_lieu_enseignement"];
+          let siretGestionnaire = data["SIRET_gestionnaire"];
 
           return [
             {
-              selector: data["SIRET_gestionnaire"],
+              selector: siretGestionnaire,
               uais: [data["UAI_gestionnaire"]],
               relations: [
-                ...(formateur
-                  ? [
+                ...(isEmpty(siretFormateur)
+                  ? []
+                  : [
                       {
-                        siret: formateur.siret,
-                        annuaire: !!formateur,
-                        label: formateur ? formateur.raison_sociale : data["nom_lieu_enseignement"],
+                        siret: siretFormateur,
+                        label: data["nom_lieu_enseignement"],
                         type: "formateur",
                       },
-                    ]
-                  : []),
+                    ]),
               ],
             },
             {
-              selector: data["SIRET_lieu_enseignement"],
+              selector: siretFormateur,
               uais: [data["UAI_lieu_enseignement"]],
               relations: [
-                ...(gestionnaire
-                  ? [
+                ...(isEmpty(siretGestionnaire)
+                  ? []
+                  : [
                       {
-                        siret: gestionnaire.siret,
-                        annuaire: !!gestionnaire,
-                        label: gestionnaire ? gestionnaire.raison_sociale : data["CFA_gestionnaire"],
+                        siret: siretGestionnaire,
+                        label: data["CFA_gestionnaire"],
                         type: "gestionnaire",
                       },
-                    ]
-                  : []),
+                    ]),
               ],
             },
           ];
         }),
         flattenArray(),
-        { promisify: false }
+        { promisify: false, parallel: 10 }
       );
     },
   };

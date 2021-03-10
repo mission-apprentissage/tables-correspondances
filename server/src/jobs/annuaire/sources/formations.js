@@ -44,7 +44,6 @@ module.exports = async (custom = {}) => {
 
                   return {
                     siret: relationSiret,
-                    annuaire: !!found,
                     label: found ? found.raison_sociale : label,
                     type: isFormateurType ? "formateur" : "gestionnaire",
                   };

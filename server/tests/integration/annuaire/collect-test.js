@@ -173,7 +173,7 @@ integrationTests(__filename, () => {
     let source = createTestSource([
       {
         selector: "111111111111111",
-        relations: [{ siret: "22222222222222", annuaire: false, label: "test", type: "gestionnaire" }],
+        relations: [{ siret: "22222222222222", annuaire: false, label: "Centre de formation", type: "gestionnaire" }],
       },
     ]);
 
@@ -184,30 +184,26 @@ integrationTests(__filename, () => {
       {
         siret: "22222222222222",
         annuaire: false,
-        label: "test",
+        label: "Centre de formation",
         type: "gestionnaire",
-        sources: ["test"],
+        source: "test",
       },
     ]);
   });
 
-  it("Vérifie qu'on met à jour les relations existantes sans les dupliquer", async () => {
-    await createAnnuaire({ siret: "111111111111111" });
-    await Annuaire.updateOne(
-      { siret: "111111111111111" },
-      {
-        $set: {
-          relations: [
-            {
-              siret: "22222222222222",
-              annuaire: false,
-              label: "test",
-              sources: ["test"],
-            },
-          ],
+  it("Vérifie qu'on ne duplique pas les relations", async () => {
+    await createAnnuaire({
+      siret: "111111111111111",
+      relations: [
+        {
+          siret: "22222222222222",
+          annuaire: false,
+          label: "test",
+          type: "gestionnaire",
+          source: "test",
         },
-      }
-    );
+      ],
+    });
     let source = createTestSource([
       {
         selector: "111111111111111",
@@ -221,6 +217,29 @@ integrationTests(__filename, () => {
     assert.strictEqual(found.relations.length, 1);
     assert.strictEqual(found.relations[0].siret, "22222222222222");
     assert.strictEqual(found.relations[0].type, "gestionnaire");
+  });
+
+  it("Vérifie qu'on peut détecter des relations entre établissements de l'annuaire", async () => {
+    await createAnnuaire({ siret: "11111111111111" });
+    await createAnnuaire({ siret: "22222222222222", raison_sociale: "Centre de formation" });
+    let source = createTestSource([
+      {
+        selector: "11111111111111",
+        relations: [{ siret: "22222222222222", label: "test" }],
+      },
+    ]);
+
+    await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found.relations, [
+      {
+        siret: "22222222222222",
+        label: "Centre de formation",
+        annuaire: true,
+        source: "test",
+      },
+    ]);
   });
 
   it("Vérifie qu'on peut collecter des reseaux", async () => {
