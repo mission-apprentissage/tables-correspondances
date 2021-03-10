@@ -8,7 +8,7 @@ function buildSelectorQuery(selector) {
   return { $or: [{ siret: selector }, { uai: selector }, { "uais_secondaires.uai": selector }] };
 }
 
-function getUAIsSecondaires(type, etablissement, uais) {
+function buildNewUAIsSecondaires(type, etablissement, uais) {
   return uais
     .filter((uai) => uai && uai !== "NULL" && etablissement.uai !== uai)
     .map((uai) => {
@@ -16,7 +16,7 @@ function getUAIsSecondaires(type, etablissement, uais) {
     });
 }
 
-function getRelations(type, etablissement, relations) {
+function buildRelations(type, etablissement, relations) {
   let previousRelations = etablissement.relations.map((relation) => {
     let found = relations.find((r) => r.siret === relation.siret);
     return found ? { ...found, ...relation, sources: [...relation.sources, type] } : relation;
@@ -93,14 +93,14 @@ module.exports = async (source, options = {}) => {
             {
               $set: {
                 ...data,
-                relations: getRelations(type, etablissement, relations),
+                relations: buildRelations(type, etablissement, relations),
               },
               $addToSet: {
                 reseaux: {
                   $each: reseaux,
                 },
                 uais_secondaires: {
-                  $each: getUAIsSecondaires(type, etablissement, uais),
+                  $each: buildNewUAIsSecondaires(type, etablissement, uais),
                 },
               },
             },
