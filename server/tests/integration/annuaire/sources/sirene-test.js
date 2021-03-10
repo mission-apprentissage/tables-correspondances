@@ -6,7 +6,6 @@ const { createApiSireneMock } = require("../../../utils/mocks");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
 const collect = require("../../../../src/jobs/annuaire/collect");
 const { importReferentiel } = require("../../../utils/testUtils");
-const { createAnnuaire } = require("../../../utils/fixtures");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations de l'API Sirene", async () => {
@@ -81,7 +80,7 @@ integrationTests(__filename, () => {
         siret: "11111111122222",
         label: "NOMAYO2 75001 PARIS",
         annuaire: false,
-        sources: ["sirene"],
+        source: "sirene",
       },
     ]);
     assert.deepStrictEqual(results, {
@@ -179,46 +178,6 @@ integrationTests(__filename, () => {
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.relations, []);
-  });
-
-  it("Vérifie qu'on peut détecter des relations entre établissements de l'annuaire", async () => {
-    await importReferentiel();
-    await createAnnuaire({ siret: "11111111122222" });
-    let source = await createSource("sirene", {
-      apiSirene: createApiSireneMock({
-        etablissements: [
-          {
-            siret: "11111111111111",
-            etat_administratif: "A",
-            etablissement_siege: "true",
-            libelle_voie: "DES LILAS",
-            code_postal: "75019",
-            libelle_commune: "PARIS",
-          },
-          {
-            siret: "11111111122222",
-            denomination_usuelle: "NOMAYO2",
-            etat_administratif: "A",
-            etablissement_siege: "true",
-            code_postal: "75001",
-            libelle_commune: "PARIS",
-          },
-        ],
-      }),
-      organismes: ["11111111111111", "11111111122222"],
-    });
-
-    await collect(source);
-
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(found.relations, [
-      {
-        siret: "11111111122222",
-        label: "NOMAYO2 75001 PARIS",
-        annuaire: true,
-        sources: ["sirene"],
-      },
-    ]);
   });
 
   it("Vérifie qu'on gère une erreur lors de la récupération des informations de l'API Sirene", async () => {
