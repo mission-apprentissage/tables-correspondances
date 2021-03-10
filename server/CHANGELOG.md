@@ -1,3 +1,11 @@
+# [2.1.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.0.0...v2.1.0) (2021-03-10)
+
+
+### Features
+
+* **sdk:** add bcn importer and cfd info ([4e57f49](https://github.com/mission-apprentissage/tables-correspondances/commit/4e57f49aafb5f3cf980ee50121f2a8ff5f8eed11))
+* change file name ([13bdfa1](https://github.com/mission-apprentissage/tables-correspondances/commit/13bdfa105360140fb13557777017357843217e09))
+
 # [2.0.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v1.2.0...v2.0.0) (2021-03-09)
 
 
