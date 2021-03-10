@@ -37,7 +37,7 @@ const conventionFilesImporter = async (db) => {
   logger.warn(`[Convention files importer] Ended`);
 };
 
-module.exports = conventionFilesImporter;
+module.exports.conventionFilesImporter = conventionFilesImporter;
 
 if (process.env.run) {
   runScript(async ({ db }) => {

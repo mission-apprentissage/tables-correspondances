@@ -50,7 +50,7 @@ const EtablissementsUpdater = async () => {
   }
 };
 
-module.exports = EtablissementsUpdater;
+module.exports.EtablissementsUpdater = EtablissementsUpdater;
 
 if (process.env.run) {
   runScript(async () => {
