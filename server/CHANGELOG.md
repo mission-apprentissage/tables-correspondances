@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.1.0...v2.2.0) (2021-03-10)
+
+
+### Features
+
+* **sdk:** add mef, siret, uai validation ([ce65717](https://github.com/mission-apprentissage/tables-correspondances/commit/ce6571706450ec89c55907f0544ad8ff344f97c6))
+
 # [2.1.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.0.0...v2.1.0) (2021-03-10)
 
 
