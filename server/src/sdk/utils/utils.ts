@@ -99,3 +99,52 @@ export async function getCfdInfo(
     return null;
   }
 }
+
+
+export async function getMef10Info(
+  mef10: string,
+): Promise<any> {
+  isSdkReady();
+  try {
+    let { getDataFromMef10 } = await import("../../logic/handlers/mefHandler");
+    const result = await getDataFromMef10(mef10);
+    return result;
+  } catch (error) {
+    console.error(`getMef10Info: something went wrong!`, error);
+    return null;
+  }
+}
+
+export async function getSiretInfo(
+  siret: string,
+): Promise<any> {
+  isSdkReady();
+  try {
+    let { getDataFromSiret } = await import("../../logic/handlers/siretHandler");
+    const result = await getDataFromSiret(siret);
+    return result;
+  } catch (error) {
+    console.error(`getSiretInfo: something went wrong!`, error);
+    return null;
+  }
+}
+
+
+
+export async function isValideUAI(
+  uai: string,
+): Promise<any> {
+  isSdkReady();
+  try {
+    let { validateUAI } = await import("../../common/utils/uaiUtils");
+    return validateUAI(uai);
+  } catch (error) {
+    console.error(`getSiretInfo: something went wrong!`, error);
+    return null;
+  }
+}
+
+// TODO
+// const conventionFilesImporter = require("./convetionFilesImporter/index");
+// await conventionFilesImporter(db);
+//await EtablissementsUpdater();
