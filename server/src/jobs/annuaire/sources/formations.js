@@ -4,7 +4,7 @@ const { Annuaire } = require("../../../common/model");
 const apiCatalogue = require("../../../common/apis/apiCatalogue");
 
 async function getFormations(api, siret, options = {}) {
-  let res = api.getFormations(
+  let res = await api.getFormations(
     {
       $or: [{ etablissement_formateur_siret: siret }, { etablissement_gestionnaire_siret: siret }],
     },
@@ -19,6 +19,7 @@ async function getFormations(api, siret, options = {}) {
       ...options,
     }
   );
+
   return res.formations;
 }
 
