@@ -5,15 +5,6 @@ let adresse = new Schema(
     label: {
       type: String,
     },
-    numero_voie: {
-      type: String,
-    },
-    type_voie: {
-      type: String,
-    },
-    nom_voie: {
-      type: String,
-    },
     code_postal: {
       type: String,
       required: true,

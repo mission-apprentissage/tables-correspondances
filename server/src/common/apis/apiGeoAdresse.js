@@ -16,7 +16,18 @@ class ApiGeoAdresse {
       const response = await axios.get(`${apiEndpoint}/search/?${params}`);
       return response.data;
     } catch (e) {
-      throw new ApiError("Api Entreprise", e.message, e.code || e.response.status);
+      throw new ApiError("apiGeoAdresse", e.message, e.code || e.response.status);
+    }
+  }
+
+  async reverse(lon, lat, options = {}) {
+    try {
+      let params = queryString.stringify({ lon, lat, ...options });
+      logger.debug(`[Adresse API] Reverse geocode with parameters ${params}...`);
+      const response = await axios.get(`${apiEndpoint}/reverse/?${params}`);
+      return response.data;
+    } catch (e) {
+      throw new ApiError("apiGeoAdresse", e.message, e.code || e.response.status);
     }
   }
 
@@ -27,7 +38,7 @@ class ApiGeoAdresse {
       logger.debug(`[Adresse API] Searching Postcode with parameters ${params}...`);
       return response.data;
     } catch (e) {
-      throw new ApiError("Api Entreprise", e.message, e.code || e.response.status);
+      throw new ApiError("apiGeoAdresse", e.message, e.code || e.response.status);
     }
   }
 
@@ -38,7 +49,7 @@ class ApiGeoAdresse {
       const response = await axios.get(`${apiEndpoint}/search/?limit=1&q=${params}`);
       return response.data;
     } catch (e) {
-      throw new ApiError("Api Entreprise", e.message, e.code || e.response.status);
+      throw new ApiError("apiGeoAdresse", e.message, e.code || e.response.status);
     }
   }
 }

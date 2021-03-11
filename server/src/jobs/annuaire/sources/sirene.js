@@ -1,7 +1,9 @@
 const { oleoduc, transformData, accumulateData, writeData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
 const apiSirene = require("../../../common/apis/apiSirene");
+const apiGeoAdresse = require("../../../common/apis/apiGeoAdresse");
 const dgefp = require("../referentiels/dgefp");
+const geocoder = require("../utils/geocoder");
 
 function getEtablissementName(e, uniteLegale) {
   return (
@@ -45,6 +47,7 @@ async function loadOrganismeDeFormations() {
 
 module.exports = async (custom = {}) => {
   let api = custom.apiSirene || apiSirene;
+  let { getAdresseFromCoordinates } = geocoder(custom.apiGeoAdresse || apiGeoAdresse);
   let organismes = custom.organismes || (await loadOrganismeDeFormations());
 
   return {
@@ -75,6 +78,8 @@ module.exports = async (custom = {}) => {
                 })
             );
 
+            let adresse = await getAdresseFromCoordinates(parseFloat(data.longitude), parseFloat(data.latitude));
+
             return {
               selector: siret,
               relations,
@@ -82,26 +87,7 @@ module.exports = async (custom = {}) => {
                 raison_sociale: getEtablissementName(data, uniteLegale),
                 siege_social: data.etablissement_siege === "true",
                 statut: data.etat_administratif === "A" ? "actif" : "fermé",
-                adresse: {
-                  geojson: {
-                    type: "Feature",
-                    geometry: {
-                      type: "Point",
-                      coordinates: [parseFloat(data.longitude), parseFloat(data.latitude)],
-                    },
-                    properties: {
-                      score: parseFloat(data.geo_score),
-                    },
-                  },
-                  label: data.geo_adresse,
-                  numero_voie: data.numero_voie,
-                  type_voie: data.type_voie,
-                  nom_voie: data.libelle_voie,
-                  code_postal: data.code_postal,
-                  code_insee: data.code_commune,
-                  localite: data.libelle_commune,
-                  cedex: data.code_cedex,
-                },
+                adresse: adresse,
               },
             };
           } catch (e) {

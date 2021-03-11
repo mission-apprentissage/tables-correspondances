@@ -2,7 +2,7 @@ const assert = require("assert");
 const ApiError = require("../../../../src/common/apis/ApiError");
 const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
-const { createApiSireneMock } = require("../../../utils/mocks");
+const { createApiSireneMock, createApiGeoAddresseMock } = require("../../../utils/mocks");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
 const collect = require("../../../../src/jobs/annuaire/collect");
 const { importReferentiel } = require("../../../utils/testUtils");
@@ -10,7 +10,11 @@ const { importReferentiel } = require("../../../utils/testUtils");
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations de l'API Sirene", async () => {
     await importReferentiel();
-    let source = await createSource("sirene", { apiSirene: createApiSireneMock(), organismes: ["11111111111111"] });
+    let source = await createSource("sirene", {
+      apiGeoAdresse: createApiGeoAddresseMock(),
+      apiSirene: createApiSireneMock(),
+      organismes: ["11111111111111"],
+    });
 
     let results = await collect(source);
 
@@ -23,20 +27,16 @@ integrationTests(__filename, () => {
         type: "Feature",
         geometry: {
           type: "Point",
-          coordinates: [2.396147, 48.880391],
+          coordinates: [2.396444, 48.879706],
         },
         properties: {
           score: 0.88,
         },
       },
-      label: "31 rue des lilas Paris 75001",
-      numero_voie: "31",
-      type_voie: "RUE",
-      nom_voie: "DES LILAS",
-      code_postal: "75001",
-      code_insee: "75000",
-      localite: "PARIS",
-      cedex: null,
+      label: "31 Rue des lilas 75019 Paris",
+      code_postal: "75019",
+      code_insee: "75119",
+      localite: "Paris",
     });
     assert.deepStrictEqual(results, {
       total: 1,
@@ -112,6 +112,7 @@ integrationTests(__filename, () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"11111111111111"`);
     let source = await createSource("sirene", {
+      apiGeoAdresse: createApiGeoAddresseMock(),
       apiSirene: createApiSireneMock({
         etablissements: [
           {
@@ -150,6 +151,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on ignore les relations pour des établissements fermés", async () => {
     await importReferentiel();
     let source = await createSource("sirene", {
+      apiGeoAdresse: createApiGeoAddresseMock(),
       apiSirene: createApiSireneMock({
         etablissements: [
           {
