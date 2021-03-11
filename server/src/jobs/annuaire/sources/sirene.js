@@ -52,10 +52,8 @@ module.exports = async (custom = {}) => {
       let filters = options.filters || {};
 
       return oleoduc(
-        Annuaire.find(filters).lean().cursor(),
-        transformData(async (etablissement) => {
-          let siret = etablissement.siret;
-
+        Annuaire.find(filters, { siret: 1 }).lean().cursor(),
+        transformData(async ({ siret }) => {
           try {
             let siren = siret.substring(0, 9);
             let uniteLegale = await api.getUniteLegale(siren);
@@ -73,7 +71,6 @@ module.exports = async (custom = {}) => {
                   return {
                     siret: e.siret,
                     label: getRelationLabel(e, uniteLegale),
-                    annuaire: (await Annuaire.countDocuments({ siret: e.siret })) > 0,
                   };
                 })
             );

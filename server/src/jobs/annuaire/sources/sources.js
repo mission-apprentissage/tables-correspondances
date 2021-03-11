@@ -32,13 +32,19 @@ module.exports = {
         () => createSource("anasup"),
         () => createSource("compagnons-du-devoir"),
         () => createSource("promotrans"),
+        () => createSource("ideo2"),
+        () => createSource("formations"),
       ],
       [
-        //Second group contains sources that need data from the previous group
+        //This group contains sources that need data from the previous groups
         () => createSource("academie"),
-        () => createSource("ideo2"),
       ],
-      [() => createSource("formations")],
+      [
+        //Theses sources used uai as selector, so we tried to collect as many uais as possible before running them
+        () => createSource("ccca-btp"),
+        () => createSource("cci-france"),
+        () => createSource("cma"),
+      ],
     ];
   },
 };

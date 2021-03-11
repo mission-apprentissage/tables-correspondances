@@ -154,6 +154,10 @@ const annuaireSchema = {
             type: Boolean,
             required: true,
           },
+          source: {
+            type: String,
+            required: true,
+          },
           label: {
             type: String,
             default: undefined,
@@ -161,10 +165,6 @@ const annuaireSchema = {
           type: {
             type: String,
             default: undefined,
-          },
-          sources: {
-            type: Array,
-            default: [],
           },
         },
         { _id: false }

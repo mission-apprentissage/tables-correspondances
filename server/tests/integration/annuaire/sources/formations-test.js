@@ -33,7 +33,7 @@ integrationTests(__filename, () => {
         label: "Etablissement",
         annuaire: false,
         type: "formateur",
-        sources: ["formations"],
+        source: "formations",
       },
     ]);
     assert.deepStrictEqual(results, {
@@ -70,7 +70,7 @@ integrationTests(__filename, () => {
         label: "Entreprise",
         annuaire: false,
         type: "gestionnaire",
-        sources: ["formations"],
+        source: "formations",
       },
     ]);
   });

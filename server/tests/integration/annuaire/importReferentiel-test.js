@@ -5,14 +5,14 @@ const { Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
 const importReferentiel = require("../../../src/jobs/annuaire/importReferentiel");
 
-const createTestReferentiel = (array) => {
+function createTestReferentiel(array) {
   return {
     type: "test",
     stream() {
       return Readable.from(array);
     },
   };
-};
+}
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut initialiser un annuaire à partir d'un référentiel", async () => {
