@@ -14,7 +14,8 @@ const arrayMerger = (strategy) => (...args) => {
 };
 
 module.exports = {
-  createApiGeoAddresseMock: (custom = {}) => {
+  createApiGeoAddresseMock: (custom = {}, options = {}) => {
+    let mergeMockedData = options.array ? arrayMerger(options.array) : merge;
     let featureCollection = {
       type: "FeatureCollection",
       version: "draft",
@@ -52,10 +53,10 @@ module.exports = {
 
     return {
       search() {
-        return merge({}, featureCollection, custom);
+        return mergeMockedData({}, featureCollection, custom);
       },
       reverse() {
-        return merge({}, omit(featureCollection, ["query"]), custom);
+        return mergeMockedData({}, omit(featureCollection, ["query"]), custom);
       },
     };
   },

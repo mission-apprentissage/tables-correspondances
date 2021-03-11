@@ -176,7 +176,7 @@ const annuaireSchema = {
             default: undefined,
           },
           adresse: {
-            default: undefined,
+            required: true,
             type: adresse,
           },
         },
