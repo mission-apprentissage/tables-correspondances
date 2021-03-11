@@ -3,7 +3,7 @@ const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
 const apiCatalogue = require("../../../common/apis/apiCatalogue");
 const apiGeoAdresse = require("../../../common/apis/apiGeoAdresse");
-const geocoder = require("../utils/geocoder");
+const adresses = require("../utils/adresses");
 
 async function getFormations(api, siret, options = {}) {
   let res = await api.getFormations(
@@ -30,7 +30,7 @@ async function getFormations(api, siret, options = {}) {
 
 module.exports = async (custom = {}) => {
   let api = custom.apiCatalogue || apiCatalogue;
-  let { getAdresseFromCoordinates } = geocoder(custom.apiGeoAdresse || apiGeoAdresse);
+  let { getAdresseFromCoordinates } = adresses(custom.apiGeoAdresse || apiGeoAdresse);
 
   return {
     stream(options = {}) {

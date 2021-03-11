@@ -3,7 +3,7 @@ const { Annuaire } = require("../../../common/model");
 const apiSirene = require("../../../common/apis/apiSirene");
 const apiGeoAdresse = require("../../../common/apis/apiGeoAdresse");
 const dgefp = require("../referentiels/dgefp");
-const geocoder = require("../utils/geocoder");
+const adresses = require("../utils/adresses");
 
 function getEtablissementName(e, uniteLegale) {
   return (
@@ -47,7 +47,7 @@ async function loadOrganismeDeFormations() {
 
 module.exports = async (custom = {}) => {
   let api = custom.apiSirene || apiSirene;
-  let { getAdresseFromCoordinates } = geocoder(custom.apiGeoAdresse || apiGeoAdresse);
+  let { getAdresseFromCoordinates } = adresses(custom.apiGeoAdresse || apiGeoAdresse);
   let organismes = custom.organismes || (await loadOrganismeDeFormations());
 
   return {
