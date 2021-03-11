@@ -31,8 +31,9 @@ integrationTests(__filename, () => {
       siret: "111111111111111",
       referentiel: "test",
       uais_secondaires: [],
-      relations: [],
       reseaux: [],
+      relations: [],
+      lieux_de_formation: [],
     });
     assert.ok(found._meta.created_at);
     assert.deepStrictEqual(found._meta.anomalies, []);
