@@ -98,7 +98,7 @@ export default () => {
                   name={<div>{etablissement.raison_sociale}</div>}
                   address={{
                     line1: !adresse ? "" : adresse.label || `${adresse.code_postal} ${adresse.localite}`,
-                    line2: `Académie ${etablissement.academie.nom}`,
+                    ...(etablissement.academie ? { line2: `Académie ${etablissement.academie.nom}` } : {}),
                   }}
                   details={[
                     { title: "UAI", content: etablissement.uai || "-" },
