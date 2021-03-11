@@ -139,12 +139,55 @@ integrationTests(__filename, () => {
     });
   });
 
+  it("Vérifie qu'on cherche une adresse quand ne peut pas reverse-geocoder un lieu de formation", async () => {
+    await importReferentiel();
+    let source = await createSource("formations", {
+      apiCatalogue: createApiCatalogueMock(),
+      apiGeoAdresse: {
+        search() {
+          return Promise.resolve(createApiGeoAddresseMock().search());
+        },
+        reverse() {
+          return Promise.reject(new Error());
+        },
+      },
+    });
+
+    let results = await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found.lieux_de_formation[0].adresse, {
+      geojson: {
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [2.396444, 48.879706],
+        },
+        properties: {
+          score: 0.88,
+        },
+      },
+      label: "31 Rue des lilas 75019 Paris",
+      code_postal: "75019",
+      code_insee: "75119",
+      localite: "Paris",
+    });
+    assert.deepStrictEqual(results, {
+      total: 1,
+      updated: 1,
+      failed: 0,
+    });
+  });
+
   it("Vérifie qu'on créer une anomalie quand on ne peut pas trouver l'adresse d'un lieu de formation", async () => {
     await importReferentiel();
     let source = await createSource("formations", {
       apiGeoAdresse: {
+        search() {
+          return Promise.reject(new Error());
+        },
         reverse() {
-          throw new Error("reverse failed");
+          return Promise.reject(new Error());
         },
       },
       apiCatalogue: createApiCatalogueMock(),
@@ -159,7 +202,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
       type: "collect",
       source: "formations",
-      details: "reverse failed",
+      details: "Adresse inconnue pour les coordonnées 2.396444,48.879706",
     });
     assert.deepStrictEqual(results, {
       total: 1,

@@ -46,12 +46,15 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on créer une anomalie quand on ne peut pas trouver l'adresse d'un lieu de formation", async () => {
+  it("Vérifie qu'on créer une anomalie quand on ne peut pas trouver l'adresse", async () => {
     await importReferentiel();
     let source = await createSource("sirene", {
       apiGeoAdresse: {
+        search() {
+          return Promise.reject(new Error());
+        },
         reverse() {
-          throw new Error("failed");
+          return Promise.reject(new Error());
         },
       },
       apiSirene: createApiSireneMock(),
@@ -65,12 +68,53 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
       type: "collect",
       source: "sirene",
-      details: "failed",
+      details: "Adresse inconnue pour les coordonnées 2.396147,48.880391",
     });
     assert.deepStrictEqual(results, {
       total: 1,
       updated: 1,
       failed: 1,
+    });
+  });
+
+  it("Vérifie qu'on chercher une adresse quand ne peut pas reverse-geocoder", async () => {
+    await importReferentiel();
+    let source = await createSource("sirene", {
+      apiGeoAdresse: {
+        search() {
+          return Promise.resolve(createApiGeoAddresseMock().search());
+        },
+        reverse() {
+          return Promise.reject(new Error());
+        },
+      },
+      apiSirene: createApiSireneMock(),
+      organismes: ["11111111111111"],
+    });
+
+    let results = await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found.adresse, {
+      geojson: {
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [2.396444, 48.879706],
+        },
+        properties: {
+          score: 0.88,
+        },
+      },
+      label: "31 Rue des lilas 75019 Paris",
+      code_postal: "75019",
+      code_insee: "75119",
+      localite: "Paris",
+    });
+    assert.deepStrictEqual(results, {
+      total: 1,
+      updated: 1,
+      failed: 0,
     });
   });
 
