@@ -5,7 +5,7 @@ class ReverseGeocodingError extends Error {
     super();
     Error.captureStackTrace(this, this.constructor);
     this.name = this.constructor.name;
-    this.message = `Pas de résultats pour les coordonnées ${latitude},${longitude}`;
+    this.message = `Adresse inconnue pour les coordonnées ${latitude},${longitude}`;
   }
 }
 
@@ -14,12 +14,16 @@ module.exports = (apiGeoAdresse) => {
     async getAdresseFromCoordinates(longitude, latitude) {
       let results = await apiGeoAdresse.reverse(longitude, latitude);
 
+      if (results.features.length === 0) {
+        throw new ReverseGeocodingError(longitude, latitude);
+      }
+
       let best = results.features[0];
       let properties = best.properties;
       let score = properties.score;
 
-      if (!best || score < MIN_GEOCODE_SCORE) {
-        throw new ReverseGeocodingError();
+      if (score < MIN_GEOCODE_SCORE) {
+        throw new ReverseGeocodingError(longitude, latitude);
       } else {
         return {
           label: properties.label,

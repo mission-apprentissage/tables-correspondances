@@ -46,6 +46,7 @@ module.exports = async (custom = {}) => {
             ]);
 
             let formations = [..._2020, ..._2021];
+            let anomalies = [];
 
             let relations = await Promise.all(
               formations
@@ -73,18 +74,25 @@ module.exports = async (custom = {}) => {
                 .map(async (f) => {
                   let [latitude, longitude] = f.lieu_formation_geo_coordonnees.split(",");
 
-                  return {
-                    siret: f.lieu_formation_siret || undefined,
-                    adresse: await getAdresseFromCoordinates(longitude, latitude),
-                  };
+                  let adresse = await getAdresseFromCoordinates(longitude, latitude).catch((e) => {
+                    anomalies.push(e);
+                  });
+
+                  return adresse
+                    ? {
+                        siret: f.lieu_formation_siret || undefined,
+                        adresse,
+                      }
+                    : null;
                 })
             );
 
             return {
               selector: siret,
               relations: uniqBy(relations, "siret"),
+              anomalies,
               data: {
-                lieux_de_formation: lieuxDeFormation,
+                lieux_de_formation: lieuxDeFormation.filter((a) => a),
               },
             };
           } catch (e) {
