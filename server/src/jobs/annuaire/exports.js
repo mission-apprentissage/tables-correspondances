@@ -13,12 +13,8 @@ module.exports = {
             "Raison sociale": (a) => a.raison_sociale,
             UAI: (a) => a.uai,
             "UAIs secondaires disponibles": (a) => (a.uais_secondaires.length > 0 ? "Oui" : "Non"),
-            "UAI secondaires": (a) =>
-              a.uais_secondaires
-                .map(({ uai, type }) => {
-                  return `${uai}_${type}`;
-                })
-                .join("|"),
+            "UAI secondaires": (a) => a.uais_secondaires.map(({ uai }) => uai).join("|"),
+            Sources: (a) => a.uais_secondaires.map(({ type }) => type).join("|"),
           },
         });
 
