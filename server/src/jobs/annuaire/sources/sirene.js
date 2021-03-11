@@ -59,6 +59,7 @@ module.exports = async (custom = {}) => {
         transformData(async ({ siret }) => {
           try {
             let siren = siret.substring(0, 9);
+            let anomalies = [];
             let uniteLegale = await api.getUniteLegale(siren);
             let data = uniteLegale.etablissements.find((e) => e.siret === siret);
             if (!data) {
@@ -78,11 +79,17 @@ module.exports = async (custom = {}) => {
                 })
             );
 
-            let adresse = await getAdresseFromCoordinates(parseFloat(data.longitude), parseFloat(data.latitude));
+            let adresse;
+            try {
+              adresse = await getAdresseFromCoordinates(parseFloat(data.longitude), parseFloat(data.latitude));
+            } catch (e) {
+              anomalies.push(e);
+            }
 
             return {
               selector: siret,
               relations,
+              anomalies,
               data: {
                 raison_sociale: getEtablissementName(data, uniteLegale),
                 siege_social: data.etablissement_siege === "true",

@@ -1,4 +1,5 @@
 const assert = require("assert");
+const { omit } = require("lodash");
 const ApiError = require("../../../../src/common/apis/ApiError");
 const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
@@ -42,6 +43,34 @@ integrationTests(__filename, () => {
       total: 1,
       updated: 1,
       failed: 0,
+    });
+  });
+
+  it("Vérifie qu'on créer une anomalie quand on ne peut pas trouver l'adresse d'un lieu de formation", async () => {
+    await importReferentiel();
+    let source = await createSource("sirene", {
+      apiGeoAdresse: {
+        reverse() {
+          throw new Error("failed");
+        },
+      },
+      apiSirene: createApiSireneMock(),
+      organismes: ["11111111111111"],
+    });
+
+    let results = await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    assert.strictEqual(found._meta.anomalies.length, 1);
+    assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
+      type: "collect",
+      source: "sirene",
+      details: "failed",
+    });
+    assert.deepStrictEqual(results, {
+      total: 1,
+      updated: 1,
+      failed: 1,
     });
   });
 

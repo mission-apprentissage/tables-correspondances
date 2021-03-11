@@ -139,7 +139,7 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on peut collecter des lieux de formation", async () => {
+  it("Vérifie qu'on créer une anomalie quand on ne peut pas trouver l'adresse d'un lieu de formation", async () => {
     await importReferentiel();
     let source = await createSource("formations", {
       apiGeoAdresse: {
