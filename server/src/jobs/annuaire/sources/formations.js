@@ -74,11 +74,11 @@ module.exports = async (custom = {}) => {
                 .map(async (f) => {
                   let [latitude, longitude] = f.lieu_formation_geo_coordonnees.split(",");
 
-                  let adresse = await getAdresseFromCoordinates(longitude, latitude, f.lieu_formation_adresse).catch(
-                    (e) => {
-                      anomalies.push(e);
-                    }
-                  );
+                  let adresse = await getAdresseFromCoordinates(longitude, latitude, {
+                    label: f.lieu_formation_adresse,
+                  }).catch((e) => {
+                    anomalies.push(e);
+                  });
 
                   return adresse
                     ? {

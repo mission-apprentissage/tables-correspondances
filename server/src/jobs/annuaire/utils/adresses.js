@@ -11,8 +11,8 @@ class GeocodingError extends Error {
 }
 
 module.exports = (apiGeoAdresse) => {
-  async function fallback(error, { longitude, latitude, label }) {
-    let promise = label ? apiGeoAdresse.search(label) : Promise.reject(error);
+  async function reverseGeocodingFallback(error, longitude, latitude, options = {}) {
+    let promise = options.label ? apiGeoAdresse.search(options.label) : Promise.reject(error);
 
     return promise.catch((e) => {
       throw new GeocodingError(longitude, latitude, e.message);
@@ -20,12 +20,12 @@ module.exports = (apiGeoAdresse) => {
   }
 
   return {
-    async getAdresseFromCoordinates(longitude, latitude, label) {
+    async getAdresseFromCoordinates(longitude, latitude, options) {
       let results;
       try {
         results = await apiGeoAdresse.reverse(longitude, latitude);
       } catch (e) {
-        results = await fallback(e, { longitude, latitude, label });
+        results = await reverseGeocodingFallback(e, longitude, latitude, options);
       }
 
       if (results.features.length === 0) {

@@ -82,11 +82,9 @@ module.exports = async (custom = {}) => {
             let adresse;
             if (data.longitude) {
               try {
-                adresse = await getAdresseFromCoordinates(
-                  parseFloat(data.longitude),
-                  parseFloat(data.latitude),
-                  data.geo_adresse
-                );
+                adresse = await getAdresseFromCoordinates(parseFloat(data.longitude), parseFloat(data.latitude), {
+                  label: data.geo_adresse,
+                });
               } catch (e) {
                 anomalies.push(e);
               }
