@@ -20,6 +20,9 @@ integrationTests(__filename, () => {
       uai: "0011058V",
       siret: "11111111111111",
       referentiel: "depp",
+      conformite_reglementaire: {
+        conventionne: true,
+      },
       uais_secondaires: [],
       reseaux: [],
       relations: [],

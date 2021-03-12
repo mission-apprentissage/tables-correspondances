@@ -1,6 +1,7 @@
 const { oleoduc, writeData, filterData } = require("oleoduc");
 const { Annuaire } = require("../../common/model");
 const { getNbModifiedDocuments } = require("../../common/utils/mongooseUtils");
+const { flattenObject } = require("../../common/utils/objectUtils");
 const { validateUAI } = require("../../common/utils/uaiUtils");
 const logger = require("../../common/logger");
 
@@ -86,7 +87,7 @@ module.exports = async (source, options = {}) => {
             query,
             {
               $set: {
-                ...data,
+                ...flattenObject(data),
               },
               $addToSet: {
                 reseaux: {

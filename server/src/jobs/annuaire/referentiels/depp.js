@@ -18,6 +18,9 @@ module.exports = async (custom = {}) => {
           return {
             siret: data.numero_siren_siret_uai,
             uai: data.numero_uai,
+            conformite_reglementaire: {
+              conventionne: true,
+            },
           };
         }),
         { promisify: false }

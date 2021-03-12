@@ -77,7 +77,7 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on chercher une adresse quand ne peut pas reverse-geocoder", async () => {
+  it("Vérifie qu'on recherche une adresse quand ne peut pas reverse-geocoder", async () => {
     await importReferentiel();
     let source = await createSource("sirene", {
       apiGeoAdresse: {
