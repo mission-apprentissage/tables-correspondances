@@ -31,6 +31,9 @@ httpTests(__filename, ({ startServer }) => {
           siege_social: true,
           statut: "actif",
           referentiel: "test",
+          conformite_reglementaire: {
+            conventionne: true,
+          },
           adresse: {
             geojson: {
               type: "Feature",
@@ -253,6 +256,9 @@ httpTests(__filename, ({ startServer }) => {
       siege_social: true,
       statut: "actif",
       referentiel: "test",
+      conformite_reglementaire: {
+        conventionne: true,
+      },
       adresse: {
         geojson: {
           type: "Feature",

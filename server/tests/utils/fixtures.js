@@ -24,6 +24,9 @@ module.exports = {
           referentiel: "test",
           siege_social: true,
           statut: "actif",
+          conformite_reglementaire: {
+            conventionne: true,
+          },
           adresse: {
             geojson: {
               type: "Feature",
