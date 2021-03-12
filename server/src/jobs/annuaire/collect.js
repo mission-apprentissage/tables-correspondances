@@ -103,8 +103,11 @@ module.exports = async (source, options = {}) => {
             },
             { runValidators: true }
           );
-          stats.updated += getNbModifiedDocuments(res);
-          logger.info(`[Collect][${type}] Etablissement ${selector} updated`);
+          let nbModifiedDocuments = getNbModifiedDocuments(res);
+          if (nbModifiedDocuments) {
+            stats.updated += nbModifiedDocuments;
+            logger.info(`[Collect][${type}] Etablissement ${selector} updated`);
+          }
         } catch (e) {
           await handleAnomalies(selector, [e]);
         }
