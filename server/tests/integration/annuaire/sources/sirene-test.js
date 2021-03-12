@@ -23,6 +23,7 @@ integrationTests(__filename, () => {
     assert.strictEqual(found.raison_sociale, "NOMAYO");
     assert.strictEqual(found.siege_social, true);
     assert.strictEqual(found.statut, "actif");
+    assert.deepStrictEqual(found.forme_juridique, { code: "5710", label: "SAS, société par actions simplifiée" });
     assert.deepStrictEqual(found.adresse, {
       geojson: {
         type: "Feature",
@@ -43,37 +44,6 @@ integrationTests(__filename, () => {
       total: 1,
       updated: 1,
       failed: 0,
-    });
-  });
-
-  it("Vérifie qu'on créer une anomalie quand on ne peut pas trouver l'adresse", async () => {
-    await importReferentiel();
-    let source = await createSource("sirene", {
-      apiGeoAdresse: {
-        search() {
-          return Promise.reject(new Error());
-        },
-        reverse() {
-          return Promise.reject(new Error());
-        },
-      },
-      apiSirene: createApiSireneMock(),
-      organismes: ["11111111111111"],
-    });
-
-    let results = await collect(source);
-
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
-    assert.strictEqual(found._meta.anomalies.length, 1);
-    assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
-      type: "collect",
-      source: "sirene",
-      details: "Adresse inconnue pour les coordonnées 2.396147,48.880391",
-    });
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 1,
     });
   });
 
@@ -305,5 +275,62 @@ integrationTests(__filename, () => {
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
     assert.deepStrictEqual(found._meta.anomalies[0].details, "Entreprise inconnue");
+  });
+
+  it("Vérifie qu'on créer une anomalie quand on ne peut pas trouver l'adresse", async () => {
+    await importReferentiel();
+    let source = await createSource("sirene", {
+      apiGeoAdresse: {
+        search() {
+          return Promise.reject(new Error());
+        },
+        reverse() {
+          return Promise.reject(new Error());
+        },
+      },
+      apiSirene: createApiSireneMock(),
+      organismes: ["11111111111111"],
+    });
+
+    let results = await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    assert.strictEqual(found._meta.anomalies.length, 1);
+    assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
+      type: "collect",
+      source: "sirene",
+      details: "Adresse inconnue pour les coordonnées 2.396147,48.880391",
+    });
+    assert.deepStrictEqual(results, {
+      total: 1,
+      updated: 1,
+      failed: 1,
+    });
+  });
+
+  it("Vérifie qu'on crée une anomalie quand on ne peut pas trouver la catégorie juridique", async () => {
+    await importReferentiel();
+    let source = await createSource("sirene", {
+      apiGeoAdresse: createApiGeoAddresseMock(),
+      apiSirene: createApiSireneMock({
+        categorie_juridique: "INVALID",
+      }),
+      organismes: ["11111111111111"],
+    });
+
+    let results = await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    assert.strictEqual(found._meta.anomalies.length, 1);
+    assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
+      type: "collect",
+      source: "sirene",
+      details: "Impossible de trouver la catégorie juridique",
+    });
+    assert.deepStrictEqual(results, {
+      total: 1,
+      updated: 1,
+      failed: 1,
+    });
   });
 });

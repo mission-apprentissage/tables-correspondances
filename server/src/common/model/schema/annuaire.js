@@ -106,6 +106,24 @@ const annuaireSchema = {
     default: undefined,
     type: adresse,
   },
+  forme_juridique: {
+    description: "Informations relatives à la forme juridique de l'établissement",
+    type: new Schema(
+      {
+        code: {
+          type: String,
+          required: true,
+          description: "Le code la forme juridique",
+        },
+        label: {
+          type: String,
+          required: true,
+          description: "Le nom de la forme juridique",
+        },
+      },
+      { _id: false }
+    ),
+  },
   conformite_reglementaire: {
     description: "Informations relatives à la conformité réglementaire",
     type: new Schema(
