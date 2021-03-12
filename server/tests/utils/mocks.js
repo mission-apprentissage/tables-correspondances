@@ -108,7 +108,6 @@ module.exports = {
               code_postal: "75019",
               localite: "PARIS",
               code_insee_localite: "75000",
-              cedex: null,
             },
             etat_administratif: {
               value: "A",

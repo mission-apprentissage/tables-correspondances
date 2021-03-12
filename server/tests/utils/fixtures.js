@@ -39,7 +39,6 @@ module.exports = {
             code_postal: "75001",
             code_insee: "75000",
             localite: "PARIS",
-            cedex: null,
           },
         },
         custom

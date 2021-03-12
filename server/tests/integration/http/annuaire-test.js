@@ -46,7 +46,6 @@ httpTests(__filename, ({ startServer }) => {
             code_postal: "75001",
             code_insee: "75000",
             localite: "PARIS",
-            cedex: null,
           },
           _meta: {
             anomalies: [],
@@ -269,7 +268,6 @@ httpTests(__filename, ({ startServer }) => {
         code_postal: "75001",
         code_insee: "75000",
         localite: "PARIS",
-        cedex: null,
       },
     });
   });

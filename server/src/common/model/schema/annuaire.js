@@ -13,9 +13,6 @@ let adresse = new Schema(
       type: String,
       required: true,
     },
-    cedex: {
-      type: String,
-    },
     localite: {
       type: String,
       required: true,

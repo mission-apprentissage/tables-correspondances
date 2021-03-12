@@ -44,7 +44,6 @@ module.exports = (apiGeoAdresse) => {
           code_postal: properties.postcode,
           code_insee: properties.citycode,
           localite: properties.city,
-          cedex: properties.cedex,
           geojson: {
             type: best.type,
             geometry: best.geometry,
