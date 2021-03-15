@@ -51,7 +51,7 @@ export default () => {
 
   function search(options = {}) {
     let keys = Object.keys(options);
-    history.push(`/annuaire?${buildQuery({ ...omit(query, keys), ...options })}`);
+    history.push(`/annuaire/anomalies?${buildQuery({ ...omit(query, keys), ...options })}`);
   }
 
   return (

@@ -106,6 +106,24 @@ const annuaireSchema = {
     default: undefined,
     type: adresse,
   },
+  conformite_reglementaire: {
+    description: "Informations relatives à la conformité réglementaire",
+    type: new Schema(
+      {
+        conventionne: {
+          type: Boolean,
+          default: false,
+          description: "True si l'établissement est conventionné",
+        },
+        certificateur: {
+          type: String,
+          default: undefined,
+          description: "Le nom du certificateur",
+        },
+      },
+      { _id: false }
+    ),
+  },
   uais_secondaires: {
     description: "La liste de tous les uais connus pour cet établissement",
     required: true,
