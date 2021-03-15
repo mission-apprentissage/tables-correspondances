@@ -19,6 +19,10 @@ async function getFormations(api, siret, options = {}) {
         lieu_formation_adresse: 1,
         lieu_formation_siret: 1,
         lieu_formation_geo_coordonnees: 1,
+        rncp_code: 1,
+        rncp_intitule: 1,
+        cfd: 1,
+        cfd_specialite: 1,
       },
       resultats_par_page: 600, // no pagination needed for the moment
       ...options,
@@ -46,7 +50,21 @@ async function buildRelations(siret, formations) {
         };
       })
   );
-  return { relations };
+  return { relations: uniqBy(relations, "siret") };
+}
+
+async function buildDiplomes(siret, formations) {
+  let diplomes = await Promise.all(
+    formations
+      .filter((f) => siret === f.etablissement_formateur_siret)
+      .map(async (f) => {
+        return {
+          code: f.cfd,
+          type: "cfd",
+        };
+      })
+  );
+  return { diplomes: uniqBy(diplomes, "code") };
 }
 
 async function buildLieuxDeFormation(siret, formations, getAdresseFromCoordinates) {
@@ -72,7 +90,7 @@ async function buildLieuxDeFormation(siret, formations, getAdresseFromCoordinate
       })
   );
 
-  return { lieux, anomalies };
+  return { lieux: lieux.filter((a) => a), anomalies };
 }
 
 module.exports = async (custom = {}) => {
@@ -94,14 +112,16 @@ module.exports = async (custom = {}) => {
 
             let formations = [..._2020, ..._2021];
             let { relations } = await buildRelations(siret, formations);
+            let { diplomes } = await buildDiplomes(siret, formations);
             let { lieux, anomalies } = await buildLieuxDeFormation(siret, formations, getAdresseFromCoordinates);
 
             return {
               selector: siret,
-              relations: uniqBy(relations, "siret"),
+              relations,
               anomalies,
               data: {
-                lieux_de_formation: lieux.filter((a) => a),
+                lieux_de_formation: lieux,
+                diplomes,
               },
             };
           } catch (e) {

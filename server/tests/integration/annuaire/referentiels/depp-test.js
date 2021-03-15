@@ -27,6 +27,7 @@ integrationTests(__filename, () => {
       reseaux: [],
       relations: [],
       lieux_de_formation: [],
+      diplomes: [],
     });
     assert.deepStrictEqual(results, {
       total: 1,

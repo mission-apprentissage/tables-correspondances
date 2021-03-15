@@ -232,6 +232,30 @@ const annuaireSchema = {
       ),
     ],
   },
+  diplomes: {
+    description: "La liste des diplomes que l'etablissement dispensent",
+    required: true,
+    default: [],
+    type: [
+      new Schema(
+        {
+          code: {
+            type: String,
+            required: true,
+          },
+          label: {
+            type: String,
+            default: undefined,
+          },
+          type: {
+            type: String,
+            required: true,
+          },
+        },
+        { _id: false }
+      ),
+    ],
+  },
   _meta: {
     required: true,
     default: {},
