@@ -1,4 +1,4 @@
-const { uniqBy } = require("lodash");
+const { uniqBy, chain } = require("lodash");
 const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
 const apiCatalogue = require("../../../common/apis/apiCatalogue");
@@ -56,7 +56,7 @@ async function buildRelations(siret, formations) {
 async function buildDiplomes(siret, formations) {
   let diplomes = await Promise.all(
     formations
-      .filter((f) => siret === f.etablissement_formateur_siret)
+      .filter((f) => f.cfd && siret === f.etablissement_formateur_siret)
       .map(async (f) => {
         return {
           code: f.cfd,
@@ -67,11 +67,26 @@ async function buildDiplomes(siret, formations) {
   return { diplomes: uniqBy(diplomes, "code") };
 }
 
+async function buildCertifications(siret, formations) {
+  let certifications = await Promise.all(
+    formations
+      .filter((f) => f.rncp_code && siret === f.etablissement_formateur_siret)
+      .map(async (f) => {
+        return {
+          code: f.rncp_code,
+          label: f.rncp_intitule,
+          type: "rncp",
+        };
+      })
+  );
+  return { certifications: uniqBy(certifications, "code") };
+}
+
 async function buildLieuxDeFormation(siret, formations, getAdresseFromCoordinates) {
   let anomalies = [];
   let lieux = await Promise.all(
-    formations
-      .filter((f) => f.lieu_formation_geo_coordonnees && siret === f.etablissement_formateur_siret)
+    chain(formations.filter((f) => f.lieu_formation_geo_coordonnees && siret === f.etablissement_formateur_siret))
+      .uniqBy("lieu_formation_geo_coordonnees")
       .map(async (f) => {
         let [latitude, longitude] = f.lieu_formation_geo_coordonnees.split(",");
 
@@ -88,6 +103,7 @@ async function buildLieuxDeFormation(siret, formations, getAdresseFromCoordinate
             }
           : null;
       })
+      .value()
   );
 
   return { lieux: lieux.filter((a) => a), anomalies };
@@ -113,6 +129,7 @@ module.exports = async (custom = {}) => {
             let formations = [..._2020, ..._2021];
             let { relations } = await buildRelations(siret, formations);
             let { diplomes } = await buildDiplomes(siret, formations);
+            let { certifications } = await buildCertifications(siret, formations);
             let { lieux, anomalies } = await buildLieuxDeFormation(siret, formations, getAdresseFromCoordinates);
 
             return {
@@ -122,6 +139,7 @@ module.exports = async (custom = {}) => {
               data: {
                 lieux_de_formation: lieux,
                 diplomes,
+                certifications,
               },
             };
           } catch (e) {

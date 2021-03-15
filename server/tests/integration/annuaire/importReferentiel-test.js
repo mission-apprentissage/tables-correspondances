@@ -38,6 +38,7 @@ integrationTests(__filename, () => {
       relations: [],
       lieux_de_formation: [],
       diplomes: [],
+      certifications: [],
     });
     assert.ok(found._meta.created_at);
     assert.deepStrictEqual(found._meta.anomalies, []);

@@ -138,6 +138,68 @@ integrationTests(__filename, () => {
     });
   });
 
+  it("Vérifie qu'on peut collecter des certifications (rncp)", async () => {
+    await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
+"0011058V";"22222222222222"`);
+    let source = await createSource("formations", {
+      apiGeoAdresse: createApiGeoAddresseMock(),
+      apiCatalogue: createApiCatalogueMock({
+        formations: [
+          {
+            etablissement_formateur_siret: "22222222222222",
+            etablissement_formateur_entreprise_raison_sociale: "Etablissement",
+            rncp_code: "RNCP28662",
+            rncp_intitule: "Gestionnaire de l'administration des ventes et de la relation commerciale",
+          },
+        ],
+      }),
+    });
+
+    let results = await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found.certifications, [
+      {
+        code: "RNCP28662",
+        label: "Gestionnaire de l'administration des ventes et de la relation commerciale",
+        type: "rncp",
+      },
+    ]);
+    assert.deepStrictEqual(results, {
+      total: 1,
+      updated: 1,
+      failed: 0,
+    });
+  });
+
+  it("Vérifie qu'on ne collecte pas de certifications pour les établissements gestionnaire", async () => {
+    await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
+"0011058V";"11111111111111"`);
+    let source = await createSource("formations", {
+      apiGeoAdresse: createApiGeoAddresseMock(),
+      apiCatalogue: createApiCatalogueMock({
+        formations: [
+          {
+            etablissement_gestionnaire_siret: "11111111111111",
+            etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
+            rncp_code: "RNCP28662",
+            rncp_intitule: "Gestionnaire de l'administration des ventes et de la relation commerciale",
+          },
+        ],
+      }),
+    });
+
+    let results = await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found.certifications, []);
+    assert.deepStrictEqual(results, {
+      total: 1,
+      updated: 1,
+      failed: 0,
+    });
+  });
+
   it("Vérifie qu'on peut collecter des lieux de formation", async () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"22222222222222"`);
@@ -313,7 +375,7 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0, __v: 0 }).lean();
 
     assert.strictEqual(found.lieux_de_formation.length, 0);
-    assert.strictEqual(found._meta.anomalies.length, 2);
+    assert.strictEqual(found._meta.anomalies.length, 1);
     assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
       type: "collect",
       source: "formations",
