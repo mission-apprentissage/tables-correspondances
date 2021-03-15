@@ -17,6 +17,21 @@ let adresse = new Schema(
       type: String,
       required: true,
     },
+    region: {
+      type: new Schema(
+        {
+          code: {
+            type: String,
+            required: true,
+          },
+          label: {
+            type: String,
+            required: true,
+          },
+        },
+        { _id: false }
+      ),
+    },
     geojson: {
       type: new Schema(
         {

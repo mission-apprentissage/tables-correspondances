@@ -132,6 +132,10 @@ integrationTests(__filename, () => {
           geometry: { coordinates: [2.396444, 48.879706], type: "Point" },
           properties: { score: 0.88 },
         },
+        region: {
+          code: "11",
+          label: "Île-de-France",
+        },
       },
     });
     assert.deepStrictEqual(results, {
@@ -180,6 +184,10 @@ integrationTests(__filename, () => {
       code_postal: "75019",
       code_insee: "75119",
       localite: "Paris",
+      region: {
+        code: "11",
+        label: "Île-de-France",
+      },
     });
     assert.deepStrictEqual(results, {
       total: 1,

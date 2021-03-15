@@ -1,3 +1,4 @@
+const regions = require("./regions");
 const MIN_GEOCODE_SCORE = 0.6;
 
 class GeocodingError extends Error {
@@ -20,7 +21,7 @@ module.exports = (apiGeoAdresse) => {
   }
 
   return {
-    async getAdresseFromCoordinates(longitude, latitude, options) {
+    getAdresseFromCoordinates: async function (longitude, latitude, options) {
       let results;
       try {
         results = await apiGeoAdresse.reverse(longitude, latitude);
@@ -35,6 +36,8 @@ module.exports = (apiGeoAdresse) => {
       let best = results.features[0];
       let properties = best.properties;
       let score = properties.score;
+      let regionName = properties.context.split(",")[2].trim();
+      let region = regions.find((r) => r.label === regionName);
 
       if (score < MIN_GEOCODE_SCORE) {
         throw new GeocodingError(longitude, latitude);
@@ -44,6 +47,7 @@ module.exports = (apiGeoAdresse) => {
           code_postal: properties.postcode,
           code_insee: properties.citycode,
           localite: properties.city,
+          region: region,
           geojson: {
             type: best.type,
             geometry: best.geometry,

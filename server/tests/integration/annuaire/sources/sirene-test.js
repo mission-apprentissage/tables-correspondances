@@ -39,6 +39,10 @@ integrationTests(__filename, () => {
       code_postal: "75019",
       code_insee: "75119",
       localite: "Paris",
+      region: {
+        code: "11",
+        label: "Île-de-France",
+      },
     });
     assert.deepStrictEqual(results, {
       total: 1,
@@ -80,6 +84,10 @@ integrationTests(__filename, () => {
       code_postal: "75019",
       code_insee: "75119",
       localite: "Paris",
+      region: {
+        code: "11",
+        label: "Île-de-France",
+      },
     });
     assert.deepStrictEqual(results, {
       total: 1,
