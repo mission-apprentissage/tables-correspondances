@@ -79,7 +79,8 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut collecter des lieux de formation", async () => {
-    await importReferentiel();
+    await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
+"0011058V";"22222222222222"`);
     let source = await createSource("formations", {
       apiGeoAdresse: createApiGeoAddresseMock(
         {
@@ -105,6 +106,7 @@ integrationTests(__filename, () => {
         {
           formations: [
             {
+              etablissement_formateur_siret: "22222222222222",
               lieu_formation_siret: "33333333333333",
               lieu_formation_geo_coordonnees: "48.879706,2.396444",
             },
@@ -116,7 +118,7 @@ integrationTests(__filename, () => {
 
     let results = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0, __v: 0 }).lean();
 
     assert.deepStrictEqual(found.lieux_de_formation[0], {
       siret: "33333333333333",
@@ -140,9 +142,9 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on cherche une adresse quand ne peut pas reverse-geocoder un lieu de formation", async () => {
-    await importReferentiel();
+    await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
+"0011058V";"22222222222222"`);
     let source = await createSource("formations", {
-      apiCatalogue: createApiCatalogueMock(),
       apiGeoAdresse: {
         search() {
           return Promise.resolve(createApiGeoAddresseMock().search());
@@ -151,11 +153,18 @@ integrationTests(__filename, () => {
           return Promise.reject(new Error());
         },
       },
+      apiCatalogue: createApiCatalogueMock({
+        formations: [
+          {
+            etablissement_formateur_siret: "22222222222222",
+          },
+        ],
+      }),
     });
 
     let results = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0, __v: 0 }).lean();
     assert.deepStrictEqual(found.lieux_de_formation[0].adresse, {
       geojson: {
         type: "Feature",
@@ -180,8 +189,16 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on créer une anomalie quand on ne peut pas trouver l'adresse d'un lieu de formation", async () => {
-    await importReferentiel();
+    await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
+"0011058V";"22222222222222"`);
     let source = await createSource("formations", {
+      apiCatalogue: createApiCatalogueMock({
+        formations: [
+          {
+            etablissement_formateur_siret: "22222222222222",
+          },
+        ],
+      }),
       apiGeoAdresse: {
         search() {
           return Promise.reject(new Error());
@@ -190,12 +207,11 @@ integrationTests(__filename, () => {
           return Promise.reject(new Error());
         },
       },
-      apiCatalogue: createApiCatalogueMock(),
     });
 
     let results = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0, __v: 0 }).lean();
 
     assert.strictEqual(found.lieux_de_formation.length, 0);
     assert.strictEqual(found._meta.anomalies.length, 2);

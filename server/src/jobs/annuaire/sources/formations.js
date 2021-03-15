@@ -70,7 +70,7 @@ module.exports = async (custom = {}) => {
 
             let lieuxDeFormation = await Promise.all(
               formations
-                .filter((f) => f.lieu_formation_geo_coordonnees)
+                .filter((f) => f.lieu_formation_geo_coordonnees && siret === f.etablissement_formateur_siret)
                 .map(async (f) => {
                   let [latitude, longitude] = f.lieu_formation_geo_coordonnees.split(",");
 
