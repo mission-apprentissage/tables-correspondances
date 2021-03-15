@@ -4,6 +4,7 @@ const apiSirene = require("../../../common/apis/apiSirene");
 const apiGeoAdresse = require("../../../common/apis/apiGeoAdresse");
 const dgefp = require("../referentiels/dgefp");
 const adresses = require("../utils/adresses");
+const categoriesJuridiques = require("../utils/categoriesJuridiques");
 
 function getEtablissementName(e, uniteLegale) {
   return (
@@ -90,6 +91,11 @@ module.exports = async (custom = {}) => {
               }
             }
 
+            let formeJuridique = categoriesJuridiques.find((cj) => cj.code === uniteLegale.categorie_juridique);
+            if (!formeJuridique) {
+              anomalies.push("Impossible de trouver la catégorie juridique");
+            }
+
             return {
               selector: siret,
               relations,
@@ -99,6 +105,7 @@ module.exports = async (custom = {}) => {
                 siege_social: data.etablissement_siege === "true",
                 statut: data.etat_administratif === "A" ? "actif" : "fermé",
                 adresse: adresse,
+                ...(formeJuridique ? { forme_juridique: formeJuridique } : {}),
               },
             };
           } catch (e) {
