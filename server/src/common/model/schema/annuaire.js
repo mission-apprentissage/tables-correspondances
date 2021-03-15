@@ -1,5 +1,70 @@
 const { Schema } = require("mongoose");
 
+let adresse = new Schema(
+  {
+    label: {
+      type: String,
+    },
+    code_postal: {
+      type: String,
+      required: true,
+    },
+    code_insee: {
+      type: String,
+      required: true,
+    },
+    localite: {
+      type: String,
+      required: true,
+    },
+    region: {
+      type: new Schema(
+        {
+          code: {
+            type: String,
+            required: true,
+          },
+          label: {
+            type: String,
+            required: true,
+          },
+        },
+        { _id: false }
+      ),
+    },
+    geojson: {
+      type: new Schema(
+        {
+          type: {
+            type: String,
+            required: true,
+          },
+          geometry: {
+            type: new Schema(
+              {
+                type: {
+                  type: String,
+                  required: true,
+                },
+                coordinates: {
+                  type: Array,
+                  required: true,
+                },
+              },
+              { _id: false }
+            ),
+          },
+          properties: {
+            type: Object,
+          },
+        },
+        { _id: false }
+      ),
+    },
+  },
+  { _id: false }
+);
+
 const annuaireSchema = {
   siret: {
     type: String,
@@ -54,63 +119,39 @@ const annuaireSchema = {
   },
   adresse: {
     default: undefined,
+    type: adresse,
+  },
+  forme_juridique: {
+    description: "Informations relatives à la forme juridique de l'établissement",
     type: new Schema(
       {
+        code: {
+          type: String,
+          required: true,
+          description: "Le code la forme juridique",
+        },
         label: {
           type: String,
-        },
-        numero_voie: {
-          type: String,
-        },
-        type_voie: {
-          type: String,
-        },
-        nom_voie: {
-          type: String,
-        },
-        code_postal: {
-          type: String,
           required: true,
+          description: "Le nom de la forme juridique",
         },
-        code_insee: {
+      },
+      { _id: false }
+    ),
+  },
+  conformite_reglementaire: {
+    description: "Informations relatives à la conformité réglementaire",
+    type: new Schema(
+      {
+        conventionne: {
+          type: Boolean,
+          default: false,
+          description: "True si l'établissement est conventionné",
+        },
+        certificateur: {
           type: String,
-          required: true,
-        },
-        cedex: {
-          type: String,
-        },
-        localite: {
-          type: String,
-          required: true,
-        },
-        geojson: {
-          type: new Schema(
-            {
-              type: {
-                type: String,
-                required: true,
-              },
-              geometry: {
-                type: new Schema(
-                  {
-                    type: {
-                      type: String,
-                      required: true,
-                    },
-                    coordinates: {
-                      type: Array,
-                      required: true,
-                    },
-                  },
-                  { _id: false }
-                ),
-              },
-              properties: {
-                type: Object,
-              },
-            },
-            { _id: false }
-          ),
+          default: undefined,
+          description: "Le nom du certificateur",
         },
       },
       { _id: false }
@@ -165,6 +206,26 @@ const annuaireSchema = {
           type: {
             type: String,
             default: undefined,
+          },
+        },
+        { _id: false }
+      ),
+    ],
+  },
+  lieux_de_formation: {
+    description: "La liste des lieux dans lesquels l'établissement dispense des formations",
+    required: true,
+    default: [],
+    type: [
+      new Schema(
+        {
+          siret: {
+            type: String,
+            default: undefined,
+          },
+          adresse: {
+            required: true,
+            type: adresse,
           },
         },
         { _id: false }

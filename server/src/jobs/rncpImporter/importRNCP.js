@@ -2,6 +2,8 @@ const logger = require("../../common/logger");
 const kitApprentissageController = require("./kitApprentissageController");
 const { asyncForEach } = require("../../common/utils/asyncUtils");
 const { FicheRncp } = require("../../common/model/index");
+const { getFileFromS3 } = require("../../common/utils/awsUtils");
+const parseFichesFile = require("./parseFichesFile");
 
 const isEligibleApprentissage = (fiche) => {
   if (!fiche) {
@@ -19,16 +21,48 @@ const isEligibleApprentissage = (fiche) => {
   return false;
 };
 
-const getFichesRncp = async () => {
-  const fiches = kitApprentissageController.referentielRncp;
+const lookupDiffAndMerge = (fichesXML, fichesKitA) => {
+  const referentiel = [];
+  for (let ite = 0; ite < fichesXML.length; ite++) {
+    const ficheXML = fichesXML[ite];
+    let elementToPush = null;
+    for (let jte = 0; jte < fichesKitA.length; jte++) {
+      const ficheKitA = fichesKitA[jte];
+      if (ficheXML.code_rncp === ficheKitA.code_rncp) {
+        elementToPush = {
+          ...ficheKitA,
+          partenaires: ficheXML.partenaires,
+          certificateurs: ficheXML.certificateurs,
+        };
+        break;
+      }
+    }
+    if (!elementToPush) {
+      elementToPush = {
+        ...ficheXML,
+        eligible_apprentissage: isEligibleApprentissage(ficheXML),
+      };
+    }
+    referentiel.push(elementToPush);
+  }
 
-  const referentiel = fiches.map((f) => {
+  return referentiel;
+};
+
+const getFichesRncp = async () => {
+  const fichesXMLInputStream = getFileFromS3("mna-services/features/rncp/export_fiches_RNCP_V2_0_latest.xml");
+  let { fiches: fichesXML } = await parseFichesFile(fichesXMLInputStream);
+
+  const fichesKitA = kitApprentissageController.referentielRncp.map((f) => {
     const result = kitApprentissageController.getDataFromRncp(f.Numero_Fiche);
     return {
       ...result,
       eligible_apprentissage: isEligibleApprentissage(result),
     };
   });
+
+  // Vérification si le kit est plus "à jour" que le xml
+  const referentiel = lookupDiffAndMerge(fichesXML, fichesKitA);
 
   return referentiel;
 };

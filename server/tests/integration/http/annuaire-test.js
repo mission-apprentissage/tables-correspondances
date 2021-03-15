@@ -26,10 +26,14 @@ httpTests(__filename, ({ startServer }) => {
           raison_sociale: "Centre de formation",
           uais_secondaires: [],
           relations: [],
+          lieux_de_formation: [],
           reseaux: [],
           siege_social: true,
           statut: "actif",
           referentiel: "test",
+          conformite_reglementaire: {
+            conventionne: true,
+          },
           adresse: {
             geojson: {
               type: "Feature",
@@ -42,13 +46,9 @@ httpTests(__filename, ({ startServer }) => {
               },
             },
             label: "31 rue des lilas Paris 75019",
-            numero_voie: "31",
-            type_voie: "RUE",
-            nom_voie: "31",
             code_postal: "75001",
             code_insee: "75000",
             localite: "PARIS",
-            cedex: null,
           },
           _meta: {
             anomalies: [],
@@ -252,9 +252,13 @@ httpTests(__filename, ({ startServer }) => {
       uais_secondaires: [],
       relations: [],
       reseaux: [],
+      lieux_de_formation: [],
       siege_social: true,
       statut: "actif",
       referentiel: "test",
+      conformite_reglementaire: {
+        conventionne: true,
+      },
       adresse: {
         geojson: {
           type: "Feature",
@@ -267,13 +271,9 @@ httpTests(__filename, ({ startServer }) => {
           },
         },
         label: "31 rue des lilas Paris 75019",
-        numero_voie: "31",
-        type_voie: "RUE",
-        nom_voie: "31",
         code_postal: "75001",
         code_insee: "75000",
         localite: "PARIS",
-        cedex: null,
       },
     });
   });

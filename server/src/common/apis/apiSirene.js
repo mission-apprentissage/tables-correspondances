@@ -15,7 +15,7 @@ class ApiSirene {
   getUniteLegale(siren) {
     return executeWithRateLimiting(async () => {
       try {
-        logger.debug(`[Sirene API] Fetching siren ${siren}...`);
+        logger.debug(`[Sirene API] Fetching unites_legales for siren ${siren}...`);
         let response = await axios.get(`${apiEndpoint}/unites_legales/${siren}`);
         return response.data.unite_legale;
       } catch (e) {
