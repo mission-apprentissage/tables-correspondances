@@ -1,8 +1,9 @@
 const assert = require("assert");
+const { omit } = require("lodash");
 const ApiError = require("../../../../src/common/apis/ApiError");
 const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
-const { createApiCatalogueMock } = require("../../../utils/mocks");
+const { createApiCatalogueMock, createApiGeoAddresseMock } = require("../../../utils/mocks");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
 const collect = require("../../../../src/jobs/annuaire/collect");
 const { importReferentiel } = require("../../../utils/testUtils");
@@ -12,6 +13,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des relations (formateur)", async () => {
     await importReferentiel();
     let source = await createSource("formations", {
+      apiGeoAdresse: createApiGeoAddresseMock(),
       apiCatalogue: createApiCatalogueMock({
         formations: [
           {
@@ -46,6 +48,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des relations (gestionnaire)", async () => {
     await importReferentiel();
     let source = await createSource("formations", {
+      apiGeoAdresse: createApiGeoAddresseMock(),
       apiCatalogue: createApiCatalogueMock(
         {
           formations: [
@@ -75,6 +78,155 @@ integrationTests(__filename, () => {
     ]);
   });
 
+  it("Vérifie qu'on peut collecter des lieux de formation", async () => {
+    await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
+"0011058V";"22222222222222"`);
+    let source = await createSource("formations", {
+      apiGeoAdresse: createApiGeoAddresseMock(
+        {
+          features: [
+            {
+              type: "Feature",
+              geometry: {
+                type: "Point",
+                coordinates: [2.396444, 48.879706],
+              },
+              properties: {
+                label: "32 Rue des lilas 75019 Paris",
+                score: 0.88,
+                name: "32 Rue des Lilas",
+                city: "Paris",
+              },
+            },
+          ],
+        },
+        { array: "merge" }
+      ),
+      apiCatalogue: createApiCatalogueMock(
+        {
+          formations: [
+            {
+              etablissement_formateur_siret: "22222222222222",
+              lieu_formation_siret: "33333333333333",
+              lieu_formation_geo_coordonnees: "48.879706,2.396444",
+            },
+          ],
+        },
+        { array: "merge" }
+      ),
+    });
+
+    let results = await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0, __v: 0 }).lean();
+
+    assert.deepStrictEqual(found.lieux_de_formation[0], {
+      siret: "33333333333333",
+      adresse: {
+        label: "32 Rue des lilas 75019 Paris",
+        code_postal: "75019",
+        code_insee: "75119",
+        localite: "Paris",
+        geojson: {
+          type: "Feature",
+          geometry: { coordinates: [2.396444, 48.879706], type: "Point" },
+          properties: { score: 0.88 },
+        },
+      },
+    });
+    assert.deepStrictEqual(results, {
+      total: 1,
+      updated: 1,
+      failed: 0,
+    });
+  });
+
+  it("Vérifie qu'on cherche une adresse quand ne peut pas reverse-geocoder un lieu de formation", async () => {
+    await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
+"0011058V";"22222222222222"`);
+    let source = await createSource("formations", {
+      apiGeoAdresse: {
+        search() {
+          return Promise.resolve(createApiGeoAddresseMock().search());
+        },
+        reverse() {
+          return Promise.reject(new Error());
+        },
+      },
+      apiCatalogue: createApiCatalogueMock({
+        formations: [
+          {
+            etablissement_formateur_siret: "22222222222222",
+          },
+        ],
+      }),
+    });
+
+    let results = await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0, __v: 0 }).lean();
+    assert.deepStrictEqual(found.lieux_de_formation[0].adresse, {
+      geojson: {
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [2.396444, 48.879706],
+        },
+        properties: {
+          score: 0.88,
+        },
+      },
+      label: "31 Rue des lilas 75019 Paris",
+      code_postal: "75019",
+      code_insee: "75119",
+      localite: "Paris",
+    });
+    assert.deepStrictEqual(results, {
+      total: 1,
+      updated: 1,
+      failed: 0,
+    });
+  });
+
+  it("Vérifie qu'on créer une anomalie quand on ne peut pas trouver l'adresse d'un lieu de formation", async () => {
+    await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
+"0011058V";"22222222222222"`);
+    let source = await createSource("formations", {
+      apiCatalogue: createApiCatalogueMock({
+        formations: [
+          {
+            etablissement_formateur_siret: "22222222222222",
+          },
+        ],
+      }),
+      apiGeoAdresse: {
+        search() {
+          return Promise.reject(new Error());
+        },
+        reverse() {
+          return Promise.reject(new Error());
+        },
+      },
+    });
+
+    let results = await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0, __v: 0 }).lean();
+
+    assert.strictEqual(found.lieux_de_formation.length, 0);
+    assert.strictEqual(found._meta.anomalies.length, 2);
+    assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
+      type: "collect",
+      source: "formations",
+      details: "Adresse inconnue pour les coordonnées 2.396444,48.879706",
+    });
+    assert.deepStrictEqual(results, {
+      total: 1,
+      updated: 1,
+      failed: 1,
+    });
+  });
+
   it("Vérifie qu'on peut filter par siret", async () => {
     await createAnnuaire({
       siret: "11111111100000",
@@ -94,6 +246,7 @@ integrationTests(__filename, () => {
     await importReferentiel();
     await createAnnuaire({ siret: "22222222222222", raison_sociale: "Mon centre de formation" });
     let source = await createSource("formations", {
+      apiGeoAdresse: createApiGeoAddresseMock(),
       apiCatalogue: createApiCatalogueMock({
         formations: [
           {

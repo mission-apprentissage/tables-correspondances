@@ -22,8 +22,9 @@ integrationTests(__filename, () => {
       siret: "11111111111111",
       referentiel: "dgefp",
       uais_secondaires: [],
-      relations: [],
       reseaux: [],
+      relations: [],
+      lieux_de_formation: [],
     });
     assert.deepStrictEqual(results, {
       total: 1,

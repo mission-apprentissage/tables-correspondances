@@ -1,5 +1,55 @@
 const { Schema } = require("mongoose");
 
+let adresse = new Schema(
+  {
+    label: {
+      type: String,
+    },
+    code_postal: {
+      type: String,
+      required: true,
+    },
+    code_insee: {
+      type: String,
+      required: true,
+    },
+    localite: {
+      type: String,
+      required: true,
+    },
+    geojson: {
+      type: new Schema(
+        {
+          type: {
+            type: String,
+            required: true,
+          },
+          geometry: {
+            type: new Schema(
+              {
+                type: {
+                  type: String,
+                  required: true,
+                },
+                coordinates: {
+                  type: Array,
+                  required: true,
+                },
+              },
+              { _id: false }
+            ),
+          },
+          properties: {
+            type: Object,
+          },
+        },
+        { _id: false }
+      ),
+    },
+  },
+  { _id: false }
+);
+
 const annuaireSchema = {
   siret: {
     type: String,
@@ -54,67 +104,7 @@ const annuaireSchema = {
   },
   adresse: {
     default: undefined,
-    type: new Schema(
-      {
-        label: {
-          type: String,
-        },
-        numero_voie: {
-          type: String,
-        },
-        type_voie: {
-          type: String,
-        },
-        nom_voie: {
-          type: String,
-        },
-        code_postal: {
-          type: String,
-          required: true,
-        },
-        code_insee: {
-          type: String,
-          required: true,
-        },
-        cedex: {
-          type: String,
-        },
-        localite: {
-          type: String,
-          required: true,
-        },
-        geojson: {
-          type: new Schema(
-            {
-              type: {
-                type: String,
-                required: true,
-              },
-              geometry: {
-                type: new Schema(
-                  {
-                    type: {
-                      type: String,
-                      required: true,
-                    },
-                    coordinates: {
-                      type: Array,
-                      required: true,
-                    },
-                  },
-                  { _id: false }
-                ),
-              },
-              properties: {
-                type: Object,
-              },
-            },
-            { _id: false }
-          ),
-        },
-      },
-      { _id: false }
-    ),
+    type: adresse,
   },
   uais_secondaires: {
     description: "La liste de tous les uais connus pour cet établissement",
@@ -165,6 +155,26 @@ const annuaireSchema = {
           type: {
             type: String,
             default: undefined,
+          },
+        },
+        { _id: false }
+      ),
+    ],
+  },
+  lieux_de_formation: {
+    description: "La liste des lieux dans lesquels l'établissement dispense des formations",
+    required: true,
+    default: [],
+    type: [
+      new Schema(
+        {
+          siret: {
+            type: String,
+            default: undefined,
+          },
+          adresse: {
+            required: true,
+            type: adresse,
           },
         },
         { _id: false }
