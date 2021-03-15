@@ -4,6 +4,7 @@ const { oleoduc, transformIntoJSON } = require("oleoduc");
 const Joi = require("joi");
 const { Annuaire } = require("../../common/model");
 const { paginateAggregationWithCursor } = require("../../common/utils/mongooseUtils");
+const { sendJsonStream } = require("../utils/httpUtils");
 const tryCatch = require("../middlewares/tryCatchMiddleware");
 
 module.exports = () => {
@@ -53,14 +54,16 @@ module.exports = () => {
         { page, limit }
       );
 
-      oleoduc(
-        cursor,
-        transformIntoJSON({
-          arrayPropertyName: "etablissements",
-          arrayWrapper: {
-            pagination,
-          },
-        }),
+      sendJsonStream(
+        oleoduc(
+          cursor,
+          transformIntoJSON({
+            arrayPropertyName: "etablissements",
+            arrayWrapper: {
+              pagination,
+            },
+          })
+        ),
         res
       );
     })
