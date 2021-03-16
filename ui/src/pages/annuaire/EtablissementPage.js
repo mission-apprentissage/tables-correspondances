@@ -1,59 +1,34 @@
 import React from "react";
-import { Badge, Card, ContactCard, Grid, Page } from "tabler-react";
+import { Badge, Card, Grid, Page, Table } from "tabler-react";
 import { useFetch } from "../../common/hooks/useFetch";
 import { Link, useParams } from "react-router-dom";
 import FormError from "../../common/components/FormError";
 import styled from "styled-components";
 
-function UaiSecondaires({ items }) {
-  return (
-    <div>
-      {items.length === 0
-        ? "-"
-        : items.map((item) => {
-            return (
-              <div>
-                <span style={{ paddingRight: "0.5rem" }}>{item.uai}</span>
-                <span>(source : {item.type})</span>
-              </div>
-            );
-          })}
-    </div>
-  );
-}
-
-const Relation = styled.div`
+const Item = styled.div`
   display: flex;
   align-items: baseline;
   margin-bottom: 1rem;
   span {
-    padding-right: 0.5rem;
+    &:nth-child(1) {
+      font-weight: bold;
+      width: 15%;
+    }
+    &:nth-child(2) {
+      width: 25%;
+    }
   }
 `;
 
-function Relations({ items }) {
-  return (
-    <div>
-      {items.length === 0
-        ? "-"
-        : items.map((item) => {
-            return (
-              <Relation>
-                {item.annuaire ? (
-                  <Link style={{ width: "25%" }} to={`/annuaire/etablissements/${item.siret}`}>
-                    {item.siret}
-                  </Link>
-                ) : (
-                  <span style={{ width: "25%" }}>{item.siret}</span>
-                )}
-                <span style={{ width: "60%" }}>{item.label}</span>
-                <span style={{ width: "20%", textAlign: "right" }}>{item.type}</span>
-              </Relation>
-            );
-          })}
-    </div>
-  );
-}
+const List = styled.div`
+  margin-bottom: 1rem;
+  div:first-child {
+    &:nth-child(1) {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+  }
+`;
 
 const Title = styled.div`
   display: flex;
@@ -83,35 +58,168 @@ export default () => {
             <Grid.Col>
               {error && <Card title={name} body={<FormError>Une erreur est survenue</FormError>} />}
               {etablissement && (
-                <ContactCard
-                  cardTitle={
+                <Card
+                  title={
                     <Title>
-                      <span>{etablissement.raison_sociale}</span>
+                      <span>Etablissement</span>
                       <span>
                         {etablissement.statut === "fermé" && <Badge color="danger">{etablissement.statut}</Badge>}
                       </span>
                     </Title>
                   }
-                  rounded
-                  objectURL="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2264%22%20height%3D%2264%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_15ec911398e%20text%20%7B%20fill%3Argba(255%2C255%2C255%2C.75)%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A10pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_15ec911398e%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22%23777%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2213.84375%22%20y%3D%2236.65%22%3E64x64%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E"
-                  alt={siret}
-                  name={<div>{etablissement.raison_sociale}</div>}
-                  address={{
-                    line1: !adresse ? "" : adresse.label || `${adresse.code_postal} ${adresse.localite}`,
-                    ...(etablissement.academie ? { line2: `Académie ${etablissement.academie.nom}` } : {}),
-                  }}
-                  details={[
-                    { title: "UAI", content: etablissement.uai || "-" },
-                    { title: "Siège social", content: etablissement.siege_social ? "Oui" : "Non" },
-                    {
-                      title: "UAI secondaires",
-                      content: <UaiSecondaires items={etablissement.uais_secondaires} />,
-                    },
-                    {
-                      title: "Relations",
-                      content: <Relations items={etablissement.relations} />,
-                    },
-                  ]}
+                  body={
+                    <div>
+                      <Item>
+                        <span>Nom</span>
+                        <span>{etablissement.raison_sociale}</span>
+                      </Item>
+                      <Item>
+                        <span>Siret</span>
+                        <span>{etablissement.siret}</span>
+                      </Item>
+                      <Item>
+                        <span>Forme juridique</span>
+                        <span>{etablissement.forme_juridique ? etablissement.forme_juridique.label : "-"}</span>
+                      </Item>
+                      <Item>
+                        <span>Statut</span>
+                        <span>{etablissement.statut}</span>
+                      </Item>
+                      <Item>
+                        <span>Siège social</span>
+                        <span>{etablissement.siege_social ? "Oui" : "Non"}</span>
+                      </Item>
+                      <Item>
+                        <span>Adresse</span>
+                        <span>{!adresse ? "" : adresse.label || `${adresse.code_postal} ${adresse.localite}`}</span>
+                      </Item>
+                      {etablissement.academie && (
+                        <Item>
+                          <span>Académie</span>
+                          <span>{etablissement.academie.nom}</span>
+                        </Item>
+                      )}
+                      <Item>
+                        <span>Réseaux</span>
+                        <span>{etablissement.reseaux.length === 0 ? "-" : etablissement.reseaux.join(",")}</span>
+                      </Item>
+                      <Item>
+                        <span>UAI</span>
+                        <div>{etablissement.uai || "-"}</div>
+                      </Item>
+                      <List>
+                        <div>UAI secondaires</div>
+                        <Table>
+                          <Table.Header>
+                            <Table.ColHeader>UAI</Table.ColHeader>
+                            <Table.ColHeader>Type</Table.ColHeader>
+                            <Table.ColHeader>Valide</Table.ColHeader>
+                          </Table.Header>
+                          <Table.Body>
+                            {etablissement.uais_secondaires.map((item) => {
+                              return (
+                                <Table.Row>
+                                  <Table.Col>{item.uai}</Table.Col>
+                                  <Table.Col>{item.type}</Table.Col>
+                                  <Table.Col>{item.valide ? "oui" : "non"}</Table.Col>
+                                </Table.Row>
+                              );
+                            })}
+                          </Table.Body>
+                        </Table>
+                      </List>
+                      <List>
+                        <div>Relations</div>
+                        <Table>
+                          <Table.Header>
+                            <Table.ColHeader>Siret</Table.ColHeader>
+                            <Table.ColHeader>Label</Table.ColHeader>
+                            <Table.ColHeader>Type</Table.ColHeader>
+                            <Table.ColHeader>Source</Table.ColHeader>
+                          </Table.Header>
+                          <Table.Body>
+                            {etablissement.relations.map((item) => {
+                              return (
+                                <Table.Row>
+                                  <Table.Col>
+                                    {item.annuaire ? (
+                                      <Link to={`/annuaire/etablissements/${item.siret}`}>{item.siret}</Link>
+                                    ) : (
+                                      item.siret
+                                    )}
+                                  </Table.Col>
+                                  <Table.Col>{item.label}</Table.Col>
+                                  <Table.Col>{item.type}</Table.Col>
+                                  <Table.Col>{item.source}</Table.Col>
+                                </Table.Row>
+                              );
+                            })}
+                          </Table.Body>
+                        </Table>
+                      </List>
+                      <List>
+                        <div>Lieux de formations</div>
+                        <Table>
+                          <Table.Header>
+                            <Table.ColHeader>Siret</Table.ColHeader>
+                            <Table.ColHeader>Adresse</Table.ColHeader>
+                          </Table.Header>
+                          <Table.Body>
+                            {etablissement.lieux_de_formation.map((item) => {
+                              return (
+                                <Table.Row>
+                                  <Table.Col>{item.siret}</Table.Col>
+                                  <Table.Col>{item.adresse}</Table.Col>
+                                </Table.Row>
+                              );
+                            })}
+                          </Table.Body>
+                        </Table>
+                      </List>
+                      <List>
+                        <div>Diplomes</div>
+                        <Table>
+                          <Table.Header>
+                            <Table.ColHeader>Code</Table.ColHeader>
+                            <Table.ColHeader>Label</Table.ColHeader>
+                            <Table.ColHeader>Type</Table.ColHeader>
+                          </Table.Header>
+                          <Table.Body>
+                            {etablissement.diplomes.map((item) => {
+                              return (
+                                <Table.Row>
+                                  <Table.Col>{item.code}</Table.Col>
+                                  <Table.Col>{item.label}</Table.Col>
+                                  <Table.Col>{item.type}</Table.Col>
+                                </Table.Row>
+                              );
+                            })}
+                          </Table.Body>
+                        </Table>
+                      </List>
+                      <List>
+                        <div>Certifications</div>
+                        <Table>
+                          <Table.Header>
+                            <Table.ColHeader>Code</Table.ColHeader>
+                            <Table.ColHeader>Label</Table.ColHeader>
+                            <Table.ColHeader>Type</Table.ColHeader>
+                          </Table.Header>
+                          <Table.Body>
+                            {etablissement.certifications.map((item) => {
+                              return (
+                                <Table.Row>
+                                  <Table.Col>{item.code}</Table.Col>
+                                  <Table.Col>{item.label}</Table.Col>
+                                  <Table.Col>{item.type}</Table.Col>
+                                </Table.Row>
+                              );
+                            })}
+                          </Table.Body>
+                        </Table>
+                      </List>
+                    </div>
+                  }
                 />
               )}
             </Grid.Col>
