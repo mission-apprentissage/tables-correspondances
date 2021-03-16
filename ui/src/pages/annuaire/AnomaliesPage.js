@@ -22,9 +22,9 @@ const AnomaliesTable = ({ anomalies }) => {
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {anomalies.map((ano) => {
+        {anomalies.map((ano, index) => {
           return (
-            <Table.Row>
+            <Table.Row key={index}>
               <Table.Col>{ano.type}</Table.Col>
               <Table.Col>{ano.source}</Table.Col>
               <Table.Col>{ano.date}</Table.Col>
@@ -85,11 +85,11 @@ export default () => {
                         data.etablissements.map((e) => {
                           let anomalies = e._meta.anomalies;
                           return (
-                            <Table.Row key={e.uai}>
+                            <Table.Row key={e.siret}>
                               <Table.Col>
                                 <Link to={`/annuaire/etablissements/${e.siret}`}>{e.siret}</Link>
                               </Table.Col>
-                              <Table.Col>{e.uai}</Table.Col>
+                              <Table.Col>{e.raison_sociale}</Table.Col>
                               <Table.Col>
                                 <AnomaliesTable anomalies={anomalies} />
                               </Table.Col>

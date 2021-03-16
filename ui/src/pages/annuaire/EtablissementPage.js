@@ -118,7 +118,7 @@ export default () => {
                           <Table.Body>
                             {etablissement.uais_secondaires.map((item) => {
                               return (
-                                <Table.Row>
+                                <Table.Row key={item.uai}>
                                   <Table.Col>{item.uai}</Table.Col>
                                   <Table.Col>{item.type}</Table.Col>
                                   <Table.Col>{item.valide ? "oui" : "non"}</Table.Col>
@@ -140,7 +140,7 @@ export default () => {
                           <Table.Body>
                             {etablissement.relations.map((item) => {
                               return (
-                                <Table.Row>
+                                <Table.Row key={item.siret}>
                                   <Table.Col>
                                     {item.annuaire ? (
                                       <Link to={`/annuaire/etablissements/${item.siret}`}>{item.siret}</Link>
@@ -167,7 +167,7 @@ export default () => {
                           <Table.Body>
                             {etablissement.lieux_de_formation.map((item) => {
                               return (
-                                <Table.Row>
+                                <Table.Row key={item.siret}>
                                   <Table.Col>{item.siret}</Table.Col>
                                   <Table.Col>{item.adresse}</Table.Col>
                                 </Table.Row>
@@ -187,7 +187,7 @@ export default () => {
                           <Table.Body>
                             {etablissement.diplomes.map((item) => {
                               return (
-                                <Table.Row>
+                                <Table.Row key={item.code}>
                                   <Table.Col>{item.code}</Table.Col>
                                   <Table.Col>{item.label}</Table.Col>
                                   <Table.Col>{item.type}</Table.Col>
@@ -208,7 +208,7 @@ export default () => {
                           <Table.Body>
                             {etablissement.certifications.map((item) => {
                               return (
-                                <Table.Row>
+                                <Table.Row key={item.code}>
                                   <Table.Col>{item.code}</Table.Col>
                                   <Table.Col>{item.label}</Table.Col>
                                   <Table.Col>{item.type}</Table.Col>
