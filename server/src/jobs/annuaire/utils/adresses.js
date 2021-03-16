@@ -6,7 +6,7 @@ class GeocodingError extends Error {
     super();
     Error.captureStackTrace(this, this.constructor);
     this.name = this.constructor.name;
-    this.message = `Adresse inconnue pour les coordonnées ${latitude},${longitude}`;
+    this.message = `Adresse inconnue pour les coordonnées latitude:${latitude} et longitude:${longitude}`;
     this.reason = reason;
   }
 }
@@ -36,7 +36,8 @@ module.exports = (apiGeoAdresse) => {
       let best = results.features[0];
       let properties = best.properties;
       let score = properties.score;
-      let regionName = properties.context.split(",")[2].trim();
+      let context = properties.context.split(",");
+      let regionName = context[context.length - 1].trim();
       let region = regions.find((r) => r.label === regionName);
 
       if (score < MIN_GEOCODE_SCORE) {

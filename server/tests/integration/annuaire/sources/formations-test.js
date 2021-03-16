@@ -379,7 +379,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
       type: "collect",
       source: "formations",
-      details: "Adresse inconnue pour les coordonnées 2.396444,48.879706",
+      details: "Adresse inconnue pour les coordonnées latitude:2.396444 et longitude:48.879706",
     });
     assert.deepStrictEqual(results, {
       total: 1,

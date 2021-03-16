@@ -307,7 +307,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
       type: "collect",
       source: "sirene",
-      details: "Adresse inconnue pour les coordonnées 2.396147,48.880391",
+      details: "Adresse inconnue pour les coordonnées latitude:2.396147 et longitude:48.880391",
     });
     assert.deepStrictEqual(results, {
       total: 1,
