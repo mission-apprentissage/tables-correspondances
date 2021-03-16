@@ -1,5 +1,3 @@
-![](https://avatars1.githubusercontent.com/u/63645182?s=200&v=4)
-
 # Annuaire
 
 L'annuaire regroupe les établissements qui dispensent des formations en apprentissage.

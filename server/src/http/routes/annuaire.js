@@ -10,16 +10,81 @@ const tryCatch = require("../middlewares/tryCatchMiddleware");
 module.exports = () => {
   const router = express.Router();
 
+  /**
+   * @swagger
+   *
+   * /annuaire/etablissements:
+   *   get:
+   *     summary: Récupérer la liste des établissements de l'annuaire
+   *     parameters:
+   *       - in: query
+   *         name: text
+   *         description: Permet de faire une recherche sur tous les champs texte d'un établissement
+   *         type: string
+   *         required: false
+   *       - in: query
+   *         name: anomalies
+   *         description: Si true renvoie uniquement les établissements contenant des anomalies
+   *         type: string
+   *         required: false
+   *       - in: query
+   *         name: page
+   *         description: Le numéro de la page désirée
+   *         type: string
+   *         required: false
+   *       - in: query
+   *         name: items_par_page
+   *         default: 10
+   *         description: Le nombre maximum d'éléments dans la page
+   *         type: string
+   *       - in: query
+   *         name: tri
+   *         description: Le champ utilisé pour trier la liste des résultats
+   *         type: string
+   *       - in: query
+   *         name: ordre
+   *         description: L'ordre du tri
+   *         default: desc
+   *         type: string
+   *         required: false
+   *     produces:
+   *      - application/json
+   *     tags:
+   *       - Annuaire
+   *     responses:
+   *       200:
+   *         description: OK
+   *         content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  etablissements:
+   *                    type: array
+   *                    items:
+   *                      $ref: '#/components/schemas/annuaire'
+   *                  pagination:
+   *                    type: object
+   *                    properties:
+   *                      page:
+   *                        type: string
+   *                      resultats_par_page:
+   *                        type: number
+   *                      nombre_de_page:
+   *                        type: number
+   *                      total:
+   *                        type: number
+   */
   router.get(
     "/etablissements",
     tryCatch(async (req, res) => {
-      let { text, anomalies, page, limit, sortBy, order } = await Joi.object({
+      let { text, anomalies, page, items_par_page, tri, ordre } = await Joi.object({
         text: Joi.string(),
         anomalies: Joi.boolean().default(null),
         page: Joi.number().default(1),
-        limit: Joi.number().default(10),
-        order: Joi.number().allow(1, -1).default(-1),
-        sortBy: Joi.string().allow("uais_secondaires", "relations"),
+        items_par_page: Joi.number().default(10),
+        tri: Joi.string().allow("uais_secondaires", "relations"),
+        ordre: Joi.number().allow("asc", "desc").default("desc"),
       }).validateAsync(req.query, { abortEarly: false });
 
       let { cursor, pagination } = await paginateAggregationWithCursor(
@@ -31,7 +96,7 @@ module.exports = () => {
               ...(anomalies !== null ? { "_meta.anomalies.0": { $exists: anomalies } } : {}),
             },
           },
-          ...(sortBy
+          ...(tri
             ? [
                 {
                   $addFields: {
@@ -39,7 +104,7 @@ module.exports = () => {
                     nb_relations: { $size: "$relations" },
                   },
                 },
-                { $sort: { [`nb_${sortBy}`]: order } },
+                { $sort: { [`nb_${tri}`]: ordre === "asc" ? 1 : -1 } },
               ]
             : [{ $sort: { [`_meta.lastUpdate`]: -1 } }]),
           {
@@ -51,7 +116,7 @@ module.exports = () => {
             },
           },
         ],
-        { page, limit }
+        { page, limit: items_par_page }
       );
 
       sendJsonStream(
@@ -69,6 +134,30 @@ module.exports = () => {
     })
   );
 
+  /**
+   * @swagger
+   *
+   * /annuaire/etablissements/:siret:
+   *   get:
+   *     summary: Récupérer les informations d'un établissement
+   *     parameters:
+   *       - in: path
+   *         name: text
+   *         description: Le numéro de siret de l'établissement
+   *         type: string
+   *         required: true
+   *     produces:
+   *      - application/json
+   *     tags:
+   *       - Annuaire
+   *     responses:
+   *       200:
+   *         description: OK
+   *         content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/annuaire'
+   */
   router.get(
     "/etablissements/:siret",
     tryCatch(async (req, res) => {
