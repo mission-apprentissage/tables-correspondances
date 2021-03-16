@@ -28,6 +28,8 @@ integrationTests(__filename, () => {
       reseaux: [],
       relations: [],
       lieux_de_formation: [],
+      diplomes: [],
+      certifications: [],
     });
     assert.deepStrictEqual(results, {
       total: 1,
