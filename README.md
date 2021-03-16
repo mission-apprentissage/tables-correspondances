@@ -6,6 +6,7 @@ Le projet Tables de correspondances est une application qui regroupe les APIs su
 - CFD
 - RNCP
 - BCN
+- [Annuaire](./ANNUAIRE.md)
 
 ## Démarrage rapide
 
