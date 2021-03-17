@@ -13,17 +13,17 @@ const SortButton = styled(Button)`
 `;
 
 export default ({ onClick }) => {
-  const [order, setOrder] = useState(-1);
+  const [order, setOrder] = useState("desc");
 
   function toggleOrder() {
-    let newValue = order * -1;
+    let newValue = order === "asc" ? "desc" : "asc";
     setOrder(newValue);
     onClick(newValue);
   }
 
   return (
     <SortButton onClick={toggleOrder} size="sm">
-      {order === 1 ? "\u25B2" : "\u25BC"}
+      {order === "asc" ? "\u25B2" : "\u25BC"}
     </SortButton>
   );
 };

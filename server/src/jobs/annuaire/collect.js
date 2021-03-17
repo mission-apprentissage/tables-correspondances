@@ -21,7 +21,7 @@ async function buildNewRelations(type, relations) {
   return Promise.all(
     relations.map(async (r) => {
       let doc = await Annuaire.findOne({ siret: r.siret });
-      return { ...r, label: doc ? doc.raison_sociale : r.label, annuaire: !!doc, source: type };
+      return { ...r, annuaire: !!doc, source: type };
     })
   );
 }
@@ -106,7 +106,7 @@ module.exports = async (source, options = {}) => {
           let nbModifiedDocuments = getNbModifiedDocuments(res);
           if (nbModifiedDocuments) {
             stats.updated += nbModifiedDocuments;
-            logger.info(`[Collect][${type}] Etablissement ${selector} updated`);
+            logger.debug(`[Collect][${type}] Etablissement ${selector} updated`);
           }
         } catch (e) {
           await handleAnomalies(selector, [e]);

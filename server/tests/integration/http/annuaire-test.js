@@ -28,6 +28,8 @@ httpTests(__filename, ({ startServer }) => {
           relations: [],
           lieux_de_formation: [],
           reseaux: [],
+          diplomes: [],
+          certifications: [],
           siege_social: true,
           statut: "actif",
           referentiel: "test",
@@ -122,12 +124,12 @@ httpTests(__filename, ({ startServer }) => {
       }),
     ]);
 
-    let response = await httpClient.get("/api/v1/annuaire/etablissements?sortBy=relations&order=-1");
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?tri=relations&ordre=desc");
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "33333333333333");
     strictEqual(response.data.etablissements[1].siret, "11111111111111");
 
-    response = await httpClient.get("/api/v1/annuaire/etablissements?sortBy=relations&order=1");
+    response = await httpClient.get("/api/v1/annuaire/etablissements?tri=relations&ordre=asc");
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "11111111111111");
     strictEqual(response.data.etablissements[1].siret, "33333333333333");
@@ -163,15 +165,32 @@ httpTests(__filename, ({ startServer }) => {
       }),
     ]);
 
-    let response = await httpClient.get("/api/v1/annuaire/etablissements?sortBy=uais_secondaires&order=-1");
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?tri=uais_secondaires&ordre=desc");
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "33333333333333");
     strictEqual(response.data.etablissements[1].siret, "11111111111111");
 
-    response = await httpClient.get("/api/v1/annuaire/etablissements?sortBy=uais_secondaires&order=1");
+    response = await httpClient.get("/api/v1/annuaire/etablissements?tri=uais_secondaires&ordre=asc");
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "11111111111111");
     strictEqual(response.data.etablissements[1].siret, "33333333333333");
+  });
+
+  it("Vérifie qu'on peut peut limiter le établissement par page", async () => {
+    const { httpClient } = await startServer();
+    await Promise.all([
+      createAnnuaire({ siret: "11111111111111" }),
+      createAnnuaire({ siret: "22222222222222" }),
+      createAnnuaire({ siret: "33333333333333" }),
+    ]);
+
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?items_par_page=1&page=1");
+    strictEqual(response.status, 200);
+    strictEqual(response.data.etablissements.length, 1);
+
+    response = await httpClient.get("/api/v1/annuaire/etablissements?items_par_page=1&page=2");
+    strictEqual(response.status, 200);
+    strictEqual(response.data.etablissements.length, 1);
   });
 
   it("Vérifie qu'on peut filtrer les établissements avec des anomalies", async () => {
@@ -225,13 +244,22 @@ httpTests(__filename, ({ startServer }) => {
     });
   });
 
-  it("Vérifie que le service retourne une 400 quand les paramètres sont invalides", async () => {
+  it("Vérifie que le service retourne une 400 quand les paramètres sont inconnus", async () => {
     const { httpClient } = await startServer();
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements?invalid=XXX");
 
     strictEqual(response.status, 400);
     deepStrictEqual(response.data.details[0].path[0], "invalid");
+  });
+
+  it("Vérifie que le service retourne une 400 quand les paramètres sont invalides", async () => {
+    const { httpClient } = await startServer();
+
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?ordre=-1");
+
+    strictEqual(response.status, 400);
+    deepStrictEqual(response.data.details[0].path[0], "ordre");
   });
 
   it("Vérifie qu'on peut obtenir un établissement", async () => {
@@ -253,6 +281,8 @@ httpTests(__filename, ({ startServer }) => {
       relations: [],
       reseaux: [],
       lieux_de_formation: [],
+      diplomes: [],
+      certifications: [],
       siege_social: true,
       statut: "actif",
       referentiel: "test",

@@ -25,7 +25,13 @@ function buildQuery(elements = {}) {
 
 export default () => {
   let history = useHistory();
-  let query = { page: 1, order: -1, limit: 25, ...queryString.parse(window.location.search), anomalies: false };
+  let query = {
+    ordre: -1,
+    page: 1,
+    items_par_page: 25,
+    ...queryString.parse(window.location.search),
+    anomalies: false,
+  };
   let [data, loading, error] = useFetch(`/api/v1/annuaire/etablissements?${buildQuery(query)}`, {
     etablissements: [],
     pagination: {
@@ -117,10 +123,10 @@ export default () => {
                         <Table.ColHeader>Nom</Table.ColHeader>
                         <Table.ColHeader>
                           Uai secondaires
-                          <SortButton onClick={(order) => search({ page: 1, sortBy: "uais_secondaires", order })} />
+                          <SortButton onClick={(ordre) => search({ page: 1, tri: "uais_secondaires", ordre })} />
                         </Table.ColHeader>
                         <Table.ColHeader>
-                          Relations <SortButton onClick={(order) => search({ page: 1, sortBy: "relations", order })} />
+                          Relations <SortButton onClick={(ordre) => search({ page: 1, tri: "relations", ordre })} />
                         </Table.ColHeader>
                       </Table.Row>
                     </Table.Header>

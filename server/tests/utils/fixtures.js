@@ -21,6 +21,8 @@ module.exports = {
           relations: [],
           lieux_de_formation: [],
           reseaux: [],
+          diplomes: [],
+          certifications: [],
           referentiel: "test",
           siege_social: true,
           statut: "actif",

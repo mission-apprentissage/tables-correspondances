@@ -22,9 +22,9 @@ const AnomaliesTable = ({ anomalies }) => {
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {anomalies.map((ano) => {
+        {anomalies.map((ano, index) => {
           return (
-            <Table.Row>
+            <Table.Row key={index}>
               <Table.Col>{ano.type}</Table.Col>
               <Table.Col>{ano.source}</Table.Col>
               <Table.Col>{ano.date}</Table.Col>
@@ -38,7 +38,13 @@ const AnomaliesTable = ({ anomalies }) => {
 };
 export default () => {
   let history = useHistory();
-  let query = { page: 1, order: -1, limit: 25, ...queryString.parse(window.location.search), anomalies: true };
+  let query = {
+    ordre: "desc",
+    page: 1,
+    items_par_page: 25,
+    ...queryString.parse(window.location.search),
+    anomalies: true,
+  };
   let [data, loading, error] = useFetch(`/api/v1/annuaire/etablissements?${buildQuery(query)}`, {
     etablissements: [],
     pagination: {
@@ -85,11 +91,11 @@ export default () => {
                         data.etablissements.map((e) => {
                           let anomalies = e._meta.anomalies;
                           return (
-                            <Table.Row key={e.uai}>
+                            <Table.Row key={e.siret}>
                               <Table.Col>
                                 <Link to={`/annuaire/etablissements/${e.siret}`}>{e.siret}</Link>
                               </Table.Col>
-                              <Table.Col>{e.uai}</Table.Col>
+                              <Table.Col>{e.raison_sociale}</Table.Col>
                               <Table.Col>
                                 <AnomaliesTable anomalies={anomalies} />
                               </Table.Col>
