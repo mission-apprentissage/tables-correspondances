@@ -3,6 +3,7 @@ import { omit } from "lodash-es";
 import * as Yup from "yup";
 import { Button, Card, Form as TablerForm, Grid, Page, Table } from "tabler-react";
 import { Field, Form, Formik } from "formik";
+import buildQuery from "../../common/utils/buildQuery";
 import FormError from "../../common/components/FormError";
 import FormMessage from "../../common/components/FormMessage";
 import { useFetch } from "../../common/hooks/useFetch";
@@ -19,9 +20,15 @@ const Header = styled.div`
   align-items: center;
 `;
 
-function buildQuery(elements = {}) {
-  return `${queryString.stringify(elements, { skipNull: true, skipEmptyString: true })}`;
-}
+const Buttons = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  button {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+`;
 
 export default () => {
   let history = useHistory();
@@ -63,9 +70,14 @@ export default () => {
           <Page.Header>
             <Header>
               <Link to={`/annuaire`}>Annuaire</Link>
-              <Button color={"danger"} onClick={() => history.push("/annuaire/anomalies")}>
-                Voir le rapport d'anomalies >
-              </Button>
+              <Buttons>
+                <Button color={"info"} onClick={() => history.push("/annuaire/reseaux")}>
+                  Reseaux
+                </Button>
+                <Button color={"danger"} onClick={() => history.push("/annuaire/anomalies")}>
+                  Voir le rapport d'anomalies >
+                </Button>
+              </Buttons>
             </Header>
           </Page.Header>
           <Grid.Row>

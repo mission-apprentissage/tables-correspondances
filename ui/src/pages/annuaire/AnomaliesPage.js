@@ -2,13 +2,10 @@ import React from "react";
 import { omit } from "lodash-es";
 import { Card, Grid, Page, Table } from "tabler-react";
 import Pagination from "./components/Pagination";
+import buildQuery from "../../common/utils/buildQuery";
 import { useFetch } from "../../common/hooks/useFetch";
 import queryString from "query-string";
 import { Link, useHistory } from "react-router-dom";
-
-function buildQuery(elements = {}) {
-  return `${queryString.stringify(elements, { skipNull: true, skipEmptyString: true })}`;
-}
 
 const AnomaliesTable = ({ anomalies }) => {
   return (
@@ -36,6 +33,7 @@ const AnomaliesTable = ({ anomalies }) => {
     </Table>
   );
 };
+
 export default () => {
   let history = useHistory();
   let query = {
