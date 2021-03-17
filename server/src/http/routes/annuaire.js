@@ -83,8 +83,8 @@ module.exports = () => {
         anomalies: Joi.boolean().default(null),
         page: Joi.number().default(1),
         items_par_page: Joi.number().default(10),
-        tri: Joi.string().allow("uais_secondaires", "relations"),
-        ordre: Joi.number().allow("asc", "desc").default("desc"),
+        tri: Joi.string().valid("uais_secondaires", "relations"),
+        ordre: Joi.string().valid("asc", "desc").default("desc"),
       }).validateAsync(req.query, { abortEarly: false });
 
       let { cursor, pagination } = await paginateAggregationWithCursor(

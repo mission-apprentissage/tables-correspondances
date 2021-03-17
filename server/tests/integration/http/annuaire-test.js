@@ -244,13 +244,22 @@ httpTests(__filename, ({ startServer }) => {
     });
   });
 
-  it("Vérifie que le service retourne une 400 quand les paramètres sont invalides", async () => {
+  it("Vérifie que le service retourne une 400 quand les paramètres sont inconnus", async () => {
     const { httpClient } = await startServer();
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements?invalid=XXX");
 
     strictEqual(response.status, 400);
     deepStrictEqual(response.data.details[0].path[0], "invalid");
+  });
+
+  it("Vérifie que le service retourne une 400 quand les paramètres sont invalides", async () => {
+    const { httpClient } = await startServer();
+
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?ordre=-1");
+
+    strictEqual(response.status, 400);
+    deepStrictEqual(response.data.details[0].path[0], "ordre");
   });
 
   it("Vérifie qu'on peut obtenir un établissement", async () => {
