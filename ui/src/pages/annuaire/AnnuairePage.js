@@ -26,8 +26,8 @@ function buildQuery(elements = {}) {
 export default () => {
   let history = useHistory();
   let query = {
+    ordre: "desc",
     page: 1,
-    ordre: -1,
     items_par_page: 25,
     ...queryString.parse(window.location.search),
     anomalies: false,

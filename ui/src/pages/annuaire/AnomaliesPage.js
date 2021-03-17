@@ -38,7 +38,13 @@ const AnomaliesTable = ({ anomalies }) => {
 };
 export default () => {
   let history = useHistory();
-  let query = { page: 1, ordre: -1, items_par_page: 25, ...queryString.parse(window.location.search), anomalies: true };
+  let query = {
+    ordre: "desc",
+    page: 1,
+    items_par_page: 25,
+    ...queryString.parse(window.location.search),
+    anomalies: true,
+  };
   let [data, loading, error] = useFetch(`/api/v1/annuaire/etablissements?${buildQuery(query)}`, {
     etablissements: [],
     pagination: {
