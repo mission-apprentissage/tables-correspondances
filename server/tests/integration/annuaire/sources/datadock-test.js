@@ -20,9 +20,9 @@ integrationTests(__filename, () => {
 
     let results = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.strictEqual(found.conformite_reglementaire.certificateur, "datadock");
-    found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0, __v: 0 }).lean();
+    found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0 }).lean();
     assert.strictEqual(found.conformite_reglementaire.certificateur, undefined);
 
     assert.deepStrictEqual(results, {
@@ -48,7 +48,7 @@ integrationTests(__filename, () => {
 
     await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.strictEqual(found.conformite_reglementaire.conventionne, true);
   });
 });

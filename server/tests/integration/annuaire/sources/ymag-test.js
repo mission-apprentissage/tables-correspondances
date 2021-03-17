@@ -18,7 +18,7 @@ integrationTests(__filename, () => {
 
     let results = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, [
       {
         type: "ymag",

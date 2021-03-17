@@ -20,7 +20,7 @@ integrationTests(__filename, () => {
 
     let results = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, [
       {
         type: "ideo2",
@@ -28,7 +28,7 @@ integrationTests(__filename, () => {
         valide: true,
       },
     ]);
-    found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0, __v: 0 }).lean();
+    found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, [
       {
         type: "ideo2",
@@ -55,14 +55,14 @@ integrationTests(__filename, () => {
 
     await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(omit(found.relations[0], ["label"]), {
       siret: "22222222222222",
       annuaire: true,
       type: "formateur",
       source: "ideo2",
     });
-    found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0, __v: 0 }).lean();
+    found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0 }).lean();
     assert.deepStrictEqual(omit(found.relations[0], ["label"]), {
       siret: "11111111111111",
       annuaire: true,
