@@ -31,6 +31,7 @@ const lookupDiffAndMerge = (fichesXML, fichesKitA) => {
       if (ficheXML.code_rncp === ficheKitA.code_rncp) {
         elementToPush = {
           ...ficheKitA,
+          code_type_certif: ficheXML.code_type_certif,
           partenaires: ficheXML.partenaires,
           certificateurs: ficheXML.certificateurs,
         };
