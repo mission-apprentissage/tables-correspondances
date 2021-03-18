@@ -3,17 +3,17 @@ import { uniqWith } from "lodash-es";
 import { Card, Grid, Page } from "tabler-react";
 import { ResponsiveNetwork } from "@nivo/network";
 import { Link } from "react-router-dom";
-import buildQuery from "../../common/utils/buildQuery";
-import { useFetch } from "../../common/hooks/useFetch";
+import { useSearch } from "./hooks/useSearch";
+import SearchForm from "./components/SearchForm";
 
-function getReseau(etablissements) {
+function getEtablissementsReseau(etablissements) {
   let nodes = etablissements.map((e) => {
     return {
       id: e.siret,
       raison_sociale: e.raison_sociale,
       radius: 8,
       depth: 1,
-      color: "rgb(97, 205, 187)",
+      color: e.statut === "actif" ? "rgb(97, 205, 187)" : "rgb(205, 115, 97)",
     };
   });
 
@@ -21,7 +21,7 @@ function getReseau(etablissements) {
     return [
       ...acc,
       ...e.relations
-        .filter((relation) => relation.annuaire)
+        .filter((relation) => relation.annuaire && !!nodes.find((n) => n.id === relation.siret))
         .map((relation) => {
           return {
             source: e.siret,
@@ -39,7 +39,7 @@ function Reseau({ etablissements }) {
     return <div />;
   }
 
-  let { nodes, links } = getReseau(etablissements);
+  let { nodes, links } = getEtablissementsReseau(etablissements);
 
   return (
     <div style={{ height: "800px" }}>
@@ -61,19 +61,9 @@ function Reseau({ etablissements }) {
 }
 
 export default () => {
-  let query = {
-    page: 1,
+  let [{ data, loading, error }, search] = useSearch({
     items_par_page: 5000,
-    champs: "siret,raison_sociale,relations",
-  };
-  let [data, loading, error] = useFetch(`/api/v1/annuaire/etablissements?${buildQuery(query)}`, {
-    etablissements: [],
-    pagination: {
-      page: 0,
-      resultats_par_page: 0,
-      nombre_de_page: 0,
-      total: 0,
-    },
+    champs: "siret,statut,raison_sociale,relations",
   });
 
   return (
@@ -85,12 +75,21 @@ export default () => {
           </Page.Header>
           <Grid.Row>
             <Grid.Col>
+              <SearchForm search={search} error={error} />
+            </Grid.Col>
+          </Grid.Row>
+          <Grid.Row>
+            <Grid.Col>
               <Card>
                 <Card.Header>
                   <Card.Title>Réseaux</Card.Title>
                 </Card.Header>
                 <Card.Body>
-                  <Reseau etablissements={data.etablissements} />
+                  {loading || data.etablissements.length === 0 ? (
+                    <div>{loading ? "Chargement..." : "Pas de résultats"}</div>
+                  ) : (
+                    <Reseau etablissements={data.etablissements} />
+                  )}
                 </Card.Body>
               </Card>
             </Grid.Col>

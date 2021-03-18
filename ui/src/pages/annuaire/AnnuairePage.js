@@ -1,17 +1,11 @@
 import React from "react";
-import { omit } from "lodash-es";
-import * as Yup from "yup";
-import { Button, Card, Form as TablerForm, Grid, Page, Table } from "tabler-react";
-import { Field, Form, Formik } from "formik";
-import buildQuery from "../../common/utils/buildQuery";
-import FormError from "../../common/components/FormError";
-import FormMessage from "../../common/components/FormMessage";
-import { useFetch } from "../../common/hooks/useFetch";
-import queryString from "query-string";
+import { Button, Card, Grid, Page, Table } from "tabler-react";
 import { Link, useHistory } from "react-router-dom";
 import SortButton from "./components/SortButton";
 import styled from "styled-components";
 import Pagination from "./components/Pagination";
+import SearchForm from "./components/SearchForm";
+import { useSearch } from "./hooks/useSearch";
 
 const Header = styled.div`
   display: flex;
@@ -32,36 +26,7 @@ const Buttons = styled.div`
 
 export default () => {
   let history = useHistory();
-  let query = {
-    ordre: "desc",
-    page: 1,
-    items_par_page: 25,
-    ...queryString.parse(window.location.search),
-    anomalies: false,
-  };
-  let [data, loading, error] = useFetch(`/api/v1/annuaire/etablissements?${buildQuery(query)}`, {
-    etablissements: [],
-    pagination: {
-      page: 0,
-      resultats_par_page: 0,
-      nombre_de_page: 0,
-      total: 0,
-    },
-  });
-
-  function search(options = {}) {
-    let keys = Object.keys(options);
-    history.push(`/annuaire?${buildQuery({ ...omit(query, keys), ...options })}`);
-  }
-
-  function showError(meta) {
-    return meta.touched && meta.error
-      ? {
-          feedback: meta.error,
-          invalid: true,
-        }
-      : {};
-  }
+  let [{ data, loading, error }, search] = useSearch({ anomalies: false });
 
   return (
     <Page>
@@ -82,42 +47,7 @@ export default () => {
           </Page.Header>
           <Grid.Row>
             <Grid.Col>
-              <Card>
-                <Card.Header>
-                  <Card.Title>Rechercher un établissement</Card.Title>
-                </Card.Header>
-                <Card.Body>
-                  <Formik
-                    initialValues={{
-                      text: "",
-                    }}
-                    validationSchema={Yup.object().shape({
-                      text: Yup.string(),
-                    })}
-                    onSubmit={(values) => search({ page: 1, ...values })}
-                  >
-                    {({ status = {} }) => {
-                      return (
-                        <Form>
-                          <TablerForm.Group label="Raison sociale, siret ou UAI">
-                            <Field name="text">
-                              {({ field, meta }) => {
-                                return <TablerForm.Input placeholder="..." {...field} {...showError(meta)} />;
-                              }}
-                            </Field>
-                          </TablerForm.Group>
-                          <Button color="primary" className="text-left" type={"submit"}>
-                            Rechercher
-                          </Button>
-
-                          {status.message && <FormMessage>{status.message}</FormMessage>}
-                          {error && <FormError>Une erreur est survenue</FormError>}
-                        </Form>
-                      );
-                    }}
-                  </Formik>
-                </Card.Body>
-              </Card>
+              <SearchForm search={search} error={error} />
             </Grid.Col>
           </Grid.Row>
           <Grid.Row>

@@ -1,11 +1,8 @@
 import React from "react";
-import { omit } from "lodash-es";
 import { Card, Grid, Page, Table } from "tabler-react";
 import Pagination from "./components/Pagination";
-import buildQuery from "../../common/utils/buildQuery";
-import { useFetch } from "../../common/hooks/useFetch";
-import queryString from "query-string";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useSearch } from "./hooks/useSearch";
 
 const AnomaliesTable = ({ anomalies }) => {
   return (
@@ -35,28 +32,7 @@ const AnomaliesTable = ({ anomalies }) => {
 };
 
 export default () => {
-  let history = useHistory();
-  let query = {
-    ordre: "desc",
-    page: 1,
-    items_par_page: 25,
-    ...queryString.parse(window.location.search),
-    anomalies: true,
-  };
-  let [data, loading, error] = useFetch(`/api/v1/annuaire/etablissements?${buildQuery(query)}`, {
-    etablissements: [],
-    pagination: {
-      page: 0,
-      resultats_par_page: 0,
-      nombre_de_page: 0,
-      total: 0,
-    },
-  });
-
-  function search(options = {}) {
-    let keys = Object.keys(options);
-    history.push(`/annuaire/anomalies?${buildQuery({ ...omit(query, keys), ...options })}`);
-  }
+  let [{ data, loading }, search] = useSearch({ anomalies: true });
 
   return (
     <Page>
