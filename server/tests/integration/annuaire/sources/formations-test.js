@@ -28,7 +28,7 @@ integrationTests(__filename, () => {
 
     let results = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.relations, [
       {
         siret: "22222222222222",
@@ -66,7 +66,7 @@ integrationTests(__filename, () => {
 
     await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.relations, [
       {
         siret: "22222222222222",
@@ -97,7 +97,7 @@ integrationTests(__filename, () => {
 
     let results = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.diplomes, [
       {
         code: "40030001",
@@ -129,7 +129,7 @@ integrationTests(__filename, () => {
 
     let results = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.diplomes, []);
     assert.deepStrictEqual(results, {
       total: 1,
@@ -157,7 +157,7 @@ integrationTests(__filename, () => {
 
     let results = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.certifications, [
       {
         code: "RNCP28662",
@@ -191,7 +191,7 @@ integrationTests(__filename, () => {
 
     let results = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.certifications, []);
     assert.deepStrictEqual(results, {
       total: 1,
@@ -240,7 +240,7 @@ integrationTests(__filename, () => {
 
     let results = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0 }).lean();
 
     assert.deepStrictEqual(found.lieux_de_formation[0], {
       siret: "33333333333333",
@@ -288,7 +288,7 @@ integrationTests(__filename, () => {
 
     let results = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
 
     assert.deepStrictEqual(found.lieux_de_formation, []);
     assert.deepStrictEqual(results, {
@@ -321,7 +321,7 @@ integrationTests(__filename, () => {
 
     let results = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.lieux_de_formation[0].adresse, {
       geojson: {
         type: "Feature",
@@ -372,7 +372,7 @@ integrationTests(__filename, () => {
 
     let results = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0 }).lean();
 
     assert.strictEqual(found.lieux_de_formation.length, 0);
     assert.strictEqual(found._meta.anomalies.length, 1);
@@ -422,7 +422,7 @@ integrationTests(__filename, () => {
 
     await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.strictEqual(found.relations[0].annuaire, true);
   });
 

@@ -25,7 +25,7 @@ integrationTests(__filename, () => {
 
     let results = await importReferentiel(referentiel);
 
-    let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(omit(found, ["_meta"]), {
       uai: "0011058V",
       siret: "111111111111111",
@@ -64,7 +64,7 @@ integrationTests(__filename, () => {
 
     let results = await importReferentiel(referentiel);
 
-    await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0, __v: 0 }).lean();
+    await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(results, {
       total: 2,
       created: 1,
