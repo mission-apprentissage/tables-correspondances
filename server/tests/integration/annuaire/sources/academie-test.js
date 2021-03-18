@@ -19,7 +19,7 @@ integrationTests(__filename, () => {
 
     let results = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111100000" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100000" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.academie, {
       code: "01",
       nom: "Paris",

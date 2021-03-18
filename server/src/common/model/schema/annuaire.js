@@ -66,6 +66,7 @@ let adresse = new Schema(
 );
 
 const annuaireSchema = {
+  __v: { type: Number, select: false },
   siret: {
     type: String,
     required: true,
