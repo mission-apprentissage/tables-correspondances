@@ -30,9 +30,15 @@ integrationTests(__filename, () => {
       uai: "0011058V",
       siret: "111111111111111",
       referentiel: "test",
+      conformite_reglementaire: {
+        conventionne: false,
+      },
       uais_secondaires: [],
-      relations: [],
       reseaux: [],
+      relations: [],
+      lieux_de_formation: [],
+      diplomes: [],
+      certifications: [],
     });
     assert.ok(found._meta.created_at);
     assert.deepStrictEqual(found._meta.anomalies, []);

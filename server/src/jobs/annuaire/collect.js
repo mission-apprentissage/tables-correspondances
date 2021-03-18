@@ -1,6 +1,7 @@
 const { oleoduc, writeData, filterData } = require("oleoduc");
 const { Annuaire } = require("../../common/model");
 const { getNbModifiedDocuments } = require("../../common/utils/mongooseUtils");
+const { flattenObject } = require("../../common/utils/objectUtils");
 const { validateUAI } = require("../../common/utils/uaiUtils");
 const logger = require("../../common/logger");
 
@@ -20,7 +21,7 @@ async function buildNewRelations(type, relations) {
   return Promise.all(
     relations.map(async (r) => {
       let doc = await Annuaire.findOne({ siret: r.siret });
-      return { ...r, label: doc ? doc.raison_sociale : r.label, annuaire: !!doc, source: type };
+      return { ...r, annuaire: !!doc, source: type };
     })
   );
 }
@@ -86,7 +87,7 @@ module.exports = async (source, options = {}) => {
             query,
             {
               $set: {
-                ...data,
+                ...flattenObject(data),
               },
               $addToSet: {
                 reseaux: {
@@ -102,8 +103,11 @@ module.exports = async (source, options = {}) => {
             },
             { runValidators: true }
           );
-          stats.updated += getNbModifiedDocuments(res);
-          logger.info(`[Collect][${type}] Etablissement ${selector} updated`);
+          let nbModifiedDocuments = getNbModifiedDocuments(res);
+          if (nbModifiedDocuments) {
+            stats.updated += nbModifiedDocuments;
+            logger.debug(`[Collect][${type}] Etablissement ${selector} updated`);
+          }
         } catch (e) {
           await handleAnomalies(selector, [e]);
         }

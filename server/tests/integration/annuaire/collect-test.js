@@ -235,7 +235,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found.relations, [
       {
         siret: "22222222222222",
-        label: "Centre de formation",
+        label: "test",
         annuaire: true,
         source: "test",
       },

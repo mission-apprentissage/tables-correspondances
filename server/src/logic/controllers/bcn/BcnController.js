@@ -239,7 +239,6 @@ class BcnController {
   async findCfd_bcn(codeEducNat, previousInfo = null) {
     try {
       const match = await BcnFormationDiplome.findOne({ FORMATION_DIPLOME: codeEducNat });
-      console.log(`WTF ${match}`);
       if (!match) {
         return { info: infosCodes.cfd.NotFound, value: null };
       }
