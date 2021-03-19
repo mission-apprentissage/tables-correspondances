@@ -1,5 +1,6 @@
 const assert = require("assert");
 const { omit } = require("lodash");
+const { oleoduc, transformData } = require("oleoduc");
 const { Readable } = require("stream");
 const { Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
@@ -8,10 +9,14 @@ const collect = require("../../../src/jobs/annuaire/collect");
 
 integrationTests(__filename, () => {
   function createTestSource(array) {
+    let name = "dummy";
     return {
-      type: "test",
+      name,
       stream() {
-        return Readable.from(array);
+        return oleoduc(
+          Readable.from(array),
+          transformData((d) => ({ source: name, ...d }))
+        );
       },
     };
   }
@@ -25,20 +30,22 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
     let found = await Annuaire.findOne({}, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, [
       {
-        type: "test",
+        source: "dummy",
         uai: "0011073L",
         valide: true,
       },
     ]);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      failed: 0,
-      updated: 1,
+    assert.deepStrictEqual(stats, {
+      dummy: {
+        total: 1,
+        failed: 0,
+        updated: 1,
+      },
     });
   });
 
@@ -51,18 +58,20 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires[0], {
-      type: "test",
+      source: "dummy",
       uai: "093XXXT",
       valide: false,
     });
-    assert.deepStrictEqual(results, {
-      total: 1,
-      failed: 0,
-      updated: 1,
+    assert.deepStrictEqual(stats, {
+      dummy: {
+        total: 1,
+        failed: 0,
+        updated: 1,
+      },
     });
   });
 
@@ -80,9 +89,11 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, []);
     assert.deepStrictEqual(stats, {
-      total: 1,
-      failed: 0,
-      updated: 0,
+      dummy: {
+        total: 1,
+        failed: 0,
+        updated: 0,
+      },
     });
   });
 
@@ -98,7 +109,7 @@ integrationTests(__filename, () => {
       siret: "111111111111111",
       uais_secondaires: [
         {
-          type: "test",
+          source: "dummy",
           uai: "0011073L",
           valide: true,
         },
@@ -110,15 +121,17 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, [
       {
-        type: "test",
+        source: "dummy",
         uai: "0011073L",
         valide: true,
       },
     ]);
     assert.deepStrictEqual(stats, {
-      total: 1,
-      failed: 0,
-      updated: 0,
+      dummy: {
+        total: 1,
+        failed: 0,
+        updated: 0,
+      },
     });
   });
 
@@ -136,9 +149,11 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, []);
     assert.deepStrictEqual(stats, {
-      total: 1,
-      failed: 0,
-      updated: 0,
+      dummy: {
+        total: 1,
+        failed: 0,
+        updated: 0,
+      },
     });
   });
 
@@ -158,13 +173,15 @@ integrationTests(__filename, () => {
     assert.ok(errors[0].date);
     assert.deepStrictEqual(omit(errors[0], ["date"]), {
       details: "Erreur",
-      source: "test",
-      type: "collect",
+      source: "dummy",
+      task: "collect",
     });
     assert.deepStrictEqual(stats, {
-      total: 1,
-      failed: 1,
-      updated: 0,
+      dummy: {
+        total: 1,
+        failed: 1,
+        updated: 0,
+      },
     });
   });
 
@@ -186,7 +203,7 @@ integrationTests(__filename, () => {
         annuaire: false,
         label: "Centre de formation",
         type: "gestionnaire",
-        source: "test",
+        source: "dummy",
       },
     ]);
   });
@@ -200,7 +217,7 @@ integrationTests(__filename, () => {
           annuaire: false,
           label: "test",
           type: "gestionnaire",
-          source: "test",
+          source: "dummy",
         },
       ],
     });
@@ -237,7 +254,7 @@ integrationTests(__filename, () => {
         siret: "22222222222222",
         label: "test",
         annuaire: true,
-        source: "test",
+        source: "dummy",
       },
     ]);
   });
@@ -284,12 +301,14 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    let results = await collect(source, { filters: { siret: "33333333333333" } });
+    let stats = await collect(source, { filters: { siret: "33333333333333" } });
 
-    assert.deepStrictEqual(results, {
-      total: 0,
-      updated: 0,
-      failed: 0,
+    assert.deepStrictEqual(stats, {
+      dummy: {
+        total: 0,
+        updated: 0,
+        failed: 0,
+      },
     });
   });
 
@@ -302,14 +321,16 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
     let found = await Annuaire.findOne({ uai: "0011073X" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.reseaux, ["test"]);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      failed: 0,
-      updated: 1,
+    assert.deepStrictEqual(stats, {
+      dummy: {
+        total: 1,
+        failed: 0,
+        updated: 1,
+      },
     });
   });
 
@@ -319,7 +340,7 @@ integrationTests(__filename, () => {
       siret: "111111111111111",
       uais_secondaires: [
         {
-          type: "test",
+          source: "dummy",
           uai: "SECONDAIRE",
           valide: true,
         },
@@ -332,14 +353,16 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
     let found = await Annuaire.findOne({ uai: "0011073X" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.reseaux, ["test"]);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      failed: 0,
-      updated: 1,
+    assert.deepStrictEqual(stats, {
+      dummy: {
+        total: 1,
+        failed: 0,
+        updated: 1,
+      },
     });
   });
 });

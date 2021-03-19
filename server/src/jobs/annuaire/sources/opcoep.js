@@ -3,6 +3,7 @@ const csv = require("csv-parse");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
 module.exports = async (custom = {}) => {
+  let name = "opcoep";
   let input =
     custom.input ||
     (await getOvhFileAsStream(
@@ -10,6 +11,7 @@ module.exports = async (custom = {}) => {
     ));
 
   return {
+    name,
     stream() {
       return oleoduc(
         input,
@@ -21,6 +23,7 @@ module.exports = async (custom = {}) => {
         }),
         transformData((data) => {
           return {
+            source: name,
             selector: data["SIRET CFA"],
             uais: [data["N UAI CFA"]],
           };

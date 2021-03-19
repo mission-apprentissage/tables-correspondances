@@ -1,121 +1,134 @@
 const { oleoduc, writeData, filterData } = require("oleoduc");
+const mergeStream = require("merge-stream");
 const { Annuaire } = require("../../common/model");
 const { getNbModifiedDocuments } = require("../../common/utils/mongooseUtils");
 const { flattenObject } = require("../../common/utils/objectUtils");
 const { validateUAI } = require("../../common/utils/uaiUtils");
 const logger = require("../../common/logger");
 
-function buildSelectorQuery(selector) {
+function buildQuery(selector) {
   return { $or: [{ siret: selector }, { uai: selector }, { "uais_secondaires.uai": selector }] };
 }
 
-function buildNewUAIsSecondaires(type, etablissement, uais) {
+function buildNewUAIsSecondaires(source, etablissement, uais) {
   return uais
     .filter((uai) => uai && uai !== "NULL" && etablissement.uai !== uai)
     .map((uai) => {
-      return { type, uai, valide: validateUAI(uai) };
+      return { source, uai, valide: validateUAI(uai) };
     });
 }
 
-async function buildNewRelations(type, relations) {
+async function buildNewRelations(source, relations) {
   return Promise.all(
     relations.map(async (r) => {
       let doc = await Annuaire.findOne({ siret: r.siret });
-      return { ...r, annuaire: !!doc, source: type };
+      return { ...r, annuaire: !!doc, source };
     })
   );
 }
 
-module.exports = async (source, options = {}) => {
-  let filters = options.filters || {};
-  let type = source.type;
-  let stats = {
-    total: 0,
-    updated: 0,
-    failed: 0,
-  };
+async function handleAnomalies(source, selector, anomalies) {
+  logger.error(`[Collect][${source}] Erreur lors de la collecte pour l'établissement ${selector}.`, anomalies);
+  let query = buildQuery(selector);
 
-  async function handleAnomalies(selector, anomalies) {
-    stats.failed++;
-    logger.error(`[Collect][${type}] Erreur lors de la collecte pour l'établissement ${selector}.`, anomalies);
-    let query = buildSelectorQuery(selector);
-
-    await Annuaire.updateOne(
-      query,
-      {
-        $push: {
-          "_meta.anomalies": {
-            $each: anomalies.map((a) => ({
-              type: "collect",
-              source: source.type,
-              date: new Date(),
-              details: a.message || a,
-            })),
-            // Max 10 elements ordered by date
-            $slice: 10,
-            $sort: { date: -1 },
-          },
+  await Annuaire.updateOne(
+    query,
+    {
+      $push: {
+        "_meta.anomalies": {
+          $each: anomalies.map((a) => ({
+            task: "collect",
+            source,
+            date: new Date(),
+            details: a.message || a,
+          })),
+          // Max 10 elements ordered by date
+          $slice: 10,
+          $sort: { date: -1 },
         },
       },
-      { runValidators: true }
-    );
-  }
+    },
+    { runValidators: true }
+  );
+}
 
-  try {
-    let stream = await source.stream({ filters });
+function parseArgs(...args) {
+  let options = typeof args[args.length - 1].stream !== "function" ? args.pop() : {};
 
-    await oleoduc(
-      stream,
-      filterData((data) => {
-        return filters.siret ? filters.siret === data.selector : !!data;
-      }),
-      writeData(async ({ selector, uais = [], relations = [], reseaux = [], data = {}, anomalies = [] }) => {
-        stats.total++;
-        let query = buildSelectorQuery(selector);
+  let rest = args.pop();
+  return {
+    sources: Array.isArray(rest) ? rest : [rest],
+    options,
+  };
+}
 
-        try {
-          let etablissement = await Annuaire.findOne(query).lean();
-          if (!etablissement) {
-            return;
-          }
+module.exports = async (...args) => {
+  let { sources, options } = parseArgs(...args);
+  let filters = options.filters || {};
+  let stats = sources.reduce((acc, source) => {
+    return {
+      ...acc,
+      [source.name]: {
+        total: 0,
+        updated: 0,
+        failed: 0,
+      },
+    };
+  }, {});
 
-          if (anomalies.length > 0) {
-            await handleAnomalies(selector, anomalies);
-          }
+  let streams = sources.map((source) => source.stream({ filters }));
 
-          let res = await Annuaire.updateOne(
-            query,
-            {
-              $set: {
-                ...flattenObject(data),
+  await oleoduc(
+    mergeStream(streams),
+    filterData((data) => {
+      return filters.siret ? filters.siret === data.selector : !!data;
+    }),
+    writeData(async ({ source, selector, uais = [], relations = [], reseaux = [], data = {}, anomalies = [] }) => {
+      stats[source].total++;
+      let query = buildQuery(selector);
+
+      try {
+        let etablissement = await Annuaire.findOne(query).lean();
+        if (!etablissement) {
+          return;
+        }
+
+        if (anomalies.length > 0) {
+          stats[source].failed++;
+          await handleAnomalies(source, selector, anomalies);
+        }
+
+        let res = await Annuaire.updateOne(
+          query,
+          {
+            $set: {
+              ...flattenObject(data),
+            },
+            $addToSet: {
+              reseaux: {
+                $each: reseaux,
               },
-              $addToSet: {
-                reseaux: {
-                  $each: reseaux,
-                },
-                relations: {
-                  $each: await buildNewRelations(type, relations),
-                },
-                uais_secondaires: {
-                  $each: buildNewUAIsSecondaires(type, etablissement, uais),
-                },
+              relations: {
+                $each: await buildNewRelations(source, relations),
+              },
+              uais_secondaires: {
+                $each: buildNewUAIsSecondaires(source, etablissement, uais),
               },
             },
-            { runValidators: true }
-          );
-          let nbModifiedDocuments = getNbModifiedDocuments(res);
-          if (nbModifiedDocuments) {
-            stats.updated += nbModifiedDocuments;
-            logger.debug(`[Collect][${type}] Etablissement ${selector} updated`);
-          }
-        } catch (e) {
-          await handleAnomalies(selector, [e]);
+          },
+          { runValidators: true }
+        );
+        let nbModifiedDocuments = getNbModifiedDocuments(res);
+        if (nbModifiedDocuments) {
+          stats[source].updated += nbModifiedDocuments;
+          logger.debug(`[Collect][${source}] Etablissement ${selector} updated`);
         }
-      })
-    );
-  } catch (e) {
-    stats.failed++;
-    logger.error(`[Collect][${type}] Erreur lors de la collecte.`, e);
-  }
+      } catch (e) {
+        stats[source].failed++;
+        await handleAnomalies(source, selector, [e]);
+      }
+    })
+  );
+
   return stats;
 };

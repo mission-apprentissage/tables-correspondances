@@ -46,30 +46,26 @@ cli
   });
 
 cli
-  .command("collect [type] [file]")
+  .command("collect [name] [file]")
   .option("--siret <siret>", "Limite la collecte pour le siret")
   .description("Parcoure la ou les sources pour trouver des données complémentaires")
-  .action((type, file, { siret }) => {
+  .action((name, file, { siret }) => {
     runScript(async () => {
       let options = siret ? { filters: { siret } } : {};
 
-      if (type) {
+      if (name) {
         let input = file ? createReadStream(file) : null;
-        let source = await createSource(type, { input });
+        let source = await createSource(name, { input });
         return collect(source, options);
       } else {
         let groups = getDefaultSourcesGroupedByPriority();
         let stats = [];
 
-        await asyncForEach(groups, async (group) => {
-          let promises = group.map(async (builder) => {
-            let source = await builder();
-            return { [source.type]: await collect(source, options) };
-          });
-
-          let results = await Promise.all(promises);
+        for (let group of groups) {
+          let sources = await Promise.all(group.map(createSource));
+          let results = await collect(sources, options);
           stats.push(results);
-        });
+        }
 
         return stats;
       }

@@ -110,43 +110,52 @@ async function buildLieuxDeFormation(siret, formations, getAdresseFromCoordinate
 }
 
 module.exports = async (custom = {}) => {
+  let name = "formations";
   let api = custom.apiCatalogue || apiCatalogue;
   let { getAdresseFromCoordinates } = adresses(custom.apiGeoAdresse || apiGeoAdresse);
 
   return {
+    name,
     stream(options = {}) {
       let filters = options.filters || {};
 
       return oleoduc(
         Annuaire.find(filters, { siret: 1 }).lean().cursor(),
-        transformData(async ({ siret }) => {
-          try {
-            let [_2020, _2021] = await Promise.all([
-              getFormations(api, siret),
-              getFormations(api, siret, { annee: "2021" }),
-            ]);
+        transformData(
+          async ({ siret }) => {
+            try {
+              let [_2020, _2021] = await Promise.all([
+                getFormations(api, siret),
+                getFormations(api, siret, { annee: "2021" }),
+              ]);
 
-            let formations = [..._2020, ..._2021];
-            let { relations } = await buildRelations(siret, formations);
-            let { diplomes } = await buildDiplomes(siret, formations);
-            let { certifications } = await buildCertifications(siret, formations);
-            let { lieux, anomalies } = await buildLieuxDeFormation(siret, formations, getAdresseFromCoordinates);
+              let formations = [..._2020, ..._2021];
+              let { relations } = await buildRelations(siret, formations);
+              let { diplomes } = await buildDiplomes(siret, formations);
+              let { certifications } = await buildCertifications(siret, formations);
+              let { lieux, anomalies } = await buildLieuxDeFormation(siret, formations, getAdresseFromCoordinates);
 
-            return {
-              selector: siret,
-              relations,
-              anomalies,
-              data: {
-                lieux_de_formation: lieux,
-                diplomes,
-                certifications,
-              },
-            };
-          } catch (e) {
-            return { selector: siret, anomalies: [e.reason === 404 ? "Entreprise inconnue" : e] };
-          }
-        }),
-        { promisify: false, parallel: 5 }
+              return {
+                selector: siret,
+                relations,
+                anomalies,
+                data: {
+                  lieux_de_formation: lieux,
+                  diplomes,
+                  certifications,
+                },
+              };
+            } catch (e) {
+              return {
+                selector: siret,
+                anomalies: [e.reason === 404 ? "Entreprise inconnue" : e],
+              };
+            }
+          },
+          { parallel: 5 }
+        ),
+        transformData((data) => ({ ...data, source: name })),
+        { promisify: false }
       );
     },
   };
