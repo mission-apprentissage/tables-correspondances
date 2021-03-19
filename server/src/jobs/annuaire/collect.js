@@ -52,6 +52,19 @@ async function handleAnomalies(source, selector, anomalies) {
   );
 }
 
+function createStats(sources) {
+  return sources.reduce((acc, source) => {
+    return {
+      ...acc,
+      [source.name]: {
+        total: 0,
+        updated: 0,
+        failed: 0,
+      },
+    };
+  }, {});
+}
+
 function parseArgs(...args) {
   let options = typeof args[args.length - 1].stream !== "function" ? args.pop() : {};
 
@@ -65,16 +78,7 @@ function parseArgs(...args) {
 module.exports = async (...args) => {
   let { sources, options } = parseArgs(...args);
   let filters = options.filters || {};
-  let stats = sources.reduce((acc, source) => {
-    return {
-      ...acc,
-      [source.name]: {
-        total: 0,
-        updated: 0,
-        failed: 0,
-      },
-    };
-  }, {});
+  let stats = createStats(sources);
 
   let streams = sources.map((source) => source.stream({ filters }));
 
