@@ -4,16 +4,18 @@ const logger = require("../logger");
 const ApiError = require("./ApiError");
 const apiRateLimiter = require("./apiRateLimiter");
 
-const apiEndpoint = "https://catalogue.apprentissage.beta.gouv.fr";
-
 let executeWithRateLimiting = apiRateLimiter("apiCatalogue", {
   nbRequests: 5,
   durationInSeconds: 1,
+  client: axios.create({
+    baseURL: "https://catalogue.apprentissage.beta.gouv.fr",
+    timeout: 10000,
+  }),
 });
 
 class ApiCatalogue {
   getFormations(query, { annee, ...options }) {
-    return executeWithRateLimiting(async () => {
+    return executeWithRateLimiting(async (client) => {
       try {
         let params = queryString.stringify(
           {
@@ -30,7 +32,7 @@ class ApiCatalogue {
 
         let version = `${annee || ""}`;
         logger.debug(`[Catalogue API] Fetching formations ${version} with params ${params}...`);
-        let response = await axios.get(`${apiEndpoint}/api/entity/formations${version}?${params}`);
+        let response = await client.get(`api/entity/formations${version}?${params}`);
         return response.data;
       } catch (e) {
         throw new ApiError("Api Catalogue", e.message, e.code || e.response.status);
