@@ -12,10 +12,8 @@ module.exports = async (referentiel) => {
     failed: 0,
   };
 
-  let stream = await referentiel.stream();
-
   await oleoduc(
-    stream,
+    referentiel.stream(),
     writeData(async (data) => {
       stats.total++;
       if (isEmpty(data.siret)) {
@@ -30,7 +28,7 @@ module.exports = async (referentiel) => {
           {
             $set: {
               ...flattenObject(data),
-              referentiel: referentiel.type,
+              referentiel: referentiel.name,
             },
           },
           { upsert: true, setDefaultsOnInsert: true, runValidators: true }
