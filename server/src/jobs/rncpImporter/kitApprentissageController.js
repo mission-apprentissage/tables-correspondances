@@ -4,12 +4,13 @@ const XLSX = require("xlsx");
 const { readXLSXFile } = require("../../common/utils/fileUtils");
 const { downloadAndSaveFileFromS3 } = require("../../common/utils/awsUtils");
 
-const FILE_LOCAL_PATH = path.join(__dirname, "./assets", "KitApprentissage.latest.xlsx");
+const KIT_LOCAL_PATH = path.join(__dirname, "./assets", "KitApprentissage.latest.xlsx");
 class KitApprentissageController {
-  async init() {
-    await downloadAndSaveFileFromS3("mna-services/features/rncp/KitApprentissage.latest.xlsx", FILE_LOCAL_PATH);
+  async init(localPath = null) {
+    const pathL = localPath ?? KIT_LOCAL_PATH;
+    await downloadAndSaveFileFromS3("mna-services/features/rncp/KitApprentissage.latest.xlsx", pathL);
 
-    const { sheet_name_list, workbook } = readXLSXFile(FILE_LOCAL_PATH);
+    const { sheet_name_list, workbook } = readXLSXFile(pathL);
 
     // Sheet 1 === CodeDiplome_RNCP{Version}
     const worksheetCodeDiplome = workbook.Sheets[sheet_name_list[1]];
