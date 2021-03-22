@@ -1,3 +1,10 @@
+## [2.4.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.4.1...v2.4.2) (2021-03-22)
+
+
+### Bug Fixes
+
+* add local path rncp to interface ([3930661](https://github.com/mission-apprentissage/tables-correspondances/commit/3930661813b1b3851c8b84361b08fc381199e679))
+
 ## [2.4.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.4.0...v2.4.1) (2021-03-22)
 
 
