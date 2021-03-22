@@ -1,3 +1,10 @@
+## [2.4.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.4.0...v2.4.1) (2021-03-22)
+
+
+### Bug Fixes
+
+* pass down local path ([4a9720e](https://github.com/mission-apprentissage/tables-correspondances/commit/4a9720e662077ef6004e37fa27eee4b287bc49ca))
+
 # [2.4.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.3.2...v2.4.0) (2021-03-22)
 
 
