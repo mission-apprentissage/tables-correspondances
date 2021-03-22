@@ -233,9 +233,35 @@ integrationTests(__filename, () => {
         annuaire: false,
         label: "Centre de formation",
         type: "gestionnaire",
-        source: "dummy",
+        sources: ["dummy"],
       },
     ]);
+  });
+
+  it("Vérifie qu'on peut fusionner une relation déjà collectée", async () => {
+    await createAnnuaire({
+      siret: "111111111111111",
+      relations: [
+        {
+          siret: "22222222222222",
+          annuaire: false,
+          label: "Centre de formation",
+          type: "gestionnaire",
+          sources: ["other"],
+        },
+      ],
+    });
+    let source = createTestSource([
+      {
+        selector: "111111111111111",
+        relations: [{ siret: "22222222222222", label: "Centre de formation", type: "gestionnaire" }],
+      },
+    ]);
+
+    await collect(source);
+
+    let found = await Annuaire.findOne({}, { _id: 0 }).lean();
+    assert.deepStrictEqual(found.relations[0].sources, ["other", "dummy"]);
   });
 
   it("Vérifie qu'on ne duplique pas les relations", async () => {
@@ -284,7 +310,7 @@ integrationTests(__filename, () => {
         siret: "22222222222222",
         label: "test",
         annuaire: true,
-        source: "dummy",
+        sources: ["dummy"],
       },
     ]);
   });

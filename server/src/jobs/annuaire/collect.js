@@ -12,21 +12,37 @@ function buildQuery(selector) {
 }
 
 function buildUAIsSecondaires(source, etablissement, uais) {
-  return uais
+  let updated = uais
     .filter((uai) => uai && uai !== "NULL" && etablissement.uai !== uai)
     .reduce((acc, uai) => {
-      let previous = etablissement.uais_secondaires.find((u) => u.uai === uai) || {};
-      let sources = uniq([...(previous.sources || []), source]);
-      acc.push({ ...previous, uai, sources, valide: validateUAI(uai) });
+      let found = etablissement.uais_secondaires.find((u) => u.uai === uai) || {};
+      let sources = uniq([...(found.sources || []), source]);
+      acc.push({ ...found, uai, sources, valide: validateUAI(uai) });
       return acc;
     }, []);
+
+  let previous = etablissement.uais_secondaires.filter((us) => !updated.map(({ uai }) => uai).includes(us.uai));
+
+  return [...updated, ...previous];
 }
 
-async function buildNewRelations(source, relations) {
+async function buildRelations(source, etablissement, relations) {
+  let updated = relations.reduce((acc, relation) => {
+    let found = etablissement.relations.find((r) => r.siret === relation.siret) || {};
+    let sources = uniq([...(found.sources || []), source]);
+    acc.push({ ...found, ...relation, sources });
+    return acc;
+  }, []);
+
+  let previous = etablissement.relations.filter((r) => !updated.map(({ siret }) => siret).includes(r.siret));
+
   return Promise.all(
-    relations.map(async (r) => {
-      let doc = await Annuaire.findOne({ siret: r.siret });
-      return { ...r, annuaire: !!doc, source };
+    [...updated, ...previous].map(async (r) => {
+      let count = await Annuaire.countDocuments({ siret: r.siret });
+      return {
+        ...r,
+        annuaire: count > 0,
+      };
     })
   );
 }
@@ -112,13 +128,11 @@ module.exports = async (...args) => {
             $set: {
               ...flattenObject(data),
               uais_secondaires: buildUAIsSecondaires(source, etablissement, uais),
+              relations: await buildRelations(source, etablissement, relations),
             },
             $addToSet: {
               reseaux: {
                 $each: reseaux,
-              },
-              relations: {
-                $each: await buildNewRelations(source, relations),
               },
             },
           },
