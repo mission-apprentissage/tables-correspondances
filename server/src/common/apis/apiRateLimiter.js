@@ -13,6 +13,6 @@ module.exports = (name, options = {}) => {
 
   return async (callback) => {
     await queue.removeTokens(1);
-    return callback();
+    return callback(options.client);
   };
 };

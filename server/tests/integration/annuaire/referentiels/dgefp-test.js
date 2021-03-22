@@ -16,14 +16,20 @@ integrationTests(__filename, () => {
 
     let results = await importReferentiel(referentiel);
 
-    let docs = await Annuaire.find({}, { _id: 0, __v: 0 }).lean();
+    let docs = await Annuaire.find({}, { _id: 0 }).lean();
     assert.strictEqual(docs.length, 1);
     assert.deepStrictEqual(omit(docs[0], ["_meta"]), {
       siret: "11111111111111",
       referentiel: "dgefp",
+      conformite_reglementaire: {
+        conventionne: false,
+      },
       uais_secondaires: [],
-      relations: [],
       reseaux: [],
+      relations: [],
+      lieux_de_formation: [],
+      diplomes: [],
+      certifications: [],
     });
     assert.deepStrictEqual(results, {
       total: 1,

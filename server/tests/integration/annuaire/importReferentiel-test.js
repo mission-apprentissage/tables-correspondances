@@ -7,7 +7,7 @@ const importReferentiel = require("../../../src/jobs/annuaire/importReferentiel"
 
 function createTestReferentiel(array) {
   return {
-    type: "test",
+    name: "test",
     stream() {
       return Readable.from(array);
     },
@@ -25,14 +25,20 @@ integrationTests(__filename, () => {
 
     let results = await importReferentiel(referentiel);
 
-    let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(omit(found, ["_meta"]), {
       uai: "0011058V",
       siret: "111111111111111",
       referentiel: "test",
+      conformite_reglementaire: {
+        conventionne: false,
+      },
       uais_secondaires: [],
-      relations: [],
       reseaux: [],
+      relations: [],
+      lieux_de_formation: [],
+      diplomes: [],
+      certifications: [],
     });
     assert.ok(found._meta.created_at);
     assert.deepStrictEqual(found._meta.anomalies, []);
@@ -58,7 +64,7 @@ integrationTests(__filename, () => {
 
     let results = await importReferentiel(referentiel);
 
-    await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0, __v: 0 }).lean();
+    await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(results, {
       total: 2,
       created: 1,

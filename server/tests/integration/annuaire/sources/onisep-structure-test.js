@@ -8,27 +8,29 @@ const { importReferentiel, createStream } = require("../../../utils/testUtils");
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier ONISEP (structure)", async () => {
     await importReferentiel();
-    let source = await createSource("onisepStructure", {
+    let source = await createSource("onisep-structure", {
       input: createStream(
         `STRUCT SIRET;STRUCT UAI;STRUCT Libellé Amétys
 "11111111111111";"0011073L";"Centre de formation"`
       ),
     });
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, [
       {
-        type: "onisepStructure",
+        source: "onisep-structure",
         uai: "0011073L",
         valide: true,
       },
     ]);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 0,
+    assert.deepStrictEqual(stats, {
+      "onisep-structure": {
+        total: 1,
+        updated: 1,
+        failed: 0,
+      },
     });
   });
 });

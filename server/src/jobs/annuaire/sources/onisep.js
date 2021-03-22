@@ -23,14 +23,17 @@ async function defaultStream() {
 }
 
 module.exports = async (custom = {}) => {
+  let name = "onisep";
   let input = custom.input ? parse(custom.input) : await defaultStream();
 
   return {
+    name,
     stream() {
       return oleoduc(
         input,
         transformData((data) => {
           return {
+            source: name,
             selector: data["n° SIRET"],
             uais: [data["code UAI"]],
           };

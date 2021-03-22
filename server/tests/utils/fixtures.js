@@ -19,10 +19,16 @@ module.exports = {
           raison_sociale: faker.company.companyName(),
           uais_secondaires: [],
           relations: [],
+          lieux_de_formation: [],
           reseaux: [],
+          diplomes: [],
+          certifications: [],
           referentiel: "test",
           siege_social: true,
           statut: "actif",
+          conformite_reglementaire: {
+            conventionne: true,
+          },
           adresse: {
             geojson: {
               type: "Feature",
@@ -35,13 +41,9 @@ module.exports = {
               },
             },
             label: "31 rue des lilas Paris 75019",
-            numero_voie: "31",
-            type_voie: "RUE",
-            nom_voie: "31",
             code_postal: "75001",
             code_insee: "75000",
             localite: "PARIS",
-            cedex: null,
           },
         },
         custom

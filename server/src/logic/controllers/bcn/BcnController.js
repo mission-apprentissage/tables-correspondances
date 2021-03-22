@@ -261,25 +261,25 @@ class BcnController {
         };
       }
 
-      if (match.NOUVEAU_DIPLOME_7 !== "") {
+      if (match.NOUVEAU_DIPLOME_7 !== "" && match.NOUVEAU_DIPLOME_7 !== null) {
         return await this.findCfd_bcn(match.NOUVEAU_DIPLOME_7, infosCodes.cfd.Updated);
       }
-      if (match.NOUVEAU_DIPLOME_6 !== "") {
+      if (match.NOUVEAU_DIPLOME_6 !== "" && match.NOUVEAU_DIPLOME_6 !== null) {
         return await this.findCfd_bcn(match.NOUVEAU_DIPLOME_6, infosCodes.cfd.Updated);
       }
-      if (match.NOUVEAU_DIPLOME_5 !== "") {
+      if (match.NOUVEAU_DIPLOME_5 !== "" && match.NOUVEAU_DIPLOME_5 !== null) {
         return await this.findCfd_bcn(match.NOUVEAU_DIPLOME_5, infosCodes.cfd.Updated);
       }
-      if (match.NOUVEAU_DIPLOME_4 !== "") {
+      if (match.NOUVEAU_DIPLOME_4 !== "" && match.NOUVEAU_DIPLOME_4 !== null) {
         return await this.findCfd_bcn(match.NOUVEAU_DIPLOME_4, infosCodes.cfd.Updated);
       }
-      if (match.NOUVEAU_DIPLOME_3 !== "") {
+      if (match.NOUVEAU_DIPLOME_3 !== "" && match.NOUVEAU_DIPLOME_3 !== null) {
         return await this.findCfd_bcn(match.NOUVEAU_DIPLOME_3, infosCodes.cfd.Updated);
       }
-      if (match.NOUVEAU_DIPLOME_2 !== "") {
+      if (match.NOUVEAU_DIPLOME_2 !== "" && match.NOUVEAU_DIPLOME_2 !== null) {
         return await this.findCfd_bcn(match.NOUVEAU_DIPLOME_2, infosCodes.cfd.Updated);
       }
-      if (match.NOUVEAU_DIPLOME_1 !== "") {
+      if (match.NOUVEAU_DIPLOME_1 !== "" && match.NOUVEAU_DIPLOME_1 !== null) {
         return await this.findCfd_bcn(match.NOUVEAU_DIPLOME_1, infosCodes.cfd.Updated);
       }
 

@@ -26,10 +26,16 @@ httpTests(__filename, ({ startServer }) => {
           raison_sociale: "Centre de formation",
           uais_secondaires: [],
           relations: [],
+          lieux_de_formation: [],
           reseaux: [],
+          diplomes: [],
+          certifications: [],
           siege_social: true,
           statut: "actif",
           referentiel: "test",
+          conformite_reglementaire: {
+            conventionne: true,
+          },
           adresse: {
             geojson: {
               type: "Feature",
@@ -42,13 +48,9 @@ httpTests(__filename, ({ startServer }) => {
               },
             },
             label: "31 rue des lilas Paris 75019",
-            numero_voie: "31",
-            type_voie: "RUE",
-            nom_voie: "31",
             code_postal: "75001",
             code_insee: "75000",
             localite: "PARIS",
-            cedex: null,
           },
           _meta: {
             anomalies: [],
@@ -122,12 +124,12 @@ httpTests(__filename, ({ startServer }) => {
       }),
     ]);
 
-    let response = await httpClient.get("/api/v1/annuaire/etablissements?sortBy=relations&order=-1");
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?tri=relations&ordre=desc");
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "33333333333333");
     strictEqual(response.data.etablissements[1].siret, "11111111111111");
 
-    response = await httpClient.get("/api/v1/annuaire/etablissements?sortBy=relations&order=1");
+    response = await httpClient.get("/api/v1/annuaire/etablissements?tri=relations&ordre=asc");
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "11111111111111");
     strictEqual(response.data.etablissements[1].siret, "33333333333333");
@@ -140,7 +142,7 @@ httpTests(__filename, ({ startServer }) => {
         siret: "11111111111111",
         uais_secondaires: [
           {
-            type: "catalogue",
+            source: "catalogue",
             uai: "1111111S",
             valide: true,
           },
@@ -150,12 +152,12 @@ httpTests(__filename, ({ startServer }) => {
         siret: "33333333333333",
         uais_secondaires: [
           {
-            type: "catalogue",
+            source: "catalogue",
             uai: "1111111S",
             valide: true,
           },
           {
-            type: "catalogue",
+            source: "catalogue",
             uai: "2222222S",
             valide: true,
           },
@@ -163,15 +165,63 @@ httpTests(__filename, ({ startServer }) => {
       }),
     ]);
 
-    let response = await httpClient.get("/api/v1/annuaire/etablissements?sortBy=uais_secondaires&order=-1");
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?tri=uais_secondaires&ordre=desc");
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "33333333333333");
     strictEqual(response.data.etablissements[1].siret, "11111111111111");
 
-    response = await httpClient.get("/api/v1/annuaire/etablissements?sortBy=uais_secondaires&order=1");
+    response = await httpClient.get("/api/v1/annuaire/etablissements?tri=uais_secondaires&ordre=asc");
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "11111111111111");
     strictEqual(response.data.etablissements[1].siret, "33333333333333");
+  });
+
+  it("Vérifie qu'on peut limiter les champs renvoyés pour la liste des établissements", async () => {
+    const { httpClient } = await startServer();
+    await createAnnuaire({
+      uai: "0010856A",
+      siret: "11111111111111",
+      raison_sociale: "Centre de formation",
+      _meta: {
+        anomalies: [],
+        created_at: new Date("2021-02-10T16:39:13.064Z"),
+      },
+    });
+
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?champs=siret,uai");
+
+    strictEqual(response.status, 200);
+    deepStrictEqual(response.data, {
+      etablissements: [
+        {
+          siret: "11111111111111",
+          uai: "0010856A",
+        },
+      ],
+      pagination: {
+        page: 1,
+        resultats_par_page: 10,
+        nombre_de_page: 1,
+        total: 1,
+      },
+    });
+  });
+
+  it("Vérifie qu'on peut peut limiter le établissement par page", async () => {
+    const { httpClient } = await startServer();
+    await Promise.all([
+      createAnnuaire({ siret: "11111111111111" }),
+      createAnnuaire({ siret: "22222222222222" }),
+      createAnnuaire({ siret: "33333333333333" }),
+    ]);
+
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?items_par_page=1&page=1");
+    strictEqual(response.status, 200);
+    strictEqual(response.data.etablissements.length, 1);
+
+    response = await httpClient.get("/api/v1/annuaire/etablissements?items_par_page=1&page=2");
+    strictEqual(response.status, 200);
+    strictEqual(response.data.etablissements.length, 1);
   });
 
   it("Vérifie qu'on peut filtrer les établissements avec des anomalies", async () => {
@@ -182,7 +232,7 @@ httpTests(__filename, ({ startServer }) => {
         _meta: {
           anomalies: [
             {
-              type: "collect",
+              task: "collect",
               source: "sirene",
               reason: "Etablissement inconnu",
               date: new Date("2021-02-10T08:31:58.572Z"),
@@ -225,13 +275,22 @@ httpTests(__filename, ({ startServer }) => {
     });
   });
 
-  it("Vérifie que le service retourne une 400 quand les paramètres sont invalides", async () => {
+  it("Vérifie que le service retourne une 400 quand les paramètres sont inconnus", async () => {
     const { httpClient } = await startServer();
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements?invalid=XXX");
 
     strictEqual(response.status, 400);
     deepStrictEqual(response.data.details[0].path[0], "invalid");
+  });
+
+  it("Vérifie que le service retourne une 400 quand les paramètres sont invalides", async () => {
+    const { httpClient } = await startServer();
+
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?ordre=-1");
+
+    strictEqual(response.status, 400);
+    deepStrictEqual(response.data.details[0].path[0], "ordre");
   });
 
   it("Vérifie qu'on peut obtenir un établissement", async () => {
@@ -252,9 +311,15 @@ httpTests(__filename, ({ startServer }) => {
       uais_secondaires: [],
       relations: [],
       reseaux: [],
+      lieux_de_formation: [],
+      diplomes: [],
+      certifications: [],
       siege_social: true,
       statut: "actif",
       referentiel: "test",
+      conformite_reglementaire: {
+        conventionne: true,
+      },
       adresse: {
         geojson: {
           type: "Feature",
@@ -267,15 +332,51 @@ httpTests(__filename, ({ startServer }) => {
           },
         },
         label: "31 rue des lilas Paris 75019",
-        numero_voie: "31",
-        type_voie: "RUE",
-        nom_voie: "31",
         code_postal: "75001",
         code_insee: "75000",
         localite: "PARIS",
-        cedex: null,
       },
     });
+  });
+
+  it("Vérifie qu'on peut limiter les champs renvoyés pour un établissement", async () => {
+    const { httpClient } = await startServer();
+    await createAnnuaire({
+      uai: "0010856A",
+      siret: "11111111111111",
+      raison_sociale: "Centre de formation",
+      _meta: {
+        anomalies: [],
+        created_at: new Date("2021-02-10T16:39:13.064Z"),
+      },
+    });
+
+    let response = await httpClient.get("/api/v1/annuaire/etablissements/11111111111111?champs=siret,uai");
+
+    strictEqual(response.status, 200);
+    deepStrictEqual(response.data, {
+      siret: "11111111111111",
+      uai: "0010856A",
+    });
+  });
+
+  it("Vérifie qu'on peut exclure des champs renvoyés pour un établissement", async () => {
+    const { httpClient } = await startServer();
+    await createAnnuaire({
+      uai: "0010856A",
+      siret: "11111111111111",
+      raison_sociale: "Centre de formation",
+      _meta: {
+        anomalies: [],
+        created_at: new Date("2021-02-10T16:39:13.064Z"),
+      },
+    });
+
+    let response = await httpClient.get("/api/v1/annuaire/etablissements/11111111111111?champs=-siret,uai");
+
+    strictEqual(response.status, 200);
+    strictEqual(response.data.siret, undefined);
+    strictEqual(response.data.uai, undefined);
   });
 
   it("Vérifie qu'on renvoie une 404 si le siret n'est pas connu", async () => {

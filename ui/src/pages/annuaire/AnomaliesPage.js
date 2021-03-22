@@ -1,14 +1,8 @@
 import React from "react";
-import { omit } from "lodash-es";
 import { Card, Grid, Page, Table } from "tabler-react";
 import Pagination from "./components/Pagination";
-import { useFetch } from "../../common/hooks/useFetch";
-import queryString from "query-string";
-import { Link, useHistory } from "react-router-dom";
-
-function buildQuery(elements = {}) {
-  return `${queryString.stringify(elements, { skipNull: true, skipEmptyString: true })}`;
-}
+import { Link } from "react-router-dom";
+import { useSearch } from "./hooks/useSearch";
 
 const AnomaliesTable = ({ anomalies }) => {
   return (
@@ -22,9 +16,9 @@ const AnomaliesTable = ({ anomalies }) => {
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {anomalies.map((ano) => {
+        {anomalies.map((ano, index) => {
           return (
-            <Table.Row>
+            <Table.Row key={index}>
               <Table.Col>{ano.type}</Table.Col>
               <Table.Col>{ano.source}</Table.Col>
               <Table.Col>{ano.date}</Table.Col>
@@ -36,23 +30,9 @@ const AnomaliesTable = ({ anomalies }) => {
     </Table>
   );
 };
-export default () => {
-  let history = useHistory();
-  let query = { page: 1, order: -1, limit: 25, ...queryString.parse(window.location.search), anomalies: true };
-  let [data, loading, error] = useFetch(`/api/v1/annuaire/etablissements?${buildQuery(query)}`, {
-    etablissements: [],
-    pagination: {
-      page: 0,
-      resultats_par_page: 0,
-      nombre_de_page: 0,
-      total: 0,
-    },
-  });
 
-  function search(options = {}) {
-    let keys = Object.keys(options);
-    history.push(`/annuaire?${buildQuery({ ...omit(query, keys), ...options })}`);
-  }
+export default () => {
+  let [{ data, loading }, search] = useSearch({ anomalies: true });
 
   return (
     <Page>
@@ -85,11 +65,11 @@ export default () => {
                         data.etablissements.map((e) => {
                           let anomalies = e._meta.anomalies;
                           return (
-                            <Table.Row key={e.uai}>
+                            <Table.Row key={e.siret}>
                               <Table.Col>
                                 <Link to={`/annuaire/etablissements/${e.siret}`}>{e.siret}</Link>
                               </Table.Col>
-                              <Table.Col>{e.uai}</Table.Col>
+                              <Table.Col>{e.raison_sociale}</Table.Col>
                               <Table.Col>
                                 <AnomaliesTable anomalies={anomalies} />
                               </Table.Col>

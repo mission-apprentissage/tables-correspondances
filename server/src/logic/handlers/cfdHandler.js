@@ -34,6 +34,9 @@ const getDataFromCfd = async (providedCfd) => {
   const codeRncpUpdated = await fcController.findRncpFromCfd(bcnData.result.cfd);
   if (codeRncpUpdated.value) {
     rncpData = await fcController.getDataFromRncp(codeRncpUpdated.value);
+    if (!rncpData.result.code_type_certif && bcnData.result.libelle_court?.startsWith("TH")) {
+      rncpData.result.code_type_certif = "TP";
+    }
   } else {
     rncpData = {
       result: {},

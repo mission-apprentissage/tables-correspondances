@@ -1,5 +1,6 @@
 const { oleoduc, writeData } = require("oleoduc");
 const { isEmpty } = require("lodash");
+const { flattenObject } = require("../../common/utils/objectUtils");
 const { Annuaire } = require("../../common/model");
 const logger = require("../../common/logger");
 
@@ -11,25 +12,23 @@ module.exports = async (referentiel) => {
     failed: 0,
   };
 
-  let stream = await referentiel.stream();
-
   await oleoduc(
-    stream,
-    writeData(async (etab) => {
+    referentiel.stream(),
+    writeData(async (data) => {
       stats.total++;
-      if (isEmpty(etab.siret)) {
+      if (isEmpty(data.siret)) {
         stats.failed++;
-        logger.error(`[Referentiel] Siret invalide pour l'établissement ${JSON.stringify(etab)}`);
+        logger.error(`[Referentiel] Siret invalide pour l'établissement ${JSON.stringify(data)}`);
         return;
       }
 
       try {
         let res = await Annuaire.updateOne(
-          { siret: etab.siret },
+          { siret: data.siret },
           {
             $set: {
-              ...etab,
-              referentiel: referentiel.type,
+              ...flattenObject(data),
+              referentiel: referentiel.name,
             },
           },
           { upsert: true, setDefaultsOnInsert: true, runValidators: true }
@@ -39,7 +38,7 @@ module.exports = async (referentiel) => {
         stats.created += (res.upserted && res.upserted.length) || 0;
       } catch (e) {
         stats.failed++;
-        logger.error(`[Referentiel] Impossible d'ajouter le document avec le siret ${etab.siret} dans l'annuaire`, e);
+        logger.error(`[Referentiel] Impossible d'ajouter le document avec le siret ${data.siret} dans l'annuaire`, e);
       }
     })
   );

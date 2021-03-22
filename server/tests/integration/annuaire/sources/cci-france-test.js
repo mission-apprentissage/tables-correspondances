@@ -16,15 +16,17 @@ integrationTests(__filename, () => {
       ),
     });
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
-    let found = await Annuaire.findOne({ uai: "0011073L" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ uai: "0011073L" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.reseaux, ["cci-france"]);
     assert.deepStrictEqual(found.uais_secondaires, []);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 0,
+    assert.deepStrictEqual(stats, {
+      "cci-france": {
+        total: 1,
+        updated: 1,
+        failed: 0,
+      },
     });
   });
 });

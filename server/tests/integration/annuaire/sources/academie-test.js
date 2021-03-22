@@ -17,17 +17,19 @@ integrationTests(__filename, () => {
     });
     let source = await createSource("academie", { apiEsSup: createApiEsSup() });
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111100000" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100000" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.academie, {
       code: "01",
       nom: "Paris",
     });
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 0,
+    assert.deepStrictEqual(stats, {
+      academie: {
+        total: 1,
+        updated: 1,
+        failed: 0,
+      },
     });
   });
 
@@ -37,12 +39,14 @@ integrationTests(__filename, () => {
     });
     let source = await createSource("academie", { apiEsSup: createApiEsSup() });
 
-    let results = await collect(source, { filters: { siret: "33333333333333" } });
+    let stats = await collect(source, { filters: { siret: "33333333333333" } });
 
-    assert.deepStrictEqual(results, {
-      total: 0,
-      updated: 0,
-      failed: 0,
+    assert.deepStrictEqual(stats, {
+      academie: {
+        total: 0,
+        updated: 0,
+        failed: 0,
+      },
     });
   });
 
@@ -53,12 +57,14 @@ integrationTests(__filename, () => {
     });
     let source = await createSource("academie", { apiEsSup: createApiEsSup() });
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
-    assert.deepStrictEqual(results, {
-      total: 0,
-      updated: 0,
-      failed: 0,
+    assert.deepStrictEqual(stats, {
+      academie: {
+        total: 0,
+        updated: 0,
+        failed: 0,
+      },
     });
   });
 

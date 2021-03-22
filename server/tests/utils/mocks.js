@@ -1,4 +1,4 @@
-const { merge, mergeWith, isArray } = require("lodash");
+const { merge, mergeWith, isArray, omit } = require("lodash");
 
 const arrayMerger = (strategy) => (...args) => {
   return mergeWith(...args, function (a, b) {
@@ -14,47 +14,49 @@ const arrayMerger = (strategy) => (...args) => {
 };
 
 module.exports = {
-  createApiGeoAddresseMock: (custom = {}) => {
+  createApiGeoAddresseMock: (custom = {}, options = {}) => {
+    let mergeMockedData = options.array ? arrayMerger(options.array) : merge;
+    let featureCollection = {
+      type: "FeatureCollection",
+      version: "draft",
+      features: [
+        {
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [2.396444, 48.879706],
+          },
+          properties: {
+            label: "31 Rue des lilas 75019 Paris",
+            score: 0.88,
+            housenumber: "31",
+            id: "75119_5683_00031",
+            name: "31 Rue des Lilas",
+            postcode: "75019",
+            citycode: "75119",
+            x: 655734.91,
+            y: 6864578.76,
+            city: "Paris",
+            district: "Paris 19e Arrondissement",
+            context: "75, Paris, Île-de-France",
+            type: "housenumber",
+            importance: 0.73991,
+            street: "Rue des Lilas",
+          },
+        },
+      ],
+      attribution: "BAN",
+      licence: "ETALAB-2.0",
+      query: '31 rue des lilas 75019 Paris"',
+      limit: 5,
+    };
+
     return {
       search() {
-        return merge(
-          {},
-          {
-            type: "FeatureCollection",
-            version: "draft",
-            features: [
-              {
-                type: "Feature",
-                geometry: {
-                  type: "Point",
-                  coordinates: [2.396444, 48.879706],
-                },
-                properties: {
-                  label: "31 Rue des Lilas 75019 Paris",
-                  score: 0.7490827272727273,
-                  housenumber: "31",
-                  id: "75119_5683_00031",
-                  name: "31 Rue des Lilas",
-                  postcode: "75019",
-                  citycode: "75119",
-                  x: 655734.91,
-                  y: 6864578.76,
-                  city: "Paris",
-                  district: "Paris 19e Arrondissement",
-                  context: "75, Paris, Île-de-France",
-                  type: "housenumber",
-                  importance: 0.73991,
-                  street: "Rue des Lilas",
-                },
-              },
-            ],
-            attribution: "BAN",
-            licence: "ETALAB-2.0",
-            query: '31 rue des lilas 75001 Paris"',
-            limit: 5,
-          },
-          custom
-        );
+        return mergeMockedData({}, featureCollection, custom);
+      },
+      reverse() {
+        return mergeMockedData({}, omit(featureCollection, ["query"]), custom);
       },
     };
   },
@@ -97,16 +99,15 @@ module.exports = {
               l3: null,
               l4: "31 RUE DES LILAS",
               l5: null,
-              l6: "75001 PARIS",
+              l6: "75019 PARIS",
               l7: "FRANCE",
               numero_voie: "31",
               type_voie: "RUE",
               nom_voie: "DES LILAS",
               complement_adresse: null,
-              code_postal: "75001",
+              code_postal: "75019",
               localite: "PARIS",
               code_insee_localite: "75000",
-              cedex: null,
             },
             etat_administratif: {
               value: "A",
