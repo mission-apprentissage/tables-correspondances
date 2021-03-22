@@ -44,12 +44,12 @@ export async function getCpInfo(
   }
 }
 
-export async function rncpImporter(): Promise<any> {
+export async function rncpImporter(localPath = null): Promise<any> {
   isSdkReady();
   try {
     let { rncpImporter: importer } = await import("../../jobs/rncpImporter");
     // @ts-ignore
-    await importer();
+    await importer(localPath);
   } catch (error) {
     console.error(`rncpImporter: something went wrong!`, error);
     return null;
