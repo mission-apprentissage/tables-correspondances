@@ -19,7 +19,7 @@ module.exports.getFileFromS3 = getFileFromS3;
 
 const downloadAndSaveFileFromS3 = (from, to) => {
   logger.info(`Downloading and save file from S3 Bucket...`);
-
+  console.log(config);
   return new Promise((r) => {
     getFileFromS3(from)
       .pipe(fs.createWriteStream(to))
