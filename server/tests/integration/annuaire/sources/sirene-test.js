@@ -17,7 +17,7 @@ integrationTests(__filename, () => {
       organismes: ["11111111111111"],
     });
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.strictEqual(found.raison_sociale, "NOMAYO");
@@ -44,10 +44,12 @@ integrationTests(__filename, () => {
         label: "Île-de-France",
       },
     });
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 0,
+    assert.deepStrictEqual(stats, {
+      sirene: {
+        total: 1,
+        updated: 1,
+        failed: 0,
+      },
     });
   });
 
@@ -66,7 +68,7 @@ integrationTests(__filename, () => {
       organismes: ["11111111111111"],
     });
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.adresse, {
@@ -89,10 +91,12 @@ integrationTests(__filename, () => {
         label: "Île-de-France",
       },
     });
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 0,
+    assert.deepStrictEqual(stats, {
+      sirene: {
+        total: 1,
+        updated: 1,
+        failed: 0,
+      },
     });
   });
 
@@ -123,7 +127,7 @@ integrationTests(__filename, () => {
       organismes: ["11111111111111", "11111111122222"],
     });
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.relations, [
@@ -134,10 +138,12 @@ integrationTests(__filename, () => {
         source: "sirene",
       },
     ]);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 0,
+    assert.deepStrictEqual(stats, {
+      sirene: {
+        total: 1,
+        updated: 1,
+        failed: 0,
+      },
     });
   });
 
@@ -150,12 +156,14 @@ integrationTests(__filename, () => {
       organismes: ["11111111111111"],
     });
 
-    let results = await collect(source, { filters: { siret: "33333333333333" } });
+    let stats = await collect(source, { filters: { siret: "33333333333333" } });
 
-    assert.deepStrictEqual(results, {
-      total: 0,
-      updated: 0,
-      failed: 0,
+    assert.deepStrictEqual(stats, {
+      sirene: {
+        total: 0,
+        updated: 0,
+        failed: 0,
+      },
     });
   });
 
@@ -187,15 +195,17 @@ integrationTests(__filename, () => {
       organismes: ["2222222222222222"],
     });
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.strictEqual(found.relations.length, 1);
     assert.deepStrictEqual(found.relations[0].siret, "2222222222222222");
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 0,
+    assert.deepStrictEqual(stats, {
+      sirene: {
+        total: 1,
+        updated: 1,
+        failed: 0,
+      },
     });
   });
 
@@ -242,14 +252,16 @@ integrationTests(__filename, () => {
     };
     let source = await createSource("sirene", { apiSirene: failingApi, organismes: ["11111111111111"] });
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
     assert.deepStrictEqual(found._meta.anomalies[0].details, "[api] HTTP error");
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 0,
-      failed: 1,
+    assert.deepStrictEqual(stats, {
+      sirene: {
+        total: 1,
+        updated: 0,
+        failed: 1,
+      },
     });
   });
 
@@ -300,19 +312,21 @@ integrationTests(__filename, () => {
       organismes: ["11111111111111"],
     });
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.strictEqual(found._meta.anomalies.length, 1);
     assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
-      type: "collect",
+      task: "collect",
       source: "sirene",
       details: "Adresse inconnue pour les coordonnées latitude:2.396147 et longitude:48.880391",
     });
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 1,
+    assert.deepStrictEqual(stats, {
+      sirene: {
+        total: 1,
+        updated: 1,
+        failed: 1,
+      },
     });
   });
 
@@ -326,19 +340,21 @@ integrationTests(__filename, () => {
       organismes: ["11111111111111"],
     });
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.strictEqual(found._meta.anomalies.length, 1);
     assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
-      type: "collect",
+      task: "collect",
       source: "sirene",
       details: "Impossible de trouver la catégorie juridique",
     });
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 1,
+    assert.deepStrictEqual(stats, {
+      sirene: {
+        total: 1,
+        updated: 1,
+        failed: 1,
+      },
     });
   });
 });

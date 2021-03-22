@@ -6,6 +6,7 @@ module.exports = async (custom = {}) => {
   let input = custom.input || (await getOvhFileAsStream("annuaire/DGEFP-20210105_public_ofs.csv"));
 
   return {
+    name: "dgefp",
     stream(options = {}) {
       let filter = options.filter || ((data) => data.cfa === "Oui");
 

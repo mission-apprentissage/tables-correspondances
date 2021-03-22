@@ -18,17 +18,19 @@ integrationTests(__filename, () => {
       ),
     });
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.strictEqual(found.conformite_reglementaire.certificateur, "datadock");
     found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0 }).lean();
     assert.strictEqual(found.conformite_reglementaire.certificateur, undefined);
 
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 0,
+    assert.deepStrictEqual(stats, {
+      datadock: {
+        total: 1,
+        updated: 1,
+        failed: 0,
+      },
     });
   });
 

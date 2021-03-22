@@ -164,7 +164,7 @@ const annuaireSchema = {
     type: [
       new Schema(
         {
-          type: {
+          source: {
             type: String,
             required: true,
           },
@@ -298,7 +298,7 @@ const annuaireSchema = {
           type: [
             new Schema(
               {
-                type: {
+                task: {
                   type: String,
                   required: true,
                 },

@@ -7,7 +7,7 @@ const importReferentiel = require("../../../src/jobs/annuaire/importReferentiel"
 
 function createTestReferentiel(array) {
   return {
-    type: "test",
+    name: "test",
     stream() {
       return Readable.from(array);
     },

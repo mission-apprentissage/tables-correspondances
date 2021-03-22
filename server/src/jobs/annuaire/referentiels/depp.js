@@ -6,6 +6,7 @@ module.exports = async (custom = {}) => {
   let input = custom.input || (await getOvhFileAsStream("annuaire/DEPP-CFASousConvRegionale_17122020_1.csv"));
 
   return {
+    name: "depp",
     stream() {
       return oleoduc(
         input,

@@ -1,5 +1,4 @@
 const { program: cli } = require("commander");
-const { asyncForEach } = require("../../common/utils/asyncUtils");
 const { createWriteStream } = require("fs");
 const { writeToStdout } = require("oleoduc");
 const { createReadStream } = require("fs");
@@ -21,24 +20,23 @@ cli
   });
 
 cli
-  .command("import [type] [file]")
+  .command("import [name] [file]")
   .description("Importe les établissements contenus dans le ou les référentiels")
-  .action((type, file) => {
+  .action((name, file) => {
     runScript(async () => {
-      if (type) {
+      if (name) {
         let input = file ? createReadStream(file) : process.stdin;
-        let referentiel = await createReferentiel(type, { input });
+        let referentiel = await createReferentiel(name, { input });
         return importReferentiel(referentiel);
       } else {
         let referentiels = await getDefaultReferentiels();
         let stats = [];
 
-        await asyncForEach(referentiels, async (builder) => {
-          //Handle each referentiel sequentially
-          let referentiel = await builder();
-          let res = { [referentiel.type]: await importReferentiel(referentiel) };
-          stats.push(res);
-        });
+        for (let name of referentiels) {
+          let referentiel = await createReferentiel(name);
+          let results = await importReferentiel(referentiel);
+          stats.push({ [referentiel.name]: results });
+        }
 
         return stats;
       }
@@ -46,30 +44,26 @@ cli
   });
 
 cli
-  .command("collect [type] [file]")
+  .command("collect [name] [file]")
   .option("--siret <siret>", "Limite la collecte pour le siret")
   .description("Parcoure la ou les sources pour trouver des données complémentaires")
-  .action((type, file, { siret }) => {
+  .action((name, file, { siret }) => {
     runScript(async () => {
       let options = siret ? { filters: { siret } } : {};
 
-      if (type) {
+      if (name) {
         let input = file ? createReadStream(file) : null;
-        let source = await createSource(type, { input });
+        let source = await createSource(name, { input });
         return collect(source, options);
       } else {
         let groups = getDefaultSourcesGroupedByPriority();
         let stats = [];
 
-        await asyncForEach(groups, async (group) => {
-          let promises = group.map(async (builder) => {
-            let source = await builder();
-            return { [source.type]: await collect(source, options) };
-          });
-
-          let results = await Promise.all(promises);
+        for (let group of groups) {
+          let sources = await Promise.all(group.map(createSource));
+          let results = await collect(sources, options);
           stats.push(results);
-        });
+        }
 
         return stats;
       }
