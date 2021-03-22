@@ -1,3 +1,10 @@
+## [2.3.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.3.0...v2.3.1) (2021-03-22)
+
+
+### Bug Fixes
+
+* clg config ([f92e632](https://github.com/mission-apprentissage/tables-correspondances/commit/f92e63202fc272b2557ade1c6955ed003b607219))
+
 # [2.3.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.2.0...v2.3.0) (2021-03-22)
 
 
