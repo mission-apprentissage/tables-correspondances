@@ -68,9 +68,9 @@ const getFichesRncp = async () => {
   return referentiel;
 };
 
-module.exports = async () => {
+module.exports = async (localPath = null) => {
   logger.info("Loading Kit Apprentissage FC - RNCP referentiel...");
-  await kitApprentissageController.init();
+  await kitApprentissageController.init(localPath);
   const fichesRncp = await getFichesRncp();
   logger.info("Add fiches to db...");
 
