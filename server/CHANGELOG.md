@@ -1,3 +1,10 @@
+# [2.4.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.3.2...v2.4.0) (2021-03-22)
+
+
+### Features
+
+* add reject error ([c95e792](https://github.com/mission-apprentissage/tables-correspondances/commit/c95e7921bbd63fb9b704f3d5cd9de3766f49af22))
+
 ## [2.3.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.3.1...v2.3.2) (2021-03-22)
 
 
