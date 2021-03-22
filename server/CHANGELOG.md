@@ -1,3 +1,18 @@
+# [2.3.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.2.0...v2.3.0) (2021-03-22)
+
+
+### Bug Fixes
+
+* code_type_certif xml ([28ac417](https://github.com/mission-apprentissage/tables-correspondances/commit/28ac4173673198a8afed76fc9a3cc6084d29e677))
+* fill code_type_certif from bcn if empty from kit ([#112](https://github.com/mission-apprentissage/tables-correspondances/issues/112)) ([74bc6fd](https://github.com/mission-apprentissage/tables-correspondances/commit/74bc6fdf4c0db047e1fd8abec7b4134b006effc2))
+* **bcn:** find cfd bcn add condition check ([c147bbd](https://github.com/mission-apprentissage/tables-correspondances/commit/c147bbd540e93a8723872997dedf0f4ae74bd94f))
+* fixing exports method to fit with sdk ([e228827](https://github.com/mission-apprentissage/tables-correspondances/commit/e228827b54ec662e60b2139b252bfc1d3bb53b37))
+
+
+### Features
+
+* rncp rewrite with XML data ([#108](https://github.com/mission-apprentissage/tables-correspondances/issues/108)) ([d49982b](https://github.com/mission-apprentissage/tables-correspondances/commit/d49982b247b9439f5fc344018f99bf80b3fbfdd2))
+
 # [2.2.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.1.0...v2.2.0) (2021-03-10)
 
 
