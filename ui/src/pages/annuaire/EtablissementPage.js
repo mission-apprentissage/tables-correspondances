@@ -112,7 +112,7 @@ export default () => {
                         <Table>
                           <Table.Header>
                             <Table.ColHeader>UAI</Table.ColHeader>
-                            <Table.ColHeader>Type</Table.ColHeader>
+                            <Table.ColHeader>Sources</Table.ColHeader>
                             <Table.ColHeader>Valide</Table.ColHeader>
                           </Table.Header>
                           <Table.Body>
@@ -120,7 +120,7 @@ export default () => {
                               return (
                                 <Table.Row key={item.uai}>
                                   <Table.Col>{item.uai}</Table.Col>
-                                  <Table.Col>{item.type}</Table.Col>
+                                  <Table.Col>{item.sources.join(",")}</Table.Col>
                                   <Table.Col>{item.valide ? "oui" : "non"}</Table.Col>
                                 </Table.Row>
                               );

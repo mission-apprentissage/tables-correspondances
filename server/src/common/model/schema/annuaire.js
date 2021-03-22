@@ -164,8 +164,8 @@ const annuaireSchema = {
     type: [
       new Schema(
         {
-          source: {
-            type: String,
+          sources: {
+            type: [String],
             required: true,
           },
           uai: {

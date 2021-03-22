@@ -1,4 +1,5 @@
 const { oleoduc, writeData, filterData } = require("oleoduc");
+const { uniq } = require("lodash");
 const mergeStream = require("merge-stream");
 const { Annuaire } = require("../../common/model");
 const { getNbModifiedDocuments } = require("../../common/utils/mongooseUtils");
@@ -10,12 +11,15 @@ function buildQuery(selector) {
   return { $or: [{ siret: selector }, { uai: selector }, { "uais_secondaires.uai": selector }] };
 }
 
-function buildNewUAIsSecondaires(source, etablissement, uais) {
+function buildUAIsSecondaires(source, etablissement, uais) {
   return uais
     .filter((uai) => uai && uai !== "NULL" && etablissement.uai !== uai)
-    .map((uai) => {
-      return { source, uai, valide: validateUAI(uai) };
-    });
+    .reduce((acc, uai) => {
+      let previous = etablissement.uais_secondaires.find((u) => u.uai === uai) || {};
+      let sources = uniq([...(previous.sources || []), source]);
+      acc.push({ ...previous, uai, sources, valide: validateUAI(uai) });
+      return acc;
+    }, []);
 }
 
 async function buildNewRelations(source, relations) {
@@ -107,6 +111,7 @@ module.exports = async (...args) => {
           {
             $set: {
               ...flattenObject(data),
+              uais_secondaires: buildUAIsSecondaires(source, etablissement, uais),
             },
             $addToSet: {
               reseaux: {
@@ -114,9 +119,6 @@ module.exports = async (...args) => {
               },
               relations: {
                 $each: await buildNewRelations(source, relations),
-              },
-              uais_secondaires: {
-                $each: buildNewUAIsSecondaires(source, etablissement, uais),
               },
             },
           },
