@@ -52,6 +52,7 @@ const lookupDiffAndMerge = (fichesXML, fichesKitA) => {
 
 const getFichesRncp = async () => {
   const fichesXMLInputStream = getFileFromS3("mna-services/features/rncp/export_fiches_RNCP_V2_0_latest.xml");
+  logger.info("Parsing Fiches XML");
   let { fiches: fichesXML } = await parseFichesFile(fichesXMLInputStream);
 
   const fichesKitA = kitApprentissageController.referentielRncp.map((f) => {
