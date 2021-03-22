@@ -24,7 +24,6 @@ module.exports = async (custom = {}) => {
           return [
             {
               selector: siretGestionnaire,
-              uais: [data["UAI_gestionnaire"]],
               relations: [
                 ...(isEmpty(siretFormateur)
                   ? []

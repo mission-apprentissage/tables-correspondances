@@ -8,41 +8,6 @@ const { createStream } = require("../../../utils/testUtils");
 const { createAnnuaire } = require("../../../utils/fixtures");
 
 integrationTests(__filename, () => {
-  it("Vérifie qu'on peut collecter des uais pour le fichier ideo2 de l'ONISEP", async () => {
-    await createAnnuaire({ siret: "11111111111111" });
-    await createAnnuaire({ siret: "22222222222222" });
-    let source = await createSource("ideo2", {
-      input: createStream(
-        `"UAI_gestionnaire";"SIRET_gestionnaire";"SIRET_lieu_enseignement";"UAI_lieu_enseignement"
-"0011073L";"11111111111111";"22222222222222";"0011073X"`
-      ),
-    });
-
-    let results = await collect(source);
-
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires, [
-      {
-        type: "ideo2",
-        uai: "0011073L",
-        valide: true,
-      },
-    ]);
-    found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires, [
-      {
-        type: "ideo2",
-        uai: "0011073X",
-        valide: false,
-      },
-    ]);
-    assert.deepStrictEqual(results, {
-      total: 2,
-      updated: 2,
-      failed: 0,
-    });
-  });
-
   it("Vérifie qu'on peut collecter des relations pour le fichier ideo2 de l'ONISEP", async () => {
     await createAnnuaire({ siret: "11111111111111" });
     await createAnnuaire({ siret: "22222222222222" });
