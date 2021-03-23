@@ -112,7 +112,7 @@ export default () => {
                         <Table>
                           <Table.Header>
                             <Table.ColHeader>UAI</Table.ColHeader>
-                            <Table.ColHeader>Type</Table.ColHeader>
+                            <Table.ColHeader>Sources</Table.ColHeader>
                             <Table.ColHeader>Valide</Table.ColHeader>
                           </Table.Header>
                           <Table.Body>
@@ -120,7 +120,7 @@ export default () => {
                               return (
                                 <Table.Row key={item.uai}>
                                   <Table.Col>{item.uai}</Table.Col>
-                                  <Table.Col>{item.type}</Table.Col>
+                                  <Table.Col>{item.sources.join(",")}</Table.Col>
                                   <Table.Col>{item.valide ? "oui" : "non"}</Table.Col>
                                 </Table.Row>
                               );
@@ -135,12 +135,12 @@ export default () => {
                             <Table.ColHeader>Siret</Table.ColHeader>
                             <Table.ColHeader>Label</Table.ColHeader>
                             <Table.ColHeader>Type</Table.ColHeader>
-                            <Table.ColHeader>Source</Table.ColHeader>
+                            <Table.ColHeader>Sources</Table.ColHeader>
                           </Table.Header>
                           <Table.Body>
-                            {etablissement.relations.map((item) => {
+                            {etablissement.relations.map((item, index) => {
                               return (
-                                <Table.Row key={item.siret}>
+                                <Table.Row key={index}>
                                   <Table.Col>
                                     {item.annuaire ? (
                                       <Link to={`/annuaire/etablissements/${item.siret}`}>{item.siret}</Link>
@@ -150,7 +150,7 @@ export default () => {
                                   </Table.Col>
                                   <Table.Col>{item.label}</Table.Col>
                                   <Table.Col>{item.type}</Table.Col>
-                                  <Table.Col>{item.source}</Table.Col>
+                                  <Table.Col>{item.sources.join(",")}</Table.Col>
                                 </Table.Row>
                               );
                             })}
@@ -165,11 +165,11 @@ export default () => {
                             <Table.ColHeader>Adresse</Table.ColHeader>
                           </Table.Header>
                           <Table.Body>
-                            {etablissement.lieux_de_formation.map((item) => {
+                            {etablissement.lieux_de_formation.map((item, index) => {
                               return (
-                                <Table.Row key={item.siret}>
-                                  <Table.Col>{item.siret}</Table.Col>
-                                  <Table.Col>{item.adresse}</Table.Col>
+                                <Table.Row key={index}>
+                                  <Table.Col>{item.siret || "-"}</Table.Col>
+                                  <Table.Col>{item.adresse.label}</Table.Col>
                                 </Table.Row>
                               );
                             })}

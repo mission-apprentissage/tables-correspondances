@@ -20,12 +20,16 @@ module.exports.getFileFromS3 = getFileFromS3;
 const downloadAndSaveFileFromS3 = (from, to) => {
   logger.info(`Downloading and save file from S3 Bucket...`);
 
-  return new Promise((r) => {
+  return new Promise((re, rj) => {
     getFileFromS3(from)
       .pipe(fs.createWriteStream(to))
       .on("close", () => {
         logger.info(`Download done...`);
-        r();
+        re();
+      })
+      .on("error", (e) => {
+        logger.info(`Download errored...`, e);
+        rj(e);
       });
   });
 };

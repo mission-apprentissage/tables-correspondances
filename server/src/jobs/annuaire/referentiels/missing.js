@@ -13,6 +13,7 @@ module.exports = async (custom = {}) => {
   let input = custom.input || process.stdin;
 
   return {
+    name: "missing",
     stream() {
       return oleoduc(
         readSiretsAsStream(input),

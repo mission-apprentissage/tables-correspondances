@@ -142,7 +142,7 @@ httpTests(__filename, ({ startServer }) => {
         siret: "11111111111111",
         uais_secondaires: [
           {
-            type: "catalogue",
+            source: "catalogue",
             uai: "1111111S",
             valide: true,
           },
@@ -152,12 +152,12 @@ httpTests(__filename, ({ startServer }) => {
         siret: "33333333333333",
         uais_secondaires: [
           {
-            type: "catalogue",
+            source: "catalogue",
             uai: "1111111S",
             valide: true,
           },
           {
-            type: "catalogue",
+            source: "catalogue",
             uai: "2222222S",
             valide: true,
           },
@@ -232,7 +232,7 @@ httpTests(__filename, ({ startServer }) => {
         _meta: {
           anomalies: [
             {
-              type: "collect",
+              task: "collect",
               source: "sirene",
               reason: "Etablissement inconnu",
               date: new Date("2021-02-10T08:31:58.572Z"),

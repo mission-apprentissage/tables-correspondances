@@ -9,10 +9,8 @@ let sources = fs.readdirSync(__dirname).reduce((acc, filename) => {
   };
 }, {});
 
-async function createSource(type, ...args) {
-  let source = await sources[type](...args);
-  source.type = type;
-  return source;
+function createSource(name, ...args) {
+  return sources[name](...args);
 }
 
 module.exports = {
@@ -20,30 +18,30 @@ module.exports = {
   getDefaultSourcesGroupedByPriority() {
     return [
       [
-        () => createSource("etablissements"),
-        () => createSource("sirene"),
-        () => createSource("onisep"),
-        () => createSource("onisepStructure"),
-        () => createSource("opcoep"),
-        () => createSource("refea"),
-        () => createSource("gesti"),
-        () => createSource("ymag"),
-        () => createSource("agri"),
-        () => createSource("anasup"),
-        () => createSource("compagnons-du-devoir"),
-        () => createSource("promotrans"),
-        () => createSource("ideo2"),
-        () => createSource("formations"),
+        "onisep",
+        "onisep-structure",
+        "opcoep",
+        "refea",
+        "gesti",
+        "ymag",
+        "agri",
+        "anasup",
+        "compagnons-du-devoir",
+        "promotrans",
+        "ideo2",
+        "etablissements",
+        "formations",
+        "sirene",
       ],
       [
         //This group contains sources that need data from the previous groups
-        () => createSource("academie"),
+        "academie",
       ],
       [
         //Theses sources used uai as selector, so we tried to collect as many uais as possible before running them
-        () => createSource("ccca-btp"),
-        () => createSource("cci-france"),
-        () => createSource("cma"),
+        "ccca-btp",
+        "cci-france",
+        "cma",
       ],
     ];
   },

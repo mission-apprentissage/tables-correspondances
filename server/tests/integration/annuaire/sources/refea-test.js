@@ -15,20 +15,22 @@ integrationTests(__filename, () => {
       ),
     });
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, [
       {
-        type: "refea",
+        sources: ["refea"],
         uai: "0011073L",
         valide: true,
       },
     ]);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 0,
+    assert.deepStrictEqual(stats, {
+      refea: {
+        total: 1,
+        updated: 1,
+        failed: 0,
+      },
     });
   });
 });

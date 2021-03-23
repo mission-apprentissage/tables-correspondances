@@ -1,5 +1,6 @@
 const assert = require("assert");
 const { omit } = require("lodash");
+const { oleoduc, transformData } = require("oleoduc");
 const { Readable } = require("stream");
 const { Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
@@ -8,10 +9,15 @@ const collect = require("../../../src/jobs/annuaire/collect");
 
 integrationTests(__filename, () => {
   function createTestSource(array) {
+    let name = "dummy";
     return {
-      type: "test",
+      name,
       stream() {
-        return Readable.from(array);
+        return oleoduc(
+          Readable.from(array),
+          transformData((d) => ({ source: name, ...d })),
+          { promisify: false }
+        );
       },
     };
   }
@@ -25,20 +31,22 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
     let found = await Annuaire.findOne({}, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, [
       {
-        type: "test",
+        sources: ["dummy"],
         uai: "0011073L",
         valide: true,
       },
     ]);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      failed: 0,
-      updated: 1,
+    assert.deepStrictEqual(stats, {
+      dummy: {
+        total: 1,
+        failed: 0,
+        updated: 1,
+      },
     });
   });
 
@@ -51,18 +59,20 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires[0], {
-      type: "test",
+      sources: ["dummy"],
       uai: "093XXXT",
       valide: false,
     });
-    assert.deepStrictEqual(results, {
-      total: 1,
-      failed: 0,
-      updated: 1,
+    assert.deepStrictEqual(stats, {
+      dummy: {
+        total: 1,
+        failed: 0,
+        updated: 1,
+      },
     });
   });
 
@@ -80,9 +90,11 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, []);
     assert.deepStrictEqual(stats, {
-      total: 1,
-      failed: 0,
-      updated: 0,
+      dummy: {
+        total: 1,
+        failed: 0,
+        updated: 0,
+      },
     });
   });
 
@@ -98,7 +110,7 @@ integrationTests(__filename, () => {
       siret: "111111111111111",
       uais_secondaires: [
         {
-          type: "test",
+          sources: ["dummy"],
           uai: "0011073L",
           valide: true,
         },
@@ -110,16 +122,48 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, [
       {
-        type: "test",
+        sources: ["dummy"],
         uai: "0011073L",
         valide: true,
       },
     ]);
     assert.deepStrictEqual(stats, {
-      total: 1,
-      failed: 0,
-      updated: 0,
+      dummy: {
+        total: 1,
+        failed: 0,
+        updated: 0,
+      },
     });
+  });
+
+  it("Vérifie qu'on fusionne un uai déjà collecté part une autre source", async () => {
+    await createAnnuaire({
+      siret: "111111111111111",
+      uais_secondaires: [
+        {
+          sources: ["other"],
+          uai: "0011073L",
+          valide: true,
+        },
+      ],
+    });
+    let source = createTestSource([
+      {
+        selector: "111111111111111",
+        uais: ["0011073L"],
+      },
+    ]);
+
+    await collect(source);
+
+    let found = await Annuaire.findOne({}, { _id: 0 }).lean();
+    assert.deepStrictEqual(found.uais_secondaires, found.uais_secondaires, [
+      {
+        sources: ["other", "dummy"],
+        uai: "0011073L",
+        valide: true,
+      },
+    ]);
   });
 
   it("Vérifie qu'on ignore un uai avec une donnée invalide", async () => {
@@ -136,9 +180,11 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, []);
     assert.deepStrictEqual(stats, {
-      total: 1,
-      failed: 0,
-      updated: 0,
+      dummy: {
+        total: 1,
+        failed: 0,
+        updated: 0,
+      },
     });
   });
 
@@ -158,13 +204,15 @@ integrationTests(__filename, () => {
     assert.ok(errors[0].date);
     assert.deepStrictEqual(omit(errors[0], ["date"]), {
       details: "Erreur",
-      source: "test",
-      type: "collect",
+      source: "dummy",
+      task: "collect",
     });
     assert.deepStrictEqual(stats, {
-      total: 1,
-      failed: 1,
-      updated: 0,
+      dummy: {
+        total: 1,
+        failed: 1,
+        updated: 0,
+      },
     });
   });
 
@@ -186,9 +234,35 @@ integrationTests(__filename, () => {
         annuaire: false,
         label: "Centre de formation",
         type: "gestionnaire",
-        source: "test",
+        sources: ["dummy"],
       },
     ]);
+  });
+
+  it("Vérifie qu'on peut fusionner une relation déjà collectée", async () => {
+    await createAnnuaire({
+      siret: "111111111111111",
+      relations: [
+        {
+          siret: "22222222222222",
+          annuaire: false,
+          label: "Centre de formation",
+          type: "gestionnaire",
+          sources: ["other"],
+        },
+      ],
+    });
+    let source = createTestSource([
+      {
+        selector: "111111111111111",
+        relations: [{ siret: "22222222222222", label: "Centre de formation", type: "gestionnaire" }],
+      },
+    ]);
+
+    await collect(source);
+
+    let found = await Annuaire.findOne({}, { _id: 0 }).lean();
+    assert.deepStrictEqual(found.relations[0].sources, ["other", "dummy"]);
   });
 
   it("Vérifie qu'on ne duplique pas les relations", async () => {
@@ -200,7 +274,7 @@ integrationTests(__filename, () => {
           annuaire: false,
           label: "test",
           type: "gestionnaire",
-          source: "test",
+          source: "dummy",
         },
       ],
     });
@@ -237,7 +311,7 @@ integrationTests(__filename, () => {
         siret: "22222222222222",
         label: "test",
         annuaire: true,
-        source: "test",
+        sources: ["dummy"],
       },
     ]);
   });
@@ -284,12 +358,14 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    let results = await collect(source, { filters: { siret: "33333333333333" } });
+    let stats = await collect(source, { filters: { siret: "33333333333333" } });
 
-    assert.deepStrictEqual(results, {
-      total: 0,
-      updated: 0,
-      failed: 0,
+    assert.deepStrictEqual(stats, {
+      dummy: {
+        total: 0,
+        updated: 0,
+        failed: 0,
+      },
     });
   });
 
@@ -302,14 +378,16 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
     let found = await Annuaire.findOne({ uai: "0011073X" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.reseaux, ["test"]);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      failed: 0,
-      updated: 1,
+    assert.deepStrictEqual(stats, {
+      dummy: {
+        total: 1,
+        failed: 0,
+        updated: 1,
+      },
     });
   });
 
@@ -319,7 +397,7 @@ integrationTests(__filename, () => {
       siret: "111111111111111",
       uais_secondaires: [
         {
-          type: "test",
+          source: "dummy",
           uai: "SECONDAIRE",
           valide: true,
         },
@@ -332,14 +410,16 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
     let found = await Annuaire.findOne({ uai: "0011073X" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.reseaux, ["test"]);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      failed: 0,
-      updated: 1,
+    assert.deepStrictEqual(stats, {
+      dummy: {
+        total: 1,
+        failed: 0,
+        updated: 1,
+      },
     });
   });
 });

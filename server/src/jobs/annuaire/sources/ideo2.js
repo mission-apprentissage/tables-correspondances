@@ -5,9 +5,11 @@ const { decodeStream } = require("iconv-lite");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
 module.exports = async (custom = {}) => {
+  let name = "ideo2";
   let input = custom.input || (await getOvhFileAsStream("annuaire/ONISEP-Ideo2-T_Export_complet.csv"));
 
   return {
+    name,
     stream() {
       return oleoduc(
         input,
@@ -17,45 +19,48 @@ module.exports = async (custom = {}) => {
           trim: true,
           columns: true,
         }),
-        transformData(async (data) => {
-          let siretFormateur = data["SIRET_lieu_enseignement"];
-          let siretGestionnaire = data["SIRET_gestionnaire"];
+        transformData(
+          async (data) => {
+            let siretFormateur = data["SIRET_lieu_enseignement"];
+            let siretGestionnaire = data["SIRET_gestionnaire"];
 
-          return [
-            {
-              selector: siretGestionnaire,
-              uais: [data["UAI_gestionnaire"]],
-              relations: [
-                ...(isEmpty(siretFormateur)
-                  ? []
-                  : [
-                      {
-                        siret: siretFormateur,
-                        label: data["nom_lieu_enseignement"],
-                        type: "formateur",
-                      },
-                    ]),
-              ],
-            },
-            {
-              selector: siretFormateur,
-              uais: [data["UAI_lieu_enseignement"]],
-              relations: [
-                ...(isEmpty(siretGestionnaire)
-                  ? []
-                  : [
-                      {
-                        siret: siretGestionnaire,
-                        label: data["CFA_gestionnaire"],
-                        type: "gestionnaire",
-                      },
-                    ]),
-              ],
-            },
-          ];
-        }),
+            return [
+              {
+                selector: siretGestionnaire,
+                relations: [
+                  ...(isEmpty(siretFormateur)
+                    ? []
+                    : [
+                        {
+                          siret: siretFormateur,
+                          label: data["nom_lieu_enseignement"],
+                          type: "formateur",
+                        },
+                      ]),
+                ],
+              },
+              {
+                selector: siretFormateur,
+                uais: [data["UAI_lieu_enseignement"]],
+                relations: [
+                  ...(isEmpty(siretGestionnaire)
+                    ? []
+                    : [
+                        {
+                          siret: siretGestionnaire,
+                          label: data["CFA_gestionnaire"],
+                          type: "gestionnaire",
+                        },
+                      ]),
+                ],
+              },
+            ];
+          },
+          { parallel: 10 }
+        ),
         flattenArray(),
-        { promisify: false, parallel: 10 }
+        transformData((data) => ({ ...data, source: name })),
+        { promisify: false }
       );
     },
   };

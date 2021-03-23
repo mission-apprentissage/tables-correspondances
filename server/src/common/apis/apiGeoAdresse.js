@@ -4,7 +4,10 @@ const logger = require("../logger");
 const ApiError = require("./ApiError");
 
 // Cf Documentation : https://geo.api.gouv.fr/adresse
-const apiEndpoint = "https://api-adresse.data.gouv.fr";
+const client = axios.create({
+  baseURL: "https://api-adresse.data.gouv.fr",
+  timeout: 5000,
+});
 
 class ApiGeoAdresse {
   constructor() {}
@@ -13,7 +16,7 @@ class ApiGeoAdresse {
     try {
       let params = queryString.stringify({ q, ...options });
       logger.debug(`[Adresse API] Searching adresse with parameters ${params}...`);
-      const response = await axios.get(`${apiEndpoint}/search/?${params}`);
+      const response = await client.get(`search/?${params}`);
       return response.data;
     } catch (e) {
       throw new ApiError("apiGeoAdresse", e.message, e.code || e.response.status);
@@ -24,7 +27,7 @@ class ApiGeoAdresse {
     try {
       let params = queryString.stringify({ lon, lat, ...options });
       logger.debug(`[Adresse API] Reverse geocode with parameters ${params}...`);
-      const response = await axios.get(`${apiEndpoint}/reverse/?${params}`);
+      const response = await client.get(`reverse/?${params}`);
       return response.data;
     } catch (e) {
       throw new ApiError("apiGeoAdresse", e.message, e.code || e.response.status);
@@ -34,7 +37,7 @@ class ApiGeoAdresse {
   async searchPostcodeOnly(q, options = {}) {
     try {
       let params = queryString.stringify({ q, ...options });
-      const response = await axios.get(`${apiEndpoint}/search/?${params}`);
+      const response = await client.get(`search/?${params}`);
       logger.debug(`[Adresse API] Searching Postcode with parameters ${params}...`);
       return response.data;
     } catch (e) {
@@ -46,7 +49,7 @@ class ApiGeoAdresse {
     try {
       let params = `${options.isCityCode ? "citycode=" : ""}${code}&type=municipality`;
       logger.debug(`[Adresse API] Searching municipality with parameters ${params}...`);
-      const response = await axios.get(`${apiEndpoint}/search/?limit=1&q=${params}`);
+      const response = await client.get(`search/?limit=1&q=${params}`);
       return response.data;
     } catch (e) {
       throw new ApiError("apiGeoAdresse", e.message, e.code || e.response.status);
