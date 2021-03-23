@@ -5,7 +5,6 @@ const apiGeoAdresse = require("../../../common/apis/apiGeoAdresse");
 const dgefp = require("../referentiels/dgefp");
 const adresses = require("../utils/adresses");
 const categoriesJuridiques = require("../utils/categoriesJuridiques");
-const Cache = require("../../../common/apis/Cache");
 
 function getEtablissementName(e, uniteLegale) {
   return (
@@ -55,21 +54,18 @@ module.exports = async (custom = {}) => {
 
   return {
     name,
-    stream: function (options = {}) {
+    stream(options = {}) {
       let filters = options.filters || {};
-      let cache = new Cache(name);
 
-      let stream = oleoduc(
+      return oleoduc(
         Annuaire.find(filters, { siret: 1 }).lean().cursor(),
         transformData(
           async ({ siret }) => {
             try {
               let siren = siret.substring(0, 9);
               let anomalies = [];
-
-              let uniteLegale = await cache.memo(siren, () => api.getUniteLegale(siren));
+              let uniteLegale = await api.getUniteLegale(siren);
               let data = uniteLegale.etablissements.find((e) => e.siret === siret);
-
               if (!data) {
                 return {
                   selector: siret,
@@ -77,26 +73,22 @@ module.exports = async (custom = {}) => {
                 };
               }
 
-              let relations = await Promise.all(
-                uniteLegale.etablissements
-                  .filter((e) => {
-                    return e.siret !== siret && e.etat_administratif === "A" && organismes.includes(e.siret);
-                  })
-                  .map(async (e) => {
-                    return {
-                      siret: e.siret,
-                      label: getRelationLabel(e, uniteLegale),
-                    };
-                  })
-              );
+              let relations = uniteLegale.etablissements
+                .filter((e) => {
+                  return e.siret !== siret && e.etat_administratif === "A" && organismes.includes(e.siret);
+                })
+                .map((e) => {
+                  return {
+                    siret: e.siret,
+                    label: getRelationLabel(e, uniteLegale),
+                  };
+                });
 
               let adresse;
               if (data.longitude) {
                 try {
-                  let longitude = parseFloat(data.longitude);
-                  let latitude = parseFloat(data.latitude);
-                  adresse = await cache.memo(`adresse_${longitude}_${latitude}`, () => {
-                    return getAdresseFromCoordinates(longitude, latitude, { label: data.geo_adresse });
+                  adresse = await getAdresseFromCoordinates(parseFloat(data.longitude), parseFloat(data.latitude), {
+                    label: data.geo_adresse,
                   });
                 } catch (e) {
                   anomalies.push(e);
@@ -129,10 +121,6 @@ module.exports = async (custom = {}) => {
         transformData((data) => ({ ...data, source: name })),
         { promisify: false }
       );
-
-      stream.on("finish", () => cache.flush());
-
-      return stream;
     },
   };
 };

@@ -1,7 +1,6 @@
 const { uniqBy, chain } = require("lodash");
 const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
-const Cache = require("../../../common/apis/Cache");
 const apiCatalogue = require("../../../common/apis/apiCatalogue");
 const apiGeoAdresse = require("../../../common/apis/apiGeoAdresse");
 const adresses = require("../utils/adresses");
@@ -119,30 +118,22 @@ module.exports = async (custom = {}) => {
     name,
     stream(options = {}) {
       let filters = options.filters || {};
-      let cache = new Cache(name);
 
-      let stream = oleoduc(
+      return oleoduc(
         Annuaire.find(filters, { siret: 1 }).lean().cursor(),
         transformData(
           async ({ siret }) => {
             try {
-              let [_2020, _2021] = await cache.memo(siret, () => {
-                return Promise.all([getFormations(api, siret), getFormations(api, siret, { annee: "2021" })]);
-              });
+              let [_2020, _2021] = await Promise.all([
+                getFormations(api, siret),
+                getFormations(api, siret, { annee: "2021" }),
+              ]);
 
               let formations = [..._2020, ..._2021];
               let { relations } = await buildRelations(siret, formations);
               let { diplomes } = await buildDiplomes(siret, formations);
               let { certifications } = await buildCertifications(siret, formations);
-              let { lieux, anomalies } = await buildLieuxDeFormation(
-                siret,
-                formations,
-                (longitude, latitude, options) => {
-                  return cache.memo(`adresse_${longitude}_${latitude}`, () => {
-                    return getAdresseFromCoordinates(longitude, latitude, options);
-                  });
-                }
-              );
+              let { lieux, anomalies } = await buildLieuxDeFormation(siret, formations, getAdresseFromCoordinates);
 
               return {
                 selector: siret,
@@ -166,10 +157,6 @@ module.exports = async (custom = {}) => {
         transformData((data) => ({ ...data, source: name })),
         { promisify: false }
       );
-
-      stream.on("finish", () => cache.flush());
-
-      return stream;
     },
   };
 };

@@ -9,7 +9,7 @@ class Cache {
   get(key) {
     let value = this.cache[key];
     if (value) {
-      logger.warn(`Value with key '${key}' retrieved from cache ${this.name}`);
+      logger.debug(`Value with key '${key}' retrieved from cache ${this.name}`);
     }
     return value;
   }
