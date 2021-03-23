@@ -10,6 +10,7 @@ function parse(stream) {
       delimiter: ";",
       trim: true,
       bom: true,
+      skip_lines_with_error: true,
       columns: true,
     })
   );
@@ -22,13 +23,14 @@ async function defaultStream() {
   );
 }
 
-module.exports = async (custom = {}) => {
+module.exports = (custom = {}) => {
   let name = "onisep";
-  let input = custom.input ? parse(custom.input) : await defaultStream();
 
   return {
     name,
-    stream() {
+    async stream() {
+      let input = custom.input ? parse(custom.input) : await defaultStream();
+
       return oleoduc(
         input,
         transformData((data) => {

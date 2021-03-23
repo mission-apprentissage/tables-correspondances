@@ -47,11 +47,11 @@ async function buildRelations(source, etablissement, relations) {
   );
 }
 
-async function handleAnomalies(source, selector, anomalies) {
+function handleAnomalies(source, selector, anomalies) {
   logger.error(`[Collect][${source}] Erreur lors de la collecte pour l'établissement ${selector}.`, anomalies);
   let query = buildQuery(selector);
 
-  await Annuaire.updateOne(
+  return Annuaire.updateOne(
     query,
     {
       $push: {
@@ -100,7 +100,7 @@ module.exports = async (...args) => {
   let filters = options.filters || {};
   let stats = createStats(sources);
 
-  let streams = sources.map((source) => source.stream({ filters }));
+  let streams = await Promise.all(sources.map((source) => source.stream({ filters })));
 
   await oleoduc(
     mergeStream(streams),
@@ -141,7 +141,9 @@ module.exports = async (...args) => {
         let nbModifiedDocuments = getNbModifiedDocuments(res);
         if (nbModifiedDocuments) {
           stats[source].updated += nbModifiedDocuments;
-          logger.debug(`[Collect][${source}] Etablissement ${selector} updated`);
+          logger.debug(`[Annuaire][Collect][${source}] Etablissement ${selector} updated`);
+        } else {
+          logger.debug(`[Annuaire][Collect][${source}] Etablissement ${selector} ignored`);
         }
       } catch (e) {
         stats[source].failed++;
