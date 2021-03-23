@@ -24,22 +24,17 @@ cli
   .description("Importe les établissements contenus dans le ou les référentiels")
   .action((name, file) => {
     runScript(async () => {
-      if (name) {
-        let input = file ? createReadStream(file) : process.stdin;
+      let input = file ? createReadStream(file) : null;
+      let referentiels = name ? [name] : await getDefaultReferentiels();
+      let stats = [];
+
+      for (let name of referentiels) {
         let referentiel = await createReferentiel(name, { input });
-        return importReferentiel(referentiel);
-      } else {
-        let referentiels = await getDefaultReferentiels();
-        let stats = [];
-
-        for (let name of referentiels) {
-          let referentiel = await createReferentiel(name);
-          let results = await importReferentiel(referentiel);
-          stats.push({ [referentiel.name]: results });
-        }
-
-        return stats;
+        let results = await importReferentiel(referentiel);
+        stats.push({ [referentiel.name]: results });
       }
+
+      return stats;
     });
   });
 
