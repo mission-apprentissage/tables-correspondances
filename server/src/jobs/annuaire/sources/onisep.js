@@ -17,20 +17,22 @@ function parse(stream) {
 }
 
 async function defaultStream() {
-  return mergeStream(
-    parse(await getOvhFileAsStream("annuaire/ONISEP-ideo-structures_denseignement_secondaire.csv")),
-    parse(await getOvhFileAsStream("annuaire/ONISEP-ideo-structures_denseignement_superieur.csv"))
+  return oleoduc(
+    mergeStream(
+      parse(await getOvhFileAsStream("annuaire/ONISEP-ideo-structures_denseignement_secondaire.csv")),
+      parse(await getOvhFileAsStream("annuaire/ONISEP-ideo-structures_denseignement_superieur.csv"))
+    ),
+    { promisify: false }
   );
 }
 
-module.exports = (custom = {}) => {
+module.exports = async (custom = {}) => {
   let name = "onisep";
 
+  let input = custom.input ? parse(custom.input) : await defaultStream();
   return {
     name,
-    async stream() {
-      let input = custom.input ? parse(custom.input) : await defaultStream();
-
+    stream() {
       return oleoduc(
         input,
         transformData((data) => {
