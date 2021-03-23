@@ -9,7 +9,7 @@ let executeWithRateLimiting = apiRateLimiter("apiSirene", {
   durationInSeconds: 1,
   client: axios.create({
     baseURL: "https://entreprise.data.gouv.fr/api/sirene/v3",
-    timeout: 10000,
+    timeout: 5000,
   }),
 });
 
