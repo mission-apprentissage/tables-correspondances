@@ -22,7 +22,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found.reseaux, ["anasup"]);
     assert.deepStrictEqual(found.uais_secondaires, [
       {
-        source: "anasup",
+        sources: ["anasup"],
         uai: "0011073L",
         valide: true,
       },

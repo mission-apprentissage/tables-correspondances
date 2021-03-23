@@ -35,7 +35,7 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({}, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, [
       {
-        source: "dummy",
+        sources: ["dummy"],
         uai: "0011073L",
         valide: true,
       },
@@ -62,7 +62,7 @@ integrationTests(__filename, () => {
 
     let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires[0], {
-      source: "dummy",
+      sources: ["dummy"],
       uai: "093XXXT",
       valide: false,
     });
@@ -109,7 +109,7 @@ integrationTests(__filename, () => {
       siret: "111111111111111",
       uais_secondaires: [
         {
-          source: "dummy",
+          sources: ["dummy"],
           uai: "0011073L",
           valide: true,
         },
@@ -121,7 +121,7 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais_secondaires, [
       {
-        source: "dummy",
+        sources: ["dummy"],
         uai: "0011073L",
         valide: true,
       },
@@ -133,6 +133,36 @@ integrationTests(__filename, () => {
         updated: 0,
       },
     });
+  });
+
+  it("Vérifie qu'on fusionne un uai déjà collecté part une autre source", async () => {
+    await createAnnuaire({
+      siret: "111111111111111",
+      uais_secondaires: [
+        {
+          sources: ["other"],
+          uai: "0011073L",
+          valide: true,
+        },
+      ],
+    });
+    let source = createTestSource([
+      {
+        selector: "111111111111111",
+        uais: ["0011073L"],
+      },
+    ]);
+
+    await collect(source);
+
+    let found = await Annuaire.findOne({}, { _id: 0 }).lean();
+    assert.deepStrictEqual(found.uais_secondaires, found.uais_secondaires, [
+      {
+        sources: ["other", "dummy"],
+        uai: "0011073L",
+        valide: true,
+      },
+    ]);
   });
 
   it("Vérifie qu'on ignore un uai avec une donnée invalide", async () => {
