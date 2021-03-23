@@ -1,3 +1,10 @@
+# [2.5.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.4.3...v2.5.0) (2021-03-23)
+
+
+### Features
+
+* reduce timeout apiGeo ([5273a91](https://github.com/mission-apprentissage/tables-correspondances/commit/5273a9100fcba99c0b88656083aa152133671df6))
+
 ## [2.4.3](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.4.2...v2.4.3) (2021-03-22)
 
 
