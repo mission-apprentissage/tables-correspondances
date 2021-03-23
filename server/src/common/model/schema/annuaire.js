@@ -196,8 +196,8 @@ const annuaireSchema = {
             type: Boolean,
             required: true,
           },
-          source: {
-            type: String,
+          sources: {
+            type: [String],
             required: true,
           },
           label: {

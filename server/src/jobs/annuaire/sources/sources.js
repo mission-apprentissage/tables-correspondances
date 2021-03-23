@@ -18,8 +18,6 @@ module.exports = {
   getDefaultSourcesGroupedByPriority() {
     return [
       [
-        "etablissements",
-        "sirene",
         "onisep",
         "onisep-structure",
         "opcoep",
@@ -31,7 +29,9 @@ module.exports = {
         "compagnons-du-devoir",
         "promotrans",
         "ideo2",
+        "etablissements",
         "formations",
+        "sirene",
       ],
       [
         //This group contains sources that need data from the previous groups

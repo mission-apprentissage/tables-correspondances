@@ -12,30 +12,46 @@ function buildQuery(selector) {
 }
 
 function buildUAIsSecondaires(source, etablissement, uais) {
-  return uais
+  let updated = uais
     .filter((uai) => uai && uai !== "NULL" && etablissement.uai !== uai)
     .reduce((acc, uai) => {
-      let previous = etablissement.uais_secondaires.find((u) => u.uai === uai) || {};
-      let sources = uniq([...(previous.sources || []), source]);
-      acc.push({ ...previous, uai, sources, valide: validateUAI(uai) });
+      let found = etablissement.uais_secondaires.find((u) => u.uai === uai) || {};
+      let sources = uniq([...(found.sources || []), source]);
+      acc.push({ ...found, uai, sources, valide: validateUAI(uai) });
       return acc;
     }, []);
+
+  let previous = etablissement.uais_secondaires.filter((us) => !updated.map(({ uai }) => uai).includes(us.uai));
+
+  return [...updated, ...previous];
 }
 
-async function buildNewRelations(source, relations) {
+async function buildRelations(source, etablissement, relations) {
+  let updated = relations.reduce((acc, relation) => {
+    let found = etablissement.relations.find((r) => r.siret === relation.siret) || {};
+    let sources = uniq([...(found.sources || []), source]);
+    acc.push({ ...found, ...relation, sources });
+    return acc;
+  }, []);
+
+  let previous = etablissement.relations.filter((r) => !updated.map(({ siret }) => siret).includes(r.siret));
+
   return Promise.all(
-    relations.map(async (r) => {
-      let doc = await Annuaire.findOne({ siret: r.siret });
-      return { ...r, annuaire: !!doc, source };
+    [...updated, ...previous].map(async (r) => {
+      let count = await Annuaire.countDocuments({ siret: r.siret });
+      return {
+        ...r,
+        annuaire: count > 0,
+      };
     })
   );
 }
 
-async function handleAnomalies(source, selector, anomalies) {
+function handleAnomalies(source, selector, anomalies) {
   logger.error(`[Collect][${source}] Erreur lors de la collecte pour l'établissement ${selector}.`, anomalies);
   let query = buildQuery(selector);
 
-  await Annuaire.updateOne(
+  return Annuaire.updateOne(
     query,
     {
       $push: {
@@ -84,7 +100,7 @@ module.exports = async (...args) => {
   let filters = options.filters || {};
   let stats = createStats(sources);
 
-  let streams = sources.map((source) => source.stream({ filters }));
+  let streams = await Promise.all(sources.map((source) => source.stream({ filters })));
 
   await oleoduc(
     mergeStream(streams),
@@ -112,13 +128,11 @@ module.exports = async (...args) => {
             $set: {
               ...flattenObject(data),
               uais_secondaires: buildUAIsSecondaires(source, etablissement, uais),
+              relations: await buildRelations(source, etablissement, relations),
             },
             $addToSet: {
               reseaux: {
                 $each: reseaux,
-              },
-              relations: {
-                $each: await buildNewRelations(source, relations),
               },
             },
           },
@@ -127,7 +141,9 @@ module.exports = async (...args) => {
         let nbModifiedDocuments = getNbModifiedDocuments(res);
         if (nbModifiedDocuments) {
           stats[source].updated += nbModifiedDocuments;
-          logger.debug(`[Collect][${source}] Etablissement ${selector} updated`);
+          logger.debug(`[Annuaire][Collect][${source}] Etablissement ${selector} updated`);
+        } else {
+          logger.debug(`[Annuaire][Collect][${source}] Etablissement ${selector} ignored`);
         }
       } catch (e) {
         stats[source].failed++;

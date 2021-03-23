@@ -25,14 +25,14 @@ integrationTests(__filename, () => {
       siret: "22222222222222",
       annuaire: true,
       type: "formateur",
-      source: "ideo2",
+      sources: ["ideo2"],
     });
     found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0 }).lean();
     assert.deepStrictEqual(omit(found.relations[0], ["label"]), {
       siret: "11111111111111",
       annuaire: true,
       type: "gestionnaire",
-      source: "ideo2",
+      sources: ["ideo2"],
     });
   });
 });
