@@ -6,7 +6,7 @@ const ApiError = require("./ApiError");
 // Cf Documentation : https://geo.api.gouv.fr/adresse
 const client = axios.create({
   baseURL: "https://api-adresse.data.gouv.fr",
-  timeout: 10000,
+  timeout: 5000,
 });
 
 class ApiGeoAdresse {

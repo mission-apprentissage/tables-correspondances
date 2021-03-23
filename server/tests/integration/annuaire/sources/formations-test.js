@@ -35,7 +35,7 @@ integrationTests(__filename, () => {
         label: "Etablissement",
         annuaire: false,
         type: "formateur",
-        source: "formations",
+        sources: ["formations"],
       },
     ]);
     assert.deepStrictEqual(stats, {
@@ -51,19 +51,16 @@ integrationTests(__filename, () => {
     await importReferentiel();
     let source = await createSource("formations", {
       apiGeoAdresse: createApiGeoAddresseMock(),
-      apiCatalogue: createApiCatalogueMock(
-        {
-          formations: [
-            {
-              etablissement_gestionnaire_siret: "22222222222222",
-              etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
-              etablissement_formateur_siret: "11111111111111",
-              etablissement_formateur_entreprise_raison_sociale: "Etablissement",
-            },
-          ],
-        },
-        { array: "merge" }
-      ),
+      apiCatalogue: createApiCatalogueMock({
+        formations: [
+          {
+            etablissement_gestionnaire_siret: "22222222222222",
+            etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
+            etablissement_formateur_siret: "11111111111111",
+            etablissement_formateur_entreprise_raison_sociale: "Etablissement",
+          },
+        ],
+      }),
     });
 
     await collect(source);
@@ -75,7 +72,7 @@ integrationTests(__filename, () => {
         label: "Entreprise",
         annuaire: false,
         type: "gestionnaire",
-        source: "formations",
+        sources: ["formations"],
       },
     ]);
   });
@@ -214,38 +211,32 @@ integrationTests(__filename, () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"22222222222222"`);
     let source = await createSource("formations", {
-      apiGeoAdresse: createApiGeoAddresseMock(
-        {
-          features: [
-            {
-              type: "Feature",
-              geometry: {
-                type: "Point",
-                coordinates: [2.396444, 48.879706],
-              },
-              properties: {
-                label: "32 Rue des lilas 75019 Paris",
-                score: 0.88,
-                name: "32 Rue des Lilas",
-                city: "Paris",
-              },
+      apiGeoAdresse: createApiGeoAddresseMock({
+        features: [
+          {
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [2.396444, 48.879706],
             },
-          ],
-        },
-        { array: "merge" }
-      ),
-      apiCatalogue: createApiCatalogueMock(
-        {
-          formations: [
-            {
-              etablissement_formateur_siret: "22222222222222",
-              lieu_formation_siret: "33333333333333",
-              lieu_formation_geo_coordonnees: "48.879706,2.396444",
+            properties: {
+              label: "32 Rue des lilas 75019 Paris",
+              score: 0.88,
+              name: "32 Rue des Lilas",
+              city: "Paris",
             },
-          ],
-        },
-        { array: "merge" }
-      ),
+          },
+        ],
+      }),
+      apiCatalogue: createApiCatalogueMock({
+        formations: [
+          {
+            etablissement_formateur_siret: "22222222222222",
+            lieu_formation_siret: "33333333333333",
+            lieu_formation_geo_coordonnees: "48.879706,2.396444",
+          },
+        ],
+      }),
     });
 
     let stats = await collect(source);
@@ -284,18 +275,15 @@ integrationTests(__filename, () => {
 "0011058V";"11111111111111"`);
     let source = await createSource("formations", {
       apiGeoAdresse: createApiGeoAddresseMock(),
-      apiCatalogue: createApiCatalogueMock(
-        {
-          formations: [
-            {
-              etablissement_gestionnaire_siret: "11111111111111",
-              lieu_formation_siret: "33333333333333",
-              lieu_formation_geo_coordonnees: "48.879706,2.396444",
-            },
-          ],
-        },
-        { array: "merge" }
-      ),
+      apiCatalogue: createApiCatalogueMock({
+        formations: [
+          {
+            etablissement_gestionnaire_siret: "11111111111111",
+            lieu_formation_siret: "33333333333333",
+            lieu_formation_geo_coordonnees: "48.879706,2.396444",
+          },
+        ],
+      }),
     });
 
     let stats = await collect(source);

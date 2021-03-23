@@ -1,21 +1,8 @@
-const { merge, mergeWith, isArray, omit } = require("lodash");
-
-const arrayMerger = (strategy) => (...args) => {
-  return mergeWith(...args, function (a, b) {
-    if (isArray(a)) {
-      switch (strategy) {
-        case "merge":
-          return merge(a, b);
-        default:
-          return b.concat(a);
-      }
-    }
-  });
-};
+const { omit, merge } = require("lodash");
 
 module.exports = {
   createApiGeoAddresseMock: (custom = {}, options = {}) => {
-    let mergeMockedData = options.array ? arrayMerger(options.array) : merge;
+    let mergeMockedData = options.merger || merge;
     let featureCollection = {
       type: "FeatureCollection",
       version: "draft",
@@ -200,7 +187,7 @@ module.exports = {
     };
   },
   createApiSireneMock: (custom = {}, options = {}) => {
-    let mergeMockedData = options.array ? arrayMerger(options.array) : merge;
+    let mergeMockedData = options.merger || merge;
     return {
       getUniteLegale() {
         return mergeMockedData(
@@ -448,7 +435,7 @@ module.exports = {
     };
   },
   createApiCatalogueMock: (custom = {}, options = {}) => {
-    let mergeMockedData = options.array ? arrayMerger(options.array) : merge;
+    let mergeMockedData = options.merger || merge;
     return {
       getFormations() {
         return mergeMockedData(

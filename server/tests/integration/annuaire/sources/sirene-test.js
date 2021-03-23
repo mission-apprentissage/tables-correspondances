@@ -135,7 +135,7 @@ integrationTests(__filename, () => {
         siret: "11111111122222",
         label: "NOMAYO2 75001 PARIS",
         annuaire: false,
-        source: "sirene",
+        sources: ["sirene"],
       },
     ]);
     assert.deepStrictEqual(stats, {

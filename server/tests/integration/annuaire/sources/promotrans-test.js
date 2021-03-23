@@ -22,7 +22,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found.reseaux, ["promotrans"]);
     assert.deepStrictEqual(found.uais_secondaires, [
       {
-        source: "promotrans",
+        sources: ["promotrans"],
         uai: "0011073L",
         valide: true,
       },

@@ -22,7 +22,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found.reseaux, ["compagnons-du-devoir"]);
     assert.deepStrictEqual(found.uais_secondaires, [
       {
-        source: "compagnons-du-devoir",
+        sources: ["compagnons-du-devoir"],
         uai: "0011073L",
         valide: true,
       },
