@@ -49,24 +49,18 @@ cli
   .description("Parcoure la ou les sources pour trouver des données complémentaires")
   .action((name, file, { siret }) => {
     runScript(async () => {
+      let input = file ? createReadStream(file) : null;
       let options = siret ? { filters: { siret } } : {};
+      let groups = name ? [[name]] : getDefaultSourcesGroupedByPriority();
+      let stats = [];
 
-      if (name) {
-        let input = file ? createReadStream(file) : null;
-        let source = await createSource(name, { input });
-        return collect(source, options);
-      } else {
-        let groups = getDefaultSourcesGroupedByPriority();
-        let stats = [];
-
-        for (let group of groups) {
-          let sources = await Promise.all(group.map(createSource));
-          let results = await collect(sources, options);
-          stats.push(results);
-        }
-
-        return stats;
+      for (let group of groups) {
+        let sources = await Promise.all(group.map((name) => createSource(name, { input })));
+        let results = await collect(sources, options);
+        stats.push(results);
       }
+
+      return stats;
     });
   });
 
