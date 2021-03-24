@@ -3,7 +3,7 @@ const csv = require("csv-parse");
 const mergeStream = require("merge-stream");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
-function parse(stream) {
+function parseCSV(stream) {
   return oleoduc(
     stream,
     csv({
@@ -12,38 +12,32 @@ function parse(stream) {
       bom: true,
       skip_lines_with_error: true,
       columns: true,
-    })
+    }),
+    transformData((data) => {
+      return {
+        source: "onisep",
+        selector: data["n° SIRET"],
+        uais: [data["code UAI"]],
+      };
+    }),
+    { promisify: false }
   );
 }
 
 async function defaultStream() {
-  return oleoduc(
-    mergeStream(
-      parse(await getOvhFileAsStream("annuaire/ONISEP-ideo-structures_denseignement_secondaire.csv")),
-      parse(await getOvhFileAsStream("annuaire/ONISEP-ideo-structures_denseignement_superieur.csv"))
-    ),
-    { promisify: false }
+  return mergeStream(
+    parseCSV(await getOvhFileAsStream("annuaire/ONISEP-ideo-structures_denseignement_secondaire.csv")),
+    parseCSV(await getOvhFileAsStream("annuaire/ONISEP-ideo-structures_denseignement_superieur.csv"))
   );
 }
 
 module.exports = async (custom = {}) => {
   let name = "onisep";
 
-  let input = custom.input ? parse(custom.input) : await defaultStream();
   return {
     name,
-    stream() {
-      return oleoduc(
-        input,
-        transformData((data) => {
-          return {
-            source: name,
-            selector: data["n° SIRET"],
-            uais: [data["code UAI"]],
-          };
-        }),
-        { promisify: false }
-      );
+    async stream() {
+      return custom.input ? parseCSV(custom.input) : await defaultStream();
     },
   };
 };

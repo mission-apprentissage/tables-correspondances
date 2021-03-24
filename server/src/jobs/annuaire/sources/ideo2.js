@@ -1,4 +1,4 @@
-const { oleoduc, transformData, flattenArray } = require("oleoduc");
+const { oleoduc, transformData, flattenArray, filterData } = require("oleoduc");
 const csv = require("csv-parse");
 const { isEmpty } = require("lodash");
 const { decodeStream } = require("iconv-lite");
@@ -11,6 +11,8 @@ module.exports = async (custom = {}) => {
   return {
     name,
     stream() {
+      let memory = [];
+
       return oleoduc(
         input,
         decodeStream("iso-8859-1"),
@@ -18,6 +20,14 @@ module.exports = async (custom = {}) => {
           delimiter: ";",
           trim: true,
           columns: true,
+        }),
+        filterData((data) => {
+          let key = `${data["SIRET_gestionnaire"]}_${data["SIRET_lieu_enseignement"]}`;
+          if (memory.includes(key)) {
+            return null;
+          }
+          memory.push(key);
+          return data;
         }),
         transformData(
           async (data) => {
