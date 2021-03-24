@@ -72,12 +72,14 @@ const annuaireSchema = {
     required: true,
     description: "Le siret de l'établissement",
     unique: true,
+    index: true,
   },
   uai: {
     type: String,
     description: "L'UAI de l'établissement",
     unique: true,
     sparse: true,
+    index: true,
   },
   raison_sociale: {
     type: String,
@@ -171,6 +173,7 @@ const annuaireSchema = {
           uai: {
             type: String,
             required: true,
+            index: true,
           },
           valide: {
             type: Boolean,
