@@ -1,28 +1,7 @@
 const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
 const apiEsSup = require("../../../common/apis/apiEsSup");
-const logger = require("../../../common/logger");
-
-class Cache {
-  constructor(cacheName) {
-    this.name = cacheName;
-    this.cache = {};
-  }
-
-  get(key) {
-    return this.cache[key];
-  }
-
-  add(key, value) {
-    logger.debug(`Key '${key}' added to cache ${this.name}`);
-    this.cache[key] = value;
-  }
-
-  flush() {
-    logger.debug(`Cache '${this.name} ' flushed`);
-    this.cache = {};
-  }
-}
+const Cache = require("../../../common/apis/Cache");
 
 module.exports = async (custom = {}) => {
   let name = "academie";
@@ -44,15 +23,12 @@ module.exports = async (custom = {}) => {
             let codeInsee = etablissement.adresse.code_insee;
 
             try {
-              let records = cache.get(codeInsee);
-              if (!records) {
-                let fetched = await api.fetchInfoFromCodeCommune(codeInsee);
-                records = fetched.records;
-                cache.add(codeInsee, records);
-              }
+              let records = await cache.memo(codeInsee, async () => {
+                let { records } = await api.fetchInfoFromCodeCommune(codeInsee);
+                return records;
+              });
 
               let data = records.length > 0 ? records[0].fields : null;
-
               return {
                 selector: siret,
                 ...(data

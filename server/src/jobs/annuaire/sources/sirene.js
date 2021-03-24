@@ -73,18 +73,16 @@ module.exports = async (custom = {}) => {
                 };
               }
 
-              let relations = await Promise.all(
-                uniteLegale.etablissements
-                  .filter((e) => {
-                    return e.siret !== siret && e.etat_administratif === "A" && organismes.includes(e.siret);
-                  })
-                  .map(async (e) => {
-                    return {
-                      siret: e.siret,
-                      label: getRelationLabel(e, uniteLegale),
-                    };
-                  })
-              );
+              let relations = uniteLegale.etablissements
+                .filter((e) => {
+                  return e.siret !== siret && e.etat_administratif === "A" && organismes.includes(e.siret);
+                })
+                .map((e) => {
+                  return {
+                    siret: e.siret,
+                    label: getRelationLabel(e, uniteLegale),
+                  };
+                });
 
               let adresse;
               if (data.longitude) {
@@ -110,7 +108,7 @@ module.exports = async (custom = {}) => {
                   raison_sociale: getEtablissementName(data, uniteLegale),
                   siege_social: data.etablissement_siege === "true",
                   statut: data.etat_administratif === "A" ? "actif" : "fermé",
-                  adresse: adresse,
+                  ...(adresse ? { adresse } : {}),
                   ...(formeJuridique ? { forme_juridique: formeJuridique } : {}),
                 },
               };

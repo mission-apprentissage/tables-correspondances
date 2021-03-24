@@ -5,7 +5,7 @@ const titleCase = require("title-case").titleCase;
 
 const client = axios.create({
   baseURL: "https://data.enseignementsup-recherche.gouv.fr/api/records/1.0/search/",
-  timeout: 10000,
+  timeout: 5000,
 });
 
 class EsSupApi {
