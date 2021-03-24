@@ -24,22 +24,17 @@ cli
   .description("Importe les établissements contenus dans le ou les référentiels")
   .action((name, file) => {
     runScript(async () => {
-      if (name) {
-        let input = file ? createReadStream(file) : process.stdin;
+      let input = file ? createReadStream(file) : null;
+      let referentiels = name ? [name] : await getDefaultReferentiels();
+      let stats = [];
+
+      for (let name of referentiels) {
         let referentiel = await createReferentiel(name, { input });
-        return importReferentiel(referentiel);
-      } else {
-        let referentiels = await getDefaultReferentiels();
-        let stats = [];
-
-        for (let name of referentiels) {
-          let referentiel = await createReferentiel(name);
-          let results = await importReferentiel(referentiel);
-          stats.push({ [referentiel.name]: results });
-        }
-
-        return stats;
+        let results = await importReferentiel(referentiel);
+        stats.push({ [referentiel.name]: results });
       }
+
+      return stats;
     });
   });
 
@@ -49,24 +44,18 @@ cli
   .description("Parcoure la ou les sources pour trouver des données complémentaires")
   .action((name, file, { siret }) => {
     runScript(async () => {
+      let input = file ? createReadStream(file) : null;
       let options = siret ? { filters: { siret } } : {};
+      let groups = name ? [[name]] : getDefaultSourcesGroupedByPriority();
+      let stats = [];
 
-      if (name) {
-        let input = file ? createReadStream(file) : null;
-        let source = await createSource(name, { input });
-        return collect(source, options);
-      } else {
-        let groups = getDefaultSourcesGroupedByPriority();
-        let stats = [];
-
-        for (let group of groups) {
-          let sources = await Promise.all(group.map(createSource));
-          let results = await collect(sources, options);
-          stats.push(results);
-        }
-
-        return stats;
+      for (let group of groups) {
+        let sources = await Promise.all(group.map((name) => createSource(name, { input })));
+        let results = await collect(sources, options);
+        stats.push(results);
       }
+
+      return stats;
     });
   });
 

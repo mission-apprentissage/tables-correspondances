@@ -11,7 +11,7 @@ const executeWithRateLimiting = apiRateLimiter("apiEntreprise", {
   durationInSeconds: 1,
   client: axios.create({
     baseURL: "https://entreprise.api.gouv.fr/v2",
-    timeout: 10000,
+    timeout: 5000,
   }),
 });
 

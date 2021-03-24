@@ -77,7 +77,7 @@ integrationTests(__filename, () => {
     });
     let failingApi = {
       fetchInfoFromCodeCommune: () => {
-        throw new ApiError("api-es", "Too many requests", 429);
+        return Promise.reject(new ApiError("api", "Too many requests", 429));
       },
     };
     let source = await createSource("academie", { apiEsSup: failingApi });
@@ -85,7 +85,7 @@ integrationTests(__filename, () => {
     await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111100000" }).lean();
-    assert.deepStrictEqual(found._meta.anomalies[0].details, "[api-es] Too many requests");
+    assert.deepStrictEqual(found._meta.anomalies[0].details, "[api] Too many requests");
   });
 
   it("Vérifie qu'on gère une anomalie quand la réponse est vide", async () => {

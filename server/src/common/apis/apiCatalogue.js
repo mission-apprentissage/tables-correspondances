@@ -9,7 +9,7 @@ let executeWithRateLimiting = apiRateLimiter("apiCatalogue", {
   durationInSeconds: 1,
   client: axios.create({
     baseURL: "https://catalogue.apprentissage.beta.gouv.fr",
-    timeout: 10000,
+    timeout: 5000,
   }),
 });
 
