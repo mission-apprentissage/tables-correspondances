@@ -6,70 +6,74 @@ const BunyanSlack = require("bunyan-slack");
 const BunyanMongodbStream = require("bunyan-mongodb-stream");
 const { Log } = require("./model/index");
 
+function jsonStream(level) {
+  return {
+    name: "json",
+    level,
+    stream: process.stdout,
+  };
+}
+
+function consoleStream(level, output) {
+  const pretty = new PrettyStream();
+  pretty.pipe(output);
+  return {
+    name: "console",
+    level,
+    stream: pretty,
+  };
+}
+
+function mongoDBStream(level) {
+  return {
+    name: "mongodb",
+    level,
+    stream: BunyanMongodbStream({ model: Log }),
+  };
+}
+
+function slackStream(envName) {
+  const stream = new BunyanSlack(
+    {
+      webhook_url: config.slackWebhookUrl,
+      customFormatter: (record, levelName) => {
+        if (record.type === "http") {
+          record = {
+            url: record.request.url.relative,
+            statusCode: record.response.statusCode,
+            ...(record.error ? { message: record.error.message } : {}),
+          };
+        }
+        return {
+          text: util.format(`[%s][${envName}] %O`, levelName.toUpperCase(), record),
+        };
+      },
+    },
+    (error) => {
+      console.error("Unable to send log to slack", error);
+    }
+  );
+
+  return {
+    name: "slack",
+    level: "error",
+    stream,
+  };
+}
+
 const createStreams = () => {
-  const { type, level } = config.log;
+  const { destinations, level } = config.log;
   const envName = config.env;
 
-  const jsonStream = () => {
-    return {
-      name: "json",
-      level,
-      stream: process.stdout,
-    };
+  let availableDestinations = {
+    json: () => jsonStream(level),
+    stdout: () => consoleStream(level, process.stdout),
+    stderr: () => consoleStream(level, process.stderr),
+    mongodb: () => mongoDBStream(level),
+    slack: () => slackStream(envName),
   };
 
-  const consoleStream = (type) => {
-    const pretty = new PrettyStream();
-    pretty.pipe(process[type]);
-    return {
-      name: "console",
-      level,
-      stream: pretty,
-    };
-  };
-
-  const mongoDBStream = () => {
-    return {
-      name: "mongodb",
-      level,
-      stream: BunyanMongodbStream({ model: Log }),
-    };
-  };
-
-  const slackStream = () => {
-    const stream = new BunyanSlack(
-      {
-        webhook_url: config.slackWebhookUrl,
-        customFormatter: (record, levelName) => {
-          if (record.type === "http") {
-            record = {
-              url: record.request.url.relative,
-              statusCode: record.response.statusCode,
-              ...(record.error ? { message: record.error.message } : {}),
-            };
-          }
-          return {
-            text: util.format(`[%s][${envName}] %O`, levelName.toUpperCase(), record),
-          };
-        },
-      },
-      (error) => {
-        console.error("Unable to send log to slack", error);
-      }
-    );
-
-    return {
-      name: "slack",
-      level: "error",
-      stream,
-    };
-  };
-
-  const streams = [type === "json" ? jsonStream() : consoleStream(type), mongoDBStream()];
-  if (config.slackWebhookUrl) {
-    streams.push(slackStream());
-  }
-  return streams;
+  return destinations.split(",").map((type) => availableDestinations[type]());
 };
 
 module.exports = bunyan.createLogger({
