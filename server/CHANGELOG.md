@@ -1,3 +1,10 @@
+## [2.5.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.5.0...v2.5.1) (2021-03-30)
+
+
+### Bug Fixes
+
+* geo api timeout decrease to 1000ms ([2c51824](https://github.com/mission-apprentissage/tables-correspondances/commit/2c51824dbd4313c19a89e2af8df979c4b63513bc))
+
 # [2.5.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.4.3...v2.5.0) (2021-03-23)
 
 
