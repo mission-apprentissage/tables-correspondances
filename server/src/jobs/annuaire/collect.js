@@ -138,10 +138,11 @@ module.exports = async (...args) => {
           },
           { runValidators: true }
         );
+
         let nbModifiedDocuments = getNbModifiedDocuments(res);
         if (nbModifiedDocuments) {
           stats[source].updated += nbModifiedDocuments;
-          logger.debug(`[Annuaire][Collect][${source}] Etablissement ${selector} updated`);
+          logger.info(`[Annuaire][Collect][${source}] Etablissement ${selector} updated`);
         } else {
           logger.debug(`[Annuaire][Collect][${source}] Etablissement ${selector} ignored`);
         }
