@@ -271,6 +271,10 @@ const annuaireSchema = {
             type: String,
             required: true,
           },
+          niveau: {
+            type: String,
+            default: undefined,
+          },
           label: {
             type: String,
             default: undefined,
