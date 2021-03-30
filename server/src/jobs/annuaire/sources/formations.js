@@ -24,7 +24,7 @@ async function getFormations(api, siret, options = {}) {
         cfd: 1,
         cfd_specialite: 1,
       },
-      resultats_par_page: 600, // no pagination needed for the moment
+      limit: 600, // no pagination needed for the moment
       ...options,
     }
   );
