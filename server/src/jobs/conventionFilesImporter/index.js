@@ -1,25 +1,31 @@
+const config = require("config");
+const path = require("path");
+const { createWriteStream } = require("fs");
+const XLSX = require("xlsx");
+const { oleoduc } = require("oleoduc");
 const logger = require("../../common/logger");
 const { runScript } = require("../scriptWrapper");
 const importConventionFiles = require("./importConventionFiles");
 const { downloadAndSaveFileFromS3 } = require("../../common/utils/awsUtils");
 const { getJsonFromCsvFile, readXLSXFile } = require("../../common/utils/fileUtils");
-const config = require("config");
-const path = require("path");
-const XLSX = require("xlsx");
+const { getOvhFileAsStream } = require("../../common/utils/ovhUtils");
 
 const downloadXlsxAndGetJson = async (filename) => {
-  const local_path = path.join(__dirname, `./assets/${filename}`);
-  await downloadAndSaveFileFromS3(`${config.conventionFiles.path}/${filename}`, local_path);
-  const datadockWb = readXLSXFile(local_path);
+  const localPath = path.join(__dirname, `./assets/${filename}`);
+
+  let stream = await getOvhFileAsStream(`convention/${filename}`);
+  await oleoduc(stream, createWriteStream(localPath));
+
+  const datadockWb = readXLSXFile(localPath);
   return XLSX.utils.sheet_to_json(datadockWb.workbook.Sheets[datadockWb.sheet_name_list[0]]);
 };
 
 const conventionFilesImporter = async (db) => {
-  logger.warn(`[Convention files importer] Starting`);
+  logger.warn(`[Convention files importer] Starting...`);
 
-  logger.info(`[Convention files importer] removing conventionfiles documents`);
+  logger.info(`[Convention files importer] Removing files documents...`);
   await db.collection("conventionfiles").deleteMany({});
-  logger.info(`[Convention files importer] Removing successfull`);
+  logger.info(`[Convention files importer] Files have been removed successfully`);
 
   // CSV import
   const PUBLIC_OFS_PATH = path.join(__dirname, "./assets/latest_public_ofs.csv");
