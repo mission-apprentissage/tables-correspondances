@@ -1,6 +1,6 @@
 const { uniqBy, chain } = require("lodash");
 const { oleoduc, transformData } = require("oleoduc");
-const { Annuaire } = require("../../../common/model");
+const { Annuaire, BcnFormationDiplome } = require("../../../common/model");
 const apiCatalogue = require("../../../common/apis/apiCatalogue");
 const apiGeoAdresse = require("../../../common/apis/apiGeoAdresse");
 const adresses = require("../utils/adresses");
@@ -24,7 +24,7 @@ async function getFormations(api, siret, options = {}) {
         cfd: 1,
         cfd_specialite: 1,
       },
-      resultats_par_page: 600, // no pagination needed for the moment
+      limit: 600, // no pagination needed for the moment
       ...options,
     }
   );
@@ -58,9 +58,11 @@ async function buildDiplomes(siret, formations) {
     formations
       .filter((f) => f.cfd && siret === f.etablissement_formateur_siret)
       .map(async (f) => {
+        let bcn = await BcnFormationDiplome.findOne({ FORMATION_DIPLOME: f.cfd });
         return {
           code: f.cfd,
           type: "cfd",
+          ...(bcn ? { niveau: bcn.NIVEAU_FORMATION_DIPLOME, label: bcn.LIBELLE_COURT } : {}),
         };
       })
   );
