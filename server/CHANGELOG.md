@@ -1,3 +1,10 @@
+# [2.6.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.5.1...v2.6.0) (2021-04-01)
+
+
+### Features
+
+* sdk readme ([#130](https://github.com/mission-apprentissage/tables-correspondances/issues/130)) ([37bfc3a](https://github.com/mission-apprentissage/tables-correspondances/commit/37bfc3abc285bbf95c45c06798167f614c4df472))
+
 ## [2.5.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.5.0...v2.5.1) (2021-03-30)
 
 
