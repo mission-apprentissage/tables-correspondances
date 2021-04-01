@@ -144,6 +144,26 @@ export async function isValideUAI(
   }
 }
 
+export async function getBcnInfo({ page = 1, limit = 10, query = {} }) {
+  isSdkReady();
+  try {
+    const { BcnFormationDiplome } = await import("../../common/model");
+
+    const allData = await BcnFormationDiplome.paginate(query, { page, limit });
+    return {
+      formationsDiplomes: allData.docs,
+      pagination: {
+        page: allData.page,
+        resultats_par_page: limit,
+        nombre_de_page: allData.pages,
+        total: allData.total,
+      },
+    };
+  } catch (error) {
+    console.error(`getBcnInfo: something went wrong!`, error);
+    return null;
+  }
+}
 // TODO
 // const conventionFilesImporter = require("./convetionFilesImporter/index");
 // await conventionFilesImporter(db);
