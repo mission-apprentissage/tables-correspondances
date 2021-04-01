@@ -34,8 +34,8 @@
     }
   },
   "log": {
-    "type": "stdout",
-    "level": "info"
+    "level": "info",
+    "destinations": "stdout"
   },
   "slackWebhookUrl": null,
   "outputDir": ".local/output",
