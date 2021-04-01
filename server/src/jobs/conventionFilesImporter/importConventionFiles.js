@@ -1,41 +1,35 @@
+const csv = require("csv-parse");
+const { oleoduc, writeData } = require("oleoduc");
 const logger = require("../../common/logger");
-const { asyncForEach } = require("../../common/utils/asyncUtils");
-const { chunk } = require("lodash");
+const { getOvhFileAsStream } = require("../../common/utils/ovhUtils");
 
-module.exports = async (db, publicOfsp, datadock, depp, dgefp) => {
-  try {
-    const publicOfs = publicOfsp.map((i) => {
-      const line = Object.entries(i).reduce(
-        (acc, [key, value]) => {
-          return {
-            ...acc,
-            [key.trim()]: value,
-          };
-        },
-        { type: "DATAGOUV" }
-      );
-      delete line[""];
-      return line;
-    });
+async function parseCSVAndInsert(db, type, file, parseOptions = {}) {
+  await oleoduc(
+    await getOvhFileAsStream(file),
+    csv({
+      trim: true,
+      delimiter: ";",
+      skip_empty_lines: true,
+      columns: true,
+      ...parseOptions,
+    }),
+    writeData(
+      (data) => {
+        logger.debug(`Inserting new document with type ${type}`);
+        return db.collection("conventionfiles").insertOne(data);
+      },
+      { parallel: 10 }
+    )
+  );
+}
 
-    const chunks = chunk(publicOfs, 200);
-
-    await asyncForEach(chunks, async (chunkpart, i) => {
-      try {
-        await db.collection("conventionfiles").insertMany(chunkpart);
-        logger.info(`Inserted ${200 * (i + 1)}`);
-      } catch (error) {
-        console.error(error);
-      }
-    });
-
-    await db.collection("conventionfiles").insertMany(datadock.map((d) => ({ ...d, type: "DATADOCK" })));
-    await db.collection("conventionfiles").insertMany(depp.map((d) => ({ ...d, type: "DEPP" })));
-    await db.collection("conventionfiles").insertMany(dgefp.map((d) => ({ ...d, type: "DGEFP" })));
-
-    logger.info(`Importing Convention files Succeed`);
-  } catch (error) {
-    logger.error(error);
-    logger.error(`Importing Convention files table Failed`);
-  }
+module.exports = async (db) => {
+  return Promise.all([
+    parseCSVAndInsert(db, "DATADOCK", "convention/BaseDataDock-latest.csv"),
+    parseCSVAndInsert(db, "DEPP", "convention/CFASousConvRegionale_latest.csv"),
+    parseCSVAndInsert(db, "DGEFP", "convention/DGEFP - Extraction au 10 01 2020.csv"),
+    parseCSVAndInsert(db, "DATAGOUV", "convention/latest_public_ofs.csv", {
+      columns: (header) => header.map((column) => column.replace(/ /g, "")),
+    }),
+  ]);
 };
