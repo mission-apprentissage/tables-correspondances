@@ -1,11 +1,13 @@
 const csv = require("csv-parse");
-const { oleoduc, writeData } = require("oleoduc");
+const { oleoduc, groupData, writeData } = require("oleoduc");
 const logger = require("../../common/logger");
 const { getOvhFileAsStream } = require("../../common/utils/ovhUtils");
 
 async function parseCSVAndInsert(db, type, file, parseOptions = {}) {
-  await oleoduc(
-    await getOvhFileAsStream(file),
+  let stream = await getOvhFileAsStream(file);
+
+  return oleoduc(
+    stream,
     csv({
       trim: true,
       delimiter: ";",
@@ -13,12 +15,13 @@ async function parseCSVAndInsert(db, type, file, parseOptions = {}) {
       columns: true,
       ...parseOptions,
     }),
+    groupData({ size: 5 }),
     writeData(
-      (data) => {
-        logger.debug(`Inserting new document with type ${type}`);
-        return db.collection("conventionfiles").insertOne(data);
+      (docs) => {
+        logger.debug(`Inserting new ${docs.length} documents with type ${type}`);
+        return db.collection("conventionfiles").insertMany(docs.map((d) => ({ ...d, type })));
       },
-      { parallel: 10 }
+      { parallel: 5 }
     )
   );
 }

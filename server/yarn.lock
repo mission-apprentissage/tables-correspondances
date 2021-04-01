@@ -6205,10 +6205,10 @@ object.values@^1.1.1:
     es-abstract "^1.18.0-next.1"
     has "^1.0.3"
 
-oleoduc@0.5.2:
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/oleoduc/-/oleoduc-0.5.2.tgz#f17ae0dadd3b7f7dae40dd58c25658721a360a95"
-  integrity sha512-wJc0bnutHTlCFF6rWp3YL6AVOSqyZd8fZwmRRzJoFA7SoD8jdEqBgqUthksswZZgYQd6y6DsVuxiaUPakzIvhQ==
+oleoduc@0.5.4:
+  version "0.5.4"
+  resolved "https://registry.yarnpkg.com/oleoduc/-/oleoduc-0.5.4.tgz#391f754a2b93f474e80bf94ce9d4777cbb8d79b8"
+  integrity sha512-zwsYNl8XDrccOiU4yIuocHEUc9JBi5nwWZ/K/GaGwYQ8yQ7XmOiJPFZPkw0b7GMOk7Zr7Y432tmmQjVPvKBFAg==
   dependencies:
     cyclist "1.0.1"
     duplexer3 "0.1.4"
