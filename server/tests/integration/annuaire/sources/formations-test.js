@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { omit } = require("lodash");
 const ApiError = require("../../../../src/common/apis/ApiError");
-const { Annuaire } = require("../../../../src/common/model");
+const { Annuaire, BcnFormationDiplome } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
 const { createApiCatalogueMock, createApiGeoAddresseMock } = require("../../../utils/mocks");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
@@ -9,11 +9,18 @@ const collect = require("../../../../src/jobs/annuaire/collect");
 const { importReferentiel } = require("../../../utils/testUtils");
 const { createAnnuaire } = require("../../../utils/fixtures");
 
+function createFormationsSource(custom = {}) {
+  return createSource("formations", {
+    apiGeoAdresse: createApiGeoAddresseMock(),
+    apiCatalogue: createApiCatalogueMock(),
+    ...custom,
+  });
+}
+
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des relations (formateur)", async () => {
     await importReferentiel();
-    let source = await createSource("formations", {
-      apiGeoAdresse: createApiGeoAddresseMock(),
+    let source = await createFormationsSource({
       apiCatalogue: createApiCatalogueMock({
         formations: [
           {
@@ -49,8 +56,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on peut collecter des relations (gestionnaire)", async () => {
     await importReferentiel();
-    let source = await createSource("formations", {
-      apiGeoAdresse: createApiGeoAddresseMock(),
+    let source = await createFormationsSource({
       apiCatalogue: createApiCatalogueMock({
         formations: [
           {
@@ -80,8 +86,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des diplômes (cfd)", async () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"22222222222222"`);
-    let source = await createSource("formations", {
-      apiGeoAdresse: createApiGeoAddresseMock(),
+    let source = await createFormationsSource({
       apiCatalogue: createApiCatalogueMock({
         formations: [
           {
@@ -112,11 +117,43 @@ integrationTests(__filename, () => {
     });
   });
 
+  it("Vérifie qu'on peut collecter des diplômes (cfd+bcn)", async () => {
+    await BcnFormationDiplome.create({
+      FORMATION_DIPLOME: "40030001",
+      NIVEAU_FORMATION_DIPLOME: "26C",
+      LIBELLE_COURT: "FORMATION",
+    });
+    await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
+"0011058V";"22222222222222"`);
+    let source = await createFormationsSource({
+      apiCatalogue: createApiCatalogueMock({
+        formations: [
+          {
+            etablissement_formateur_siret: "22222222222222",
+            etablissement_formateur_entreprise_raison_sociale: "Etablissement",
+            cfd: "40030001",
+          },
+        ],
+      }),
+    });
+
+    await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0 }).lean();
+    assert.deepStrictEqual(found.diplomes, [
+      {
+        code: "40030001",
+        type: "cfd",
+        niveau: "26C",
+        label: "FORMATION",
+      },
+    ]);
+  });
+
   it("Vérifie qu'on ne collecte pas de diplômes pour les établissements gestionnaire", async () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"11111111111111"`);
-    let source = await createSource("formations", {
-      apiGeoAdresse: createApiGeoAddresseMock(),
+    let source = await createFormationsSource({
       apiCatalogue: createApiCatalogueMock({
         formations: [
           {
@@ -144,8 +181,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des certifications (rncp)", async () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"22222222222222"`);
-    let source = await createSource("formations", {
-      apiGeoAdresse: createApiGeoAddresseMock(),
+    let source = await createFormationsSource({
       apiCatalogue: createApiCatalogueMock({
         formations: [
           {
@@ -180,8 +216,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on ne collecte pas de certifications pour les établissements gestionnaire", async () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"11111111111111"`);
-    let source = await createSource("formations", {
-      apiGeoAdresse: createApiGeoAddresseMock(),
+    let source = await createFormationsSource({
       apiCatalogue: createApiCatalogueMock({
         formations: [
           {
@@ -210,7 +245,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des lieux de formation", async () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"22222222222222"`);
-    let source = await createSource("formations", {
+    let source = await createFormationsSource({
       apiGeoAdresse: createApiGeoAddresseMock({
         features: [
           {
@@ -273,8 +308,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on ne collecte pas des lieux de formation pour les établissements gestionnaire", async () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"11111111111111"`);
-    let source = await createSource("formations", {
-      apiGeoAdresse: createApiGeoAddresseMock(),
+    let source = await createFormationsSource({
       apiCatalogue: createApiCatalogueMock({
         formations: [
           {
@@ -303,7 +337,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on cherche une adresse quand ne peut pas reverse-geocoder un lieu de formation", async () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"22222222222222"`);
-    let source = await createSource("formations", {
+    let source = await createFormationsSource({
       apiGeoAdresse: {
         search() {
           return Promise.resolve(createApiGeoAddresseMock().search());
@@ -356,7 +390,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on créer une anomalie quand on ne peut pas trouver l'adresse d'un lieu de formation", async () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"22222222222222"`);
-    let source = await createSource("formations", {
+    let source = await createFormationsSource({
       apiCatalogue: createApiCatalogueMock({
         formations: [
           {
@@ -398,7 +432,7 @@ integrationTests(__filename, () => {
     await createAnnuaire({
       siret: "11111111100000",
     });
-    let source = await createSource("formations", { apiCatalogue: createApiCatalogueMock() });
+    let source = await createFormationsSource({ apiCatalogue: createApiCatalogueMock() });
 
     let stats = await collect(source, { filters: { siret: "33333333333333" } });
 
@@ -414,8 +448,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut détecter des relations avec des établissements déjà dans l'annuaire", async () => {
     await importReferentiel();
     await createAnnuaire({ siret: "22222222222222", raison_sociale: "Mon centre de formation" });
-    let source = await createSource("formations", {
-      apiGeoAdresse: createApiGeoAddresseMock(),
+    let source = await createFormationsSource({
       apiCatalogue: createApiCatalogueMock({
         formations: [
           {
@@ -441,7 +474,7 @@ integrationTests(__filename, () => {
         throw new ApiError("api", "HTTP error");
       },
     };
-    let source = await createSource("formations", { apiCatalogue: failingApi });
+    let source = await createFormationsSource({ apiCatalogue: failingApi });
 
     let stats = await collect(source);
 

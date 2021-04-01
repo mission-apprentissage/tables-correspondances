@@ -7,6 +7,13 @@ const { createSource } = require("../../../../src/jobs/annuaire/sources/sources"
 const collect = require("../../../../src/jobs/annuaire/collect");
 const { createAnnuaire } = require("../../../utils/fixtures");
 
+function createAcademieSource(custom = {}) {
+  return createSource("academie", {
+    apiEsSup: createApiEsSup(),
+    ...custom,
+  });
+}
+
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations de l'académie", async () => {
     await createAnnuaire({
@@ -15,7 +22,7 @@ integrationTests(__filename, () => {
         code_insee: "75000",
       },
     });
-    let source = await createSource("academie", { apiEsSup: createApiEsSup() });
+    let source = await createAcademieSource();
 
     let stats = await collect(source);
 
@@ -37,7 +44,7 @@ integrationTests(__filename, () => {
     await createAnnuaire({
       siret: "11111111100000",
     });
-    let source = await createSource("academie", { apiEsSup: createApiEsSup() });
+    let source = await createAcademieSource();
 
     let stats = await collect(source, { filters: { siret: "33333333333333" } });
 
@@ -55,7 +62,7 @@ integrationTests(__filename, () => {
       siret: "11111111100000",
       adresse: null,
     });
-    let source = await createSource("academie", { apiEsSup: createApiEsSup() });
+    let source = await createAcademieSource();
 
     let stats = await collect(source);
 
@@ -80,7 +87,7 @@ integrationTests(__filename, () => {
         return Promise.reject(new ApiError("api", "Too many requests", 429));
       },
     };
-    let source = await createSource("academie", { apiEsSup: failingApi });
+    let source = await createAcademieSource({ apiEsSup: failingApi });
 
     await collect(source);
 
@@ -113,7 +120,7 @@ integrationTests(__filename, () => {
         };
       },
     };
-    let source = await createSource("academie", { apiEsSup: failingApi });
+    let source = await createAcademieSource({ apiEsSup: failingApi });
 
     await collect(source);
 
