@@ -1,22 +1,19 @@
 import { setMongooseInstance } from "../../common/mongodb";
 
 let mongooseInstanceShared = false;
-const isSdkReady = ()=> {    
-  if(!mongooseInstanceShared) {
+const isSdkReady = () => {
+  if (!mongooseInstanceShared) {
     throw new Error(`@mission-apprentissage/tco-service-node: You must initialize the library with a mongoose instance before calling any other method(s).
     Please use initTcoModel(mongooseInstance: Mongoose)`);
   }
-}
+};
 
-export async function initTcoModel(
-mongooseInstanceFromParentProject: any
-): Promise<any> {
+export async function initTcoModel(mongooseInstanceFromParentProject: any) {
   try {
     setMongooseInstance(mongooseInstanceFromParentProject);
     mongooseInstanceShared = true;
   } catch (error) {
     console.error(`init: something went wrong!`, error);
-    return null;
   }
 }
 
@@ -30,9 +27,7 @@ mongooseInstanceFromParentProject: any
 //   }
 // }
 
-export async function getCpInfo(
-  codePostal: string,
-): Promise<any> {
+export async function getCpInfo(codePostal: string) {
   isSdkReady();
   try {
     let { getDataFromCP } = await import("../../logic/handlers/geoHandler");
@@ -44,21 +39,17 @@ export async function getCpInfo(
   }
 }
 
-export async function rncpImporter(localPath = null): Promise<any> {
+export async function rncpImporter(localPath = null) {
   isSdkReady();
   try {
     let { rncpImporter: importer } = await import("../../jobs/rncpImporter");
-    // @ts-ignore
     await importer(localPath);
   } catch (error) {
     console.error(`rncpImporter: something went wrong!`, error);
-    return null;
   }
 }
 
-export async function getRncpInfo(
-  codeRncp: string,
-): Promise<any> {
+export async function getRncpInfo(codeRncp: string) {
   isSdkReady();
   try {
     let { getDataFromRncp } = await import("../../logic/handlers/rncpHandler");
@@ -70,25 +61,20 @@ export async function getRncpInfo(
   }
 }
 
-export async function bcnImporter(): Promise<any> {
+export async function bcnImporter() {
   isSdkReady();
   try {
     let { downloadBcnTables } = await import("../../jobs/bcnDownloader");
     let { importBcnTables } = await import("../../jobs/bcnImporter");
 
-    // @ts-ignore
     await downloadBcnTables();
     await importBcnTables();
   } catch (error) {
     console.error(`bcnImporter: something went wrong!`, error);
-    return null;
   }
 }
 
-
-export async function getCfdInfo(
-  cfd: string,
-): Promise<any> {
+export async function getCfdInfo(cfd: string) {
   isSdkReady();
   try {
     let { getDataFromCfd } = await import("../../logic/handlers/cfdHandler");
@@ -100,10 +86,7 @@ export async function getCfdInfo(
   }
 }
 
-
-export async function getMef10Info(
-  mef10: string,
-): Promise<any> {
+export async function getMef10Info(mef10: string) {
   isSdkReady();
   try {
     let { getDataFromMef10 } = await import("../../logic/handlers/mefHandler");
@@ -115,9 +98,7 @@ export async function getMef10Info(
   }
 }
 
-export async function getSiretInfo(
-  siret: string,
-): Promise<any> {
+export async function getSiretInfo(siret: string) {
   isSdkReady();
   try {
     let { getDataFromSiret } = await import("../../logic/handlers/siretHandler");
@@ -129,11 +110,7 @@ export async function getSiretInfo(
   }
 }
 
-
-
-export async function isValideUAI(
-  uai: string,
-): Promise<any> {
+export async function isValideUAI(uai: string) {
   isSdkReady();
   try {
     let { validateUAI } = await import("../../common/utils/uaiUtils");
