@@ -3,6 +3,7 @@
 # Tables de Correspondances
 
 Le projet Tables de correspondances est une application qui regroupe les APIs suivantes :
+
 - CFD
 - RNCP
 - BCN
@@ -25,7 +26,15 @@ Pour plus d'informations sur la structure du projet [DEV](./DEV.md)
 
 ## Environnements
 
-Tables de correspondances est déployé sur deux environnements : 
+Tables de correspondances est déployé sur deux environnements :
+
 - [Recette](https://tables-correspondances-recette.apprentissage.beta.gouv.fr)
 - [Production](https://tables-correspondances.apprentissage.beta.gouv.fr)
 
+## SDK
+
+La librairie peut être utilisée afin d'éviter les appels au serveur:
+
+```bash
+yarn add "@mission-apprentissage/tco-service-node"
+```
