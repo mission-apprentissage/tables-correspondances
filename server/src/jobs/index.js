@@ -11,7 +11,7 @@ runScript(async ({ db }) => {
     logger.info(`Start all jobs`);
     await downloadBcnTables();
     await importBcnTables(db);
-    await conventionFilesImporter(db);
+    await conventionFilesImporter();
     await rncpImporter();
     await EtablissementsUpdater();
   } catch (error) {
