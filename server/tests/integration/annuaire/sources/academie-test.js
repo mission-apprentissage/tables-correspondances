@@ -1,15 +1,16 @@
 const assert = require("assert");
-const ApiError = require("../../../../src/common/apis/ApiError");
 const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
-const { createApiEsSup } = require("../../../utils/mocks");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
 const collect = require("../../../../src/jobs/annuaire/collect");
 const { createAnnuaire } = require("../../../utils/fixtures");
+const { getMockedApiEsSup } = require("../../../utils/apiMocks");
 
 function createAcademieSource(custom = {}) {
   return createSource("academie", {
-    apiEsSup: createApiEsSup(),
+    apiEsSup: getMockedApiEsSup((mock, responses) => {
+      mock.onGet(new RegExp(".*")).reply(200, responses.search());
+    }),
     ...custom,
   });
 }
@@ -82,17 +83,16 @@ integrationTests(__filename, () => {
         code_insee: "75000",
       },
     });
-    let failingApi = {
-      fetchInfoFromCodeCommune: () => {
-        return Promise.reject(new ApiError("api", "Too many requests", 429));
-      },
-    };
-    let source = await createAcademieSource({ apiEsSup: failingApi });
+    let api = getMockedApiEsSup((mock) => {
+      mock.onGet(new RegExp(".*")).reply(429, {});
+    });
+
+    let source = await createAcademieSource({ apiEsSup: api });
 
     await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111100000" }).lean();
-    assert.deepStrictEqual(found._meta.anomalies[0].details, "[api] Too many requests");
+    assert.deepStrictEqual(found._meta.anomalies[0].details, "[Api EsSup] Request failed with status code 429");
   });
 
   it("Vérifie qu'on gère une anomalie quand la réponse est vide", async () => {

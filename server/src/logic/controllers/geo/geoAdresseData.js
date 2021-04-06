@@ -1,7 +1,9 @@
-const apiGeoAdresse = require("../../../common/apis/apiGeoAdresse");
+const ApiGeoAdresse = require("../../../common/apis/ApiGeoAdresse");
 
 class GeoAdresseData {
-  constructor() {}
+  constructor() {
+    this.apiGeoAdresse = new ApiGeoAdresse();
+  }
 
   getAddress(numero_voie, type_voie, nom_voie, code_postal, localite) {
     return `https://api-adresse.data.gouv.fr/search/?q=${numero_voie ? numero_voie + "+" : ""}${
@@ -41,7 +43,7 @@ class GeoAdresseData {
     let query = `${numero_voie ? numero_voie + "+" : ""}${type_voie ? type_voie + "+" : ""}${nom_voie ? nom_voie : ""}`;
     let postcode = this.refinePostcode(code_postal);
     try {
-      responseApiAdresse = await apiGeoAdresse.search(query, { postcode });
+      responseApiAdresse = await this.apiGeoAdresse.search(query, { postcode });
     } catch (error) {
       console.error(`geo search error : ${query} ${postcode} ${error}`);
       responseApiAdresse = null;
@@ -54,7 +56,7 @@ class GeoAdresseData {
       let postcode = this.refinePostcode(code_postal);
 
       try {
-        responseApiAdresse = await apiGeoAdresse.searchPostcodeOnly(query, { postcode });
+        responseApiAdresse = await this.apiGeoAdresse.searchPostcodeOnly(query, { postcode });
       } catch (error) {
         console.error(`geo searchPostcodeOnly error : #${query}# ${postcode} ${error}`);
         responseApiAdresse = null;
@@ -129,7 +131,7 @@ class GeoAdresseData {
 
     // try to find results by postal code
     try {
-      let data = await apiGeoAdresse.searchMunicipalityByCode(refinedCode);
+      let data = await this.apiGeoAdresse.searchMunicipalityByCode(refinedCode);
       if (data.features && data.features.length > 0) {
         return this.formatMunicipalityResponse(data);
       }
@@ -139,7 +141,7 @@ class GeoAdresseData {
 
     try {
       // try to find results by citycode (insee)
-      let data = await apiGeoAdresse.searchMunicipalityByCode(refinedCode, { isCityCode: true });
+      let data = await this.apiGeoAdresse.searchMunicipalityByCode(refinedCode, { isCityCode: true });
       if (data.features && data.features.length > 0) {
         return this.formatMunicipalityResponse(data);
       }
