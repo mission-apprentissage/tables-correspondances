@@ -11,6 +11,7 @@ const optionDefinitions = [
   { name: "location", alias: "l", type: Boolean, defaultValue: false },
   { name: "geoloc", alias: "g", type: Boolean, defaultValue: false },
   { name: "conventionnement", alias: "c", type: Boolean, defaultValue: false },
+  { name: "onisep", alias: "o", type: Boolean, defaultValue: false },
 ];
 // Usage
 // Only conventionnment -c
@@ -22,7 +23,12 @@ const EtablissementsUpdater = async () => {
 
     const optionsCmd = commandLineArgs(optionDefinitions);
 
-    const all = !optionsCmd.siret && !optionsCmd.location && !optionsCmd.geoloc && !optionsCmd.conventionnement;
+    const all =
+      !optionsCmd.siret &&
+      !optionsCmd.location &&
+      !optionsCmd.geoloc &&
+      !optionsCmd.conventionnement &&
+      !optionsCmd.onisep;
 
     const filter = JSON.parse(optionsCmd.filter);
 
@@ -34,12 +40,14 @@ const EtablissementsUpdater = async () => {
             location: true,
             geoloc: true,
             conventionnement: true,
+            onisep: true,
           }
         : {
             siret: optionsCmd.siret,
             location: optionsCmd.location,
             geoloc: optionsCmd.geoloc,
             conventionnement: optionsCmd.conventionnement,
+            onisep: optionsCmd.onisep,
           },
     };
     await updater.run(filter, options);

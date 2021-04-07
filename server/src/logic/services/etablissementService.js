@@ -33,7 +33,10 @@ const parseErrors = (messages) => {
 
 const etablissementService = async (
   etablissement,
-  { withHistoryUpdate = true, scope = { siret: true, location: true, geoloc: true, conventionnement: true } } = {}
+  {
+    withHistoryUpdate = true,
+    scope = { siret: true, location: true, geoloc: true, conventionnement: true, onisep: true },
+  } = {}
 ) => {
   try {
     // await etablissementSchema.validateAsync(etablissement, { abortEarly: false });
@@ -146,10 +149,28 @@ const etablissementService = async (
       };
     }
 
-    const { results } = await apiOnisep.getEtablissement({ q: "0672477D", academie: "Strasbourg" });
-    if (results.length === 1) {
-      const { nom: onisep_nom, cp: onisep_code_postal, lien_site_onisepfr: onisep_url } = results[0];
-      console.log({ onisep_nom, onisep_code_postal, onisep_url });
+    // ONISEP DATA
+    if (scope.onisep) {
+      if (
+        updatedEtablissement.nom_academie &&
+        updatedEtablissement.nom_academie !== "" &&
+        updatedEtablissement.uai &&
+        updatedEtablissement.uai !== ""
+      ) {
+        const { results } = await apiOnisep.getEtablissement({
+          q: updatedEtablissement.uai,
+          academie: updatedEtablissement.nom_academie,
+        });
+        if (results.length === 1) {
+          const { nom: onisep_nom, cp: onisep_code_postal, lien_site_onisepfr: onisep_url } = results[0];
+          updatedEtablissement = {
+            ...updatedEtablissement,
+            onisep_nom,
+            onisep_code_postal,
+            onisep_url,
+          };
+        }
+      }
     }
 
     if (Object.keys(updatedEtablissement).length > 0) {
