@@ -1,3 +1,10 @@
+# [2.7.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.6.0...v2.7.0) (2021-04-07)
+
+
+### Features
+
+* onisep infos ([#132](https://github.com/mission-apprentissage/tables-correspondances/issues/132)) ([ba8f616](https://github.com/mission-apprentissage/tables-correspondances/commit/ba8f6160c61417277c6fe2dfdb24cf000c9896c9))
+
 # [2.6.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.5.1...v2.6.0) (2021-04-01)
 
 
