@@ -31,7 +31,7 @@ const createStreams = () => {
   const mongoDBStream = () => {
     return {
       name: "mongodb",
-      level,
+      level: "info",
       stream: BunyanMongodbStream({ model: Log }),
     };
   };

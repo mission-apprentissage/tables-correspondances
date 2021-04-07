@@ -8,14 +8,19 @@ const { createSource } = require("../../../../src/jobs/annuaire/sources/sources"
 const collect = require("../../../../src/jobs/annuaire/collect");
 const { importReferentiel } = require("../../../utils/testUtils");
 
+function createSireneSource(custom = {}) {
+  return createSource("sirene", {
+    apiGeoAdresse: createApiGeoAddresseMock(),
+    apiSirene: createApiSireneMock(),
+    organismes: ["11111111111111"],
+    ...custom,
+  });
+}
+
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations de l'API Sirene", async () => {
     await importReferentiel();
-    let source = await createSource("sirene", {
-      apiGeoAdresse: createApiGeoAddresseMock(),
-      apiSirene: createApiSireneMock(),
-      organismes: ["11111111111111"],
-    });
+    let source = await createSireneSource();
 
     let stats = await collect(source);
 
@@ -55,7 +60,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on recherche une adresse quand ne peut pas reverse-geocoder", async () => {
     await importReferentiel();
-    let source = await createSource("sirene", {
+    let source = await createSireneSource({
       apiGeoAdresse: {
         search() {
           return Promise.resolve(createApiGeoAddresseMock().search());
@@ -64,8 +69,6 @@ integrationTests(__filename, () => {
           return Promise.reject(new Error());
         },
       },
-      apiSirene: createApiSireneMock(),
-      organismes: ["11111111111111"],
     });
 
     let stats = await collect(source);
@@ -102,7 +105,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on peut collecter des relations", async () => {
     await importReferentiel();
-    let source = await createSource("sirene", {
+    let source = await createSireneSource({
       apiSirene: createApiSireneMock({
         etablissements: [
           {
@@ -151,7 +154,7 @@ integrationTests(__filename, () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"11111111111111"`);
 
-    let source = await createSource("sirene", {
+    let source = await createSireneSource({
       apiSirene: createApiSireneMock(),
       organismes: ["11111111111111"],
     });
@@ -170,7 +173,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on ignore les relations qui ne sont pas des organismes de formations", async () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"11111111111111"`);
-    let source = await createSource("sirene", {
+    let source = await createSireneSource({
       apiGeoAdresse: createApiGeoAddresseMock(),
       apiSirene: createApiSireneMock({
         etablissements: [
@@ -211,8 +214,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on ignore les relations pour des établissements fermés", async () => {
     await importReferentiel();
-    let source = await createSource("sirene", {
-      apiGeoAdresse: createApiGeoAddresseMock(),
+    let source = await createSireneSource({
       apiSirene: createApiSireneMock({
         etablissements: [
           {
@@ -250,7 +252,7 @@ integrationTests(__filename, () => {
         throw new ApiError("api", "HTTP error");
       },
     };
-    let source = await createSource("sirene", { apiSirene: failingApi, organismes: ["11111111111111"] });
+    let source = await createSireneSource({ apiSirene: failingApi });
 
     let stats = await collect(source);
 
@@ -274,7 +276,7 @@ integrationTests(__filename, () => {
         };
       },
     };
-    let source = await createSource("sirene", { apiSirene: failingApi, organismes: ["11111111111111"] });
+    let source = await createSireneSource({ apiSirene: failingApi });
 
     await collect(source);
 
@@ -289,7 +291,7 @@ integrationTests(__filename, () => {
         throw new ApiError("sirene", "mocked", 404);
       },
     };
-    let source = await createSource("sirene", { apiSirene: failingApi, organismes: ["11111111111111"] });
+    let source = await createSireneSource({ apiSirene: failingApi });
 
     await collect(source);
 
@@ -299,7 +301,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on créer une anomalie quand on ne peut pas trouver l'adresse", async () => {
     await importReferentiel();
-    let source = await createSource("sirene", {
+    let source = await createSireneSource({
       apiGeoAdresse: {
         search() {
           return Promise.reject(new Error());
@@ -308,8 +310,6 @@ integrationTests(__filename, () => {
           return Promise.reject(new Error());
         },
       },
-      apiSirene: createApiSireneMock(),
-      organismes: ["11111111111111"],
     });
 
     let stats = await collect(source);
@@ -332,12 +332,10 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on crée une anomalie quand on ne peut pas trouver la catégorie juridique", async () => {
     await importReferentiel();
-    let source = await createSource("sirene", {
-      apiGeoAdresse: createApiGeoAddresseMock(),
+    let source = await createSireneSource({
       apiSirene: createApiSireneMock({
         categorie_juridique: "INVALID",
       }),
-      organismes: ["11111111111111"],
     });
 
     let stats = await collect(source);

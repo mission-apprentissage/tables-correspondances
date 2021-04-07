@@ -4,6 +4,7 @@ const { getDataFromSiret } = require("../handlers/siretHandler");
 const { getDataFromCP, getCoordaniteFromAdresseData } = require("../handlers/geoHandler");
 const conventionController = require("../controllers/conventionController");
 const { diffEtablissement } = require("../../common/utils/diffUtils");
+const apiOnisep = require("../../common/apis/apiOnisep");
 
 // const etablissementSchema = Joi.object({
 //   siret: Joi.string().required(),
@@ -32,7 +33,10 @@ const parseErrors = (messages) => {
 
 const etablissementService = async (
   etablissement,
-  { withHistoryUpdate = true, scope = { siret: true, location: true, geoloc: true, conventionnement: true } } = {}
+  {
+    withHistoryUpdate = true,
+    scope = { siret: true, location: true, geoloc: true, conventionnement: true, onisep: true },
+  } = {}
 ) => {
   try {
     // await etablissementSchema.validateAsync(etablissement, { abortEarly: false });
@@ -143,6 +147,27 @@ const etablissementService = async (
         ...updatedEtablissement,
         ...conventionData,
       };
+    }
+
+    // ONISEP DATA
+    if (scope.onisep) {
+      if (current.nom_academie && current.nom_academie !== "" && etablissement.uai && etablissement.uai !== "") {
+        const { results } = await apiOnisep.getEtablissement({
+          q: etablissement.uai,
+          academie: current.nom_academie,
+        });
+        if (results.length === 1) {
+          const { code_uai, nom: onisep_nom, cp: onisep_code_postal, lien_site_onisepfr: onisep_url } = results[0];
+          if (code_uai === etablissement.uai) {
+            updatedEtablissement = {
+              ...updatedEtablissement,
+              onisep_nom,
+              onisep_code_postal,
+              onisep_url,
+            };
+          }
+        }
+      }
     }
 
     if (Object.keys(updatedEtablissement).length > 0) {
