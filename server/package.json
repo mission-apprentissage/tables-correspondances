@@ -28,7 +28,7 @@
     "bcn:importer": "yarn job -- src/jobs/bcnImporter/index.js",
     "rncp:importer": "yarn job -- src/jobs/rncpImporter/index.js",
     "etablissements:duplicate": "yarn job -- src/jobs/oneshot/mergeEtablissementDuplicates/index.js",
-    "convention:importer": "yarn job -- src/jobs/convetionFilesImporter/index.js",
+    "convention:importer": "yarn job -- src/jobs/conventionFilesImporter/index.js",
     "etablissements:updater": "yarn job -- src/jobs/EtablissementsUpdater/index.js",
     "es:index": "yarn job -- src/jobs/esIndex/index.js",
     "generate:swaggerschema": "yarn job -- src/jobs/generateSwaggerSchema/index.js",

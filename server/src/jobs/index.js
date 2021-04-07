@@ -2,7 +2,7 @@ const { runScript } = require("./scriptWrapper");
 const logger = require("../common/logger");
 const { downloadBcnTables } = require("./bcnDownloader/index");
 const { importBcnTables } = require("./bcnImporter/index");
-const { conventionFilesImporter } = require("./convetionFilesImporter/index");
+const { conventionFilesImporter } = require("./conventionFilesImporter/index");
 const { rncpImporter } = require("./rncpImporter/index");
 const { EtablissementsUpdater } = require("./EtablissementsUpdater/index");
 
