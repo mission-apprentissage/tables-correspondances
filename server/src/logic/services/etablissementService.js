@@ -157,13 +157,15 @@ const etablissementService = async (
           academie: current.nom_academie,
         });
         if (results.length === 1) {
-          const { nom: onisep_nom, cp: onisep_code_postal, lien_site_onisepfr: onisep_url } = results[0];
-          updatedEtablissement = {
-            ...updatedEtablissement,
-            onisep_nom,
-            onisep_code_postal,
-            onisep_url,
-          };
+          const { code_uai, nom: onisep_nom, cp: onisep_code_postal, lien_site_onisepfr: onisep_url } = results[0];
+          if (code_uai === etablissement.uai) {
+            updatedEtablissement = {
+              ...updatedEtablissement,
+              onisep_nom,
+              onisep_code_postal,
+              onisep_url,
+            };
+          }
         }
       }
     }
