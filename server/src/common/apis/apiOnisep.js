@@ -7,7 +7,7 @@ const FormData = require("form-data");
 
 //Documentation : http://opendata.onisep.fr/3-api.htm
 let executeWithRateLimiting = apiRateLimiter("apiOnisep", {
-  nbRequests: 5,
+  nbRequests: 1,
   durationInSeconds: 1,
   client: axios.create({
     baseURL: "https://api.projets.opendata.onisep.fr/api/1.0",
@@ -61,6 +61,26 @@ class ApiOnisep {
           params: {
             q,
             "facet.academie": academie,
+          },
+        });
+
+        return response.data;
+      } catch (e) {
+        console.log(e);
+        throw new ApiError("Api Onisep", e.message, e.code || e.response.status);
+      }
+    });
+  }
+
+  async getFormations({ q = undefined } = {}) {
+    await this.login();
+    return executeWithRateLimiting(async (client) => {
+      try {
+        logger.debug(`[Onisep API] Fetching Formations ${{ q }}...`);
+        let response = await client.get(`dataset/5d317f6081105/search`, {
+          headers: this.headers,
+          params: {
+            q,
           },
         });
 

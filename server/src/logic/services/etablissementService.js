@@ -151,15 +151,10 @@ const etablissementService = async (
 
     // ONISEP DATA
     if (scope.onisep) {
-      if (
-        updatedEtablissement.nom_academie &&
-        updatedEtablissement.nom_academie !== "" &&
-        updatedEtablissement.uai &&
-        updatedEtablissement.uai !== ""
-      ) {
+      if (current.nom_academie && current.nom_academie !== "" && etablissement.uai && etablissement.uai !== "") {
         const { results } = await apiOnisep.getEtablissement({
-          q: updatedEtablissement.uai,
-          academie: updatedEtablissement.nom_academie,
+          q: etablissement.uai,
+          academie: current.nom_academie,
         });
         if (results.length === 1) {
           const { nom: onisep_nom, cp: onisep_code_postal, lien_site_onisepfr: onisep_url } = results[0];
