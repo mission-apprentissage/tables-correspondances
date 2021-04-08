@@ -1,3 +1,10 @@
+## [2.8.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.8.0...v2.8.1) (2021-04-08)
+
+
+### Bug Fixes
+
+* typo ([c4ceb1e](https://github.com/mission-apprentissage/tables-correspondances/commit/c4ceb1e56d40b6eaf463b50751e9e15060a31666))
+
 # [2.8.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.7.1...v2.8.0) (2021-04-08)
 
 
