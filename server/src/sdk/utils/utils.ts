@@ -85,9 +85,9 @@ export async function bcnImporter() {
 }
 
 export interface cfdOptions {
-  onsiep: boolean;
+  onisep: boolean;
 }
-export async function getCfdInfo(cfd: string, options: cfdOptions = { onsiep: true } ) {
+export async function getCfdInfo(cfd: string, options: cfdOptions = { onisep: true } ) {
   isSdkReady();
   try {
     let { getDataFromCfd } = await import("../../logic/handlers/cfdHandler");
