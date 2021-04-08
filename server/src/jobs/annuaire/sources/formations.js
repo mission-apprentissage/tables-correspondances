@@ -1,8 +1,8 @@
 const { uniqBy, chain } = require("lodash");
 const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire, BcnFormationDiplome } = require("../../../common/model");
-const apiCatalogue = require("../../../common/apis/apiCatalogue");
-const apiGeoAdresse = require("../../../common/apis/apiGeoAdresse");
+const ApiCatalogue = require("../../../common/apis/ApiCatalogue");
+const ApiGeoAdresse = require("../../../common/apis/ApiGeoAdresse");
 const adresses = require("../utils/adresses");
 
 async function getFormations(api, siret, options = {}) {
@@ -113,8 +113,8 @@ async function buildLieuxDeFormation(siret, formations, getAdresseFromCoordinate
 
 module.exports = async (custom = {}) => {
   let name = "formations";
-  let api = custom.apiCatalogue || apiCatalogue;
-  let { getAdresseFromCoordinates } = adresses(custom.apiGeoAdresse || apiGeoAdresse);
+  let api = custom.apiCatalogue || new ApiCatalogue();
+  let { getAdresseFromCoordinates } = adresses(custom.apiGeoAdresse || new ApiGeoAdresse());
 
   return {
     name,

@@ -3,13 +3,15 @@ const ApiError = require("./ApiError");
 const logger = require("../logger");
 const titleCase = require("title-case").titleCase;
 
-const client = axios.create({
-  baseURL: "https://data.enseignementsup-recherche.gouv.fr/api/records/1.0/search/",
-  timeout: 5000,
-});
-
 class EsSupApi {
-  constructor() {}
+  constructor(options = {}) {
+    this.client =
+      options.axios ||
+      axios.create({
+        baseURL: "https://data.enseignementsup-recherche.gouv.fr/api/records/1.0/search/",
+        timeout: 5000,
+      });
+  }
 
   /**
    * Get the numAcademie from nomAcademie
@@ -18,7 +20,7 @@ class EsSupApi {
   async getNumAcademieInfoFromNomAcademie(nomAcademie) {
     try {
       const nomAcademieFormatted = titleCase(nomAcademie.toLowerCase());
-      const response = await client.get(
+      const response = await this.client.get(
         `?dataset=fr-esr-referentiel-geographique&refine.aca_nom=${nomAcademieFormatted}&rows=1`
       );
 
@@ -46,7 +48,7 @@ class EsSupApi {
     try {
       // Transform to string with 2 digits - some cases are String some are int - this code handle both
       numAcademie = Number.parseInt(numAcademie).toLocaleString("fr-FR", { minimumIntegerDigits: 2 });
-      const response = await client.get(
+      const response = await this.client.get(
         `?dataset=fr-esr-referentiel-geographique&refine.aca_code=${numAcademie}&rows=1`
       );
 
@@ -137,7 +139,9 @@ class EsSupApi {
   async fetchInfoFromCodeCommune(codeCommune) {
     try {
       logger.debug(`[Enseignement supérieur API] Fetching info for code commune ${codeCommune}...`);
-      let response = await client.get(`?dataset=fr-esr-referentiel-geographique&refine.com_code=${codeCommune}&rows=1`);
+      let response = await this.client.get(
+        `?dataset=fr-esr-referentiel-geographique&refine.com_code=${codeCommune}&rows=1`
+      );
       return response.data;
     } catch (e) {
       throw new ApiError("Api EsSup", e.message, e.code || e.response.status);
@@ -169,7 +173,7 @@ class EsSupApi {
    */
   async getInfoFromNumDepartement(numDepartement) {
     try {
-      const response = await client.get(
+      const response = await this.client.get(
         `?dataset=fr-esr-referentiel-geographique&refine.dep_code=${numDepartement}&rows=1`
       );
 
@@ -188,5 +192,4 @@ class EsSupApi {
   // #endregion
 }
 
-const esSupApi = new EsSupApi();
-module.exports = esSupApi;
+module.exports = EsSupApi;

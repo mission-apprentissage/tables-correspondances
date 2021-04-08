@@ -1,7 +1,7 @@
 const axios = require("axios");
 const logger = require("../logger");
 const config = require("config");
-const ApiError = require("./ApiError");
+// const ApiError = require("./ApiError");
 const apiRateLimiter = require("./apiRateLimiter");
 const FormData = require("form-data");
 
@@ -46,12 +46,37 @@ class ApiOnisep {
         return response.data.token;
       } catch (e) {
         console.log(e);
-        throw new ApiError("Api Onisep", e.message, e.code || e.response.status);
+        // throw new ApiError("Api Onisep", e.message, e.code || e.response.status);
+        return "";
       }
     });
   }
 
-  async getEtablissement({ q = undefined, academie = undefined } = {}) {
+  async getAllEtablissements(size = 1000, allEtablissements = []) {
+    try {
+      const { results, total, from, size: retSize } = await this.getEtablissements({
+        size: `${size}`,
+        from: allEtablissements.length === 0 ? "0" : `${size}`,
+      });
+
+      allEtablissements = allEtablissements.concat(results);
+
+      if (from + retSize < total) {
+        return this.getAllEtablissements(from + size, allEtablissements);
+      } else {
+        return allEtablissements;
+      }
+    } catch (error) {
+      if (error.response.status === 504) {
+        console.log("timeout");
+      } else {
+        console.log(error);
+      }
+      return [];
+    }
+  }
+
+  async getEtablissements({ q = undefined, academie = undefined, size = "10", from = "0" } = {}) {
     await this.login();
     return executeWithRateLimiting(async (client) => {
       try {
@@ -61,18 +86,45 @@ class ApiOnisep {
           params: {
             q,
             "facet.academie": academie,
+            size,
+            from,
           },
         });
 
         return response.data;
       } catch (e) {
         console.log(e);
-        throw new ApiError("Api Onisep", e.message, e.code || e.response.status);
+        // throw new ApiError("Api Onisep", e.message, e.code || e.response.status);
+        return { results: [] };
       }
     });
   }
 
-  async getFormations({ q = undefined } = {}) {
+  async getAllFormations(size = 1000, allFormations = []) {
+    try {
+      const { results, total, from, size: retSize } = await this.getFormations({
+        size: `${size}`,
+        from: allFormations.length === 0 ? "0" : `${size}`,
+      });
+
+      allFormations = allFormations.concat(results);
+
+      if (from + retSize < total) {
+        return this.getAllFormations(from + size, allFormations);
+      } else {
+        return allFormations;
+      }
+    } catch (error) {
+      if (error.response.status === 504) {
+        console.log("timeout");
+      } else {
+        console.log(error);
+      }
+      return [];
+    }
+  }
+
+  async getFormations({ q = undefined, size = "10", from = "0" } = {}) {
     await this.login();
     return executeWithRateLimiting(async (client) => {
       try {
@@ -81,12 +133,16 @@ class ApiOnisep {
           headers: this.headers,
           params: {
             q,
+            size,
+            from,
           },
         });
 
         return response.data;
       } catch (e) {
-        throw new ApiError("Api Onisep", e.message, e.code || e.response.status);
+        console.log(e);
+        //throw new ApiError("Api Onisep", e.message, e.code || e.response.status);
+        return { results: [] };
       }
     });
   }

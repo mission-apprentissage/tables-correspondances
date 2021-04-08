@@ -3,16 +3,20 @@ const { omit } = require("lodash");
 const ApiError = require("../../../../src/common/apis/ApiError");
 const { Annuaire, BcnFormationDiplome } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
-const { createApiCatalogueMock, createApiGeoAddresseMock } = require("../../../utils/mocks");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
 const collect = require("../../../../src/jobs/annuaire/collect");
 const { importReferentiel } = require("../../../utils/testUtils");
+const { getMockedApiGeoAddresse, getMockedApiCatalogue } = require("../../../utils/apiMocks");
 const { createAnnuaire } = require("../../../utils/fixtures");
 
 function createFormationsSource(custom = {}) {
   return createSource("formations", {
-    apiGeoAdresse: createApiGeoAddresseMock(),
-    apiCatalogue: createApiCatalogueMock(),
+    apiCatalogue: getMockedApiCatalogue((mock, responses) => {
+      mock.onGet(/.*formations.*/).reply(200, responses.formations());
+    }),
+    apiGeoAdresse: getMockedApiGeoAddresse((mock, responses) => {
+      mock.onGet(/reverse.*/).reply(200, responses.reverse());
+    }),
     ...custom,
   });
 }
@@ -21,15 +25,20 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des relations (formateur)", async () => {
     await importReferentiel();
     let source = await createFormationsSource({
-      apiCatalogue: createApiCatalogueMock({
-        formations: [
-          {
-            etablissement_gestionnaire_siret: "11111111111111",
-            etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
-            etablissement_formateur_siret: "22222222222222",
-            etablissement_formateur_entreprise_raison_sociale: "Etablissement",
-          },
-        ],
+      apiCatalogue: getMockedApiCatalogue((mock, responses) => {
+        mock.onGet(/.*formations.*/).reply(
+          200,
+          responses.formations({
+            formations: [
+              {
+                etablissement_gestionnaire_siret: "11111111111111",
+                etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
+                etablissement_formateur_siret: "22222222222222",
+                etablissement_formateur_entreprise_raison_sociale: "Etablissement",
+              },
+            ],
+          })
+        );
       }),
     });
 
@@ -57,15 +66,20 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des relations (gestionnaire)", async () => {
     await importReferentiel();
     let source = await createFormationsSource({
-      apiCatalogue: createApiCatalogueMock({
-        formations: [
-          {
-            etablissement_gestionnaire_siret: "22222222222222",
-            etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
-            etablissement_formateur_siret: "11111111111111",
-            etablissement_formateur_entreprise_raison_sociale: "Etablissement",
-          },
-        ],
+      apiCatalogue: getMockedApiCatalogue((mock, responses) => {
+        mock.onGet(/.*formations.*/).reply(
+          200,
+          responses.formations({
+            formations: [
+              {
+                etablissement_gestionnaire_siret: "22222222222222",
+                etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
+                etablissement_formateur_siret: "11111111111111",
+                etablissement_formateur_entreprise_raison_sociale: "Etablissement",
+              },
+            ],
+          })
+        );
       }),
     });
 
@@ -87,15 +101,20 @@ integrationTests(__filename, () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"22222222222222"`);
     let source = await createFormationsSource({
-      apiCatalogue: createApiCatalogueMock({
-        formations: [
-          {
-            etablissement_formateur_siret: "22222222222222",
-            etablissement_formateur_entreprise_raison_sociale: "Etablissement",
-            cfd: "40030001",
-            cfd_specialite: null,
-          },
-        ],
+      apiCatalogue: getMockedApiCatalogue((mock, responses) => {
+        mock.onGet(/.*formations.*/).reply(
+          200,
+          responses.formations({
+            formations: [
+              {
+                etablissement_formateur_siret: "22222222222222",
+                etablissement_formateur_entreprise_raison_sociale: "Etablissement",
+                cfd: "40030001",
+                cfd_specialite: null,
+              },
+            ],
+          })
+        );
       }),
     });
 
@@ -126,14 +145,19 @@ integrationTests(__filename, () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"22222222222222"`);
     let source = await createFormationsSource({
-      apiCatalogue: createApiCatalogueMock({
-        formations: [
-          {
-            etablissement_formateur_siret: "22222222222222",
-            etablissement_formateur_entreprise_raison_sociale: "Etablissement",
-            cfd: "40030001",
-          },
-        ],
+      apiCatalogue: getMockedApiCatalogue((mock, responses) => {
+        mock.onGet(/.*formations.*/).reply(
+          200,
+          responses.formations({
+            formations: [
+              {
+                etablissement_formateur_siret: "22222222222222",
+                etablissement_formateur_entreprise_raison_sociale: "Etablissement",
+                cfd: "40030001",
+              },
+            ],
+          })
+        );
       }),
     });
 
@@ -154,14 +178,19 @@ integrationTests(__filename, () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"11111111111111"`);
     let source = await createFormationsSource({
-      apiCatalogue: createApiCatalogueMock({
-        formations: [
-          {
-            etablissement_gestionnaire_siret: "11111111111111",
-            etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
-            cfd: "40030001",
-          },
-        ],
+      apiCatalogue: getMockedApiCatalogue((mock, responses) => {
+        mock.onGet(/.*formations.*/).reply(
+          200,
+          responses.formations({
+            formations: [
+              {
+                etablissement_gestionnaire_siret: "11111111111111",
+                etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
+                cfd: "40030001",
+              },
+            ],
+          })
+        );
       }),
     });
 
@@ -182,15 +211,20 @@ integrationTests(__filename, () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"22222222222222"`);
     let source = await createFormationsSource({
-      apiCatalogue: createApiCatalogueMock({
-        formations: [
-          {
-            etablissement_formateur_siret: "22222222222222",
-            etablissement_formateur_entreprise_raison_sociale: "Etablissement",
-            rncp_code: "RNCP28662",
-            rncp_intitule: "Gestionnaire de l'administration des ventes et de la relation commerciale",
-          },
-        ],
+      apiCatalogue: getMockedApiCatalogue((mock, responses) => {
+        mock.onGet(/.*formations.*/).reply(
+          200,
+          responses.formations({
+            formations: [
+              {
+                etablissement_formateur_siret: "22222222222222",
+                etablissement_formateur_entreprise_raison_sociale: "Etablissement",
+                rncp_code: "RNCP28662",
+                rncp_intitule: "Gestionnaire de l'administration des ventes et de la relation commerciale",
+              },
+            ],
+          })
+        );
       }),
     });
 
@@ -217,15 +251,20 @@ integrationTests(__filename, () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"11111111111111"`);
     let source = await createFormationsSource({
-      apiCatalogue: createApiCatalogueMock({
-        formations: [
-          {
-            etablissement_gestionnaire_siret: "11111111111111",
-            etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
-            rncp_code: "RNCP28662",
-            rncp_intitule: "Gestionnaire de l'administration des ventes et de la relation commerciale",
-          },
-        ],
+      apiCatalogue: getMockedApiCatalogue((mock, responses) => {
+        mock.onGet(/.*formations.*/).reply(
+          200,
+          responses.formations({
+            formations: [
+              {
+                etablissement_gestionnaire_siret: "11111111111111",
+                etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
+                rncp_code: "RNCP28662",
+                rncp_intitule: "Gestionnaire de l'administration des ventes et de la relation commerciale",
+              },
+            ],
+          })
+        );
       }),
     });
 
@@ -246,31 +285,41 @@ integrationTests(__filename, () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"22222222222222"`);
     let source = await createFormationsSource({
-      apiGeoAdresse: createApiGeoAddresseMock({
-        features: [
-          {
-            type: "Feature",
-            geometry: {
-              type: "Point",
-              coordinates: [2.396444, 48.879706],
-            },
-            properties: {
-              label: "32 Rue des lilas 75019 Paris",
-              score: 0.88,
-              name: "32 Rue des Lilas",
-              city: "Paris",
-            },
-          },
-        ],
+      apiGeoAdresse: getMockedApiGeoAddresse((mock, responses) => {
+        mock.onGet(/reverse.*/).reply(
+          200,
+          responses.reverse({
+            features: [
+              {
+                type: "Feature",
+                geometry: {
+                  type: "Point",
+                  coordinates: [2.396444, 48.879706],
+                },
+                properties: {
+                  label: "32 Rue des lilas 75019 Paris",
+                  score: 0.88,
+                  name: "32 Rue des Lilas",
+                  city: "Paris",
+                },
+              },
+            ],
+          })
+        );
       }),
-      apiCatalogue: createApiCatalogueMock({
-        formations: [
-          {
-            etablissement_formateur_siret: "22222222222222",
-            lieu_formation_siret: "33333333333333",
-            lieu_formation_geo_coordonnees: "48.879706,2.396444",
-          },
-        ],
+      apiCatalogue: getMockedApiCatalogue((mock, responses) => {
+        mock.onGet(/.*formations.*/).reply(
+          200,
+          responses.formations({
+            formations: [
+              {
+                etablissement_formateur_siret: "22222222222222",
+                lieu_formation_siret: "33333333333333",
+                lieu_formation_geo_coordonnees: "48.879706,2.396444",
+              },
+            ],
+          })
+        );
       }),
     });
 
@@ -309,14 +358,19 @@ integrationTests(__filename, () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"11111111111111"`);
     let source = await createFormationsSource({
-      apiCatalogue: createApiCatalogueMock({
-        formations: [
-          {
-            etablissement_gestionnaire_siret: "11111111111111",
-            lieu_formation_siret: "33333333333333",
-            lieu_formation_geo_coordonnees: "48.879706,2.396444",
-          },
-        ],
+      apiCatalogue: getMockedApiCatalogue((mock, responses) => {
+        mock.onGet(/.*formations.*/).reply(
+          200,
+          responses.formations({
+            formations: [
+              {
+                etablissement_gestionnaire_siret: "11111111111111",
+                lieu_formation_siret: "33333333333333",
+                lieu_formation_geo_coordonnees: "48.879706,2.396444",
+              },
+            ],
+          })
+        );
       }),
     });
 
@@ -338,20 +392,21 @@ integrationTests(__filename, () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"22222222222222"`);
     let source = await createFormationsSource({
-      apiGeoAdresse: {
-        search() {
-          return Promise.resolve(createApiGeoAddresseMock().search());
-        },
-        reverse() {
-          return Promise.reject(new Error());
-        },
-      },
-      apiCatalogue: createApiCatalogueMock({
-        formations: [
-          {
-            etablissement_formateur_siret: "22222222222222",
-          },
-        ],
+      apiGeoAdresse: getMockedApiGeoAddresse((mock, responses) => {
+        mock.onGet(/reverse.*/).reply(400, {});
+        mock.onGet(/search.*/).reply(200, responses.search());
+      }),
+      apiCatalogue: getMockedApiCatalogue((mock, responses) => {
+        mock.onGet(/.*formations.*/).reply(
+          200,
+          responses.formations({
+            formations: [
+              {
+                etablissement_formateur_siret: "22222222222222",
+              },
+            ],
+          })
+        );
       }),
     });
 
@@ -391,21 +446,22 @@ integrationTests(__filename, () => {
     await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"22222222222222"`);
     let source = await createFormationsSource({
-      apiCatalogue: createApiCatalogueMock({
-        formations: [
-          {
-            etablissement_formateur_siret: "22222222222222",
-          },
-        ],
+      apiCatalogue: getMockedApiCatalogue((mock, responses) => {
+        mock.onGet(/.*formations.*/).reply(
+          200,
+          responses.formations({
+            formations: [
+              {
+                etablissement_formateur_siret: "22222222222222",
+              },
+            ],
+          })
+        );
       }),
-      apiGeoAdresse: {
-        search() {
-          return Promise.reject(new Error());
-        },
-        reverse() {
-          return Promise.reject(new Error());
-        },
-      },
+      apiGeoAdresse: getMockedApiGeoAddresse((mock) => {
+        mock.onGet(/reverse.*/).reply(400, {});
+        mock.onGet(/search.*/).reply(400, {});
+      }),
     });
 
     let stats = await collect(source);
@@ -432,7 +488,7 @@ integrationTests(__filename, () => {
     await createAnnuaire({
       siret: "11111111100000",
     });
-    let source = await createFormationsSource({ apiCatalogue: createApiCatalogueMock() });
+    let source = await createFormationsSource();
 
     let stats = await collect(source, { filters: { siret: "33333333333333" } });
 
@@ -449,15 +505,20 @@ integrationTests(__filename, () => {
     await importReferentiel();
     await createAnnuaire({ siret: "22222222222222", raison_sociale: "Mon centre de formation" });
     let source = await createFormationsSource({
-      apiCatalogue: createApiCatalogueMock({
-        formations: [
-          {
-            etablissement_gestionnaire_siret: "11111111111111",
-            etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
-            etablissement_formateur_siret: "22222222222222",
-            etablissement_formateur_entreprise_raison_sociale: "Etablissement",
-          },
-        ],
+      apiCatalogue: getMockedApiCatalogue((mock, responses) => {
+        mock.onGet(/.*formations.*/).reply(
+          200,
+          responses.formations({
+            formations: [
+              {
+                etablissement_gestionnaire_siret: "11111111111111",
+                etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
+                etablissement_formateur_siret: "22222222222222",
+                etablissement_formateur_entreprise_raison_sociale: "Etablissement",
+              },
+            ],
+          })
+        );
       }),
     });
 
