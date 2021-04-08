@@ -4,7 +4,7 @@ const fcController = require("../controllers/rncp/rncpController");
 const { findOnisepInfos } = require("../controllers/onisep/onisepController");
 const { findOpcosFromCfd } = require("./opcoHandler");
 
-const getDataFromCfd = async (providedCfd) => {
+const getDataFromCfd = async (providedCfd, options = { onsiep: true }) => {
   const bcnData = await bcnController.getDataFromCfd(providedCfd);
 
   if (!bcnData.result.cfd) {
@@ -25,7 +25,12 @@ const getDataFromCfd = async (providedCfd) => {
   const mefs = await bcnController.getMefsFromCfd(bcnData.result.cfd);
   const mef = await bcnController.getUniqMefFromMefs(mefs);
 
-  const onisepData = await findOnisepInfos(bcnData.result.cfd, mefs.result.mefs10);
+  const onisepData = options.onsiep
+    ? await findOnisepInfos(bcnData.result.cfd, mefs.result.mefs10)
+    : {
+        result: {},
+        messages: {},
+      };
 
   let rncpData = {
     result: {},
