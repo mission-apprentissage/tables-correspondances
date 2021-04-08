@@ -1,3 +1,10 @@
+# [2.8.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.7.1...v2.8.0) (2021-04-08)
+
+
+### Features
+
+* onisep api as db ([#133](https://github.com/mission-apprentissage/tables-correspondances/issues/133)) ([e466c34](https://github.com/mission-apprentissage/tables-correspondances/commit/e466c3404b2dd1d8e0f63ae00860851e93a81859))
+
 ## [2.7.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.7.0...v2.7.1) (2021-04-08)
 
 
