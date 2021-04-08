@@ -36,6 +36,7 @@ module.exports = {
   }),
   FicheRncp: createModel("ficherncp", schema.ficheRncpSchema),
   ConventionFile: createModel("conventionfile", schema.conventionFileSchema),
+  Onisep: createModel("onisep", schema.onisepSchema),
   CodeIdccOpco: createModel("codeIdccOpco", schema.codeIdccOpcoSchema),
   CodeEnCodesIdcc: createModel("codeEnCodesIdcc", schema.codeEnCodesIdccSchema),
   BcnFormationDiplome: createModel("bcnformationdiplome", schema.bcnFormationDiplomesSchema, {
