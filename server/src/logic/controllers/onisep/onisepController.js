@@ -1,40 +1,47 @@
 const catalogue = require("./assets/onisepUrls.json");
-const apiOnisep = require("../../../common/apis/apiOnisep");
+const { Onisep } = require("../../../common/model/index");
+
+const findOnisepInfosEtablissementFromUAI = async (uai, nom_academie) => {
+  const match = await Onisep.findOne({ code_uai: uai, academie: nom_academie, type: "etablissement" })
+    .select({ code_uai: 1, academie: 1, nom: 1, cp: 1, ville: 1, lien_site_onisepfr: 1, _id: 0 })
+    .lean();
+  return match || {};
+};
 
 const findOnisepInfosFromMef = async (providedMef) => {
   if (!providedMef || !/^[0-9]{10,11}$/g.test(providedMef.trim())) {
     return {};
   }
   let mef = `${providedMef}`.trim();
-
-  const { results } = await apiOnisep.getFormations({
-    q: mef,
-  });
-  let match = {};
-  for (let jte = 0; jte < results.length; jte++) {
-    const result = results[jte];
-    if (result.code_mef === mef) {
-      match = result;
-    }
-  }
-  return match;
+  const match = await Onisep.findOne({ code_mef: mef, type: "formation" })
+    .select({
+      code_formation_diplome: 1,
+      code_mef: 1,
+      libelle_formation_principal: 1,
+      libelle_poursuite: 1,
+      lien_site_onisepfr: 1,
+      discipline: 1,
+      domaine_sousdomaine: 1,
+      _id: 0,
+    })
+    .lean();
+  return match || {};
 };
 
 const findOnisepInfosFromMefs = async (providedMefs) => {
-  let data = [];
-  for (let ite = 0; ite < providedMefs.length; ite++) {
-    const mef = providedMefs[ite];
-    const { results } = await apiOnisep.getFormations({
-      q: mef,
-    });
-    for (let jte = 0; jte < results.length; jte++) {
-      const result = results[jte];
-      if (result.code_mef === mef) {
-        data.push(result);
-      }
-    }
-  }
-  return data;
+  const match = await Onisep.find({ code_mef: { $in: providedMefs }, type: "formation" })
+    .select({
+      code_formation_diplome: 1,
+      code_mef: 1,
+      libelle_formation_principal: 1,
+      libelle_poursuite: 1,
+      lien_site_onisepfr: 1,
+      discipline: 1,
+      domaine_sousdomaine: 1,
+      _id: 0,
+    })
+    .lean();
+  return match || [];
 };
 
 const findOnisepInfosFromCfd = async (providedCfd) => {
@@ -45,34 +52,26 @@ const findOnisepInfosFromCfd = async (providedCfd) => {
   let cfd = providedCfd.length === 9 ? providedCfd.substring(0, 8) : providedCfd;
   cfd = `${cfd}`.trim();
 
-  const { results } = await apiOnisep.getFormations({
-    q: cfd,
-  });
-  let match = {};
-  for (let jte = 0; jte < results.length; jte++) {
-    const result = results[jte];
-    if (result.code_formation_diplome === cfd) {
-      match = result;
-    }
-  }
-  return match;
+  const match = await Onisep.findOne({ code_formation_diplome: cfd, type: "formation" })
+    .select({
+      code_formation_diplome: 1,
+      code_mef: 1,
+      libelle_formation_principal: 1,
+      libelle_poursuite: 1,
+      lien_site_onisepfr: 1,
+      discipline: 1,
+      domaine_sousdomaine: 1,
+      _id: 0,
+    })
+    .lean();
+  return match || {};
 };
 
 const findOnisepInfos = async (cfd = "", mefs) => {
   let dataMef = [];
   if (mefs) {
-    for (let ite = 0; ite < mefs.length; ite++) {
-      const mef = mefs[ite];
-      const { results } = await apiOnisep.getFormations({
-        q: mef.mef10,
-      });
-      for (let jte = 0; jte < results.length; jte++) {
-        const result = results[jte];
-        if (result.code_mef === mef.mef10) {
-          dataMef.push(result);
-        }
-      }
-    }
+    const currentMefs = mefs.map((m) => m.mef10);
+    dataMef = await findOnisepInfosFromMefs(currentMefs);
   }
 
   let dataCfd = {};
@@ -111,4 +110,10 @@ const findOnisepInfos = async (cfd = "", mefs) => {
   };
 };
 
-module.exports = { findOnisepInfosFromMef, findOnisepInfos, findOnisepInfosFromMefs, findOnisepInfosFromCfd };
+module.exports = {
+  findOnisepInfosEtablissementFromUAI,
+  findOnisepInfosFromMef,
+  findOnisepInfos,
+  findOnisepInfosFromMefs,
+  findOnisepInfosFromCfd,
+};

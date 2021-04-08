@@ -49,6 +49,16 @@ export async function rncpImporter(localPath = null) {
   }
 }
 
+export async function onisepImporter(db: any) {
+  isSdkReady();
+  try {
+    let { onisepImporter: importer } = await import("../../jobs/OnisepImporter");
+    await importer(db);
+  } catch (error) {
+    console.error(`onisepImporter: something went wrong!`, error);
+  }
+}
+
 export async function getRncpInfo(codeRncp: string) {
   isSdkReady();
   try {
