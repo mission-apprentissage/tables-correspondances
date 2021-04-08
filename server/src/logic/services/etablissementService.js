@@ -3,8 +3,8 @@ const logger = require("../../common/logger");
 const { getDataFromSiret } = require("../handlers/siretHandler");
 const { getDataFromCP, getCoordaniteFromAdresseData } = require("../handlers/geoHandler");
 const conventionController = require("../controllers/conventionController");
+const { findOnisepInfosEtablissementFromUAI } = require("../controllers/onisep/onisepController");
 const { diffEtablissement } = require("../../common/utils/diffUtils");
-const apiOnisep = require("../../common/apis/apiOnisep");
 
 // const etablissementSchema = Joi.object({
 //   siret: Joi.string().required(),
@@ -152,20 +152,15 @@ const etablissementService = async (
     // ONISEP DATA
     if (scope.onisep) {
       if (current.nom_academie && current.nom_academie !== "" && etablissement.uai && etablissement.uai !== "") {
-        const { results } = await apiOnisep.getEtablissement({
-          q: etablissement.uai,
-          academie: current.nom_academie,
-        });
-        if (results.length === 1) {
-          const { code_uai, nom: onisep_nom, cp: onisep_code_postal, lien_site_onisepfr: onisep_url } = results[0];
-          if (code_uai === etablissement.uai) {
-            updatedEtablissement = {
-              ...updatedEtablissement,
-              onisep_nom,
-              onisep_code_postal,
-              onisep_url,
-            };
-          }
+        const results = await findOnisepInfosEtablissementFromUAI(etablissement.uai, current.nom_academie);
+        if (Object.keys(results).length > 0) {
+          const { nom: onisep_nom, cp: onisep_code_postal, lien_site_onisepfr: onisep_url } = results;
+          updatedEtablissement = {
+            ...updatedEtablissement,
+            onisep_nom,
+            onisep_code_postal,
+            onisep_url,
+          };
         }
       }
     }
