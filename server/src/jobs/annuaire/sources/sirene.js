@@ -1,7 +1,7 @@
 const { oleoduc, transformData, accumulateData, writeData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
-const apiSirene = require("../../../common/apis/apiSirene");
-const apiGeoAdresse = require("../../../common/apis/apiGeoAdresse");
+const ApiSirene = require("../../../common/apis/ApiSirene");
+const ApiGeoAdresse = require("../../../common/apis/ApiGeoAdresse");
 const dgefp = require("../referentiels/dgefp");
 const adresses = require("../utils/adresses");
 const categoriesJuridiques = require("../utils/categoriesJuridiques");
@@ -48,8 +48,8 @@ async function loadOrganismeDeFormations() {
 
 module.exports = async (custom = {}) => {
   let name = "sirene";
-  let api = custom.apiSirene || apiSirene;
-  let { getAdresseFromCoordinates } = adresses(custom.apiGeoAdresse || apiGeoAdresse);
+  let api = custom.apiSirene || new ApiSirene();
+  let { getAdresseFromCoordinates } = adresses(custom.apiGeoAdresse || new ApiGeoAdresse());
   let organismes = custom.organismes || (await loadOrganismeDeFormations());
 
   return {

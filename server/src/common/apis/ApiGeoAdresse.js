@@ -3,20 +3,22 @@ const queryString = require("query-string");
 const logger = require("../logger");
 const ApiError = require("./ApiError");
 
-// Cf Documentation : https://geo.api.gouv.fr/adresse
-const client = axios.create({
-  baseURL: "https://api-adresse.data.gouv.fr",
-  timeout: 1000,
-});
-
 class ApiGeoAdresse {
-  constructor() {}
+  constructor(options = {}) {
+    // Cf Documentation : https://geo.api.gouv.fr/adresse
+    this.client =
+      options.axios ||
+      axios.create({
+        baseURL: "https://api-adresse.data.gouv.fr",
+        timeout: 5000,
+      });
+  }
 
   async search(q, options = {}) {
     try {
       let params = queryString.stringify({ q, ...options });
       logger.debug(`[Adresse API] Searching adresse with parameters ${params}...`);
-      const response = await client.get(`search/?${params}`);
+      const response = await this.client.get(`search/?${params}`);
       return response.data;
     } catch (e) {
       throw new ApiError("apiGeoAdresse", e.message, e.code || e.response.status);
@@ -27,7 +29,7 @@ class ApiGeoAdresse {
     try {
       let params = queryString.stringify({ lon, lat, ...options });
       logger.debug(`[Adresse API] Reverse geocode with parameters ${params}...`);
-      const response = await client.get(`reverse/?${params}`);
+      const response = await this.client.get(`reverse/?${params}`);
       return response.data;
     } catch (e) {
       throw new ApiError("apiGeoAdresse", e.message, e.code || e.response.status);
@@ -37,7 +39,7 @@ class ApiGeoAdresse {
   async searchPostcodeOnly(q, options = {}) {
     try {
       let params = queryString.stringify({ q, ...options });
-      const response = await client.get(`search/?${params}`);
+      const response = await this.client.get(`search/?${params}`);
       logger.debug(`[Adresse API] Searching Postcode with parameters ${params}...`);
       return response.data;
     } catch (e) {
@@ -49,7 +51,7 @@ class ApiGeoAdresse {
     try {
       let params = `${options.isCityCode ? "citycode=" : ""}${code}&type=municipality`;
       logger.debug(`[Adresse API] Searching municipality with parameters ${params}...`);
-      const response = await client.get(`search/?limit=1&q=${params}`);
+      const response = await this.client.get(`search/?limit=1&q=${params}`);
       return response.data;
     } catch (e) {
       throw new ApiError("apiGeoAdresse", e.message, e.code || e.response.status);
@@ -57,5 +59,4 @@ class ApiGeoAdresse {
   }
 }
 
-const apiGeoAdresse = new ApiGeoAdresse();
-module.exports = apiGeoAdresse;
+module.exports = ApiGeoAdresse;

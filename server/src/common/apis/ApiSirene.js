@@ -3,19 +3,23 @@ const logger = require("../logger");
 const ApiError = require("./ApiError");
 const apiRateLimiter = require("./apiRateLimiter");
 
-//Documentation : https://entreprise.data.gouv.fr/api_doc/sirene
-let executeWithRateLimiting = apiRateLimiter("apiSirene", {
-  nbRequests: 5,
-  durationInSeconds: 1,
-  client: axios.create({
-    baseURL: "https://entreprise.data.gouv.fr/api/sirene/v3",
-    timeout: 5000,
-  }),
-});
-
 class ApiSirene {
+  constructor(options = {}) {
+    this.executeWithRateLimiting = apiRateLimiter("apiSirene", {
+      //Documentation : https://entreprise.data.gouv.fr/api_doc/sirene
+      nbRequests: 5,
+      durationInSeconds: 1,
+      client:
+        options.axios ||
+        axios.create({
+          baseURL: "https://entreprise.data.gouv.fr/api/sirene/v3",
+          timeout: 5000,
+        }),
+    });
+  }
+
   getUniteLegale(siren) {
-    return executeWithRateLimiting(async (client) => {
+    return this.executeWithRateLimiting(async (client) => {
       try {
         logger.debug(`[Sirene API] Fetching unites_legales for siren ${siren}...`);
         let response = await client.get(`unites_legales/${siren}`);
@@ -27,7 +31,7 @@ class ApiSirene {
   }
 
   getEtablissement(siret) {
-    return executeWithRateLimiting(async (client) => {
+    return this.executeWithRateLimiting(async (client) => {
       try {
         logger.debug(`[Sirene API] Fetching etablissement ${siret}...`);
         let response = await client.get(`etablissements/${siret}`);
@@ -40,4 +44,4 @@ class ApiSirene {
   }
 }
 
-module.exports = new ApiSirene();
+module.exports = ApiSirene;

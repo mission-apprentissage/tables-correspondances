@@ -1,11 +1,11 @@
 const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
-const apiEsSup = require("../../../common/apis/apiEsSup");
+const ApiEsSup = require("../../../common/apis/ApiEsSup");
 const Cache = require("../../../common/apis/Cache");
 
 module.exports = async (custom = {}) => {
   let name = "academie";
-  let api = custom.apiEsSup || apiEsSup;
+  let api = custom.apiEsSup || new ApiEsSup();
 
   return {
     name,
