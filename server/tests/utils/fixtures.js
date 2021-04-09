@@ -23,7 +23,7 @@ module.exports = {
           reseaux: [],
           diplomes: [],
           certifications: [],
-          referentiel: "test",
+          referentiels: ["test"],
           siege_social: true,
           statut: "actif",
           conformite_reglementaire: {

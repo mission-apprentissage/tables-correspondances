@@ -32,7 +32,7 @@ httpTests(__filename, ({ startServer }) => {
           certifications: [],
           siege_social: true,
           statut: "actif",
-          referentiel: "test",
+          referentiels: ["test"],
           conformite_reglementaire: {
             conventionne: true,
           },
@@ -316,7 +316,7 @@ httpTests(__filename, ({ startServer }) => {
       certifications: [],
       siege_social: true,
       statut: "actif",
-      referentiel: "test",
+      referentiels: ["test"],
       conformite_reglementaire: {
         conventionne: true,
       },

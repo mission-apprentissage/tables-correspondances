@@ -85,8 +85,8 @@ const annuaireSchema = {
     type: String,
     description: "La raison sociale de l'établissement",
   },
-  referentiel: {
-    type: String,
+  referentiels: {
+    type: [String],
     required: true,
     description: "Le nom du référentiel depuis lequel a été importé l'établissement",
   },
@@ -101,7 +101,7 @@ const annuaireSchema = {
     description: "Statut de l'entreprise",
   },
   reseaux: {
-    type: Array,
+    type: [String],
     default: [],
     description: "Les réseaux auquels appartient l'établissement",
   },

@@ -20,7 +20,7 @@ integrationTests(__filename, () => {
     assert.strictEqual(docs.length, 1);
     assert.deepStrictEqual(omit(docs[0], ["_meta"]), {
       siret: "11111111111111",
-      referentiel: "dgefp",
+      referentiels: ["dgefp"],
       conformite_reglementaire: {
         conventionne: false,
       },
