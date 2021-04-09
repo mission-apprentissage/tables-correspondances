@@ -95,7 +95,7 @@ module.exports = () => {
         anomalies: Joi.boolean().default(null),
         page: Joi.number().default(1),
         items_par_page: Joi.number().default(10),
-        tri: Joi.string().valid("uais_secondaires", "relations"),
+        tri: Joi.string().valid("uais", "relations"),
         ordre: Joi.string().valid("asc", "desc").default("desc"),
         champs: stringList().default([]),
       }).validateAsync(req.query, { abortEarly: false });
@@ -114,7 +114,7 @@ module.exports = () => {
             ? [
                 {
                   $addFields: {
-                    nb_uais_secondaires: { $size: "$uais_secondaires" },
+                    nb_uais: { $size: "$uais" },
                     nb_relations: { $size: "$relations" },
                   },
                 },
@@ -123,7 +123,7 @@ module.exports = () => {
             : [{ $sort: { [`_meta.lastUpdate`]: -1 } }]),
           {
             $project: {
-              nb_uais_secondaires: 0,
+              nb_uais: 0,
               nb_relations: 0,
               _id: 0,
               __v: 0,

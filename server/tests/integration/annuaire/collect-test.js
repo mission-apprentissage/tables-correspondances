@@ -34,7 +34,7 @@ integrationTests(__filename, () => {
     let stats = await collect(source);
 
     let found = await Annuaire.findOne({}, { _id: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires, [
+    assert.deepStrictEqual(found.uais, [
       {
         sources: ["dummy"],
         uai: "0011073L",
@@ -62,7 +62,7 @@ integrationTests(__filename, () => {
     let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires[0], {
+    assert.deepStrictEqual(found.uais[0], {
       sources: ["dummy"],
       uai: "093XXXT",
       valide: false,
@@ -76,29 +76,7 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on ignore un uai quand il existe en tant qu'uai principal", async () => {
-    await createAnnuaire({ siret: "111111111111111", uai: "0011058V" });
-    let source = createTestSource([
-      {
-        selector: "111111111111111",
-        uais: ["0011058V"],
-      },
-    ]);
-
-    let stats = await collect(source);
-
-    let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires, []);
-    assert.deepStrictEqual(stats, {
-      dummy: {
-        total: 1,
-        failed: 0,
-        updated: 0,
-      },
-    });
-  });
-
-  it("Vérifie qu'on ignore un uai quand il existe déjà en tant qu'uai secondaire", async () => {
+  it("Vérifie qu'on ignore un uai quand il existe déjà dans la liste des uais", async () => {
     let source = createTestSource([
       {
         selector: "111111111111111",
@@ -108,7 +86,7 @@ integrationTests(__filename, () => {
     await createAnnuaire({
       uai: "0011058V",
       siret: "111111111111111",
-      uais_secondaires: [
+      uais: [
         {
           sources: ["dummy"],
           uai: "0011073L",
@@ -120,7 +98,7 @@ integrationTests(__filename, () => {
     let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires, [
+    assert.deepStrictEqual(found.uais, [
       {
         sources: ["dummy"],
         uai: "0011073L",
@@ -139,7 +117,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on fusionne un uai déjà collecté part une autre source", async () => {
     await createAnnuaire({
       siret: "111111111111111",
-      uais_secondaires: [
+      uais: [
         {
           sources: ["other"],
           uai: "0011073L",
@@ -157,7 +135,7 @@ integrationTests(__filename, () => {
     await collect(source);
 
     let found = await Annuaire.findOne({}, { _id: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires, found.uais_secondaires, [
+    assert.deepStrictEqual(found.uais, found.uais, [
       {
         sources: ["other", "dummy"],
         uai: "0011073L",
@@ -178,7 +156,7 @@ integrationTests(__filename, () => {
     let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires, []);
+    assert.deepStrictEqual(found.uais, []);
     assert.deepStrictEqual(stats, {
       dummy: {
         total: 1,
@@ -369,33 +347,11 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on peut collecter en se basant sur l'uai", async () => {
-    await createAnnuaire({ siret: "111111111111111", uai: "0011073X" });
-    let source = createTestSource([
-      {
-        selector: "0011073X",
-        reseaux: ["test"],
-      },
-    ]);
-
-    let stats = await collect(source);
-
-    let found = await Annuaire.findOne({ uai: "0011073X" }, { _id: 0 }).lean();
-    assert.deepStrictEqual(found.reseaux, ["test"]);
-    assert.deepStrictEqual(stats, {
-      dummy: {
-        total: 1,
-        failed: 0,
-        updated: 1,
-      },
-    });
-  });
-
-  it("Vérifie qu'on peut collecter en se basant sur un uai secondaire", async () => {
+  it("Vérifie qu'on peut collecter en se basant sur un uai", async () => {
     await createAnnuaire({
       uai: "0011073X",
       siret: "111111111111111",
-      uais_secondaires: [
+      uais: [
         {
           source: "dummy",
           uai: "SECONDAIRE",
@@ -412,7 +368,7 @@ integrationTests(__filename, () => {
 
     let stats = await collect(source);
 
-    let found = await Annuaire.findOne({ uai: "0011073X" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.reseaux, ["test"]);
     assert.deepStrictEqual(stats, {
       dummy: {

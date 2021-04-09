@@ -21,8 +21,8 @@ module.exports = async (custom = {}) => {
           return {
             source: name,
             selector: data["numero_siren_siret_uai"],
+            uais: [data["numero_uai"]],
             data: {
-              uai: data["numero_uai"],
               conformite_reglementaire: {
                 conventionne: true,
               },
