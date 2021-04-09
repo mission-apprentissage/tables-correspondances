@@ -17,12 +17,8 @@ integrationTests(__filename, () => {
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(omit(found, ["_meta"]), {
-      uai: "0011058V",
       siret: "11111111111111",
       referentiels: ["depp"],
-      conformite_reglementaire: {
-        conventionne: true,
-      },
       uais_secondaires: [],
       reseaux: [],
       relations: [],

@@ -16,23 +16,14 @@ function createTestReferentiel(array) {
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut initialiser un annuaire à partir d'un référentiel", async () => {
-    let referentiel = createTestReferentiel([
-      {
-        siret: "111111111111111",
-        uai: "0011058V",
-      },
-    ]);
+    let referentiel = createTestReferentiel(["111111111111111"]);
 
     let results = await importReferentiel(referentiel);
 
     let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(omit(found, ["_meta"]), {
-      uai: "0011058V",
       siret: "111111111111111",
       referentiels: ["test"],
-      conformite_reglementaire: {
-        conventionne: false,
-      },
       uais_secondaires: [],
       reseaux: [],
       relations: [],
@@ -51,16 +42,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on ignore les établissements en double", async () => {
-    let referentiel = createTestReferentiel([
-      {
-        siret: "111111111111111",
-        uai: "0011058V",
-      },
-      {
-        siret: "111111111111111",
-        uai: "0011058V",
-      },
-    ]);
+    let referentiel = createTestReferentiel(["111111111111111", "111111111111111"]);
 
     let results = await importReferentiel(referentiel);
 
@@ -77,7 +59,6 @@ integrationTests(__filename, () => {
     let referentiel = createTestReferentiel([
       {
         siret: "",
-        uai: "0011058V",
       },
     ]);
 

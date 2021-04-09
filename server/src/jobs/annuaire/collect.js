@@ -110,7 +110,6 @@ module.exports = async (...args) => {
     writeData(async ({ source, selector, uais = [], relations = [], reseaux = [], data = {}, anomalies = [] }) => {
       stats[source].total++;
       let query = buildQuery(selector);
-
       try {
         let etablissement = await Annuaire.findOne(query).lean();
         if (!etablissement) {
