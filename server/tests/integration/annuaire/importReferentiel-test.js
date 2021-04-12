@@ -29,7 +29,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(omit(found, ["_meta"]), {
       uai: "0011058V",
       siret: "111111111111111",
-      referentiel: "test",
+      referentiels: ["test"],
       conformite_reglementaire: {
         conventionne: false,
       },

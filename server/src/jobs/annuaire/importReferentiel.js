@@ -28,7 +28,9 @@ module.exports = async (referentiel) => {
           {
             $set: {
               ...flattenObject(data),
-              referentiel: referentiel.name,
+            },
+            $addToSet: {
+              referentiels: referentiel.name,
             },
           },
           { upsert: true, setDefaultsOnInsert: true, runValidators: true }
