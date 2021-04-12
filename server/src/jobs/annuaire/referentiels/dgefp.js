@@ -18,11 +18,7 @@ module.exports = async (custom = {}) => {
           columns: (header) => header.map((column) => column.replace(/ /g, "")),
         }),
         filterData(filter),
-        transformData((data) => {
-          return {
-            siret: `${data.siren}${data.num_etablissement}`,
-          };
-        }),
+        transformData((data) => `${data.siren}${data.num_etablissement}`),
         { promisify: false }
       );
     },
