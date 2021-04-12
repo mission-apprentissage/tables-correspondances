@@ -9,12 +9,7 @@ module.exports = async (custom = {}) => {
 
       return oleoduc(
         input,
-        transformData((etablissement) => {
-          return {
-            siret: etablissement.siret,
-            ...(etablissement.uai ? { uai: etablissement.uai } : {}),
-          };
-        }),
+        transformData(({ siret }) => siret),
         { promisify: false }
       );
     },

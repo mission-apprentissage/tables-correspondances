@@ -17,6 +17,8 @@ module.exports = {
   createSource,
   getDefaultSourcesGroupedByPriority() {
     return [
+      ["depp"],
+      //Other groups contain sources that need data from the previous ones
       [
         "onisep",
         "onisep-structure",
@@ -33,10 +35,7 @@ module.exports = {
         "formations",
         "sirene",
       ],
-      [
-        //This group contains sources that need data from the previous groups
-        "academie",
-      ],
+      ["academie"],
       [
         //Theses sources used uai as selector, so we tried to collect as many uais as possible before running them
         "ccca-btp",
