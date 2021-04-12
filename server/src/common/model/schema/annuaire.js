@@ -1,6 +1,6 @@
 const { Schema } = require("mongoose");
 
-let adresse = new Schema(
+let adresseSchema = new Schema(
   {
     label: {
       type: String,
@@ -121,8 +121,7 @@ const annuaireSchema = {
     ),
   },
   adresse: {
-    default: undefined,
-    type: adresse,
+    type: adresseSchema,
   },
   forme_juridique: {
     description: "Informations relatives à la forme juridique de l'établissement",
@@ -148,7 +147,7 @@ const annuaireSchema = {
       {
         conventionne: {
           type: Boolean,
-          default: false,
+          default: undefined,
           description: "True si l'établissement est conventionné",
         },
         certificateur: {
@@ -229,7 +228,7 @@ const annuaireSchema = {
           },
           adresse: {
             required: true,
-            type: adresse,
+            type: adresseSchema,
           },
         },
         { _id: false }

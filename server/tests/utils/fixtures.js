@@ -14,7 +14,6 @@ module.exports = {
       merge(
         {},
         {
-          uai: faker.helpers.replaceSymbols("#######?"),
           siret: faker.helpers.replaceSymbols("#########00015"),
           raison_sociale: faker.company.companyName(),
           uais_secondaires: [],
