@@ -24,7 +24,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(omit(found, ["_meta"]), {
       siret: "111111111111111",
       referentiels: ["test"],
-      uais_secondaires: [],
+      uais: [],
       reseaux: [],
       relations: [],
       lieux_de_formation: [],

@@ -8,20 +8,20 @@ const { validateUAI } = require("../../common/utils/uaiUtils");
 const logger = require("../../common/logger");
 
 function buildQuery(selector) {
-  return { $or: [{ siret: selector }, { uai: selector }, { "uais_secondaires.uai": selector }] };
+  return { $or: [{ siret: selector }, { uai: selector }, { "uais.uai": selector }] };
 }
 
-function buildUAIsSecondaires(source, etablissement, uais) {
+function buildUAIs(source, etablissement, uais) {
   let updated = uais
-    .filter((uai) => uai && uai !== "NULL" && etablissement.uai !== uai)
+    .filter((uai) => uai && uai !== "NULL")
     .reduce((acc, uai) => {
-      let found = etablissement.uais_secondaires.find((u) => u.uai === uai) || {};
+      let found = etablissement.uais.find((u) => u.uai === uai) || {};
       let sources = uniq([...(found.sources || []), source]);
       acc.push({ ...found, uai, sources, valide: validateUAI(uai) });
       return acc;
     }, []);
 
-  let previous = etablissement.uais_secondaires.filter((us) => !updated.map(({ uai }) => uai).includes(us.uai));
+  let previous = etablissement.uais.filter((us) => !updated.map(({ uai }) => uai).includes(us.uai));
 
   return [...updated, ...previous];
 }
@@ -126,7 +126,7 @@ module.exports = async (...args) => {
           {
             $set: {
               ...flattenObject(data),
-              uais_secondaires: buildUAIsSecondaires(source, etablissement, uais),
+              uais: buildUAIs(source, etablissement, uais),
               relations: await buildRelations(source, etablissement, relations),
             },
             $addToSet: {

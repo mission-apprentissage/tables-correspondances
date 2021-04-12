@@ -64,8 +64,8 @@ export default () => {
                         <Table.ColHeader>Uai</Table.ColHeader>
                         <Table.ColHeader>Nom</Table.ColHeader>
                         <Table.ColHeader>
-                          Uai secondaires
-                          <SortButton onClick={(ordre) => search({ page: 1, tri: "uais_secondaires", ordre })} />
+                          UAI
+                          <SortButton onClick={(ordre) => search({ page: 1, tri: "uais", ordre })} />
                         </Table.ColHeader>
                         <Table.ColHeader>
                           Relations <SortButton onClick={(ordre) => search({ page: 1, tri: "relations", ordre })} />
@@ -80,13 +80,13 @@ export default () => {
                       ) : (
                         data.etablissements.map((e) => {
                           return (
-                            <Table.Row key={e.uai}>
+                            <Table.Row key={e.siret}>
                               <Table.Col>
                                 <Link to={`/annuaire/etablissements/${e.siret}`}>{e.siret}</Link>
                               </Table.Col>
-                              <Table.Col>{e.uai}</Table.Col>
+                              <Table.Col>{(e.uais.find((u) => u.sources.includes("depp")) || {}).uai}</Table.Col>
                               <Table.Col>{e.raison_sociale}</Table.Col>
-                              <Table.Col>{e.uais_secondaires.length}</Table.Col>
+                              <Table.Col>{e.uais.length}</Table.Col>
                               <Table.Col>{e.relations.length}</Table.Col>
                             </Table.Row>
                           );

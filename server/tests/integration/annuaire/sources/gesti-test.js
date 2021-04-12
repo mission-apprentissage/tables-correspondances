@@ -19,7 +19,7 @@ integrationTests(__filename, () => {
     let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires, [
+    assert.deepStrictEqual(found.uais, [
       {
         sources: ["gesti"],
         uai: "0011073L",

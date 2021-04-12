@@ -8,7 +8,16 @@ const { createAnnuaire } = require("../../../utils/fixtures");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier cma", async () => {
-    await createAnnuaire({ uai: "0011073L" });
+    await createAnnuaire({
+      siret: "11111111111111",
+      uais: [
+        {
+          source: "test",
+          uai: "0011073L",
+          valide: true,
+        },
+      ],
+    });
     let source = await createSource("cma", {
       input: createStream(
         `uai
@@ -18,9 +27,8 @@ integrationTests(__filename, () => {
 
     let stats = await collect(source);
 
-    let found = await Annuaire.findOne({ uai: "0011073L" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.reseaux, ["cma"]);
-    assert.deepStrictEqual(found.uais_secondaires, []);
     assert.deepStrictEqual(stats, {
       cma: {
         total: 1,
