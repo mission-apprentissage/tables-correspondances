@@ -12,8 +12,8 @@ const onisepImporter = async (db) => {
   const etablissements = await apiOnisep.getAllEtablissements();
   const formations = await apiOnisep.getAllFormations();
 
-  await db.collection("onisep").insertMany(etablissements.map((d) => ({ ...d, type: "etablissement" })));
-  await db.collection("onisep").insertMany(formations.map((d) => ({ ...d, type: "formation" })));
+  await db.collection("oniseps").insertMany(etablissements.map((d) => ({ ...d, type: "etablissement" })));
+  await db.collection("oniseps").insertMany(formations.map((d) => ({ ...d, type: "formation" })));
 
   logger.warn(`[Onisep importer] Ended`);
 };
