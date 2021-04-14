@@ -1,9 +1,11 @@
 const logger = require("../../common/logger");
-const kitApprentissageController = require("./kitApprentissageController");
+// const kitApprentissageController = require("./kitApprentissageController");
 const { asyncForEach } = require("../../common/utils/asyncUtils");
 const { FicheRncp } = require("../../common/model/index");
+const { getJsonFromCsvFile } = require("../../common/utils/fileUtils");
 // const { getFileFromS3 } = require("../../common/utils/awsUtils");
 const parseFichesFile = require("./parseFichesFile");
+const path = require("path");
 const config = require("config");
 let Client = require("ssh2-sftp-client");
 const { sortBy } = require("lodash");
@@ -25,35 +27,6 @@ const isEligibleApprentissage = (fiche) => {
   return false;
 };
 
-const lookupDiffAndMerge = (fichesXML, fichesKitA) => {
-  const referentiel = [];
-  for (let ite = 0; ite < fichesXML.length; ite++) {
-    const ficheXML = fichesXML[ite];
-    let elementToPush = null;
-    for (let jte = 0; jte < fichesKitA.length; jte++) {
-      const ficheKitA = fichesKitA[jte];
-      if (ficheXML.code_rncp === ficheKitA.code_rncp) {
-        elementToPush = {
-          ...ficheKitA,
-          code_type_certif: ficheXML.code_type_certif,
-          partenaires: ficheXML.partenaires,
-          certificateurs: ficheXML.certificateurs,
-        };
-        break;
-      }
-    }
-    if (!elementToPush) {
-      elementToPush = {
-        ...ficheXML,
-        eligible_apprentissage: isEligibleApprentissage(ficheXML),
-      };
-    }
-    referentiel.push(elementToPush);
-  }
-
-  return referentiel;
-};
-
 const downloadFromFtp = async () => {
   try {
     await sftp.connect({
@@ -73,30 +46,58 @@ const downloadFromFtp = async () => {
   }
 };
 
+const importerRncpCfdFile = (fileName) => {
+  return getJsonFromCsvFile(path.join(__dirname, fileName))
+    .map((fk) => ({
+      code_rncp: fk["Code RNCP"],
+      cfds: [fk["Code Diplome"]],
+    }))
+    .filter((e) => e.code_rncp !== "NR");
+};
+
 const getFichesRncp = async () => {
   const fichesXMLInputStream = await downloadFromFtp(); // getFileFromS3("mna-services/features/rncp/export_fiches_RNCP_V2_0_latest.xml");
   logger.info("Parsing Fiches XML");
   let { fiches: fichesXML } = await parseFichesFile(fichesXMLInputStream);
-
   sftp.end();
 
-  const fichesKitA = kitApprentissageController.referentielRncp.map((f) => {
-    const result = kitApprentissageController.getDataFromRncp(f.Numero_Fiche);
+  const rncpCfdKit = importerRncpCfdFile("./assets/CodeDiplome_RNCP_latest_kit.csv");
+  const rncpCfdMna = importerRncpCfdFile("./assets/CodeDiplome_RNCP_latest_mna.csv");
+
+  const rncpCfd = [...rncpCfdKit, ...rncpCfdMna].reduce((acc, cur) => {
+    const existType = acc.find((a) => a.code_rncp === cur.code_rncp);
+    if (existType) {
+      existType.cfds = [...existType.cfds, ...cur.cfds];
+      return acc;
+    }
+
+    acc.push({
+      code_rncp: cur.code_rncp,
+      cfds: cur.cfds,
+    });
+    return acc;
+  }, []);
+
+  const referentiel = fichesXML.map((ficheXML) => {
+    const { cfds } = rncpCfd.find((i) => i.code_rncp === ficheXML.code_rncp) || { cfds: [] }; // .map(({ cfds }) => cfds)
+    if (cfds.length > 0) {
+      console.log(cfds);
+    }
     return {
-      ...result,
-      eligible_apprentissage: isEligibleApprentissage(result),
+      ...ficheXML,
+      eligible_apprentissage: isEligibleApprentissage(ficheXML),
+      cfds,
     };
   });
 
-  // Vérification si le kit est plus "à jour" que le xml
-  const referentiel = lookupDiffAndMerge(fichesXML, fichesKitA);
+  // console.log(referentiel);
 
   return referentiel;
 };
 
+// eslint-disable-next-line no-unused-vars
 module.exports = async (localPath = null) => {
   logger.info("Loading Kit Apprentissage FC - RNCP referentiel...");
-  await kitApprentissageController.init(localPath);
   const fichesRncp = await getFichesRncp();
   logger.info("Add fiches to db...");
 
