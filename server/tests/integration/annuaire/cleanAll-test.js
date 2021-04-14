@@ -10,7 +10,7 @@ integrationTests(__filename, () => {
       uai: "0011058V",
       siret: "11111111111111",
       raison_sociale: "Centre de formation",
-      uais_secondaires: [],
+      uais: [],
     });
 
     let stats = await cleanAll();

@@ -74,13 +74,6 @@ const annuaireSchema = {
     unique: true,
     index: true,
   },
-  uai: {
-    type: String,
-    description: "L'UAI de l'établissement",
-    unique: true,
-    sparse: true,
-    index: true,
-  },
   raison_sociale: {
     type: String,
     description: "La raison sociale de l'établissement",
@@ -159,7 +152,7 @@ const annuaireSchema = {
       { _id: false }
     ),
   },
-  uais_secondaires: {
+  uais: {
     description: "La liste de tous les uais connus pour cet établissement",
     required: true,
     type: [

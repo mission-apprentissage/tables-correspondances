@@ -20,7 +20,7 @@ integrationTests(__filename, () => {
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.reseaux, ["anasup"]);
-    assert.deepStrictEqual(found.uais_secondaires, [
+    assert.deepStrictEqual(found.uais, [
       {
         sources: ["anasup"],
         uai: "0011073L",
