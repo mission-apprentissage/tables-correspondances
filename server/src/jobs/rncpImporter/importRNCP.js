@@ -87,8 +87,6 @@ const getFichesRncp = async () => {
     };
   });
 
-  // console.log(referentiel);
-
   return referentiel;
 };
 
