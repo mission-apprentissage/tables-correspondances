@@ -1,3 +1,10 @@
+# [2.9.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.8.2...v2.9.0) (2021-04-14)
+
+
+### Features
+
+* RNCP auto  ([#138](https://github.com/mission-apprentissage/tables-correspondances/issues/138)) ([8c42651](https://github.com/mission-apprentissage/tables-correspondances/commit/8c42651f6117b3009a8ef06926baa6137707b21d))
+
 ## [2.8.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.8.1...v2.8.2) (2021-04-12)
 
 
