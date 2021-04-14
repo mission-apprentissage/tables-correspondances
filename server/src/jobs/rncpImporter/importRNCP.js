@@ -2,8 +2,12 @@ const logger = require("../../common/logger");
 const kitApprentissageController = require("./kitApprentissageController");
 const { asyncForEach } = require("../../common/utils/asyncUtils");
 const { FicheRncp } = require("../../common/model/index");
-const { getFileFromS3 } = require("../../common/utils/awsUtils");
+// const { getFileFromS3 } = require("../../common/utils/awsUtils");
 const parseFichesFile = require("./parseFichesFile");
+const config = require("config");
+let Client = require("ssh2-sftp-client");
+const { sortBy } = require("lodash");
+let sftp = new Client();
 
 const isEligibleApprentissage = (fiche) => {
   if (!fiche) {
@@ -50,10 +54,31 @@ const lookupDiffAndMerge = (fichesXML, fichesKitA) => {
   return referentiel;
 };
 
+const downloadFromFtp = async () => {
+  try {
+    await sftp.connect({
+      host: config.franceCompetences.host,
+      port: config.franceCompetences.port,
+      username: config.franceCompetences.username,
+      password: config.franceCompetences.password,
+    });
+
+    const list = await sftp.list("/xml_export");
+    const V2files = list.filter((f) => new RegExp("export_fiches_RNCP_V2_0_(.)*.xml").test(f.name));
+    // eslint-disable-next-line no-unused-vars
+    const [file, ...rest] = sortBy(V2files, ["name"]).reverse();
+    return sftp.sftp.createReadStream(`/xml_export/${file.name}`);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const getFichesRncp = async () => {
-  const fichesXMLInputStream = getFileFromS3("mna-services/features/rncp/export_fiches_RNCP_V2_0_latest.xml");
+  const fichesXMLInputStream = await downloadFromFtp(); // getFileFromS3("mna-services/features/rncp/export_fiches_RNCP_V2_0_latest.xml");
   logger.info("Parsing Fiches XML");
   let { fiches: fichesXML } = await parseFichesFile(fichesXMLInputStream);
+
+  sftp.end();
 
   const fichesKitA = kitApprentissageController.referentielRncp.map((f) => {
     const result = kitApprentissageController.getDataFromRncp(f.Numero_Fiche);
