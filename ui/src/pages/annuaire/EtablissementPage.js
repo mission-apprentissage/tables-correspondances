@@ -103,12 +103,8 @@ export default () => {
                         <span>Réseaux</span>
                         <span>{etablissement.reseaux.length === 0 ? "-" : etablissement.reseaux.join(",")}</span>
                       </Item>
-                      <Item>
-                        <span>UAI</span>
-                        <div>{etablissement.uai || "-"}</div>
-                      </Item>
                       <List>
-                        <div>UAI secondaires</div>
+                        <div>UAIs</div>
                         <Table>
                           <Table.Header>
                             <Table.ColHeader>UAI</Table.ColHeader>
@@ -116,7 +112,7 @@ export default () => {
                             <Table.ColHeader>Valide</Table.ColHeader>
                           </Table.Header>
                           <Table.Body>
-                            {etablissement.uais_secondaires.map((item) => {
+                            {etablissement.uais.map((item) => {
                               return (
                                 <Table.Row key={item.uai}>
                                   <Table.Col>{item.uai}</Table.Col>

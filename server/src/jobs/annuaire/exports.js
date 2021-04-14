@@ -11,10 +11,8 @@ module.exports = {
           columns: {
             Siret: (a) => a.siret,
             "Raison sociale": (a) => a.raison_sociale,
-            UAI: (a) => a.uai,
-            "UAIs secondaires disponibles": (a) => (a.uais_secondaires.length > 0 ? "Oui" : "Non"),
-            "UAI secondaires": (a) => a.uais_secondaires.map(({ uai }) => uai).join("|"),
-            Sources: (a) => a.uais_secondaires.map(({ type }) => type).join("|"),
+            UAIs: (a) => a.uais.map(({ uai }) => uai).join("|"),
+            Sources: (a) => a.uais.map(({ type }) => type).join("|"),
           },
         });
 

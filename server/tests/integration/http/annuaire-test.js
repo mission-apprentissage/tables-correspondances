@@ -6,7 +6,6 @@ httpTests(__filename, ({ startServer }) => {
   it("Vérifie qu'on peut lister des établissements", async () => {
     const { httpClient } = await startServer();
     await createAnnuaire({
-      uai: "0010856A",
       siret: "11111111111111",
       raison_sociale: "Centre de formation",
       _meta: {
@@ -21,10 +20,9 @@ httpTests(__filename, ({ startServer }) => {
     deepStrictEqual(response.data, {
       etablissements: [
         {
-          uai: "0010856A",
           siret: "11111111111111",
           raison_sociale: "Centre de formation",
-          uais_secondaires: [],
+          uais: [],
           relations: [],
           lieux_de_formation: [],
           reseaux: [],
@@ -70,13 +68,19 @@ httpTests(__filename, ({ startServer }) => {
   it("Vérifie qu'on peut rechercher des établissements à partir d'un uai", async () => {
     const { httpClient } = await startServer();
     await createAnnuaire({
-      uai: "0010856A",
+      uais: [
+        {
+          source: "dummy",
+          uai: "0010856A",
+          valide: true,
+        },
+      ],
     });
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements?text=0010856A");
 
     strictEqual(response.status, 200);
-    strictEqual(response.data.etablissements[0].uai, "0010856A");
+    strictEqual(response.data.etablissements[0].uais[0].uai, "0010856A");
   });
 
   it("Vérifie qu'on peut rechercher des établissements à partir d'un siret", async () => {
@@ -140,7 +144,7 @@ httpTests(__filename, ({ startServer }) => {
     await Promise.all([
       createAnnuaire({
         siret: "11111111111111",
-        uais_secondaires: [
+        uais: [
           {
             source: "catalogue",
             uai: "1111111S",
@@ -150,7 +154,7 @@ httpTests(__filename, ({ startServer }) => {
       }),
       createAnnuaire({
         siret: "33333333333333",
-        uais_secondaires: [
+        uais: [
           {
             source: "catalogue",
             uai: "1111111S",
@@ -165,12 +169,12 @@ httpTests(__filename, ({ startServer }) => {
       }),
     ]);
 
-    let response = await httpClient.get("/api/v1/annuaire/etablissements?tri=uais_secondaires&ordre=desc");
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?tri=uais&ordre=desc");
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "33333333333333");
     strictEqual(response.data.etablissements[1].siret, "11111111111111");
 
-    response = await httpClient.get("/api/v1/annuaire/etablissements?tri=uais_secondaires&ordre=asc");
+    response = await httpClient.get("/api/v1/annuaire/etablissements?tri=uais&ordre=asc");
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "11111111111111");
     strictEqual(response.data.etablissements[1].siret, "33333333333333");
@@ -179,7 +183,6 @@ httpTests(__filename, ({ startServer }) => {
   it("Vérifie qu'on peut limiter les champs renvoyés pour la liste des établissements", async () => {
     const { httpClient } = await startServer();
     await createAnnuaire({
-      uai: "0010856A",
       siret: "11111111111111",
       raison_sociale: "Centre de formation",
       _meta: {
@@ -195,7 +198,6 @@ httpTests(__filename, ({ startServer }) => {
       etablissements: [
         {
           siret: "11111111111111",
-          uai: "0010856A",
         },
       ],
       pagination: {
@@ -296,7 +298,6 @@ httpTests(__filename, ({ startServer }) => {
   it("Vérifie qu'on peut obtenir un établissement", async () => {
     const { httpClient } = await startServer();
     await createAnnuaire({
-      uai: "0010856A",
       siret: "11111111111111",
       raison_sociale: "Centre de formation",
     });
@@ -305,10 +306,9 @@ httpTests(__filename, ({ startServer }) => {
 
     strictEqual(response.status, 200);
     deepStrictEqual(response.data, {
-      uai: "0010856A",
       siret: "11111111111111",
       raison_sociale: "Centre de formation",
-      uais_secondaires: [],
+      uais: [],
       relations: [],
       reseaux: [],
       lieux_de_formation: [],
@@ -342,7 +342,6 @@ httpTests(__filename, ({ startServer }) => {
   it("Vérifie qu'on peut limiter les champs renvoyés pour un établissement", async () => {
     const { httpClient } = await startServer();
     await createAnnuaire({
-      uai: "0010856A",
       siret: "11111111111111",
       raison_sociale: "Centre de formation",
       _meta: {
@@ -356,14 +355,12 @@ httpTests(__filename, ({ startServer }) => {
     strictEqual(response.status, 200);
     deepStrictEqual(response.data, {
       siret: "11111111111111",
-      uai: "0010856A",
     });
   });
 
   it("Vérifie qu'on peut exclure des champs renvoyés pour un établissement", async () => {
     const { httpClient } = await startServer();
     await createAnnuaire({
-      uai: "0010856A",
       siret: "11111111111111",
       raison_sociale: "Centre de formation",
       _meta: {

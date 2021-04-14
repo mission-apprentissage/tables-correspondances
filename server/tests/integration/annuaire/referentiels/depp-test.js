@@ -19,7 +19,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(omit(found, ["_meta"]), {
       siret: "11111111111111",
       referentiels: ["depp"],
-      uais_secondaires: [],
+      uais: [],
       reseaux: [],
       relations: [],
       lieux_de_formation: [],
