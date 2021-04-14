@@ -79,10 +79,7 @@ const getFichesRncp = async () => {
   }, []);
 
   const referentiel = fichesXML.map((ficheXML) => {
-    const { cfds } = rncpCfd.find((i) => i.code_rncp === ficheXML.code_rncp) || { cfds: [] }; // .map(({ cfds }) => cfds)
-    if (cfds.length > 0) {
-      console.log(cfds);
-    }
+    const { cfds } = rncpCfd.find((i) => i.code_rncp === ficheXML.code_rncp) || { cfds: null };
     return {
       ...ficheXML,
       eligible_apprentissage: isEligibleApprentissage(ficheXML),
