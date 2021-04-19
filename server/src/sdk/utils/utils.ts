@@ -17,6 +17,21 @@ export async function initTcoModel(mongooseInstanceFromParentProject: any) {
   }
 }
 
+let Models: any = null;
+export async function getModels() {
+  isSdkReady();
+  try {
+    if(!Models) {
+      Models = await import("../../common/model");
+    }
+    
+    return Models;
+  } catch (error) {
+    console.error(`getModels: something went wrong!`, error);
+    return null;
+  }
+}
+
 // export async function tcoJobs(): Promise<any> {
 //   isSdkReady();
 //   try {
