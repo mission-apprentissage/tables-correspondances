@@ -1,3 +1,10 @@
+# [2.10.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.9.0...v2.10.0) (2021-04-19)
+
+
+### Features
+
+* **sdk:** expose mongoose models ([1e2a7a0](https://github.com/mission-apprentissage/tables-correspondances/commit/1e2a7a0fad1a84d9652435ffceba29ba0ca9d292))
+
 # [2.9.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.8.2...v2.9.0) (2021-04-14)
 
 
