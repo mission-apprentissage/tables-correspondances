@@ -1,3 +1,10 @@
+## [2.10.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.10.0...v2.10.1) (2021-04-19)
+
+
+### Bug Fixes
+
+* **sdk:** replace export models by getter ([a377483](https://github.com/mission-apprentissage/tables-correspondances/commit/a377483abf1713eee11c8f0b2b5c84e392c262d3))
+
 # [2.10.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.9.0...v2.10.0) (2021-04-19)
 
 
