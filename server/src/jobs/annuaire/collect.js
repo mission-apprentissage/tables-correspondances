@@ -1,5 +1,5 @@
 const { oleoduc, writeData, filterData } = require("oleoduc");
-const { uniq } = require("lodash");
+const { uniq, isEmpty } = require("lodash");
 const mergeStream = require("merge-stream");
 const { Annuaire } = require("../../common/model");
 const { getNbModifiedDocuments } = require("../../common/utils/mongooseUtils");
@@ -8,7 +8,11 @@ const { validateUAI } = require("../../common/utils/uaiUtils");
 const logger = require("../../common/logger");
 
 function buildQuery(selector) {
-  return { $or: [{ siret: selector }, { uai: selector }, { "uais.uai": selector }] };
+  if (isEmpty(selector)) {
+    throw new Error("Select must not be empty");
+  }
+
+  return { $or: [{ siret: selector }, { "uais.uai": selector }] };
 }
 
 function buildUAIs(source, etablissement, uais) {
@@ -47,9 +51,8 @@ async function buildRelations(source, etablissement, relations) {
   );
 }
 
-function handleAnomalies(source, selector, anomalies) {
-  logger.error(`[Collect][${source}] Erreur lors de la collecte pour l'établissement ${selector}.`, anomalies);
-  let query = buildQuery(selector);
+function handleAnomalies(source, query, anomalies) {
+  logger.error(`[Collect][${source}] Erreur lors de la collecte pour l'établissement ${query}.`, anomalies);
 
   return Annuaire.updateOne(
     query,
@@ -109,8 +112,8 @@ module.exports = async (...args) => {
     }),
     writeData(async ({ source, selector, uais = [], relations = [], reseaux = [], data = {}, anomalies = [] }) => {
       stats[source].total++;
-      let query = buildQuery(selector);
       try {
+        let query = typeof selector === "object" ? selector : buildQuery(selector);
         let etablissement = await Annuaire.findOne(query).lean();
         if (!etablissement) {
           return;
@@ -118,7 +121,7 @@ module.exports = async (...args) => {
 
         if (anomalies.length > 0) {
           stats[source].failed++;
-          await handleAnomalies(source, selector, anomalies);
+          await handleAnomalies(source, query, anomalies);
         }
 
         let res = await Annuaire.updateOne(
@@ -141,9 +144,9 @@ module.exports = async (...args) => {
         let nbModifiedDocuments = getNbModifiedDocuments(res);
         if (nbModifiedDocuments) {
           stats[source].updated += nbModifiedDocuments;
-          logger.info(`[Annuaire][Collect][${source}] Etablissement ${selector} updated`);
+          logger.info(`[Annuaire][Collect][${source}] Etablissement ${etablissement.siret} updated`);
         } else {
-          logger.debug(`[Annuaire][Collect][${source}] Etablissement ${selector} ignored`);
+          logger.debug(`[Annuaire][Collect][${source}] Etablissement ${etablissement.siret} ignored`);
         }
       } catch (e) {
         stats[source].failed++;
