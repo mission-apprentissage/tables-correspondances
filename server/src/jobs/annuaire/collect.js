@@ -8,8 +8,11 @@ const { validateUAI } = require("../../common/utils/uaiUtils");
 const logger = require("../../common/logger");
 
 function buildQuery(selector) {
-  if (isEmpty(selector)) {
-    throw new Error("Select must not be empty");
+  if (typeof selector === "object") {
+    if (isEmpty(selector)) {
+      throw new Error("Select must not be empty");
+    }
+    return selector;
   }
 
   return { $or: [{ siret: selector }, { "uais.uai": selector }] };
@@ -51,9 +54,14 @@ async function buildRelations(source, etablissement, relations) {
   );
 }
 
-async function handleAnomalies(query, source, anomalies) {
-  let etablissement = await Annuaire.findOneAndUpdate(
-    query,
+function handleAnomalies(etablissement, source, anomalies) {
+  logger.error(
+    `[Collect][${source}] Erreur lors de la collecte pour l'établissement ${etablissement.siret}.`,
+    anomalies
+  );
+
+  return Annuaire.updateOne(
+    { siret: etablissement.siret },
     {
       $push: {
         "_meta.anomalies": {
@@ -69,12 +77,7 @@ async function handleAnomalies(query, source, anomalies) {
         },
       },
     },
-    { runValidators: true, new: true }
-  );
-
-  logger.error(
-    `[Collect][${source}] Erreur lors de la collecte pour l'établissement ${etablissement.siret}.`,
-    anomalies
+    { runValidators: true }
   );
 }
 
@@ -115,17 +118,16 @@ module.exports = async (...args) => {
     }),
     writeData(async ({ source, selector, uais = [], relations = [], reseaux = [], data = {}, anomalies = [] }) => {
       stats[source].total++;
-      let query = typeof selector === "object" ? selector : buildQuery(selector);
+      let query = buildQuery(selector);
+      let etablissement = await Annuaire.findOne(query).lean();
+      if (!etablissement) {
+        return;
+      }
 
       try {
-        let etablissement = await Annuaire.findOne(query).lean();
-        if (!etablissement) {
-          return;
-        }
-
         if (anomalies.length > 0) {
           stats[source].failed++;
-          await handleAnomalies(query, source, anomalies);
+          await handleAnomalies(etablissement, source, anomalies);
         }
 
         let res = await Annuaire.updateOne(
@@ -154,7 +156,7 @@ module.exports = async (...args) => {
         }
       } catch (e) {
         stats[source].failed++;
-        await handleAnomalies(query, source, [e]);
+        await handleAnomalies(etablissement, source, [e]);
       }
     })
   );
