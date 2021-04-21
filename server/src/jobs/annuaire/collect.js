@@ -51,10 +51,8 @@ async function buildRelations(source, etablissement, relations) {
   );
 }
 
-function handleAnomalies(source, query, anomalies) {
-  logger.error(`[Collect][${source}] Erreur lors de la collecte pour l'établissement ${query}.`, anomalies);
-
-  return Annuaire.updateOne(
+async function handleAnomalies(query, source, anomalies) {
+  let etablissement = await Annuaire.findOneAndUpdate(
     query,
     {
       $push: {
@@ -71,7 +69,12 @@ function handleAnomalies(source, query, anomalies) {
         },
       },
     },
-    { runValidators: true }
+    { runValidators: true, new: true }
+  );
+
+  logger.error(
+    `[Collect][${source}] Erreur lors de la collecte pour l'établissement ${etablissement.siret}.`,
+    anomalies
   );
 }
 
@@ -112,8 +115,9 @@ module.exports = async (...args) => {
     }),
     writeData(async ({ source, selector, uais = [], relations = [], reseaux = [], data = {}, anomalies = [] }) => {
       stats[source].total++;
+      let query = typeof selector === "object" ? selector : buildQuery(selector);
+
       try {
-        let query = typeof selector === "object" ? selector : buildQuery(selector);
         let etablissement = await Annuaire.findOne(query).lean();
         if (!etablissement) {
           return;
@@ -121,7 +125,7 @@ module.exports = async (...args) => {
 
         if (anomalies.length > 0) {
           stats[source].failed++;
-          await handleAnomalies(source, query, anomalies);
+          await handleAnomalies(query, source, anomalies);
         }
 
         let res = await Annuaire.updateOne(
@@ -150,7 +154,7 @@ module.exports = async (...args) => {
         }
       } catch (e) {
         stats[source].failed++;
-        await handleAnomalies(source, selector, [e]);
+        await handleAnomalies(query, source, [e]);
       }
     })
   );
