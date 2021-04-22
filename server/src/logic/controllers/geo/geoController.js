@@ -138,7 +138,7 @@ class GeoController {
   }
 
   async findGeoCoordinateFromAdresse({ numero_voie, type_voie, nom_voie, code_postal, localite }) {
-    const { geo_coordonnees } = await geoAdresseData.getGeoCoordinateFromAdresse({
+    const { geo_coordonnees, results_count } = await geoAdresseData.getGeoCoordinateFromAdresse({
       numero_voie,
       type_voie,
       nom_voie,
@@ -149,6 +149,7 @@ class GeoController {
     return {
       info: `Ok`,
       value: geo_coordonnees,
+      count: results_count,
     };
   }
 

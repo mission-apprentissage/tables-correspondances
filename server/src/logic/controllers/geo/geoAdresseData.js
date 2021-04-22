@@ -27,6 +27,7 @@ class GeoAdresseData {
       // cas particulier concernant un unique college à saint barth'
       return {
         geo_coordonnees: "17.896279,-62.849772", // format "lat,long"
+        results_count: 1,
       };
     }
 
@@ -36,6 +37,7 @@ class GeoAdresseData {
       );
       return {
         geo_coordonnees: null,
+        results_count: 0,
       };
     }
 
@@ -66,6 +68,7 @@ class GeoAdresseData {
     if (!responseApiAdresse)
       return {
         geo_coordonnees: null,
+        results_count: 0,
       };
 
     if (responseApiAdresse.features.length === 0) {
@@ -80,6 +83,7 @@ class GeoAdresseData {
       );
       return {
         geo_coordonnees: null,
+        results_count: 0,
       };
     }
 
@@ -100,6 +104,7 @@ class GeoAdresseData {
 
     return {
       geo_coordonnees: `${geojson.features[0].geometry.coordinates[1]},${geojson.features[0].geometry.coordinates[0]}`, // format "lat,long"
+      results_count: geojson.features.length,
     };
   }
 

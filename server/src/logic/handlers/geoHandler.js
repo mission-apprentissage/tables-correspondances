@@ -61,6 +61,7 @@ const getCoordinatesFromAddressData = async ({ numero_voie, type_voie, nom_voie,
   return {
     result: {
       geo_coordonnees: coordUpdated.value,
+      results_count: coordUpdated.count,
     },
     messages: {
       geo_coordonnees: coordUpdated.info,
