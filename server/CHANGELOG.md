@@ -1,3 +1,10 @@
+# [2.11.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.10.1...v2.11.0) (2021-04-22)
+
+
+### Features
+
+* **sdk:** Add coordinates method ([#141](https://github.com/mission-apprentissage/tables-correspondances/issues/141)) ([97754aa](https://github.com/mission-apprentissage/tables-correspondances/commit/97754aa77b1cb4e9b1ad39fea8c2c9d3eee775ce))
+
 ## [2.10.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.10.0...v2.10.1) (2021-04-19)
 
 
