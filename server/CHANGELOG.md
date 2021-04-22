@@ -1,3 +1,10 @@
+# [2.12.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.11.0...v2.12.0) (2021-04-22)
+
+
+### Features
+
+* **sdk:** add result count to geo coordinates method ([#142](https://github.com/mission-apprentissage/tables-correspondances/issues/142)) ([8308bf2](https://github.com/mission-apprentissage/tables-correspondances/commit/8308bf2928f47cd179a3fb54a5624b7c47aa56d7))
+
 # [2.11.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.10.1...v2.11.0) (2021-04-22)
 
 
