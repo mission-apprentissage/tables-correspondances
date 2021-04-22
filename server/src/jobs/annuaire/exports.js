@@ -12,7 +12,7 @@ module.exports = {
             Siret: (a) => a.siret,
             "Raison sociale": (a) => a.raison_sociale,
             UAIs: (a) => a.uais.map(({ uai }) => uai).join("|"),
-            Sources: (a) => a.uais.map(({ type }) => type).join("|"),
+            Sources: (a) => a.uais.flatMap(({ sources }) => sources).join("|"),
           },
         });
 
