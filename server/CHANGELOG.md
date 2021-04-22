@@ -1,3 +1,10 @@
+# [2.13.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.12.0...v2.13.0) (2021-04-22)
+
+
+### Features
+
+* Add rate limit to API address call ([#143](https://github.com/mission-apprentissage/tables-correspondances/issues/143)) ([ad1f5d6](https://github.com/mission-apprentissage/tables-correspondances/commit/ad1f5d6fb6a931975f084670327dac9f22274e2e))
+
 # [2.12.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.11.0...v2.12.0) (2021-04-22)
 
 
