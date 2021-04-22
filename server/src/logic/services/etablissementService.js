@@ -1,7 +1,7 @@
 const logger = require("../../common/logger");
 //const Joi = require("joi");
 const { getDataFromSiret } = require("../handlers/siretHandler");
-const { getDataFromCP, getCoordaniteFromAdresseData } = require("../handlers/geoHandler");
+const { getDataFromCP, getCoordinatesFromAddressData } = require("../handlers/geoHandler");
 const conventionController = require("../controllers/conventionController");
 const { findOnisepInfosEtablissementFromUAI } = require("../controllers/onisep/onisepController");
 const { diffEtablissement } = require("../../common/utils/diffUtils");
@@ -116,7 +116,7 @@ const etablissementService = async (
     // GEOLOC DATA
     if (scope.geoloc) {
       // console.log("Update geoloc info");
-      const { result: geoMapping, messages: geoMessages } = await getCoordaniteFromAdresseData({
+      const { result: geoMapping, messages: geoMessages } = await getCoordinatesFromAddressData({
         numero_voie: current.numero_voie,
         type_voie: current.type_voie,
         nom_voie: current.nom_voie,
