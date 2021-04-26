@@ -1,3 +1,10 @@
+# [2.14.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.13.0...v2.14.0) (2021-04-26)
+
+
+### Features
+
+* **sdk:** add closing date to api cfd ([#144](https://github.com/mission-apprentissage/tables-correspondances/issues/144)) ([b8f0705](https://github.com/mission-apprentissage/tables-correspondances/commit/b8f0705bb7b8957a1b7fa53f3b64e71a0be4f416))
+
 # [2.13.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.12.0...v2.13.0) (2021-04-22)
 
 
