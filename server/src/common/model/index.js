@@ -32,6 +32,7 @@ module.exports = {
     collectionName: "annuaire",
     createMongoDBIndexes: (schema) => {
       schema.index({ "$**": "text" }, { default_language: "french" });
+      schema.index({ "adresse.geojson.geometry": "2dsphere" });
     },
   }),
   AnnuaireStats: createModel("annuaireStats", schema.annuaireStatsSchema, {
