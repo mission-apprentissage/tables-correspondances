@@ -1,3 +1,10 @@
+# [2.15.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.14.0...v2.15.0) (2021-04-29)
+
+
+### Features
+
+* **sdk:** rncpImporter arg to read CFD kit file ([#146](https://github.com/mission-apprentissage/tables-correspondances/issues/146)) ([232dcd6](https://github.com/mission-apprentissage/tables-correspondances/commit/232dcd6d2a05e1125a4557c449ee8caa89d66909))
+
 # [2.14.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.13.0...v2.14.0) (2021-04-26)
 
 
