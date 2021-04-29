@@ -9,7 +9,7 @@ const AnomaliesTable = ({ anomalies }) => {
     <Table>
       <Table.Header>
         <Table.Row>
-          <Table.ColHeader>Type</Table.ColHeader>
+          <Table.ColHeader>Tâche</Table.ColHeader>
           <Table.ColHeader>Source</Table.ColHeader>
           <Table.ColHeader>Date</Table.ColHeader>
           <Table.ColHeader>Message</Table.ColHeader>
@@ -19,7 +19,7 @@ const AnomaliesTable = ({ anomalies }) => {
         {anomalies.map((ano, index) => {
           return (
             <Table.Row key={index}>
-              <Table.Col>{ano.type}</Table.Col>
+              <Table.Col>{ano.task}</Table.Col>
               <Table.Col>{ano.source}</Table.Col>
               <Table.Col>{ano.date}</Table.Col>
               <Table.Col>{ano.details}</Table.Col>
