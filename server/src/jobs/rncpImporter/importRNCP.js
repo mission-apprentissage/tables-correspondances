@@ -46,8 +46,8 @@ const downloadFromFtp = async () => {
   }
 };
 
-const importerRncpCfdFile = (fileName) => {
-  return getJsonFromCsvFile(path.join(__dirname, fileName))
+const importerRncpCfdFile = (filePath) => {
+  return getJsonFromCsvFile(filePath)
     .map((fk) => ({
       code_rncp: fk["Code RNCP"],
       cfds: [fk["Code Diplome"]],
@@ -55,14 +55,16 @@ const importerRncpCfdFile = (fileName) => {
     .filter((e) => e.code_rncp !== "NR");
 };
 
-const getFichesRncp = async () => {
+const CFD_KIT_LOCAL_PATH = path.join(__dirname, "./assets", "CodeDiplome_RNCP_latest_kit.csv");
+
+const getFichesRncp = async (cfdKitPath) => {
   const fichesXMLInputStream = await downloadFromFtp(); // getFileFromS3("mna-services/features/rncp/export_fiches_RNCP_V2_0_latest.xml");
   logger.info("Parsing Fiches XML");
   let { fiches: fichesXML } = await parseFichesFile(fichesXMLInputStream);
   sftp.end();
 
-  const rncpCfdKit = importerRncpCfdFile("./assets/CodeDiplome_RNCP_latest_kit.csv");
-  const rncpCfdMna = importerRncpCfdFile("./assets/CodeDiplome_RNCP_latest_mna.csv");
+  const rncpCfdKit = importerRncpCfdFile(cfdKitPath ?? CFD_KIT_LOCAL_PATH);
+  const rncpCfdMna = importerRncpCfdFile(path.join(__dirname, "./assets/CodeDiplome_RNCP_latest_mna.csv"));
 
   const rncpCfd = [...rncpCfdKit, ...rncpCfdMna].reduce((acc, cur) => {
     const existType = acc.find((a) => a.code_rncp === cur.code_rncp);
@@ -91,9 +93,9 @@ const getFichesRncp = async () => {
 };
 
 // eslint-disable-next-line no-unused-vars
-module.exports = async (localPath = null) => {
+module.exports = async (cfdKitPath = null) => {
   logger.info("Loading Kit Apprentissage FC - RNCP referentiel...");
-  const fichesRncp = await getFichesRncp();
+  const fichesRncp = await getFichesRncp(cfdKitPath);
   logger.info("Add fiches to db...");
 
   try {
