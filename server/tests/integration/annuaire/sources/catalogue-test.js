@@ -7,7 +7,7 @@ const { createSource } = require("../../../../src/jobs/annuaire/sources/sources"
 const collect = require("../../../../src/jobs/annuaire/collect");
 const { importReferentiel } = require("../../../utils/testUtils");
 const { getMockedApiGeoAddresse, getMockedApiCatalogue } = require("../../../utils/apiMocks");
-const { createAnnuaire } = require("../../../utils/fixtures");
+const { insertAnnuaire } = require("../../../utils/fixtures");
 
 function createFormationsSource(custom = {}) {
   return createSource("catalogue", {
@@ -521,7 +521,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut filter par siret", async () => {
-    await createAnnuaire({
+    await insertAnnuaire({
       siret: "11111111100000",
     });
     let source = await createFormationsSource();
@@ -539,7 +539,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on peut détecter des relations avec des établissements déjà dans l'annuaire", async () => {
     await importReferentiel();
-    await createAnnuaire({ siret: "22222222222222", raison_sociale: "Mon centre de formation" });
+    await insertAnnuaire({ siret: "22222222222222", raison_sociale: "Mon centre de formation" });
     let source = await createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
