@@ -109,6 +109,12 @@ const annuaireSchema = {
       { _id: false }
     ),
   },
+  gestionnaire: {
+    type: Boolean,
+  },
+  formateur: {
+    type: Boolean,
+  },
   referentiels: {
     type: [String],
     required: true,

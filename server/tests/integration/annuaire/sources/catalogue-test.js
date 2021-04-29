@@ -45,6 +45,8 @@ integrationTests(__filename, () => {
     let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    assert.ok(found.gestionnaire);
+    assert.ok(!found.formateur);
     assert.deepStrictEqual(found.relations, [
       {
         siret: "22222222222222",
@@ -86,6 +88,8 @@ integrationTests(__filename, () => {
     await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    assert.ok(!found.gestionnaire);
+    assert.ok(found.formateur);
     assert.deepStrictEqual(found.relations, [
       {
         siret: "22222222222222",
@@ -95,6 +99,36 @@ integrationTests(__filename, () => {
         sources: ["catalogue"],
       },
     ]);
+  });
+
+  it("Vérifie que seuls les établissements avec au moins une formation active en 2021 sont formateurs", async () => {
+    await importReferentiel();
+    let source = await createFormationsSource({
+      apiCatalogue: getMockedApiCatalogue((mock, responses) => {
+        mock.onGet(/.*formations(?!2021).*/).reply(
+          200,
+          responses.formations({
+            formations: [
+              {
+                etablissement_gestionnaire_siret: "22222222222222",
+                etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
+                etablissement_formateur_siret: "11111111111111",
+                etablissement_formateur_entreprise_raison_sociale: "Etablissement",
+              },
+            ],
+          })
+        );
+        mock.onGet(/.*formations2021.*/).reply(200, {
+          formations: [],
+        });
+      }),
+    });
+
+    await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    assert.ok(!found.gestionnaire);
+    assert.ok(!found.formateur);
   });
 
   it("Vérifie qu'on peut collecter des diplômes (cfd)", async () => {

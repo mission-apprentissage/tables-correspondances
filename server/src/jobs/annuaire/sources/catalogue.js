@@ -145,6 +145,8 @@ module.exports = async (custom = {}) => {
                   lieux_de_formation: lieux,
                   diplomes,
                   certifications,
+                  gestionnaire: !!relations.find((r) => r.type === "formateur"),
+                  formateur: !!relations.find((r) => r.type === "gestionnaire") && _2021.length > 0,
                 },
               };
             } catch (e) {
