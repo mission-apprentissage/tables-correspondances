@@ -10,6 +10,7 @@ const bcnNMefSchema = require("./bcnNMef");
 const bcnNDispositifFormationSchema = require("./bcnNDispositifFormation");
 const etablissementSchema = require("./etablissement");
 const annuaireSchema = require("./annuaire");
+const annuaireStatsSchema = require("./annuaireStats");
 const conventionFileSchema = require("./conventionFile");
 const onisepSchema = require("./onisep");
 
@@ -28,6 +29,7 @@ module.exports = {
   ficheRncpSchema,
   etablissementSchema,
   annuaireSchema,
+  annuaireStatsSchema,
   conventionFileSchema,
   codeIdccOpcoSchema,
   codeEnCodesIdccSchema,

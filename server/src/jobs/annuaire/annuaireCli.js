@@ -9,6 +9,7 @@ const cleanAll = require("./cleanAll");
 const importReferentiel = require("./importReferentiel");
 const collect = require("./collect");
 const etablissementAsCsvStream = require("./utils/etablissementAsCsvStream");
+const computeStats = require("./computeStats");
 
 cli
   .command("clean")
@@ -70,6 +71,15 @@ cli
       let input = etablissementAsCsvStream({ filter, limit });
 
       return oleoduc(input, out || writeToStdout());
+    });
+  });
+
+cli
+  .command("stats")
+  .description("Génère les statistiques de l'annuaire")
+  .action(() => {
+    runScript(() => {
+      return computeStats();
     });
   });
 

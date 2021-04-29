@@ -3,7 +3,7 @@ const { isEmpty } = require("lodash");
 const Boom = require("boom");
 const { oleoduc, transformIntoJSON } = require("oleoduc");
 const Joi = require("joi");
-const { Annuaire } = require("../../common/model");
+const { Annuaire, AnnuaireStats } = require("../../common/model");
 const { paginateAggregationWithCursor } = require("../../common/utils/mongooseUtils");
 const { sendJsonStream } = require("../utils/httpUtils");
 const buildProjection = require("../utils/buildProjection");
@@ -202,6 +202,21 @@ module.exports = () => {
       delete etablissement._id;
       delete etablissement._meta;
       return res.json(etablissement);
+    })
+  );
+
+  router.get(
+    "/stats",
+    tryCatch(async (req, res) => {
+      sendJsonStream(
+        oleoduc(
+          AnnuaireStats.find({}, { _id: 0 }).sort({ created_at: -1 }).lean().cursor(),
+          transformIntoJSON({
+            arrayPropertyName: "stats",
+          })
+        ),
+        res
+      );
     })
   );
 

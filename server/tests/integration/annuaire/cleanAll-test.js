@@ -6,12 +6,7 @@ const { insertAnnuaire } = require("../../utils/fixtures");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut supprimer un annuaire", async () => {
-    await insertAnnuaire({
-      uai: "0011058V",
-      siret: "11111111111111",
-      raison_sociale: "Centre de formation",
-      uais: [],
-    });
+    await insertAnnuaire();
 
     let stats = await cleanAll();
 
