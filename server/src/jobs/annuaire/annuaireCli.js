@@ -8,7 +8,7 @@ const { createSource, getDefaultSourcesGroupedByPriority } = require("./sources/
 const cleanAll = require("./cleanAll");
 const importReferentiel = require("./importReferentiel");
 const collect = require("./collect");
-const { exportAnnuaire } = require("./exports");
+const exportAnnuaire = require("./exportAnnuaire");
 
 cli
   .command("clean")
