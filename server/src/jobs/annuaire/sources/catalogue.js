@@ -112,7 +112,7 @@ async function buildLieuxDeFormation(siret, formations, getAdresseFromCoordinate
 }
 
 module.exports = async (custom = {}) => {
-  let name = "formations";
+  let name = "catalogue";
   let api = custom.apiCatalogue || new ApiCatalogue();
   let { getAdresseFromCoordinates } = adresses(custom.apiGeoAdresse || new ApiGeoAdresse());
 

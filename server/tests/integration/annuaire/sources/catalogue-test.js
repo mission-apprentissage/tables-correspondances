@@ -10,7 +10,7 @@ const { getMockedApiGeoAddresse, getMockedApiCatalogue } = require("../../../uti
 const { createAnnuaire } = require("../../../utils/fixtures");
 
 function createFormationsSource(custom = {}) {
-  return createSource("formations", {
+  return createSource("catalogue", {
     apiCatalogue: getMockedApiCatalogue((mock, responses) => {
       mock.onGet(/.*formations.*/).reply(200, responses.formations());
     }),
@@ -51,11 +51,11 @@ integrationTests(__filename, () => {
         label: "Etablissement",
         annuaire: false,
         type: "formateur",
-        sources: ["formations"],
+        sources: ["catalogue"],
       },
     ]);
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 1,
         updated: 1,
         failed: 0,
@@ -92,7 +92,7 @@ integrationTests(__filename, () => {
         label: "Entreprise",
         annuaire: false,
         type: "gestionnaire",
-        sources: ["formations"],
+        sources: ["catalogue"],
       },
     ]);
   });
@@ -128,7 +128,7 @@ integrationTests(__filename, () => {
       },
     ]);
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 1,
         updated: 1,
         failed: 0,
@@ -199,7 +199,7 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.diplomes, []);
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 1,
         updated: 1,
         failed: 0,
@@ -239,7 +239,7 @@ integrationTests(__filename, () => {
       },
     ]);
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 1,
         updated: 1,
         failed: 0,
@@ -273,7 +273,7 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.certifications, []);
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 1,
         updated: 1,
         failed: 0,
@@ -346,7 +346,7 @@ integrationTests(__filename, () => {
       },
     });
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 1,
         updated: 1,
         failed: 0,
@@ -380,7 +380,7 @@ integrationTests(__filename, () => {
 
     assert.deepStrictEqual(found.lieux_de_formation, []);
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 1,
         updated: 1,
         failed: 0,
@@ -434,7 +434,7 @@ integrationTests(__filename, () => {
       },
     });
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 1,
         updated: 1,
         failed: 0,
@@ -472,13 +472,13 @@ integrationTests(__filename, () => {
     assert.strictEqual(found._meta.anomalies.length, 1);
     assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
       task: "collect",
-      source: "formations",
+      source: "catalogue",
       details:
         "Lieu de formation inconnu : 31 rue des lilas. " +
         "Adresse inconnue pour les coordonnées latitude:2.396444 et longitude:48.879706",
     });
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 1,
         updated: 1,
         failed: 1,
@@ -495,7 +495,7 @@ integrationTests(__filename, () => {
     let stats = await collect(source, { filters: { siret: "33333333333333" } });
 
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 0,
         updated: 0,
         failed: 0,
@@ -544,7 +544,7 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
     assert.deepStrictEqual(found._meta.anomalies[0].details, "[api] HTTP error");
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 1,
         updated: 0,
         failed: 1,
