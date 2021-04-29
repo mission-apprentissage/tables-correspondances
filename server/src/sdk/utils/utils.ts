@@ -54,7 +54,7 @@ export async function getCpInfo(codePostal: string) {
   }
 }
 
-export async function rncpImporter(localPath = null) {
+export async function rncpImporter(localPath: string | null = null) {
   isSdkReady();
   try {
     let { rncpImporter: importer } = await import("../../jobs/rncpImporter");

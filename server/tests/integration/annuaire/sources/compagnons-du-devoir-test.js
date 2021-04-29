@@ -8,7 +8,7 @@ const { createAnnuaire } = require("../../../utils/fixtures");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier compagnons-du-devoir", async () => {
-    await createAnnuaire({ siret: "11111111111111", uai: "1111111A" });
+    await createAnnuaire({ siret: "11111111111111" });
     let source = await createSource("compagnons-du-devoir", {
       input: createStream(
         `siret;uai
