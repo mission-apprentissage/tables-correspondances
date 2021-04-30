@@ -112,7 +112,7 @@ async function buildLieuxDeFormation(siret, formations, getAdresseFromCoordinate
 }
 
 module.exports = async (custom = {}) => {
-  let name = "formations";
+  let name = "catalogue";
   let api = custom.apiCatalogue || new ApiCatalogue();
   let { getAdresseFromCoordinates } = adresses(custom.apiGeoAdresse || new ApiGeoAdresse());
 
@@ -145,6 +145,8 @@ module.exports = async (custom = {}) => {
                   lieux_de_formation: lieux,
                   diplomes,
                   certifications,
+                  gestionnaire: !!relations.find((r) => r.type === "formateur"),
+                  formateur: !!relations.find((r) => r.type === "gestionnaire") && _2021.length > 0,
                 },
               };
             } catch (e) {

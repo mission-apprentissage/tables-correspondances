@@ -78,20 +78,47 @@ const annuaireSchema = {
     type: String,
     description: "La raison sociale de l'établissement",
   },
-  referentiels: {
-    type: [String],
-    required: true,
-    description: "Le nom du référentiel depuis lequel a été importé l'établissement",
-  },
   siege_social: {
     type: Boolean,
     required: true,
-    description: "Le siège social",
+    description: "Le siège social de l'entreprise",
   },
   statut: {
     type: String,
     required: true,
     description: "Statut de l'entreprise",
+  },
+  adresse: {
+    type: adresseSchema,
+  },
+  forme_juridique: {
+    description: "Informations relatives à la forme juridique de l'entreprise",
+    type: new Schema(
+      {
+        code: {
+          type: String,
+          required: true,
+          description: "Le code la forme juridique",
+        },
+        label: {
+          type: String,
+          required: true,
+          description: "Le nom de la forme juridique",
+        },
+      },
+      { _id: false }
+    ),
+  },
+  gestionnaire: {
+    type: Boolean,
+  },
+  formateur: {
+    type: Boolean,
+  },
+  referentiels: {
+    type: [String],
+    required: true,
+    description: "Le nom du référentiel depuis lequel a été importé l'établissement",
   },
   reseaux: {
     type: [String],
@@ -108,27 +135,6 @@ const annuaireSchema = {
         nom: {
           type: String,
           required: true,
-        },
-      },
-      { _id: false }
-    ),
-  },
-  adresse: {
-    type: adresseSchema,
-  },
-  forme_juridique: {
-    description: "Informations relatives à la forme juridique de l'établissement",
-    type: new Schema(
-      {
-        code: {
-          type: String,
-          required: true,
-          description: "Le code la forme juridique",
-        },
-        label: {
-          type: String,
-          required: true,
-          description: "Le nom de la forme juridique",
         },
       },
       { _id: false }
@@ -201,6 +207,7 @@ const annuaireSchema = {
           },
           type: {
             type: String,
+            enum: ["formateur", "gestionnaire"],
             default: undefined,
           },
         },
@@ -245,6 +252,7 @@ const annuaireSchema = {
           },
           type: {
             type: String,
+            enum: ["rncp"],
             required: true,
           },
         },
@@ -273,6 +281,7 @@ const annuaireSchema = {
           },
           type: {
             type: String,
+            enum: ["cfd"],
             required: true,
           },
         },

@@ -4,11 +4,11 @@ const integrationTests = require("../../../utils/integrationTests");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
 const collect = require("../../../../src/jobs/annuaire/collect");
 const { createStream } = require("../../../utils/testUtils");
-const { createAnnuaire } = require("../../../utils/fixtures");
+const { insertAnnuaire } = require("../../../utils/fixtures");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier mfr avec le siret", async () => {
-    await createAnnuaire({ siret: "11111111111111" });
+    await insertAnnuaire({ siret: "11111111111111" });
     let source = await createSource("mfr", {
       input: createStream(
         `uai;uai_code_educnationale;siret
@@ -42,7 +42,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut collecter des informations du fichier mfr avec un uai", async () => {
-    await createAnnuaire({
+    await insertAnnuaire({
       uais: [
         {
           sources: ["mfr"],
@@ -70,7 +70,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut collecter des informations du fichier mfr avec un uai_code_educnationale", async () => {
-    await createAnnuaire({
+    await insertAnnuaire({
       uais: [
         {
           sources: ["mfr"],

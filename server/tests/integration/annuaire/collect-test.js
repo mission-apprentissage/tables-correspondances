@@ -4,7 +4,7 @@ const { oleoduc, transformData } = require("oleoduc");
 const { Readable } = require("stream");
 const { Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
-const { createAnnuaire } = require("../../utils/fixtures");
+const { insertAnnuaire } = require("../../utils/fixtures");
 const collect = require("../../../src/jobs/annuaire/collect");
 
 integrationTests(__filename, () => {
@@ -23,7 +23,7 @@ integrationTests(__filename, () => {
   }
 
   it("Vérifie qu'on peut collecter un uai", async () => {
-    await createAnnuaire({ siret: "111111111111111" });
+    await insertAnnuaire({ siret: "111111111111111" });
     let source = createTestSource([
       {
         selector: "111111111111111",
@@ -51,7 +51,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on teste la validité d'un UAI", async () => {
-    await createAnnuaire({ siret: "111111111111111" });
+    await insertAnnuaire({ siret: "111111111111111" });
     let source = createTestSource([
       {
         selector: "111111111111111",
@@ -83,7 +83,7 @@ integrationTests(__filename, () => {
         uais: ["0011073L"],
       },
     ]);
-    await createAnnuaire({
+    await insertAnnuaire({
       uai: "0011058V",
       siret: "111111111111111",
       uais: [
@@ -115,7 +115,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on fusionne un uai déjà collecté part une autre source", async () => {
-    await createAnnuaire({
+    await insertAnnuaire({
       siret: "111111111111111",
       uais: [
         {
@@ -145,7 +145,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on ignore un uai avec une donnée invalide", async () => {
-    await createAnnuaire({ siret: "111111111111111" });
+    await insertAnnuaire({ siret: "111111111111111" });
     let source = createTestSource([
       {
         selector: "111111111111111",
@@ -167,7 +167,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on ignore un établissement quand il est inconnu", async () => {
-    await createAnnuaire({ siret: "222222222222222" });
+    await insertAnnuaire({ siret: "222222222222222" });
     let source = createTestSource([
       {
         selector: "111111111111111",
@@ -189,7 +189,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on stocke une erreur survenue durant une collecte", async () => {
-    await createAnnuaire({ siret: "111111111111111" });
+    await insertAnnuaire({ siret: "111111111111111" });
     let source = createTestSource([
       {
         selector: "111111111111111",
@@ -217,7 +217,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on stocke une erreur survenue technique", async () => {
-    await createAnnuaire({ siret: "111111111111111" });
+    await insertAnnuaire({ siret: "111111111111111" });
     let source = createTestSource([
       {
         selector: "111111111111111",
@@ -245,7 +245,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on rejete un selecteur vide", async () => {
-    await createAnnuaire({ siret: "111111111111111" });
+    await insertAnnuaire({ siret: "111111111111111" });
     let source = createTestSource([
       {
         selector: {},
@@ -262,7 +262,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut collecter des relations", async () => {
-    await createAnnuaire({ siret: "111111111111111" });
+    await insertAnnuaire({ siret: "111111111111111" });
     let source = createTestSource([
       {
         selector: "111111111111111",
@@ -285,7 +285,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut fusionner une relation déjà collectée", async () => {
-    await createAnnuaire({
+    await insertAnnuaire({
       siret: "111111111111111",
       relations: [
         {
@@ -311,7 +311,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on ne duplique pas les relations", async () => {
-    await createAnnuaire({
+    await insertAnnuaire({
       siret: "111111111111111",
       relations: [
         {
@@ -339,8 +339,8 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut détecter des relations entre établissements de l'annuaire", async () => {
-    await createAnnuaire({ siret: "11111111111111" });
-    await createAnnuaire({ siret: "22222222222222", raison_sociale: "Centre de formation" });
+    await insertAnnuaire({ siret: "11111111111111" });
+    await insertAnnuaire({ siret: "22222222222222", raison_sociale: "Centre de formation" });
     let source = createTestSource([
       {
         selector: "11111111111111",
@@ -362,7 +362,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut collecter des reseaux", async () => {
-    await createAnnuaire({ siret: "111111111111111" });
+    await insertAnnuaire({ siret: "111111111111111" });
     let source = createTestSource([
       {
         selector: "111111111111111",
@@ -377,7 +377,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on ne duplique pas les reseaux", async () => {
-    await createAnnuaire({
+    await insertAnnuaire({
       siret: "111111111111111",
       reseaux: ["test"],
     });
@@ -395,7 +395,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut filter par siret", async () => {
-    await createAnnuaire({ siret: "111111111111111" });
+    await insertAnnuaire({ siret: "111111111111111" });
     let source = createTestSource([
       {
         selector: "111111111111111",
@@ -415,7 +415,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut collecter en se basant sur un uai", async () => {
-    await createAnnuaire({
+    await insertAnnuaire({
       uai: "0011073X",
       siret: "111111111111111",
       uais: [
