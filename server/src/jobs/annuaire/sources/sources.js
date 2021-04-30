@@ -32,7 +32,7 @@ module.exports = {
         "promotrans",
         "ideo2",
         "tables-correspondances",
-        "formations",
+        "catalogue",
         "sirene",
       ],
       ["academie"],

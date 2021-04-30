@@ -3,7 +3,7 @@ const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
 const collect = require("../../../../src/jobs/annuaire/collect");
-const { createAnnuaire } = require("../../../utils/fixtures");
+const { insertAnnuaire } = require("../../../utils/fixtures");
 const { getMockedApiEsSup } = require("../../../utils/apiMocks");
 
 function createAcademieSource(custom = {}) {
@@ -17,7 +17,7 @@ function createAcademieSource(custom = {}) {
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations de l'académie", async () => {
-    await createAnnuaire({
+    await insertAnnuaire({
       siret: "11111111100000",
       adresse: {
         code_insee: "75000",
@@ -42,7 +42,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut filter par siret", async () => {
-    await createAnnuaire({
+    await insertAnnuaire({
       siret: "11111111100000",
     });
     let source = await createAcademieSource();
@@ -59,7 +59,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on ignore les établissements sans adresse", async () => {
-    await createAnnuaire({
+    await insertAnnuaire({
       siret: "11111111100000",
       adresse: null,
     });
@@ -77,7 +77,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on gère une anomalie quand on ne peut pas collecter d'informations", async () => {
-    await createAnnuaire({
+    await insertAnnuaire({
       siret: "11111111100000",
       adresse: {
         code_insee: "75000",
@@ -96,7 +96,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on gère une anomalie quand la réponse est vide", async () => {
-    await createAnnuaire({
+    await insertAnnuaire({
       siret: "11111111100000",
       adresse: {
         code_insee: "75000",

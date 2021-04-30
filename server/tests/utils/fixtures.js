@@ -9,7 +9,7 @@ module.exports = {
       valeur: "Valeur",
     },
   },
-  createAnnuaire: (custom) => {
+  insertAnnuaire: (custom) => {
     return Annuaire.create(
       merge(
         {},
