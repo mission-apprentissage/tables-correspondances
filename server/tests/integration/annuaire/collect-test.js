@@ -166,6 +166,28 @@ integrationTests(__filename, () => {
     });
   });
 
+  it("Vérifie qu'on ignore un établissement quand il est inconnu", async () => {
+    await createAnnuaire({ siret: "222222222222222" });
+    let source = createTestSource([
+      {
+        selector: "111111111111111",
+        uais: ["", null, "NULL"],
+      },
+    ]);
+
+    let stats = await collect(source);
+
+    let count = await Annuaire.countDocuments({ siret: "111111111111111" });
+    assert.strictEqual(count, 0);
+    assert.deepStrictEqual(stats, {
+      dummy: {
+        total: 1,
+        failed: 0,
+        updated: 0,
+      },
+    });
+  });
+
   it("Vérifie qu'on stocke une erreur survenue durant une collecte", async () => {
     await createAnnuaire({ siret: "111111111111111" });
     let source = createTestSource([
@@ -192,6 +214,51 @@ integrationTests(__filename, () => {
         updated: 0,
       },
     });
+  });
+
+  it("Vérifie qu'on stocke une erreur survenue technique", async () => {
+    await createAnnuaire({ siret: "111111111111111" });
+    let source = createTestSource([
+      {
+        selector: "111111111111111",
+        uais: null,
+      },
+    ]);
+
+    let stats = await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
+    let errors = found._meta.anomalies;
+    assert.ok(errors[0].date);
+    assert.deepStrictEqual(omit(errors[0], ["date"]), {
+      details: "Cannot read property 'filter' of null",
+      source: "dummy",
+      task: "collect",
+    });
+    assert.deepStrictEqual(stats, {
+      dummy: {
+        total: 1,
+        failed: 1,
+        updated: 0,
+      },
+    });
+  });
+
+  it("Vérifie qu'on rejete un selecteur vide", async () => {
+    await createAnnuaire({ siret: "111111111111111" });
+    let source = createTestSource([
+      {
+        selector: {},
+        uais: [],
+      },
+    ]);
+
+    try {
+      await collect(source);
+      assert.fail();
+    } catch (e) {
+      assert.strictEqual(e.message, "Select must not be empty");
+    }
   });
 
   it("Vérifie qu'on peut collecter des relations", async () => {

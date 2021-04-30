@@ -341,7 +341,9 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
       task: "collect",
       source: "sirene",
-      details: "Adresse inconnue pour les coordonnées latitude:2.396147 et longitude:48.880391",
+      details:
+        "Impossible de géolocaliser l'adresse de l'établissement: 31 rue des lilas Paris 75001. " +
+        "Adresse inconnue pour les coordonnées latitude:2.396147 et longitude:48.880391",
     });
     assert.deepStrictEqual(stats, {
       sirene: {
@@ -370,7 +372,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
       task: "collect",
       source: "sirene",
-      details: "Impossible de trouver la catégorie juridique",
+      details: "Impossible de trouver la catégorie juridique de l'entreprise : INVALID",
     });
     assert.deepStrictEqual(stats, {
       sirene: {

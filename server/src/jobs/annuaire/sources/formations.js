@@ -95,7 +95,7 @@ async function buildLieuxDeFormation(siret, formations, getAdresseFromCoordinate
         let adresse = await getAdresseFromCoordinates(longitude, latitude, {
           label: f.lieu_formation_adresse,
         }).catch((e) => {
-          anomalies.push(e);
+          anomalies.push(`Lieu de formation inconnu : ${f.lieu_formation_adresse}. ${e.message}`);
         });
 
         return adresse

@@ -17,6 +17,21 @@ export async function initTcoModel(mongooseInstanceFromParentProject: any) {
   }
 }
 
+let Models: any = null;
+export async function getModels() {
+  isSdkReady();
+  try {
+    if (!Models) {
+      Models = await import("../../common/model");
+    }
+
+    return Models;
+  } catch (error) {
+    console.error(`getModels: something went wrong!`, error);
+    return null;
+  }
+}
+
 // export async function tcoJobs(): Promise<any> {
 //   isSdkReady();
 //   try {
@@ -39,7 +54,7 @@ export async function getCpInfo(codePostal: string) {
   }
 }
 
-export async function rncpImporter(localPath = null) {
+export async function rncpImporter(localPath: string | null = null) {
   isSdkReady();
   try {
     let { rncpImporter: importer } = await import("../../jobs/rncpImporter");
@@ -87,7 +102,7 @@ export async function bcnImporter() {
 export interface cfdOptions {
   onisep: boolean;
 }
-export async function getCfdInfo(cfd: string, options: cfdOptions = { onisep: true } ) {
+export async function getCfdInfo(cfd: string, options: cfdOptions = { onisep: true }) {
   isSdkReady();
   try {
     let { getDataFromCfd } = await import("../../logic/handlers/cfdHandler");
@@ -151,6 +166,37 @@ export async function getBcnInfo({ page = 1, limit = 10, query = {} }) {
     };
   } catch (error) {
     console.error(`getBcnInfo: something went wrong!`, error);
+    return null;
+  }
+}
+
+type AddressData = {
+  numero_voie: string;
+  type_voie: string;
+  nom_voie: string;
+  localite: string;
+  code_postal: string;
+};
+
+export async function getCoordinatesFromAddressData({
+  numero_voie,
+  type_voie,
+  nom_voie,
+  localite,
+  code_postal,
+}: AddressData) {
+  isSdkReady();
+  try {
+    let { getCoordinatesFromAddressData } = await import("../../logic/handlers/geoHandler");
+    return await getCoordinatesFromAddressData({
+      numero_voie,
+      type_voie,
+      nom_voie,
+      localite,
+      code_postal,
+    });
+  } catch (error) {
+    console.error(`getCoordinatesFromAddressData: something went wrong!`, error);
     return null;
   }
 }

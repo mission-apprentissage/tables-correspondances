@@ -91,13 +91,17 @@ module.exports = async (custom = {}) => {
                     label: data.geo_adresse,
                   });
                 } catch (e) {
-                  anomalies.push(e);
+                  anomalies.push(
+                    `Impossible de géolocaliser l'adresse de l'établissement: ${data.geo_adresse}. ${e.message}`
+                  );
                 }
               }
 
               let formeJuridique = categoriesJuridiques.find((cj) => cj.code === uniteLegale.categorie_juridique);
               if (!formeJuridique) {
-                anomalies.push("Impossible de trouver la catégorie juridique");
+                anomalies.push(
+                  `Impossible de trouver la catégorie juridique de l'entreprise : ${uniteLegale.categorie_juridique}`
+                );
               }
 
               return {

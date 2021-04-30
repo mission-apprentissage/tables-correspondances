@@ -11,8 +11,12 @@ module.exports = {
           columns: {
             Siret: (a) => a.siret,
             "Raison sociale": (a) => a.raison_sociale,
+            Statut: (a) => a.statut,
+            "Code Postal": (a) => a.adresse.code_postal,
+            Ville: (a) => a.adresse.localite,
+            Reseaux: (a) => a.reseaux.join("|"),
             UAIs: (a) => a.uais.map(({ uai }) => uai).join("|"),
-            Sources: (a) => a.uais.map(({ type }) => type).join("|"),
+            Sources: (a) => a.uais.flatMap(({ sources }) => sources).join("|"),
           },
         });
 
