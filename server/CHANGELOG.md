@@ -1,3 +1,10 @@
+## [2.16.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.16.0...v2.16.1) (2021-05-03)
+
+
+### Bug Fixes
+
+* fix typo ([a53e27d](https://github.com/mission-apprentissage/tables-correspondances/commit/a53e27d71cf7124322daf40a79f1a925b9570654))
+
 # [2.16.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.15.0...v2.16.0) (2021-05-03)
 
 
