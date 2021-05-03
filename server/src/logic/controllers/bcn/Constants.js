@@ -46,9 +46,9 @@ const computeCodes = {
 
 const niveaux = [
   "3 (CAP...)",
-  "4 (Bac...)",
-  "5 (BTS, DUT...)",
-  "6 (Licence...)",
+  "4 (BAC...)",
+  "5 (BTS, DEUST...)",
+  "6 (Licence, BUT...)",
   "7 (Master, titre ingénieur...)",
   "8 (Doctorat...)",
 ];
