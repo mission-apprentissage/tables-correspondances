@@ -2,7 +2,7 @@ const express = require("express");
 const logger = require("../../common/logger");
 const Joi = require("joi");
 const tryCatch = require("../middlewares/tryCatchMiddleware");
-const { getCoordinatesFromAdressData } = require("../../logic/handlers/geoHandler");
+const { getCoordinatesFromAddressData } = require("../../logic/handlers/geoHandler");
 
 /**
  * Request body validation
@@ -72,7 +72,7 @@ module.exports = () => {
       await requestSchema.validateAsync(req.body, { abortEarly: false });
       const item = req.body;
       logger.info("Looking for data on give adresse: ", item);
-      const result = await getCoordinatesFromAdressData(item);
+      const result = await getCoordinatesFromAddressData(item);
       return res.json(result);
     })
   );
