@@ -1,3 +1,22 @@
+# [2.16.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.15.0...v2.16.0) (2021-05-03)
+
+
+### Bug Fixes
+
+* fix typo ([e76c5e5](https://github.com/mission-apprentissage/tables-correspondances/commit/e76c5e5087155b1d9a25c1b758d7da3275102bee))
+* ofusc some field ([67d531c](https://github.com/mission-apprentissage/tables-correspondances/commit/67d531c69ff5cfd4d2e6e78c9fecd7ea0c32ffd3))
+* oupsy undefined ([480bd1d](https://github.com/mission-apprentissage/tables-correspondances/commit/480bd1d23839e6f59a2b9c05e866207928125809))
+
+
+### Features
+
+* **opcos:** add opcos data to cfd handler ([e473197](https://github.com/mission-apprentissage/tables-correspondances/commit/e47319745e582b6a7c1edbe9a0b28051c049bc50))
+* add crud etablissement ([7f0e1c6](https://github.com/mission-apprentissage/tables-correspondances/commit/7f0e1c62108453f419ae99cc2219421e7752abd5))
+* add etablissement model ([536e73b](https://github.com/mission-apprentissage/tables-correspondances/commit/536e73be6f0279cc51470d00f3b6da3634dfddd8))
+* add siret-uai api ([b4431cf](https://github.com/mission-apprentissage/tables-correspondances/commit/b4431cf1964fded93562815956f7304fea22e25e))
+* base etablissement updater ([84e716c](https://github.com/mission-apprentissage/tables-correspondances/commit/84e716c01ce6ffbaea19cea3a3b658dd2395f368))
+* import files into db ([d5cf995](https://github.com/mission-apprentissage/tables-correspondances/commit/d5cf995b060a5042af4ae64885bea04c7633ee93))
+
 # [2.15.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.14.0...v2.15.0) (2021-04-29)
 
 
