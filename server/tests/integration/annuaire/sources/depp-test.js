@@ -4,11 +4,11 @@ const integrationTests = require("../../../utils/integrationTests");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
 const collect = require("../../../../src/jobs/annuaire/collect");
 const { createStream } = require("../../../utils/testUtils");
-const { createAnnuaire } = require("../../../utils/fixtures");
+const { insertAnnuaire } = require("../../../utils/fixtures");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter l'uai formateur et les informations de conformité", async () => {
-    await createAnnuaire({
+    await insertAnnuaire({
       siret: "11111111111111",
     });
     let source = await createSource("depp", {

@@ -7,10 +7,10 @@ const { createSource } = require("../../../../src/jobs/annuaire/sources/sources"
 const collect = require("../../../../src/jobs/annuaire/collect");
 const { importReferentiel } = require("../../../utils/testUtils");
 const { getMockedApiGeoAddresse, getMockedApiCatalogue } = require("../../../utils/apiMocks");
-const { createAnnuaire } = require("../../../utils/fixtures");
+const { insertAnnuaire } = require("../../../utils/fixtures");
 
 function createFormationsSource(custom = {}) {
-  return createSource("formations", {
+  return createSource("catalogue", {
     apiCatalogue: getMockedApiCatalogue((mock, responses) => {
       mock.onGet(/.*formations.*/).reply(200, responses.formations());
     }),
@@ -45,17 +45,19 @@ integrationTests(__filename, () => {
     let stats = await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    assert.ok(found.gestionnaire);
+    assert.ok(!found.formateur);
     assert.deepStrictEqual(found.relations, [
       {
         siret: "22222222222222",
         label: "Etablissement",
         annuaire: false,
         type: "formateur",
-        sources: ["formations"],
+        sources: ["catalogue"],
       },
     ]);
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 1,
         updated: 1,
         failed: 0,
@@ -86,15 +88,47 @@ integrationTests(__filename, () => {
     await collect(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    assert.ok(!found.gestionnaire);
+    assert.ok(found.formateur);
     assert.deepStrictEqual(found.relations, [
       {
         siret: "22222222222222",
         label: "Entreprise",
         annuaire: false,
         type: "gestionnaire",
-        sources: ["formations"],
+        sources: ["catalogue"],
       },
     ]);
+  });
+
+  it("Vérifie que seuls les établissements avec au moins une formation active en 2021 sont formateurs", async () => {
+    await importReferentiel();
+    let source = await createFormationsSource({
+      apiCatalogue: getMockedApiCatalogue((mock, responses) => {
+        mock.onGet(/.*formations(?!2021).*/).reply(
+          200,
+          responses.formations({
+            formations: [
+              {
+                etablissement_gestionnaire_siret: "22222222222222",
+                etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
+                etablissement_formateur_siret: "11111111111111",
+                etablissement_formateur_entreprise_raison_sociale: "Etablissement",
+              },
+            ],
+          })
+        );
+        mock.onGet(/.*formations2021.*/).reply(200, {
+          formations: [],
+        });
+      }),
+    });
+
+    await collect(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    assert.ok(!found.gestionnaire);
+    assert.ok(!found.formateur);
   });
 
   it("Vérifie qu'on peut collecter des diplômes (cfd)", async () => {
@@ -128,7 +162,7 @@ integrationTests(__filename, () => {
       },
     ]);
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 1,
         updated: 1,
         failed: 0,
@@ -199,7 +233,7 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.diplomes, []);
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 1,
         updated: 1,
         failed: 0,
@@ -239,7 +273,7 @@ integrationTests(__filename, () => {
       },
     ]);
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 1,
         updated: 1,
         failed: 0,
@@ -273,7 +307,7 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.certifications, []);
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 1,
         updated: 1,
         failed: 0,
@@ -346,7 +380,7 @@ integrationTests(__filename, () => {
       },
     });
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 1,
         updated: 1,
         failed: 0,
@@ -380,7 +414,7 @@ integrationTests(__filename, () => {
 
     assert.deepStrictEqual(found.lieux_de_formation, []);
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 1,
         updated: 1,
         failed: 0,
@@ -434,7 +468,7 @@ integrationTests(__filename, () => {
       },
     });
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 1,
         updated: 1,
         failed: 0,
@@ -472,11 +506,13 @@ integrationTests(__filename, () => {
     assert.strictEqual(found._meta.anomalies.length, 1);
     assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
       task: "collect",
-      source: "formations",
-      details: "Adresse inconnue pour les coordonnées latitude:2.396444 et longitude:48.879706",
+      source: "catalogue",
+      details:
+        "Lieu de formation inconnu : 31 rue des lilas. " +
+        "Adresse inconnue pour les coordonnées latitude:2.396444 et longitude:48.879706",
     });
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 1,
         updated: 1,
         failed: 1,
@@ -485,7 +521,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut filter par siret", async () => {
-    await createAnnuaire({
+    await insertAnnuaire({
       siret: "11111111100000",
     });
     let source = await createFormationsSource();
@@ -493,7 +529,7 @@ integrationTests(__filename, () => {
     let stats = await collect(source, { filters: { siret: "33333333333333" } });
 
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 0,
         updated: 0,
         failed: 0,
@@ -503,7 +539,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on peut détecter des relations avec des établissements déjà dans l'annuaire", async () => {
     await importReferentiel();
-    await createAnnuaire({ siret: "22222222222222", raison_sociale: "Mon centre de formation" });
+    await insertAnnuaire({ siret: "22222222222222", raison_sociale: "Mon centre de formation" });
     let source = await createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
@@ -542,7 +578,7 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
     assert.deepStrictEqual(found._meta.anomalies[0].details, "[api] HTTP error");
     assert.deepStrictEqual(stats, {
-      formations: {
+      catalogue: {
         total: 1,
         updated: 0,
         failed: 1,

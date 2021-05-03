@@ -51,7 +51,7 @@ module.exports.connectToMongo = (mongoUri = config.mongodb.uri, mongooseInst = n
     });
 
     db.once("open", () => {
-      console.log("MongoDB: Connected");
+      console.error("MongoDB: Connected");
       resolve({ db });
     });
   });

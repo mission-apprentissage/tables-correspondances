@@ -4,12 +4,12 @@ const integrationTests = require("../../../utils/integrationTests");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
 const collect = require("../../../../src/jobs/annuaire/collect");
 const { createStream } = require("../../../utils/testUtils");
-const { createAnnuaire } = require("../../../utils/fixtures");
+const { insertAnnuaire } = require("../../../utils/fixtures");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations datadock", async () => {
-    await createAnnuaire({ siret: "11111111111111" });
-    await createAnnuaire({ siret: "22222222222222" });
+    await insertAnnuaire({ siret: "11111111111111" });
+    await insertAnnuaire({ siret: "22222222222222" });
     let source = await createSource("datadock", {
       input: createStream(
         `siret;REFERENCABLE
@@ -35,7 +35,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut préserver le conventionnement", async () => {
-    await createAnnuaire({
+    await insertAnnuaire({
       siret: "11111111111111",
       conformite_reglementaire: {
         conventionne: true,

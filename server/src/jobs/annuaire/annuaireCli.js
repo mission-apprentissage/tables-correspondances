@@ -1,6 +1,6 @@
 const { program: cli } = require("commander");
 const { createWriteStream } = require("fs");
-const { writeToStdout } = require("oleoduc");
+const { oleoduc, writeToStdout } = require("oleoduc");
 const { createReadStream } = require("fs");
 const { runScript } = require("../scriptWrapper");
 const { createReferentiel, getDefaultReferentiels } = require("./referentiels/referentiels");
@@ -8,7 +8,7 @@ const { createSource, getDefaultSourcesGroupedByPriority } = require("./sources/
 const cleanAll = require("./cleanAll");
 const importReferentiel = require("./importReferentiel");
 const collect = require("./collect");
-const { exportAnnuaire } = require("./exports");
+const etablissementAsCsvStream = require("./utils/etablissementAsCsvStream");
 
 cli
   .command("clean")
@@ -65,12 +65,11 @@ cli
   .option("--filter <filter>", "Filtre au format json", JSON.parse)
   .option("--limit <limit>", "Nombre maximum d'éléments à exporter", parseInt)
   .option("--out <out>", "Fichier cible dans lequel sera stocké l'export (defaut: stdout)", createWriteStream)
-  .option("--format <format>", "Format : json|csv(défaut)")
-  .action(({ filter, limit, out, format }) => {
+  .action(({ filter, limit, out }) => {
     runScript(() => {
-      let output = out || writeToStdout();
+      let input = etablissementAsCsvStream({ filter, limit });
 
-      return exportAnnuaire(output, { filter, limit, format });
+      return oleoduc(input, out || writeToStdout());
     });
   });
 
