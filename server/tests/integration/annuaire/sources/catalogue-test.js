@@ -507,9 +507,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
       task: "collect",
       source: "catalogue",
-      details:
-        "Lieu de formation inconnu : 31 rue des lilas. " +
-        "Adresse inconnue pour les coordonnées latitude:2.396444 et longitude:48.879706",
+      details: "Lieu de formation inconnu : 31 rue des lilas. Adresse inconnue [2.396444,48.879706]",
     });
     assert.deepStrictEqual(stats, {
       catalogue: {

@@ -343,7 +343,7 @@ integrationTests(__filename, () => {
       source: "sirene",
       details:
         "Impossible de géolocaliser l'adresse de l'établissement: 31 rue des lilas Paris 75001. " +
-        "Adresse inconnue pour les coordonnées latitude:2.396147 et longitude:48.880391",
+        "Adresse inconnue [2.396147,48.880391]",
     });
     assert.deepStrictEqual(stats, {
       sirene: {
