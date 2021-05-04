@@ -1,121 +1,165 @@
 const { oleoduc, writeData, filterData } = require("oleoduc");
+const { uniq, isEmpty } = require("lodash");
+const mergeStream = require("merge-stream");
 const { Annuaire } = require("../../common/model");
 const { getNbModifiedDocuments } = require("../../common/utils/mongooseUtils");
 const { flattenObject } = require("../../common/utils/objectUtils");
 const { validateUAI } = require("../../common/utils/uaiUtils");
 const logger = require("../../common/logger");
 
-function buildSelectorQuery(selector) {
-  return { $or: [{ siret: selector }, { uai: selector }, { "uais_secondaires.uai": selector }] };
+function buildQuery(selector) {
+  if (typeof selector === "object") {
+    if (isEmpty(selector)) {
+      throw new Error("Select must not be empty");
+    }
+    return selector;
+  }
+
+  return { $or: [{ siret: selector }, { "uais.uai": selector }] };
 }
 
-function buildNewUAIsSecondaires(type, etablissement, uais) {
-  return uais
-    .filter((uai) => uai && uai !== "NULL" && etablissement.uai !== uai)
-    .map((uai) => {
-      return { type, uai, valide: validateUAI(uai) };
-    });
+function buildUAIs(source, etablissement, uais) {
+  let updated = uais
+    .filter((uai) => uai && uai !== "NULL")
+    .reduce((acc, uai) => {
+      let found = etablissement.uais.find((u) => u.uai === uai) || {};
+      let sources = uniq([...(found.sources || []), source]);
+      acc.push({ ...found, uai, sources, valide: validateUAI(uai) });
+      return acc;
+    }, []);
+
+  let previous = etablissement.uais.filter((us) => !updated.map(({ uai }) => uai).includes(us.uai));
+
+  return [...updated, ...previous];
 }
 
-async function buildNewRelations(type, relations) {
+async function buildRelations(source, etablissement, relations) {
+  let updated = relations.reduce((acc, relation) => {
+    let found = etablissement.relations.find((r) => r.siret === relation.siret) || {};
+    let sources = uniq([...(found.sources || []), source]);
+    acc.push({ ...found, ...relation, sources });
+    return acc;
+  }, []);
+
+  let previous = etablissement.relations.filter((r) => !updated.map(({ siret }) => siret).includes(r.siret));
+
   return Promise.all(
-    relations.map(async (r) => {
-      let doc = await Annuaire.findOne({ siret: r.siret });
-      return { ...r, annuaire: !!doc, source: type };
+    [...updated, ...previous].map(async (r) => {
+      let count = await Annuaire.countDocuments({ siret: r.siret });
+      return {
+        ...r,
+        annuaire: count > 0,
+      };
     })
   );
 }
 
-module.exports = async (source, options = {}) => {
-  let filters = options.filters || {};
-  let type = source.type;
-  let stats = {
-    total: 0,
-    updated: 0,
-    failed: 0,
-  };
+function handleAnomalies(etablissement, source, anomalies) {
+  logger.error(
+    `[Collect][${source}] Erreur lors de la collecte pour l'établissement ${etablissement.siret}.`,
+    anomalies
+  );
 
-  async function handleAnomalies(selector, anomalies) {
-    stats.failed++;
-    logger.error(`[Collect][${type}] Erreur lors de la collecte pour l'établissement ${selector}.`, anomalies);
-    let query = buildSelectorQuery(selector);
-
-    await Annuaire.updateOne(
-      query,
-      {
-        $push: {
-          "_meta.anomalies": {
-            $each: anomalies.map((a) => ({
-              type: "collect",
-              source: source.type,
-              date: new Date(),
-              details: a.message || a,
-            })),
-            // Max 10 elements ordered by date
-            $slice: 10,
-            $sort: { date: -1 },
-          },
+  return Annuaire.updateOne(
+    { siret: etablissement.siret },
+    {
+      $push: {
+        "_meta.anomalies": {
+          $each: anomalies.map((a) => ({
+            task: "collect",
+            source,
+            date: new Date(),
+            details: a.message || a,
+          })),
+          // Max 10 elements ordered by date
+          $slice: 10,
+          $sort: { date: -1 },
         },
       },
-      { runValidators: true }
-    );
-  }
+    },
+    { runValidators: true }
+  );
+}
 
-  try {
-    let stream = await source.stream({ filters });
+function createStats(sources) {
+  return sources.reduce((acc, source) => {
+    return {
+      ...acc,
+      [source.name]: {
+        total: 0,
+        updated: 0,
+        failed: 0,
+      },
+    };
+  }, {});
+}
 
-    await oleoduc(
-      stream,
-      filterData((data) => {
-        return filters.siret ? filters.siret === data.selector : !!data;
-      }),
-      writeData(async ({ selector, uais = [], relations = [], reseaux = [], data = {}, anomalies = [] }) => {
-        stats.total++;
-        let query = buildSelectorQuery(selector);
+function parseArgs(...args) {
+  let options = typeof args[args.length - 1].stream !== "function" ? args.pop() : {};
 
-        try {
-          let etablissement = await Annuaire.findOne(query).lean();
-          if (!etablissement) {
-            return;
-          }
+  let rest = args.pop();
+  return {
+    sources: Array.isArray(rest) ? rest : [rest],
+    options,
+  };
+}
 
-          if (anomalies.length > 0) {
-            await handleAnomalies(selector, anomalies);
-          }
+module.exports = async (...args) => {
+  let { sources, options } = parseArgs(...args);
+  let filters = options.filters || {};
+  let stats = createStats(sources);
 
-          let res = await Annuaire.updateOne(
-            query,
-            {
-              $set: {
-                ...flattenObject(data),
-              },
-              $addToSet: {
-                reseaux: {
-                  $each: reseaux,
-                },
-                relations: {
-                  $each: await buildNewRelations(type, relations),
-                },
-                uais_secondaires: {
-                  $each: buildNewUAIsSecondaires(type, etablissement, uais),
-                },
+  let streams = await Promise.all(sources.map((source) => source.stream({ filters })));
+
+  await oleoduc(
+    mergeStream(streams),
+    filterData((data) => {
+      return filters.siret ? filters.siret === data.selector : !!data;
+    }),
+    writeData(async ({ source, selector, uais = [], relations = [], reseaux = [], data = {}, anomalies = [] }) => {
+      stats[source].total++;
+      let query = buildQuery(selector);
+      let etablissement = await Annuaire.findOne(query).lean();
+      if (!etablissement) {
+        return;
+      }
+
+      try {
+        if (anomalies.length > 0) {
+          stats[source].failed++;
+          await handleAnomalies(etablissement, source, anomalies);
+        }
+
+        let res = await Annuaire.updateOne(
+          query,
+          {
+            $set: {
+              ...flattenObject(data),
+              uais: buildUAIs(source, etablissement, uais),
+              relations: await buildRelations(source, etablissement, relations),
+            },
+            $addToSet: {
+              reseaux: {
+                $each: reseaux,
               },
             },
-            { runValidators: true }
-          );
-          let nbModifiedDocuments = getNbModifiedDocuments(res);
-          if (nbModifiedDocuments) {
-            stats.updated += nbModifiedDocuments;
-            logger.debug(`[Collect][${type}] Etablissement ${selector} updated`);
-          }
-        } catch (e) {
-          await handleAnomalies(selector, [e]);
+          },
+          { runValidators: true }
+        );
+
+        let nbModifiedDocuments = getNbModifiedDocuments(res);
+        if (nbModifiedDocuments) {
+          stats[source].updated += nbModifiedDocuments;
+          logger.info(`[Annuaire][Collect][${source}] Etablissement ${etablissement.siret} updated`);
+        } else {
+          logger.debug(`[Annuaire][Collect][${source}] Etablissement ${etablissement.siret} ignored`);
         }
-      })
-    );
-  } catch (e) {
-    stats.failed++;
-    logger.error(`[Collect][${type}] Erreur lors de la collecte.`, e);
-  }
+      } catch (e) {
+        stats[source].failed++;
+        await handleAnomalies(etablissement, source, [e]);
+      }
+    })
+  );
+
   return stats;
 };

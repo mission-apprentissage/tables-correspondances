@@ -1,14 +1,18 @@
-const { oleoduc, transformData, flattenArray } = require("oleoduc");
+const { oleoduc, transformData, flattenArray, filterData } = require("oleoduc");
 const csv = require("csv-parse");
 const { isEmpty } = require("lodash");
 const { decodeStream } = require("iconv-lite");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
 module.exports = async (custom = {}) => {
+  let name = "ideo2";
   let input = custom.input || (await getOvhFileAsStream("annuaire/ONISEP-Ideo2-T_Export_complet.csv"));
 
   return {
+    name,
     stream() {
+      let memory = [];
+
       return oleoduc(
         input,
         decodeStream("iso-8859-1"),
@@ -17,45 +21,56 @@ module.exports = async (custom = {}) => {
           trim: true,
           columns: true,
         }),
-        transformData(async (data) => {
-          let siretFormateur = data["SIRET_lieu_enseignement"];
-          let siretGestionnaire = data["SIRET_gestionnaire"];
-
-          return [
-            {
-              selector: siretGestionnaire,
-              uais: [data["UAI_gestionnaire"]],
-              relations: [
-                ...(isEmpty(siretFormateur)
-                  ? []
-                  : [
-                      {
-                        siret: siretFormateur,
-                        label: data["nom_lieu_enseignement"],
-                        type: "formateur",
-                      },
-                    ]),
-              ],
-            },
-            {
-              selector: siretFormateur,
-              uais: [data["UAI_lieu_enseignement"]],
-              relations: [
-                ...(isEmpty(siretGestionnaire)
-                  ? []
-                  : [
-                      {
-                        siret: siretGestionnaire,
-                        label: data["CFA_gestionnaire"],
-                        type: "gestionnaire",
-                      },
-                    ]),
-              ],
-            },
-          ];
+        filterData((data) => {
+          let key = `${data["SIRET_gestionnaire"]}_${data["SIRET_lieu_enseignement"]}`;
+          if (memory.includes(key)) {
+            return null;
+          }
+          memory.push(key);
+          return data;
         }),
+        transformData(
+          async (data) => {
+            let siretFormateur = data["SIRET_lieu_enseignement"];
+            let siretGestionnaire = data["SIRET_gestionnaire"];
+
+            return [
+              {
+                selector: siretGestionnaire,
+                relations: [
+                  ...(isEmpty(siretFormateur)
+                    ? []
+                    : [
+                        {
+                          siret: siretFormateur,
+                          label: data["nom_lieu_enseignement"],
+                          type: "formateur",
+                        },
+                      ]),
+                ],
+              },
+              {
+                selector: siretFormateur,
+                uais: [data["UAI_lieu_enseignement"]],
+                relations: [
+                  ...(isEmpty(siretGestionnaire)
+                    ? []
+                    : [
+                        {
+                          siret: siretGestionnaire,
+                          label: data["CFA_gestionnaire"],
+                          type: "gestionnaire",
+                        },
+                      ]),
+                ],
+              },
+            ];
+          },
+          { parallel: 10 }
+        ),
         flattenArray(),
-        { promisify: false, parallel: 10 }
+        transformData((data) => ({ ...data, source: name })),
+        { promisify: false }
       );
     },
   };

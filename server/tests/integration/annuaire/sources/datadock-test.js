@@ -4,12 +4,12 @@ const integrationTests = require("../../../utils/integrationTests");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
 const collect = require("../../../../src/jobs/annuaire/collect");
 const { createStream } = require("../../../utils/testUtils");
-const { createAnnuaire } = require("../../../utils/fixtures");
+const { insertAnnuaire } = require("../../../utils/fixtures");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations datadock", async () => {
-    await createAnnuaire({ siret: "11111111111111" });
-    await createAnnuaire({ siret: "22222222222222" });
+    await insertAnnuaire({ siret: "11111111111111" });
+    await insertAnnuaire({ siret: "22222222222222" });
     let source = await createSource("datadock", {
       input: createStream(
         `siret;REFERENCABLE
@@ -18,22 +18,24 @@ integrationTests(__filename, () => {
       ),
     });
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.strictEqual(found.conformite_reglementaire.certificateur, "datadock");
-    found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0, __v: 0 }).lean();
+    found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0 }).lean();
     assert.strictEqual(found.conformite_reglementaire.certificateur, undefined);
 
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 0,
+    assert.deepStrictEqual(stats, {
+      datadock: {
+        total: 1,
+        updated: 1,
+        failed: 0,
+      },
     });
   });
 
   it("Vérifie qu'on peut préserver le conventionnement", async () => {
-    await createAnnuaire({
+    await insertAnnuaire({
       siret: "11111111111111",
       conformite_reglementaire: {
         conventionne: true,
@@ -48,7 +50,7 @@ integrationTests(__filename, () => {
 
     await collect(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.strictEqual(found.conformite_reglementaire.conventionne, true);
   });
 });

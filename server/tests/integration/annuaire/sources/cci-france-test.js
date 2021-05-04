@@ -4,11 +4,21 @@ const integrationTests = require("../../../utils/integrationTests");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
 const collect = require("../../../../src/jobs/annuaire/collect");
 const { createStream } = require("../../../utils/testUtils");
-const { createAnnuaire } = require("../../../utils/fixtures");
+const { insertAnnuaire } = require("../../../utils/fixtures");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier cci-france", async () => {
-    await createAnnuaire({ uai: "0011073L" });
+    await insertAnnuaire({
+      siret: "11111111111111",
+      uais: [
+        {
+          source: "test",
+          uai: "0011073L",
+          valide: true,
+        },
+      ],
+    });
+
     let source = await createSource("cci-france", {
       input: createStream(
         `uai
@@ -16,15 +26,16 @@ integrationTests(__filename, () => {
       ),
     });
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
-    let found = await Annuaire.findOne({ uai: "0011073L" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.reseaux, ["cci-france"]);
-    assert.deepStrictEqual(found.uais_secondaires, []);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 0,
+    assert.deepStrictEqual(stats, {
+      "cci-france": {
+        total: 1,
+        updated: 1,
+        failed: 0,
+      },
     });
   });
 });

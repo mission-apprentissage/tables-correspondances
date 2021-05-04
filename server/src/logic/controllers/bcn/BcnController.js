@@ -46,6 +46,7 @@ class BcnController {
         result: {
           cfd: cfd,
           cfd_outdated,
+          date_fermeture: cfdUpdated.date_fermeture,
           specialite: null,
           niveau: null,
           intitule_long: null,
@@ -75,6 +76,7 @@ class BcnController {
       result: {
         cfd: cfdUpdated.value,
         cfd_outdated,
+        date_fermeture: cfdUpdated.date_fermeture,
         specialite: specialiteUpdated.value,
         niveau: niveauUpdated.value,
         intitule_long: intituleLongUpdated.value,
@@ -240,7 +242,7 @@ class BcnController {
     try {
       const match = await BcnFormationDiplome.findOne({ FORMATION_DIPLOME: codeEducNat });
       if (!match) {
-        return { info: infosCodes.cfd.NotFound, value: null };
+        return { info: infosCodes.cfd.NotFound, value: null, date_fermeture: null };
       }
 
       if (match.DATE_FERMETURE === "") {
@@ -248,6 +250,7 @@ class BcnController {
         return {
           info: previousInfo ? previousInfo : infosCodes.cfd.Found,
           value: codeEducNat,
+          date_fermeture: null,
         };
       }
 
@@ -258,6 +261,7 @@ class BcnController {
         return {
           info: previousInfo ? previousInfo : infosCodes.cfd.Found,
           value: codeEducNat,
+          date_fermeture: closingDate.valueOf(),
         };
       }
 
@@ -283,10 +287,10 @@ class BcnController {
         return await this.findCfd_bcn(match.NOUVEAU_DIPLOME_1, infosCodes.cfd.Updated);
       }
 
-      return { info: infosCodes.cfd.OutDated, value: codeEducNat };
+      return { info: infosCodes.cfd.OutDated, value: codeEducNat, date_fermeture: closingDate.valueOf() };
     } catch (err) {
       logger.error(err);
-      return { info: infosCodes.cfd.NotFound, value: null };
+      return { info: infosCodes.cfd.NotFound, value: null, date_fermeture: null };
     }
   }
 

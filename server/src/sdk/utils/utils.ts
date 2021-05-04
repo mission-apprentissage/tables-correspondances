@@ -1,21 +1,33 @@
 import { setMongooseInstance } from "../../common/mongodb";
 
 let mongooseInstanceShared = false;
-const isSdkReady = ()=> {    
-  if(!mongooseInstanceShared) {
+const isSdkReady = () => {
+  if (!mongooseInstanceShared) {
     throw new Error(`@mission-apprentissage/tco-service-node: You must initialize the library with a mongoose instance before calling any other method(s).
     Please use initTcoModel(mongooseInstance: Mongoose)`);
   }
-}
+};
 
-export async function initTcoModel(
-mongooseInstanceFromParentProject: any
-): Promise<any> {
+export async function initTcoModel(mongooseInstanceFromParentProject: any) {
   try {
     setMongooseInstance(mongooseInstanceFromParentProject);
     mongooseInstanceShared = true;
   } catch (error) {
     console.error(`init: something went wrong!`, error);
+  }
+}
+
+let Models: any = null;
+export async function getModels() {
+  isSdkReady();
+  try {
+    if (!Models) {
+      Models = await import("../../common/model");
+    }
+
+    return Models;
+  } catch (error) {
+    console.error(`getModels: something went wrong!`, error);
     return null;
   }
 }
@@ -30,9 +42,7 @@ mongooseInstanceFromParentProject: any
 //   }
 // }
 
-export async function getCpInfo(
-  codePostal: string,
-): Promise<any> {
+export async function getCpInfo(codePostal: string) {
   isSdkReady();
   try {
     let { getDataFromCP } = await import("../../logic/handlers/geoHandler");
@@ -44,21 +54,27 @@ export async function getCpInfo(
   }
 }
 
-export async function rncpImporter(): Promise<any> {
+export async function rncpImporter(localPath: string | null = null) {
   isSdkReady();
   try {
     let { rncpImporter: importer } = await import("../../jobs/rncpImporter");
-    // @ts-ignore
-    await importer();
+    await importer(localPath);
   } catch (error) {
     console.error(`rncpImporter: something went wrong!`, error);
-    return null;
   }
 }
 
-export async function getRncpInfo(
-  codeRncp: string,
-): Promise<any> {
+export async function onisepImporter(db: any) {
+  isSdkReady();
+  try {
+    let { onisepImporter: importer } = await import("../../jobs/OnisepImporter");
+    await importer(db);
+  } catch (error) {
+    console.error(`onisepImporter: something went wrong!`, error);
+  }
+}
+
+export async function getRncpInfo(codeRncp: string) {
   isSdkReady();
   try {
     let { getDataFromRncp } = await import("../../logic/handlers/rncpHandler");
@@ -70,29 +86,27 @@ export async function getRncpInfo(
   }
 }
 
-export async function bcnImporter(): Promise<any> {
+export async function bcnImporter() {
   isSdkReady();
   try {
     let { downloadBcnTables } = await import("../../jobs/bcnDownloader");
     let { importBcnTables } = await import("../../jobs/bcnImporter");
 
-    // @ts-ignore
     await downloadBcnTables();
     await importBcnTables();
   } catch (error) {
     console.error(`bcnImporter: something went wrong!`, error);
-    return null;
   }
 }
 
-
-export async function getCfdInfo(
-  cfd: string,
-): Promise<any> {
+export interface cfdOptions {
+  onisep: boolean;
+}
+export async function getCfdInfo(cfd: string, options: cfdOptions = { onisep: true }) {
   isSdkReady();
   try {
     let { getDataFromCfd } = await import("../../logic/handlers/cfdHandler");
-    const result = await getDataFromCfd(cfd);
+    const result = await getDataFromCfd(cfd, options);
     return result;
   } catch (error) {
     console.error(`getCfdInfo: something went wrong!`, error);
@@ -100,10 +114,7 @@ export async function getCfdInfo(
   }
 }
 
-
-export async function getMef10Info(
-  mef10: string,
-): Promise<any> {
+export async function getMef10Info(mef10: string) {
   isSdkReady();
   try {
     let { getDataFromMef10 } = await import("../../logic/handlers/mefHandler");
@@ -115,9 +126,7 @@ export async function getMef10Info(
   }
 }
 
-export async function getSiretInfo(
-  siret: string,
-): Promise<any> {
+export async function getSiretInfo(siret: string) {
   isSdkReady();
   try {
     let { getDataFromSiret } = await import("../../logic/handlers/siretHandler");
@@ -129,11 +138,7 @@ export async function getSiretInfo(
   }
 }
 
-
-
-export async function isValideUAI(
-  uai: string,
-): Promise<any> {
+export async function isValideUAI(uai: string) {
   isSdkReady();
   try {
     let { validateUAI } = await import("../../common/utils/uaiUtils");
@@ -144,6 +149,57 @@ export async function isValideUAI(
   }
 }
 
+export async function getBcnInfo({ page = 1, limit = 10, query = {} }) {
+  isSdkReady();
+  try {
+    const { BcnFormationDiplome } = await import("../../common/model");
+
+    const allData = await BcnFormationDiplome.paginate(query, { page, limit });
+    return {
+      formationsDiplomes: allData.docs,
+      pagination: {
+        page: allData.page,
+        resultats_par_page: limit,
+        nombre_de_page: allData.pages,
+        total: allData.total,
+      },
+    };
+  } catch (error) {
+    console.error(`getBcnInfo: something went wrong!`, error);
+    return null;
+  }
+}
+
+type AddressData = {
+  numero_voie: string;
+  type_voie: string;
+  nom_voie: string;
+  localite: string;
+  code_postal: string;
+};
+
+export async function getCoordinatesFromAddressData({
+  numero_voie,
+  type_voie,
+  nom_voie,
+  localite,
+  code_postal,
+}: AddressData) {
+  isSdkReady();
+  try {
+    let { getCoordinatesFromAddressData } = await import("../../logic/handlers/geoHandler");
+    return await getCoordinatesFromAddressData({
+      numero_voie,
+      type_voie,
+      nom_voie,
+      localite,
+      code_postal,
+    });
+  } catch (error) {
+    console.error(`getCoordinatesFromAddressData: something went wrong!`, error);
+    return null;
+  }
+}
 // TODO
 // const conventionFilesImporter = require("./convetionFilesImporter/index");
 // await conventionFilesImporter(db);

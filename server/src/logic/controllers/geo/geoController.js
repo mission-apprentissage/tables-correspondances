@@ -1,10 +1,11 @@
 const axios = require("axios");
-const apiEsSup = require("../../../common/apis/apiEsSup");
+const ApiEsSup = require("../../../common/apis/ApiEsSup");
 const geoAdresseData = require("./geoAdresseData");
 const fs = require("fs-extra");
 const path = require("path");
 
 const opendataApiKey = "19b8028585be8b5c2ebc456a6363756a48b680d8447a1ebfb8a1d10f";
+const apiEsSup = new ApiEsSup();
 
 class GeoController {
   constructor() {
@@ -137,7 +138,7 @@ class GeoController {
   }
 
   async findGeoCoordinateFromAdresse({ numero_voie, type_voie, nom_voie, code_postal, localite }) {
-    const { geo_coordonnees } = await geoAdresseData.getGeoCoordinateFromAdresse({
+    const { geo_coordonnees, results_count } = await geoAdresseData.getGeoCoordinateFromAdresse({
       numero_voie,
       type_voie,
       nom_voie,
@@ -148,6 +149,7 @@ class GeoController {
     return {
       info: `Ok`,
       value: geo_coordonnees,
+      count: results_count,
     };
   }
 

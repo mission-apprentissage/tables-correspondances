@@ -2,15 +2,15 @@ const assert = require("assert");
 const { Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
 const cleanAll = require("../../../src/jobs/annuaire/cleanAll");
-const { createAnnuaire } = require("../../utils/fixtures");
+const { insertAnnuaire } = require("../../utils/fixtures");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut supprimer un annuaire", async () => {
-    await createAnnuaire({
+    await insertAnnuaire({
       uai: "0011058V",
       siret: "11111111111111",
       raison_sociale: "Centre de formation",
-      uais_secondaires: [],
+      uais: [],
     });
 
     let stats = await cleanAll();

@@ -1,8 +1,8 @@
 const { uniqBy, chain } = require("lodash");
 const { oleoduc, transformData } = require("oleoduc");
-const { Annuaire } = require("../../../common/model");
-const apiCatalogue = require("../../../common/apis/apiCatalogue");
-const apiGeoAdresse = require("../../../common/apis/apiGeoAdresse");
+const { Annuaire, BcnFormationDiplome } = require("../../../common/model");
+const ApiCatalogue = require("../../../common/apis/ApiCatalogue");
+const ApiGeoAdresse = require("../../../common/apis/ApiGeoAdresse");
 const adresses = require("../utils/adresses");
 
 async function getFormations(api, siret, options = {}) {
@@ -24,7 +24,7 @@ async function getFormations(api, siret, options = {}) {
         cfd: 1,
         cfd_specialite: 1,
       },
-      resultats_par_page: 600, // no pagination needed for the moment
+      limit: 600, // no pagination needed for the moment
       ...options,
     }
   );
@@ -58,9 +58,11 @@ async function buildDiplomes(siret, formations) {
     formations
       .filter((f) => f.cfd && siret === f.etablissement_formateur_siret)
       .map(async (f) => {
+        let bcn = await BcnFormationDiplome.findOne({ FORMATION_DIPLOME: f.cfd });
         return {
           code: f.cfd,
           type: "cfd",
+          ...(bcn ? { niveau: bcn.NIVEAU_FORMATION_DIPLOME, label: bcn.LIBELLE_COURT } : {}),
         };
       })
   );
@@ -93,7 +95,7 @@ async function buildLieuxDeFormation(siret, formations, getAdresseFromCoordinate
         let adresse = await getAdresseFromCoordinates(longitude, latitude, {
           label: f.lieu_formation_adresse,
         }).catch((e) => {
-          anomalies.push(e);
+          anomalies.push(`Lieu de formation inconnu : ${f.lieu_formation_adresse}. ${e.message}`);
         });
 
         return adresse
@@ -110,43 +112,54 @@ async function buildLieuxDeFormation(siret, formations, getAdresseFromCoordinate
 }
 
 module.exports = async (custom = {}) => {
-  let api = custom.apiCatalogue || apiCatalogue;
-  let { getAdresseFromCoordinates } = adresses(custom.apiGeoAdresse || apiGeoAdresse);
+  let name = "catalogue";
+  let api = custom.apiCatalogue || new ApiCatalogue();
+  let { getAdresseFromCoordinates } = adresses(custom.apiGeoAdresse || new ApiGeoAdresse());
 
   return {
+    name,
     stream(options = {}) {
       let filters = options.filters || {};
 
       return oleoduc(
         Annuaire.find(filters, { siret: 1 }).lean().cursor(),
-        transformData(async ({ siret }) => {
-          try {
-            let [_2020, _2021] = await Promise.all([
-              getFormations(api, siret),
-              getFormations(api, siret, { annee: "2021" }),
-            ]);
+        transformData(
+          async ({ siret }) => {
+            try {
+              let [_2020, _2021] = await Promise.all([
+                getFormations(api, siret),
+                getFormations(api, siret, { annee: "2021" }),
+              ]);
 
-            let formations = [..._2020, ..._2021];
-            let { relations } = await buildRelations(siret, formations);
-            let { diplomes } = await buildDiplomes(siret, formations);
-            let { certifications } = await buildCertifications(siret, formations);
-            let { lieux, anomalies } = await buildLieuxDeFormation(siret, formations, getAdresseFromCoordinates);
+              let formations = [..._2020, ..._2021];
+              let { relations } = await buildRelations(siret, formations);
+              let { diplomes } = await buildDiplomes(siret, formations);
+              let { certifications } = await buildCertifications(siret, formations);
+              let { lieux, anomalies } = await buildLieuxDeFormation(siret, formations, getAdresseFromCoordinates);
 
-            return {
-              selector: siret,
-              relations,
-              anomalies,
-              data: {
-                lieux_de_formation: lieux,
-                diplomes,
-                certifications,
-              },
-            };
-          } catch (e) {
-            return { selector: siret, anomalies: [e.reason === 404 ? "Entreprise inconnue" : e] };
-          }
-        }),
-        { promisify: false, parallel: 5 }
+              return {
+                selector: siret,
+                relations,
+                anomalies,
+                data: {
+                  lieux_de_formation: lieux,
+                  diplomes,
+                  certifications,
+                  gestionnaire: !!relations.find((r) => r.type === "formateur"),
+                  formateur: !!relations.find((r) => r.type === "gestionnaire") && _2021.length > 0,
+                },
+              };
+            } catch (e) {
+              return {
+                selector: siret,
+                anomalies: [e.reason === 404 ? "Entreprise inconnue" : e],
+              };
+            }
+          },
+          { parallel: 5 }
+        ),
+        transformData((data) => ({ ...data, source: name })),
+        { promisify: false }
       );
     },
   };

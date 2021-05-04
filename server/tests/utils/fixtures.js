@@ -9,21 +9,20 @@ module.exports = {
       valeur: "Valeur",
     },
   },
-  createAnnuaire: (custom) => {
+  insertAnnuaire: (custom) => {
     return Annuaire.create(
       merge(
         {},
         {
-          uai: faker.helpers.replaceSymbols("#######?"),
           siret: faker.helpers.replaceSymbols("#########00015"),
           raison_sociale: faker.company.companyName(),
-          uais_secondaires: [],
+          uais: [],
           relations: [],
           lieux_de_formation: [],
           reseaux: [],
           diplomes: [],
           certifications: [],
-          referentiel: "test",
+          referentiels: ["test"],
           siege_social: true,
           statut: "actif",
           conformite_reglementaire: {

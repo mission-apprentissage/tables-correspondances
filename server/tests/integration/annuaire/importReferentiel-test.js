@@ -7,7 +7,7 @@ const importReferentiel = require("../../../src/jobs/annuaire/importReferentiel"
 
 function createTestReferentiel(array) {
   return {
-    type: "test",
+    name: "test",
     stream() {
       return Readable.from(array);
     },
@@ -16,24 +16,15 @@ function createTestReferentiel(array) {
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut initialiser un annuaire à partir d'un référentiel", async () => {
-    let referentiel = createTestReferentiel([
-      {
-        siret: "111111111111111",
-        uai: "0011058V",
-      },
-    ]);
+    let referentiel = createTestReferentiel(["111111111111111"]);
 
     let results = await importReferentiel(referentiel);
 
-    let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(omit(found, ["_meta"]), {
-      uai: "0011058V",
       siret: "111111111111111",
-      referentiel: "test",
-      conformite_reglementaire: {
-        conventionne: false,
-      },
-      uais_secondaires: [],
+      referentiels: ["test"],
+      uais: [],
       reseaux: [],
       relations: [],
       lieux_de_formation: [],
@@ -51,20 +42,11 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on ignore les établissements en double", async () => {
-    let referentiel = createTestReferentiel([
-      {
-        siret: "111111111111111",
-        uai: "0011058V",
-      },
-      {
-        siret: "111111111111111",
-        uai: "0011058V",
-      },
-    ]);
+    let referentiel = createTestReferentiel(["111111111111111", "111111111111111"]);
 
     let results = await importReferentiel(referentiel);
 
-    await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0, __v: 0 }).lean();
+    await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(results, {
       total: 2,
       created: 1,
@@ -77,7 +59,6 @@ integrationTests(__filename, () => {
     let referentiel = createTestReferentiel([
       {
         siret: "",
-        uai: "0011058V",
       },
     ]);
 

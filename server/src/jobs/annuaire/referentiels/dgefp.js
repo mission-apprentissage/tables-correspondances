@@ -6,6 +6,7 @@ module.exports = async (custom = {}) => {
   let input = custom.input || (await getOvhFileAsStream("annuaire/DGEFP-20210105_public_ofs.csv"));
 
   return {
+    name: "dgefp",
     stream(options = {}) {
       let filter = options.filter || ((data) => data.cfa === "Oui");
 
@@ -17,11 +18,7 @@ module.exports = async (custom = {}) => {
           columns: (header) => header.map((column) => column.replace(/ /g, "")),
         }),
         filterData(filter),
-        transformData((data) => {
-          return {
-            siret: `${data.siren}${data.num_etablissement}`,
-          };
-        }),
+        transformData((data) => `${data.siren}${data.num_etablissement}`),
         { promisify: false }
       );
     },

@@ -1,8 +1,9 @@
 const logger = require("../../common/logger");
 //const Joi = require("joi");
 const { getDataFromSiret } = require("../handlers/siretHandler");
-const { getDataFromCP, getCoordaniteFromAdresseData } = require("../handlers/geoHandler");
+const { getDataFromCP, getCoordinatesFromAddressData } = require("../handlers/geoHandler");
 const conventionController = require("../controllers/conventionController");
+const { findOnisepInfosEtablissementFromUAI } = require("../controllers/onisep/onisepController");
 const { diffEtablissement } = require("../../common/utils/diffUtils");
 
 // const etablissementSchema = Joi.object({
@@ -32,7 +33,10 @@ const parseErrors = (messages) => {
 
 const etablissementService = async (
   etablissement,
-  { withHistoryUpdate = true, scope = { siret: true, location: true, geoloc: true, conventionnement: true } } = {}
+  {
+    withHistoryUpdate = true,
+    scope = { siret: true, location: true, geoloc: true, conventionnement: true, onisep: true },
+  } = {}
 ) => {
   try {
     // await etablissementSchema.validateAsync(etablissement, { abortEarly: false });
@@ -112,7 +116,7 @@ const etablissementService = async (
     // GEOLOC DATA
     if (scope.geoloc) {
       // console.log("Update geoloc info");
-      const { result: geoMapping, messages: geoMessages } = await getCoordaniteFromAdresseData({
+      const { result: geoMapping, messages: geoMessages } = await getCoordinatesFromAddressData({
         numero_voie: current.numero_voie,
         type_voie: current.type_voie,
         nom_voie: current.nom_voie,
@@ -143,6 +147,22 @@ const etablissementService = async (
         ...updatedEtablissement,
         ...conventionData,
       };
+    }
+
+    // ONISEP DATA
+    if (scope.onisep) {
+      if (current.nom_academie && current.nom_academie !== "" && etablissement.uai && etablissement.uai !== "") {
+        const results = await findOnisepInfosEtablissementFromUAI(etablissement.uai, current.nom_academie);
+        if (Object.keys(results).length > 0) {
+          const { nom: onisep_nom, cp: onisep_code_postal, lien_site_onisepfr: onisep_url } = results;
+          updatedEtablissement = {
+            ...updatedEtablissement,
+            onisep_nom,
+            onisep_code_postal,
+            onisep_url,
+          };
+        }
+      }
     }
 
     if (Object.keys(updatedEtablissement).length > 0) {

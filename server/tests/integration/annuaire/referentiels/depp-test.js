@@ -15,15 +15,11 @@ integrationTests(__filename, () => {
 
     let results = await importReferentiel(referentiel);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0, __v: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(omit(found, ["_meta"]), {
-      uai: "0011058V",
       siret: "11111111111111",
-      referentiel: "depp",
-      conformite_reglementaire: {
-        conventionne: true,
-      },
-      uais_secondaires: [],
+      referentiels: ["depp"],
+      uais: [],
       reseaux: [],
       relations: [],
       lieux_de_formation: [],

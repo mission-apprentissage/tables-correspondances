@@ -10,9 +10,8 @@ services:
     mem_limit: 1g
     stdin_open: true
     volumes:
-      #Allows source folders to be watched be use node_modules from container
+      # Allows source folders to be watched
       - ./ui:/app
-      - /app/node_modules/
 
   server:
     command: [ "yarn", "debug" ]

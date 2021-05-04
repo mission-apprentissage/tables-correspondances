@@ -13,22 +13,24 @@ integrationTests(__filename, () => {
       siret: "11111111111111",
       entreprise_raison_sociale: "Centre de formation",
     });
-    let source = await createSource("etablissements");
+    let source = await createSource("tables-correspondances");
 
-    let results = await collect(source);
+    let stats = await collect(source);
 
-    let found = await Annuaire.findOne({}, { _id: 0, __v: 0 }).lean();
-    assert.deepStrictEqual(found.uais_secondaires, [
+    let found = await Annuaire.findOne({}, { _id: 0 }).lean();
+    assert.deepStrictEqual(found.uais, [
       {
-        type: "etablissements",
+        sources: ["tables-correspondances"],
         uai: "0011073L",
         valide: true,
       },
     ]);
-    assert.deepStrictEqual(results, {
-      total: 1,
-      updated: 1,
-      failed: 0,
+    assert.deepStrictEqual(stats, {
+      "tables-correspondances": {
+        total: 1,
+        updated: 1,
+        failed: 0,
+      },
     });
   });
 
@@ -39,16 +41,18 @@ integrationTests(__filename, () => {
       siret: "11111111111111",
       entreprise_raison_sociale: "Centre de formation",
     });
-    let source = await createSource("etablissements");
+    let source = await createSource("tables-correspondances");
 
-    let results = await collect(source, {
+    let stats = await collect(source, {
       filters: { siret: "33333333333333" },
     });
 
-    assert.deepStrictEqual(results, {
-      total: 0,
-      updated: 0,
-      failed: 0,
+    assert.deepStrictEqual(stats, {
+      "tables-correspondances": {
+        total: 0,
+        updated: 0,
+        failed: 0,
+      },
     });
   });
 });

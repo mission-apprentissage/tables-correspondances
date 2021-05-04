@@ -5,7 +5,16 @@ const ApiError = require("./ApiError");
 const apiRateLimiter = require("./apiRateLimiter");
 
 // Cf Documentation : https://doc.entreprise.api.gouv.fr/#param-tres-obligatoires
-const apiEndpoint = "https://entreprise.api.gouv.fr/v2";
+const executeWithRateLimiting = apiRateLimiter("apiEntreprise", {
+  //2 requests per second
+  nbRequests: 2,
+  durationInSeconds: 1,
+  client: axios.create({
+    baseURL: "https://entreprise.api.gouv.fr/v2",
+    timeout: 5000,
+  }),
+});
+
 const apiParams = {
   token: config.apiEntreprise,
   context: "Catalogue MNA",
@@ -13,18 +22,12 @@ const apiParams = {
   object: "Consolidation des données du Catalogue MNA",
 };
 
-let executeWithRateLimiting = apiRateLimiter("apiEntreprise", {
-  //2 requests per second
-  nbRequests: 2,
-  durationInSeconds: 1,
-});
-
 class ApiEntreprise {
   getEntreprise(siren) {
-    return executeWithRateLimiting(async () => {
+    return executeWithRateLimiting(async (client) => {
       try {
         logger.debug(`[Entreprise API] Fetching entreprise ${siren}...`);
-        let response = await axios.get(`${apiEndpoint}/entreprises/${siren}`, {
+        let response = await client.get(`entreprises/${siren}`, {
           params: apiParams,
         });
         if (!response?.data?.entreprise) {
@@ -38,10 +41,10 @@ class ApiEntreprise {
   }
 
   async getEtablissement(siret) {
-    return executeWithRateLimiting(async () => {
+    return executeWithRateLimiting(async (client) => {
       try {
         logger.debug(`[Entreprise API] Fetching etablissement ${siret}...`);
-        let response = await axios.get(`${apiEndpoint}/etablissements/${siret}`, {
+        let response = await client.get(`etablissements/${siret}`, {
           params: apiParams,
         });
         if (!response?.data?.etablissement) {

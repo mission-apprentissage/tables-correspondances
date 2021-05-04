@@ -1,6 +1,6 @@
 const { Schema } = require("mongoose");
 
-let adresse = new Schema(
+let adresseSchema = new Schema(
   {
     label: {
       type: String,
@@ -66,39 +66,62 @@ let adresse = new Schema(
 );
 
 const annuaireSchema = {
+  __v: { type: Number, select: false },
   siret: {
     type: String,
     required: true,
     description: "Le siret de l'établissement",
     unique: true,
-  },
-  uai: {
-    type: String,
-    description: "L'UAI de l'établissement",
-    unique: true,
-    sparse: true,
+    index: true,
   },
   raison_sociale: {
     type: String,
     description: "La raison sociale de l'établissement",
   },
-  referentiel: {
-    type: String,
-    required: true,
-    description: "Le nom du référentiel depuis lequel a été importé l'établissement",
-  },
   siege_social: {
     type: Boolean,
     required: true,
-    description: "Le siège social",
+    description: "Le siège social de l'entreprise",
   },
   statut: {
     type: String,
     required: true,
     description: "Statut de l'entreprise",
   },
+  adresse: {
+    type: adresseSchema,
+  },
+  forme_juridique: {
+    description: "Informations relatives à la forme juridique de l'entreprise",
+    type: new Schema(
+      {
+        code: {
+          type: String,
+          required: true,
+          description: "Le code la forme juridique",
+        },
+        label: {
+          type: String,
+          required: true,
+          description: "Le nom de la forme juridique",
+        },
+      },
+      { _id: false }
+    ),
+  },
+  gestionnaire: {
+    type: Boolean,
+  },
+  formateur: {
+    type: Boolean,
+  },
+  referentiels: {
+    type: [String],
+    required: true,
+    description: "Le nom du référentiel depuis lequel a été importé l'établissement",
+  },
   reseaux: {
-    type: Array,
+    type: [String],
     default: [],
     description: "Les réseaux auquels appartient l'établissement",
   },
@@ -117,35 +140,13 @@ const annuaireSchema = {
       { _id: false }
     ),
   },
-  adresse: {
-    default: undefined,
-    type: adresse,
-  },
-  forme_juridique: {
-    description: "Informations relatives à la forme juridique de l'établissement",
-    type: new Schema(
-      {
-        code: {
-          type: String,
-          required: true,
-          description: "Le code la forme juridique",
-        },
-        label: {
-          type: String,
-          required: true,
-          description: "Le nom de la forme juridique",
-        },
-      },
-      { _id: false }
-    ),
-  },
   conformite_reglementaire: {
     description: "Informations relatives à la conformité réglementaire",
     type: new Schema(
       {
         conventionne: {
           type: Boolean,
-          default: false,
+          default: undefined,
           description: "True si l'établissement est conventionné",
         },
         certificateur: {
@@ -157,19 +158,20 @@ const annuaireSchema = {
       { _id: false }
     ),
   },
-  uais_secondaires: {
+  uais: {
     description: "La liste de tous les uais connus pour cet établissement",
     required: true,
     type: [
       new Schema(
         {
-          type: {
-            type: String,
+          sources: {
+            type: [String],
             required: true,
           },
           uai: {
             type: String,
             required: true,
+            index: true,
           },
           valide: {
             type: Boolean,
@@ -195,8 +197,8 @@ const annuaireSchema = {
             type: Boolean,
             required: true,
           },
-          source: {
-            type: String,
+          sources: {
+            type: [String],
             required: true,
           },
           label: {
@@ -205,6 +207,7 @@ const annuaireSchema = {
           },
           type: {
             type: String,
+            enum: ["formateur", "gestionnaire"],
             default: undefined,
           },
         },
@@ -225,7 +228,7 @@ const annuaireSchema = {
           },
           adresse: {
             required: true,
-            type: adresse,
+            type: adresseSchema,
           },
         },
         { _id: false }
@@ -249,6 +252,7 @@ const annuaireSchema = {
           },
           type: {
             type: String,
+            enum: ["rncp"],
             required: true,
           },
         },
@@ -267,12 +271,17 @@ const annuaireSchema = {
             type: String,
             required: true,
           },
+          niveau: {
+            type: String,
+            default: undefined,
+          },
           label: {
             type: String,
             default: undefined,
           },
           type: {
             type: String,
+            enum: ["cfd"],
             required: true,
           },
         },
@@ -297,7 +306,7 @@ const annuaireSchema = {
           type: [
             new Schema(
               {
-                type: {
+                task: {
                   type: String,
                   required: true,
                 },

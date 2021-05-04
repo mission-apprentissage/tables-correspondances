@@ -55,6 +55,8 @@ services:
     environment:
       - ES_JAVA_OPTS=-Xmx512m -Xms512m
       - cluster.name=docker-cluster
+      - discovery.zen.minimum_master_nodes=1
+      - network.host=0.0.0.0
       - discovery.type=single-node
     mem_limit: 1g
     networks:

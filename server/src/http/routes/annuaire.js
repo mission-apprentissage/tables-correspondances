@@ -1,10 +1,13 @@
 const express = require("express");
+const { isEmpty } = require("lodash");
 const Boom = require("boom");
 const { oleoduc, transformIntoJSON } = require("oleoduc");
 const Joi = require("joi");
 const { Annuaire } = require("../../common/model");
 const { paginateAggregationWithCursor } = require("../../common/utils/mongooseUtils");
 const { sendJsonStream } = require("../utils/httpUtils");
+const buildProjection = require("../utils/buildProjection");
+const { stringList } = require("../utils/validators");
 const tryCatch = require("../middlewares/tryCatchMiddleware");
 
 module.exports = () => {
@@ -47,6 +50,15 @@ module.exports = () => {
    *         default: desc
    *         type: string
    *         required: false
+   *       - in: query
+   *         name: champs
+   *         description: |
+   *          La liste des champs séparés par des virgules à inclure ou exclure dans la réponse.
+   *          Exemple :
+   *            - inclusion `champs=siret,uai`
+   *            - exclusion `champs=-siret,uai`
+   *         type: string
+   *         required: false
    *     produces:
    *      - application/json
    *     tags:
@@ -78,15 +90,17 @@ module.exports = () => {
   router.get(
     "/etablissements",
     tryCatch(async (req, res) => {
-      let { text, anomalies, page, items_par_page, tri, ordre } = await Joi.object({
+      let { text, anomalies, page, items_par_page, tri, ordre, champs } = await Joi.object({
         text: Joi.string(),
         anomalies: Joi.boolean().default(null),
         page: Joi.number().default(1),
         items_par_page: Joi.number().default(10),
-        tri: Joi.string().valid("uais_secondaires", "relations"),
+        tri: Joi.string().valid("uais", "relations"),
         ordre: Joi.string().valid("asc", "desc").default("desc"),
+        champs: stringList().default([]),
       }).validateAsync(req.query, { abortEarly: false });
 
+      let projection = buildProjection(champs);
       let { cursor, pagination } = await paginateAggregationWithCursor(
         Annuaire,
         [
@@ -100,7 +114,7 @@ module.exports = () => {
             ? [
                 {
                   $addFields: {
-                    nb_uais_secondaires: { $size: "$uais_secondaires" },
+                    nb_uais: { $size: "$uais" },
                     nb_relations: { $size: "$relations" },
                   },
                 },
@@ -109,12 +123,13 @@ module.exports = () => {
             : [{ $sort: { [`_meta.lastUpdate`]: -1 } }]),
           {
             $project: {
-              nb_uais_secondaires: 0,
+              nb_uais: 0,
               nb_relations: 0,
               _id: 0,
               __v: 0,
             },
           },
+          ...(isEmpty(projection) ? [] : [{ $project: projection }]),
         ],
         { page, limit: items_par_page }
       );
@@ -146,6 +161,15 @@ module.exports = () => {
    *         description: Le numéro de siret de l'établissement
    *         type: string
    *         required: true
+   *       - in: query
+   *         name: champs
+   *         description: |
+   *          La liste des champs séparés par des virgules à inclure ou exclure dans la réponse.
+   *          Exemple :
+   *            - Retourne uniquement les champs uai et siret `champs=siret,uai`
+   *            - Retourne tous les champs sauf uai et siret `champs=-siret,uai`
+   *         type: string
+   *         required: false
    *     produces:
    *      - application/json
    *     tags:
@@ -161,17 +185,22 @@ module.exports = () => {
   router.get(
     "/etablissements/:siret",
     tryCatch(async (req, res) => {
-      let { siret } = await Joi.object({
+      let { siret, champs } = await Joi.object({
         siret: Joi.string()
           .pattern(/^[0-9]{14}$/)
           .required(),
-      }).validateAsync(req.params, { abortEarly: false });
+        champs: stringList().default([]),
+      }).validateAsync({ ...req.params, ...req.query }, { abortEarly: false });
 
-      let etablissement = await Annuaire.findOne({ siret }, { _id: 0, __v: 0, _meta: 0 }).lean();
+      let projection = buildProjection(champs);
+      let etablissement = await Annuaire.findOne({ siret }, projection).lean();
+
       if (!etablissement) {
         throw Boom.notFound("Siret inconnu");
       }
 
+      delete etablissement._id;
+      delete etablissement._meta;
       return res.json(etablissement);
     })
   );

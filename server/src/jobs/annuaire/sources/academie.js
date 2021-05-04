@@ -1,75 +1,57 @@
 const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
-const apiEsSup = require("../../../common/apis/apiEsSup");
-const logger = require("../../../common/logger");
-
-class Cache {
-  constructor(cacheName) {
-    this.name = cacheName;
-    this.cache = {};
-  }
-
-  get(key) {
-    return this.cache[key];
-  }
-
-  add(key, value) {
-    logger.debug(`Key '${key}' added to cache ${this.name}`);
-    this.cache[key] = value;
-  }
-
-  flush() {
-    logger.debug(`Cache '${this.name} ' flushed`);
-    this.cache = {};
-  }
-}
+const ApiEsSup = require("../../../common/apis/ApiEsSup");
+const Cache = require("../../../common/apis/Cache");
 
 module.exports = async (custom = {}) => {
-  let api = custom.apiEsSup || apiEsSup;
+  let name = "academie";
+  let api = custom.apiEsSup || new ApiEsSup();
 
   return {
+    name,
     stream(options = {}) {
       let filters = options.filters || {};
-      let cache = new Cache("academie");
+      let cache = new Cache(name);
 
       let stream = oleoduc(
         Annuaire.find({ ...filters, $and: [{ adresse: { $exists: true } }, { adresse: { $ne: null } }] })
           .lean()
           .cursor(),
-        transformData(async (etablissement) => {
-          let siret = etablissement.siret;
-          let codeInsee = etablissement.adresse.code_insee;
+        transformData(
+          async (etablissement) => {
+            let siret = etablissement.siret;
+            let codeInsee = etablissement.adresse.code_insee;
 
-          try {
-            let records = cache.get(codeInsee);
-            if (!records) {
-              let fetched = await api.fetchInfoFromCodeCommune(codeInsee);
-              records = fetched.records;
-              cache.add(codeInsee, records);
-            }
+            try {
+              let records = await cache.memo(codeInsee, async () => {
+                let { records } = await api.fetchInfoFromCodeCommune(codeInsee);
+                return records;
+              });
 
-            let data = records.length > 0 ? records[0].fields : null;
-
-            return {
-              selector: siret,
-              ...(data
-                ? {
-                    data: {
-                      academie: {
-                        code: data.aca_code,
-                        nom: data.aca_nom,
+              let data = records.length > 0 ? records[0].fields : null;
+              return {
+                selector: siret,
+                ...(data
+                  ? {
+                      data: {
+                        academie: {
+                          code: data.aca_code,
+                          nom: data.aca_nom,
+                        },
                       },
-                    },
-                  }
-                : {
-                    anomalies: [`Impossible de déterminer l'académie pour le code insee ${codeInsee}`],
-                  }),
-            };
-          } catch (e) {
-            return { selector: siret, anomalies: [e] };
-          }
-        }),
-        { promisify: false, parallel: 5 }
+                    }
+                  : {
+                      anomalies: [`Impossible de déterminer l'académie pour le code insee ${codeInsee}`],
+                    }),
+              };
+            } catch (e) {
+              return { selector: siret, anomalies: [e] };
+            }
+          },
+          { parallel: 5 }
+        ),
+        transformData((data) => ({ ...data, source: name })),
+        { promisify: false }
       );
 
       stream.on("finish", () => cache.flush());
