@@ -3,7 +3,7 @@ const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
 module.exports = async (custom = {}) => {
   let name = "acce";
-  let input = custom.input || (await getOvhFileAsStream("annuaire/acce-20210428.ndjson"));
+  let input = custom.input || (await getOvhFileAsStream("annuaire/acce-20210430.ndjson"));
 
   return {
     name,
