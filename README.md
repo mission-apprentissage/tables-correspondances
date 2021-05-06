@@ -38,3 +38,32 @@ La librairie peut être utilisée afin d'éviter les appels au serveur:
 ```bash
 yarn add "@mission-apprentissage/tco-service-node"
 ```
+
+Pour utiliser la lib il faut l'initialiser avec l'instance mongoose du projet qui l'utilise, pour qu'elle puisse créer des collections :
+```js
+const { initTcoModel } = require("@mission-apprentissage/tco-service-node");
+
+await initTcoModel(mongoose);
+```
+
+Ensuite pour remplir les données il faut exécuter les scripts bcn, onisep et rncp :
+
+```js
+const { bcnImporter, onisepImporter, rncpImporter } = require("@mission-apprentissage/tco-service-node");
+
+await bcnImporter();
+await onisepImporter(db);
+await rncpImporter();
+```
+
+Enfin vous pouvez appeler les méthodes dont vous avez besoin, e.g:
+
+```js
+const { getCfdInfo } = require("@mission-apprentissage/tco-service-node");
+
+const cfdInfo = await getCfdInfo("40033002");
+```
+
+
+
+
