@@ -5,7 +5,7 @@ import { Formik, Field, Form } from "formik";
 import { useHistory } from "react-router-dom";
 import useAuth from "../../common/hooks/useAuth";
 import { _post } from "../../common/httpClient";
-import FormError from "../../common/components/FormError";
+import FormError from "../../common/components/Error";
 import CenteredCol from "../../common/components/CenteredCol";
 import FormMessage from "../../common/components/FormMessage";
 

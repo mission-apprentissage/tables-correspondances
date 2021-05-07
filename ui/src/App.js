@@ -11,7 +11,7 @@ import HomePage from "./pages/HomePage";
 import ResetPasswordPage from "./pages/password/ResetPasswordPage";
 import ForgottenPasswordPage from "./pages/password/ForgottenPasswordPage";
 import AnomaliesPage from "./pages/annuaire/AnomaliesPage";
-import ReseauxPage from "./pages/annuaire/ReseauxPage";
+import StatsPage from "./pages/annuaire/StatsPage";
 import ScrollToTop from "./common/components/ScrollToTop";
 
 function PrivateRoute({ children, ...rest }) {
@@ -44,7 +44,7 @@ export default () => {
           <Layout>
             <Route exact path="/annuaire" component={AnnuairePage} />
             <Route exact path="/annuaire/anomalies" component={AnomaliesPage} />
-            <Route exact path="/annuaire/reseaux" component={ReseauxPage} />
+            <Route exact path="/annuaire/stats" component={StatsPage} />
             <Route exact path="/annuaire/etablissements/:siret" component={EtablissementPage} />
           </Layout>
         </Switch>

@@ -36,8 +36,8 @@ export default () => {
             <Header>
               <Link to={`/annuaire`}>Annuaire</Link>
               <Buttons>
-                <Button color={"info"} onClick={() => history.push("/annuaire/reseaux")}>
-                  Reseaux
+                <Button color={"info"} onClick={() => history.push("/annuaire/stats")}>
+                  Stats
                 </Button>
                 <Button color={"danger"} onClick={() => history.push("/annuaire/anomalies")}>
                   Voir le rapport d'anomalies >

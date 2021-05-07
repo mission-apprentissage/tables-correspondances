@@ -34,6 +34,9 @@ module.exports = {
       schema.index({ "$**": "text" }, { default_language: "french" });
     },
   }),
+  AnnuaireStats: createModel("annuaireStats", schema.annuaireStatsSchema, {
+    collectionName: "annuaireStats",
+  }),
   FicheRncp: createModel("ficherncp", schema.ficheRncpSchema),
   ConventionFile: createModel("conventionfile", schema.conventionFileSchema),
   Onisep: createModel("onisep", schema.onisepSchema),
