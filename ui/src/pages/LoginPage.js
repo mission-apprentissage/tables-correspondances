@@ -6,7 +6,7 @@ import { NavLink, useHistory } from "react-router-dom";
 import useAuth from "../common/hooks/useAuth";
 import { _post } from "../common/httpClient";
 import CenteredCol from "../common/components/CenteredCol";
-import FormError from "../common/components/FormError";
+import FormError from "../common/components/Error";
 
 export default () => {
   let [, setAuth] = useAuth();

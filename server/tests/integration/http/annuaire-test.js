@@ -1,3 +1,4 @@
+const { omit } = require("lodash");
 const { strictEqual, deepStrictEqual } = require("assert");
 const httpTests = require("../../utils/httpTests");
 const { insertAnnuaire } = require("../../utils/fixtures");
@@ -49,6 +50,10 @@ httpTests(__filename, ({ startServer }) => {
             code_postal: "75001",
             code_insee: "75000",
             localite: "PARIS",
+          },
+          academie: {
+            code: "01",
+            nom: "Paris",
           },
           _meta: {
             anomalies: [],
@@ -336,6 +341,10 @@ httpTests(__filename, ({ startServer }) => {
         code_insee: "75000",
         localite: "PARIS",
       },
+      academie: {
+        code: "01",
+        nom: "Paris",
+      },
     });
   });
 
@@ -386,6 +395,43 @@ httpTests(__filename, ({ startServer }) => {
       error: "Not Found",
       message: "Siret inconnu",
       statusCode: 404,
+    });
+  });
+
+  it("Vérifie qu'on peut lister les stats", async () => {
+    const { httpClient, computeStats } = await startServer();
+    await insertAnnuaire({ siret: "11111111111111" });
+    await computeStats();
+
+    let response = await httpClient.get("/api/v1/annuaire/stats");
+
+    strictEqual(response.status, 200);
+    deepStrictEqual(omit(response.data.stats[0], ["created_at"]), {
+      referentiels: [{ name: "dgefp", nbSirens: 1, nbSirets: 1 }],
+      globale: {
+        nbSirens: 1,
+        nbSirets: 1,
+        nbSiretsGestionnairesEtFormateurs: 0,
+        nbSiretsGestionnaires: 0,
+        nbSiretsFormateurs: 0,
+        nbSiretsSansUAIs: 1,
+        nbSiretsAvecPlusieursUAIs: 0,
+      },
+      academies: [
+        {
+          academie: {
+            code: "01",
+            nom: "Paris",
+          },
+          nbSirens: 1,
+          nbSirets: 1,
+          nbSiretsGestionnairesEtFormateurs: 0,
+          nbSiretsGestionnaires: 0,
+          nbSiretsFormateurs: 0,
+          nbSiretsSansUAIs: 1,
+          nbSiretsAvecPlusieursUAIs: 0,
+        },
+      ],
     });
   });
 });

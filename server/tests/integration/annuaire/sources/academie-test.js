@@ -22,6 +22,10 @@ integrationTests(__filename, () => {
       adresse: {
         code_insee: "75000",
       },
+      academie: {
+        code: "XX",
+        nom: "XXXX",
+      },
     });
     let source = await createAcademieSource();
 

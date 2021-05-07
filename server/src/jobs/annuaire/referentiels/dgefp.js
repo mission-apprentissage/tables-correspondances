@@ -3,7 +3,7 @@ const csv = require("csv-parse");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
 module.exports = async (custom = {}) => {
-  let input = custom.input || (await getOvhFileAsStream("annuaire/DGEFP-20210105_public_ofs.csv"));
+  let input = custom.input || (await getOvhFileAsStream("annuaire/DGEFP-20210505_public_ofs.csv"));
 
   return {
     name: "dgefp",

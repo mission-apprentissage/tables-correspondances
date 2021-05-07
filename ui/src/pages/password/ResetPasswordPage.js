@@ -7,7 +7,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import useAuth from "../../common/hooks/useAuth";
 import { _post } from "../../common/httpClient";
 import decodeJWT from "../../common/utils/decodeJWT";
-import FormError from "../../common/components/FormError";
+import FormError from "../../common/components/Error";
 import CenteredCol from "../../common/components/CenteredCol";
 
 export default () => {

@@ -3,7 +3,7 @@ import { Button, Card, Form as TablerForm } from "tabler-react";
 import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import FormMessage from "../../../common/components/FormMessage";
-import FormError from "../../../common/components/FormError";
+import Error from "../../../common/components/Error";
 import queryString from "query-string";
 
 export default ({ search, error }) => {
@@ -48,7 +48,7 @@ export default ({ search, error }) => {
                 </Button>
 
                 {status.message && <FormMessage>{status.message}</FormMessage>}
-                {error && <FormError>Une erreur est survenue</FormError>}
+                {error && <Error>Une erreur est survenue</Error>}
               </Form>
             );
           }}
