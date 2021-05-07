@@ -30,55 +30,6 @@ async function computeReferentielStats(referentiel) {
 }
 
 function computeAnnuaireStats(groupBy) {
-  console.log("%j", [
-    {
-      $group: {
-        ...groupBy,
-        sirens: { $addToSet: { $substr: ["$siret", 0, 9] } },
-        nbSirets: { $sum: 1 },
-        nbSiretsGestionnairesEtFormateurs: {
-          $sum: {
-            $cond: {
-              if: { $and: [{ $eq: ["$gestionnaire", true] }, { $eq: ["$formateur", true] }] },
-              then: 1,
-              else: 0,
-            },
-          },
-        },
-        nbSiretsGestionnaires: {
-          $sum: {
-            $cond: {
-              if: { $and: [{ $eq: ["$gestionnaire", true] }, { $ne: ["$formateur", true] }] },
-              then: 1,
-              else: 0,
-            },
-          },
-        },
-        nbSiretsFormateurs: {
-          $sum: {
-            $cond: {
-              if: { $and: [{ $ne: ["$gestionnaire", true] }, { $eq: ["$formateur", true] }] },
-              then: 1,
-              else: 0,
-            },
-          },
-        },
-        nbSiretsSansUAIs: { $sum: { $cond: { if: { $eq: [{ $size: "$uais" }, 0] }, then: 1, else: 0 } } },
-        nbSiretsAvecPlusieursUAIs: { $sum: { $cond: { if: { $gt: [{ $size: "$uais" }, 0] }, then: 1, else: 0 } } },
-      },
-    },
-    {
-      $addFields: {
-        nbSirens: { $size: "$sirens" },
-      },
-    },
-    {
-      $unset: ["sirens", "_id"],
-    },
-    {
-      $sort: { "academie.nom": 1 },
-    },
-  ]);
   return Annuaire.aggregate([
     {
       $group: {
