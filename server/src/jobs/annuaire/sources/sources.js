@@ -31,7 +31,7 @@ module.exports = {
         "compagnons-du-devoir",
         "promotrans",
         "ideo2",
-        "tables-correspondances",
+        "etablissements",
         "catalogue",
         "sirene",
       ],

@@ -2,7 +2,7 @@ const { oleoduc, transformData } = require("oleoduc");
 const { Etablissement } = require("../../../common/model");
 
 module.exports = () => {
-  let name = "tables-correspondances";
+  let name = "etablissements";
 
   return {
     name,

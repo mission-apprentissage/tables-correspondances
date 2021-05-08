@@ -9,7 +9,7 @@ module.exports = {
       valeur: "Valeur",
     },
   },
-  insertAnnuaire: (custom) => {
+  insertAnnuaire(custom) {
     return Annuaire.create(
       merge(
         {},
@@ -43,6 +43,10 @@ module.exports = {
             code_postal: "75001",
             code_insee: "75000",
             localite: "PARIS",
+          },
+          academie: {
+            code: "01",
+            nom: "Paris",
           },
         },
         custom
