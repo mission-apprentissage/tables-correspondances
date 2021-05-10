@@ -1,3 +1,15 @@
+# [2.17.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.16.1...v2.17.0) (2021-05-10)
+
+
+### Features
+
+* **sdk:** search address by cp & insee ([#154](https://github.com/mission-apprentissage/tables-correspondances/issues/154)) ([a3a19a1](https://github.com/mission-apprentissage/tables-correspondances/commit/a3a19a12a2eb1c66cdb10c6a57a0bba63fad83e2))
+
+
+### Reverts
+
+* Revert "Rename etablissements source into tables-correspondances (#150)" ([91c5bea](https://github.com/mission-apprentissage/tables-correspondances/commit/91c5bead99efedd27cd14fa9c19e7e9f9b3b3572)), closes [#150](https://github.com/mission-apprentissage/tables-correspondances/issues/150)
+
 ## [2.16.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.16.0...v2.16.1) (2021-05-03)
 
 
