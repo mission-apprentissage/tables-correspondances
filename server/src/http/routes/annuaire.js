@@ -3,7 +3,7 @@ const { isEmpty } = require("lodash");
 const Boom = require("boom");
 const { oleoduc, transformIntoJSON } = require("oleoduc");
 const Joi = require("joi");
-const { Annuaire } = require("../../common/model");
+const { Annuaire, AnnuaireStats } = require("../../common/model");
 const { paginateAggregationWithCursor } = require("../../common/utils/mongooseUtils");
 const { sendJsonStream } = require("../utils/httpUtils");
 const buildProjection = require("../utils/buildProjection");
@@ -20,6 +20,16 @@ module.exports = () => {
    *   get:
    *     summary: Récupérer la liste des établissements de l'annuaire
    *     parameters:
+   *       - in: query
+   *         name: siret
+   *         description: Retourne uniquement l'établissement ayant ce siren/siret
+   *         type: string
+   *         required: false
+   *       - in: query
+   *         name: text
+   *         description: Retourne uniquement l'établissement ayant cet uai.
+   *         type: string
+   *         required: false
    *       - in: query
    *         name: text
    *         description: Permet de faire une recherche sur tous les champs texte d'un établissement
@@ -90,7 +100,9 @@ module.exports = () => {
   router.get(
     "/etablissements",
     tryCatch(async (req, res) => {
-      let { text, anomalies, page, items_par_page, tri, ordre, champs } = await Joi.object({
+      let { siret, uai, text, anomalies, page, items_par_page, tri, ordre, champs } = await Joi.object({
+        uai: Joi.string().pattern(/^[0-9]{7}[A-Z]{1}$/),
+        siret: Joi.string().pattern(/^([0-9]{9}|[0-9]{14})$/),
         text: Joi.string(),
         anomalies: Joi.boolean().default(null),
         page: Joi.number().default(1),
@@ -106,6 +118,8 @@ module.exports = () => {
         [
           {
             $match: {
+              ...(siret ? { siret } : {}),
+              ...(uai ? { "uais.uai": uai } : {}),
               ...(text ? { $text: { $search: text } } : {}),
               ...(anomalies !== null ? { "_meta.anomalies.0": { $exists: anomalies } } : {}),
             },
@@ -202,6 +216,21 @@ module.exports = () => {
       delete etablissement._id;
       delete etablissement._meta;
       return res.json(etablissement);
+    })
+  );
+
+  router.get(
+    "/stats",
+    tryCatch(async (req, res) => {
+      sendJsonStream(
+        oleoduc(
+          AnnuaireStats.find({}, { _id: 0 }).sort({ created_at: -1 }).lean().cursor(),
+          transformIntoJSON({
+            arrayPropertyName: "stats",
+          })
+        ),
+        res
+      );
     })
   );
 

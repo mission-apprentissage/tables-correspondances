@@ -1,3 +1,4 @@
+const { omit } = require("lodash");
 const { strictEqual, deepStrictEqual } = require("assert");
 const httpTests = require("../../utils/httpTests");
 const { insertAnnuaire } = require("../../utils/fixtures");
@@ -6,7 +7,7 @@ httpTests(__filename, ({ startServer }) => {
   it("Vérifie qu'on peut lister des établissements", async () => {
     const { httpClient } = await startServer();
     await insertAnnuaire({
-      siret: "11111111111111",
+      siret: "11111111100001",
       raison_sociale: "Centre de formation",
       _meta: {
         anomalies: [],
@@ -20,7 +21,7 @@ httpTests(__filename, ({ startServer }) => {
     deepStrictEqual(response.data, {
       etablissements: [
         {
-          siret: "11111111111111",
+          siret: "11111111100001",
           raison_sociale: "Centre de formation",
           uais: [],
           relations: [],
@@ -50,6 +51,10 @@ httpTests(__filename, ({ startServer }) => {
             code_insee: "75000",
             localite: "PARIS",
           },
+          academie: {
+            code: "01",
+            nom: "Paris",
+          },
           _meta: {
             anomalies: [],
             created_at: "2021-02-10T16:39:13.064Z",
@@ -67,6 +72,52 @@ httpTests(__filename, ({ startServer }) => {
 
   it("Vérifie qu'on peut rechercher des établissements à partir d'un uai", async () => {
     const { httpClient } = await startServer();
+    await insertAnnuaire();
+    await insertAnnuaire({
+      uais: [
+        {
+          source: "dummy",
+          uai: "0010856A",
+          valide: true,
+        },
+      ],
+    });
+
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?uai=0010856A");
+
+    strictEqual(response.status, 200);
+    strictEqual(response.data.etablissements[0].uais[0].uai, "0010856A");
+  });
+
+  it("Vérifie qu'on peut rechercher des établissements à partir d'un siret", async () => {
+    const { httpClient } = await startServer();
+    await insertAnnuaire();
+    await insertAnnuaire({
+      siret: "11111111100001",
+    });
+
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?siret=11111111100001");
+
+    strictEqual(response.status, 200);
+    strictEqual(response.data.etablissements[0].siret, "11111111100001");
+  });
+
+  it("Vérifie qu'on peut rechercher des établissements à partir d'un siren", async () => {
+    const { httpClient } = await startServer();
+    await insertAnnuaire();
+    await insertAnnuaire({
+      siret: "11111111100001",
+    });
+
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?siret=11111111100001");
+
+    strictEqual(response.status, 200);
+    strictEqual(response.data.etablissements[0].siret, "11111111100001");
+  });
+
+  it("Vérifie qu'on peut rechercher des établissements à partir d'un uai (fulltext)", async () => {
+    const { httpClient } = await startServer();
+    await insertAnnuaire();
     await insertAnnuaire({
       uais: [
         {
@@ -83,23 +134,24 @@ httpTests(__filename, ({ startServer }) => {
     strictEqual(response.data.etablissements[0].uais[0].uai, "0010856A");
   });
 
-  it("Vérifie qu'on peut rechercher des établissements à partir d'un siret", async () => {
+  it("Vérifie qu'on peut rechercher des établissements à partir d'un siret (fulltext)", async () => {
     const { httpClient } = await startServer();
+    await insertAnnuaire();
     await insertAnnuaire({
-      siret: "11111111111111",
+      siret: "11111111100001",
     });
 
-    let response = await httpClient.get("/api/v1/annuaire/etablissements?text=11111111111111");
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?text=11111111100001");
 
     strictEqual(response.status, 200);
-    strictEqual(response.data.etablissements[0].siret, "11111111111111");
+    strictEqual(response.data.etablissements[0].siret, "11111111100001");
   });
 
   it("Vérifie qu'on peut trier les établissements par nombre de relations", async () => {
     const { httpClient } = await startServer();
     await Promise.all([
       insertAnnuaire({
-        siret: "11111111111111",
+        siret: "11111111100001",
         relations: [
           {
             siret: "22222222222222",
@@ -113,7 +165,7 @@ httpTests(__filename, ({ startServer }) => {
         siret: "33333333333333",
         relations: [
           {
-            siret: "11111111111111",
+            siret: "11111111100001",
             label: "NOMAYO",
             annuaire: true,
             source: "test",
@@ -131,11 +183,11 @@ httpTests(__filename, ({ startServer }) => {
     let response = await httpClient.get("/api/v1/annuaire/etablissements?tri=relations&ordre=desc");
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "33333333333333");
-    strictEqual(response.data.etablissements[1].siret, "11111111111111");
+    strictEqual(response.data.etablissements[1].siret, "11111111100001");
 
     response = await httpClient.get("/api/v1/annuaire/etablissements?tri=relations&ordre=asc");
     strictEqual(response.status, 200);
-    strictEqual(response.data.etablissements[0].siret, "11111111111111");
+    strictEqual(response.data.etablissements[0].siret, "11111111100001");
     strictEqual(response.data.etablissements[1].siret, "33333333333333");
   });
 
@@ -143,7 +195,7 @@ httpTests(__filename, ({ startServer }) => {
     const { httpClient } = await startServer();
     await Promise.all([
       insertAnnuaire({
-        siret: "11111111111111",
+        siret: "11111111100001",
         uais: [
           {
             source: "catalogue",
@@ -172,18 +224,18 @@ httpTests(__filename, ({ startServer }) => {
     let response = await httpClient.get("/api/v1/annuaire/etablissements?tri=uais&ordre=desc");
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "33333333333333");
-    strictEqual(response.data.etablissements[1].siret, "11111111111111");
+    strictEqual(response.data.etablissements[1].siret, "11111111100001");
 
     response = await httpClient.get("/api/v1/annuaire/etablissements?tri=uais&ordre=asc");
     strictEqual(response.status, 200);
-    strictEqual(response.data.etablissements[0].siret, "11111111111111");
+    strictEqual(response.data.etablissements[0].siret, "11111111100001");
     strictEqual(response.data.etablissements[1].siret, "33333333333333");
   });
 
   it("Vérifie qu'on peut limiter les champs renvoyés pour la liste des établissements", async () => {
     const { httpClient } = await startServer();
     await insertAnnuaire({
-      siret: "11111111111111",
+      siret: "11111111100001",
       raison_sociale: "Centre de formation",
       _meta: {
         anomalies: [],
@@ -197,7 +249,7 @@ httpTests(__filename, ({ startServer }) => {
     deepStrictEqual(response.data, {
       etablissements: [
         {
-          siret: "11111111111111",
+          siret: "11111111100001",
         },
       ],
       pagination: {
@@ -212,7 +264,7 @@ httpTests(__filename, ({ startServer }) => {
   it("Vérifie qu'on peut peut limiter le établissement par page", async () => {
     const { httpClient } = await startServer();
     await Promise.all([
-      insertAnnuaire({ siret: "11111111111111" }),
+      insertAnnuaire({ siret: "11111111100001" }),
       insertAnnuaire({ siret: "22222222222222" }),
       insertAnnuaire({ siret: "33333333333333" }),
     ]);
@@ -230,7 +282,7 @@ httpTests(__filename, ({ startServer }) => {
     const { httpClient } = await startServer();
     await Promise.all([
       insertAnnuaire({
-        siret: "11111111111111",
+        siret: "11111111100001",
         _meta: {
           anomalies: [
             {
@@ -249,7 +301,7 @@ httpTests(__filename, ({ startServer }) => {
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements?anomalies=true");
     strictEqual(response.status, 200);
-    strictEqual(response.data.etablissements[0].siret, "11111111111111");
+    strictEqual(response.data.etablissements[0].siret, "11111111100001");
 
     response = await httpClient.get("/api/v1/annuaire/etablissements?anomalies=false");
     strictEqual(response.status, 200);
@@ -298,15 +350,15 @@ httpTests(__filename, ({ startServer }) => {
   it("Vérifie qu'on peut obtenir un établissement", async () => {
     const { httpClient } = await startServer();
     await insertAnnuaire({
-      siret: "11111111111111",
+      siret: "11111111100001",
       raison_sociale: "Centre de formation",
     });
 
-    let response = await httpClient.get("/api/v1/annuaire/etablissements/11111111111111");
+    let response = await httpClient.get("/api/v1/annuaire/etablissements/11111111100001");
 
     strictEqual(response.status, 200);
     deepStrictEqual(response.data, {
-      siret: "11111111111111",
+      siret: "11111111100001",
       raison_sociale: "Centre de formation",
       uais: [],
       relations: [],
@@ -336,13 +388,17 @@ httpTests(__filename, ({ startServer }) => {
         code_insee: "75000",
         localite: "PARIS",
       },
+      academie: {
+        code: "01",
+        nom: "Paris",
+      },
     });
   });
 
   it("Vérifie qu'on peut limiter les champs renvoyés pour un établissement", async () => {
     const { httpClient } = await startServer();
     await insertAnnuaire({
-      siret: "11111111111111",
+      siret: "11111111100001",
       raison_sociale: "Centre de formation",
       _meta: {
         anomalies: [],
@@ -350,18 +406,18 @@ httpTests(__filename, ({ startServer }) => {
       },
     });
 
-    let response = await httpClient.get("/api/v1/annuaire/etablissements/11111111111111?champs=siret,uai");
+    let response = await httpClient.get("/api/v1/annuaire/etablissements/11111111100001?champs=siret,uai");
 
     strictEqual(response.status, 200);
     deepStrictEqual(response.data, {
-      siret: "11111111111111",
+      siret: "11111111100001",
     });
   });
 
   it("Vérifie qu'on peut exclure des champs renvoyés pour un établissement", async () => {
     const { httpClient } = await startServer();
     await insertAnnuaire({
-      siret: "11111111111111",
+      siret: "11111111100001",
       raison_sociale: "Centre de formation",
       _meta: {
         anomalies: [],
@@ -369,7 +425,7 @@ httpTests(__filename, ({ startServer }) => {
       },
     });
 
-    let response = await httpClient.get("/api/v1/annuaire/etablissements/11111111111111?champs=-siret,uai");
+    let response = await httpClient.get("/api/v1/annuaire/etablissements/11111111100001?champs=-siret,uai");
 
     strictEqual(response.status, 200);
     strictEqual(response.data.siret, undefined);
@@ -379,13 +435,50 @@ httpTests(__filename, ({ startServer }) => {
   it("Vérifie qu'on renvoie une 404 si le siret n'est pas connu", async () => {
     const { httpClient } = await startServer();
 
-    let response = await httpClient.get("/api/v1/annuaire/etablissements/11111111111111");
+    let response = await httpClient.get("/api/v1/annuaire/etablissements/11111111100001");
 
     strictEqual(response.status, 404);
     deepStrictEqual(response.data, {
       error: "Not Found",
       message: "Siret inconnu",
       statusCode: 404,
+    });
+  });
+
+  it("Vérifie qu'on peut lister les stats", async () => {
+    const { httpClient, computeStats } = await startServer();
+    await insertAnnuaire({ siret: "11111111100001" });
+    await computeStats();
+
+    let response = await httpClient.get("/api/v1/annuaire/stats");
+
+    strictEqual(response.status, 200);
+    deepStrictEqual(omit(response.data.stats[0], ["created_at"]), {
+      referentiels: [{ name: "dgefp", nbSirens: 1, nbSirets: 1 }],
+      globale: {
+        nbSirens: 1,
+        nbSirets: 1,
+        nbSiretsGestionnairesEtFormateurs: 0,
+        nbSiretsGestionnaires: 0,
+        nbSiretsFormateurs: 0,
+        nbSiretsSansUAIs: 1,
+        nbSiretsAvecPlusieursUAIs: 0,
+      },
+      academies: [
+        {
+          academie: {
+            code: "01",
+            nom: "Paris",
+          },
+          nbSirens: 1,
+          nbSirets: 1,
+          nbSiretsGestionnairesEtFormateurs: 0,
+          nbSiretsGestionnaires: 0,
+          nbSiretsFormateurs: 0,
+          nbSiretsSansUAIs: 1,
+          nbSiretsAvecPlusieursUAIs: 0,
+        },
+      ],
     });
   });
 });

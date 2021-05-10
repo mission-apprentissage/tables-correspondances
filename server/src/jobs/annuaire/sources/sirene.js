@@ -46,11 +46,11 @@ async function loadOrganismeDeFormations() {
   return organismes;
 }
 
-module.exports = async (custom = {}) => {
+module.exports = async (options = {}) => {
   let name = "sirene";
-  let api = custom.apiSirene || new ApiSirene();
-  let { getAdresseFromCoordinates } = adresses(custom.apiGeoAdresse || new ApiGeoAdresse());
-  let organismes = custom.organismes || (await loadOrganismeDeFormations());
+  let api = options.apiSirene || new ApiSirene();
+  let { getAdresseFromCoordinates } = adresses(options.apiGeoAdresse || new ApiGeoAdresse());
+  let organismes = options.organismes || (await loadOrganismeDeFormations());
 
   return {
     name,

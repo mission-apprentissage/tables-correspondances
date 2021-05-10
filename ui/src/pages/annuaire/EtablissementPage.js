@@ -2,7 +2,7 @@ import React from "react";
 import { Badge, Card, Grid, Page, Table } from "tabler-react";
 import { useFetch } from "../../common/hooks/useFetch";
 import { Link, useParams } from "react-router-dom";
-import FormError from "../../common/components/FormError";
+import FormError from "../../common/components/Error";
 import styled from "styled-components";
 
 const Item = styled.div`

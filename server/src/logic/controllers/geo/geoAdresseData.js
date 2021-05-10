@@ -131,8 +131,20 @@ class GeoAdresseData {
   /**
    * Retrieve a municipality by postal code or insee code
    */
-  async getMunicipality(code) {
+  async getMunicipality(code, codeInsee) {
     const refinedCode = this.refinePostcode(code);
+
+    // try to find results by postal code & citycode (insee)
+    if (codeInsee) {
+      try {
+        let data = await this.apiGeoAdresse.searchMunicipalityByCode(refinedCode, { codeInsee });
+        if (data.features && data.features.length > 0) {
+          return this.formatMunicipalityResponse(data);
+        }
+      } catch (e) {
+        console.error("geo search municipality error", e);
+      }
+    }
 
     // try to find results by postal code
     try {
