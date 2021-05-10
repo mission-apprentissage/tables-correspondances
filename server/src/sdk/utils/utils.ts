@@ -42,11 +42,11 @@ export async function getModels() {
 //   }
 // }
 
-export async function getCpInfo(codePostal: string) {
+export async function getCpInfo(codePostal: string, codeInsee?: string) {
   isSdkReady();
   try {
     let { getDataFromCP } = await import("../../logic/handlers/geoHandler");
-    const result = await getDataFromCP(codePostal);
+    const result = await getDataFromCP(codePostal, codeInsee);
     return result;
   } catch (error) {
     console.error(`getCpInfo: something went wrong!`, error);
