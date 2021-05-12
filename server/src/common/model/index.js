@@ -7,9 +7,9 @@ const mongoose = getMongooseInstance();
 const createModel = (modelName, descriptor, options = {}) => {
   try {
     const schema = new mongoose.Schema(descriptor, options.schemaOptions || {});
-    if (options.esIndexName) {
+    schema.plugin(require("mongoose-paginate"));
+    if (options.esIndexName && !mongoose.isElasticDisabled) {
       schema.plugin(mongoosastic, { esClient: getElasticInstance(), index: options.esIndexName });
-      schema.plugin(require("mongoose-paginate"));
     }
     if (options.createMongoDBIndexes) {
       options.createMongoDBIndexes(schema);

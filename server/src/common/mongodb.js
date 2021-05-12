@@ -57,6 +57,9 @@ module.exports.connectToMongo = (mongoUri = config.mongodb.uri, mongooseInst = n
   });
 };
 
-module.exports.setMongooseInstance = (mongooseInst = mongoose) => (mongooseInstance = mongooseInst);
+module.exports.setMongooseInstance = (mongooseInst = mongoose, isElasticDisabled = false) => {
+  mongooseInstance = mongooseInst;
+  mongooseInstance.isElasticDisabled = isElasticDisabled;
+};
 module.exports.getMongooseInstance = () => mongooseInstance;
 module.exports.closeMongoConnection = (mongooseInst = mongoose) => mongooseInst.disconnect();
