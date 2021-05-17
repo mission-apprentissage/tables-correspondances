@@ -8,9 +8,12 @@ const isSdkReady = () => {
   }
 };
 
-export async function initTcoModel(mongooseInstanceFromParentProject: any) {
+type InitOptions = {
+  noElastic?: boolean;
+};
+export async function initTcoModel(mongooseInstanceFromParentProject: any, { noElastic = false }: InitOptions) {
   try {
-    setMongooseInstance(mongooseInstanceFromParentProject);
+    setMongooseInstance(mongooseInstanceFromParentProject, noElastic);
     mongooseInstanceShared = true;
   } catch (error) {
     console.error(`init: something went wrong!`, error);
