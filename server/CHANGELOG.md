@@ -1,3 +1,10 @@
+# [2.18.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.17.0...v2.18.0) (2021-05-17)
+
+
+### Features
+
+* **sdk:** make it possible to use sdk without eS ([#155](https://github.com/mission-apprentissage/tables-correspondances/issues/155)) ([28f847b](https://github.com/mission-apprentissage/tables-correspondances/commit/28f847b9c7b3bd66ba5f2132160446941b7c9fca))
+
 # [2.17.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.16.1...v2.17.0) (2021-05-10)
 
 
