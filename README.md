@@ -64,6 +64,16 @@ const { getCfdInfo } = require("@mission-apprentissage/tco-service-node");
 const cfdInfo = await getCfdInfo("40033002");
 ```
 
+Vous aurez également besoin de renseigner certaines variables d'environnement, selon les appels que vous ferez :
+```
+TABLES_CORRESPONDANCES_API_ENTREPRISE_KEY=
+TABLES_CORRESPONDANCE_ONISEP_EMAIL=
+TABLES_CORRESPONDANCE_ONISEP_PASSWORD=
+TABLES_CORRESPONDANCE_FRANCE_COMPETENCES_HOST=
+TABLES_CORRESPONDANCE_FRANCE_COMPETENCES_PORT=
+TABLES_CORRESPONDANCE_FRANCE_COMPETENCES_USERNAME=
+TABLES_CORRESPONDANCE_FRANCE_COMPETENCES_PASSWORD=
+```
 
 
 
