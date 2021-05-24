@@ -7,7 +7,7 @@ const BunyanMongodbStream = require("bunyan-mongodb-stream");
 const { Log } = require("./model/index");
 
 const createStreams = () => {
-  const { type, level } = config.log;
+  const { type = "stdout", level = "debug" } = config.log;
   const envName = config.env;
 
   const jsonStream = () => {
