@@ -11,7 +11,7 @@ const isSdkReady = () => {
 type InitOptions = {
   noElastic?: boolean;
 };
-export async function initTcoModel(mongooseInstanceFromParentProject: any, { noElastic = false }: InitOptions) {
+export async function initTcoModel(mongooseInstanceFromParentProject: any, { noElastic = false }: InitOptions = {}) {
   try {
     setMongooseInstance(mongooseInstanceFromParentProject, noElastic);
     mongooseInstanceShared = true;
