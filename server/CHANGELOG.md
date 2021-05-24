@@ -1,3 +1,10 @@
+## [2.18.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.18.0...v2.18.1) (2021-05-24)
+
+
+### Bug Fixes
+
+* try to add some defaults for config ([82a9a13](https://github.com/mission-apprentissage/tables-correspondances/commit/82a9a13b01ff2c5076c8278a3cc28199ef6e223d))
+
 # [2.18.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.17.0...v2.18.0) (2021-05-17)
 
 
