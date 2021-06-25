@@ -5,18 +5,18 @@ const { createReadStream } = require("fs");
 const { runScript } = require("../scriptWrapper");
 const { createReferentiel, getDefaultReferentiels } = require("./referentiels/referentiels");
 const { createSource, getDefaultSourcesGroupedByPriority } = require("./sources/sources");
-const cleanAll = require("./cleanAll");
+const clearAnnuaire = require("./clearAnnuaire");
 const importReferentiel = require("./importReferentiel");
 const collect = require("./collect");
 const etablissementAsCsvStream = require("./utils/etablissementAsCsvStream");
 const computeStats = require("./computeStats");
 
 cli
-  .command("clean")
+  .command("clear")
   .description("Vide l'annuaire avec les données de la DEPP")
   .action(() => {
     runScript(() => {
-      return cleanAll();
+      return clearAnnuaire();
     });
   });
 
