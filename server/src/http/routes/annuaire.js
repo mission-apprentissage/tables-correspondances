@@ -166,15 +166,16 @@ module.exports = () => {
   /**
    * @swagger
    *
-   * /annuaire/etablissements/:siret:
+   * /annuaire/etablissements/{siret}:
    *   get:
    *     summary: Récupérer les informations d'un établissement
    *     parameters:
    *       - in: path
-   *         name: text
-   *         description: Le numéro de siret de l'établissement
-   *         type: string
+   *         name: siret
    *         required: true
+   *         schema:
+   *          type: string
+   *         example: "42476141900045"
    *       - in: query
    *         name: champs
    *         description: |
