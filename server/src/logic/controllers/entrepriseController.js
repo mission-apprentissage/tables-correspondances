@@ -1,5 +1,5 @@
-const { Etablissement } = require("src/common/model");
 const apiEntreprise = require("../../common/apis/apiEntreprise");
+const conventionController = require("./conventionController");
 
 class EntrepriseApiData {
   constructor() {}
@@ -41,12 +41,15 @@ class EntrepriseApiData {
       };
     }
 
-    let etablissementCatalogueInfo;
-    try{
-      etablissementCatalogueInfo = await Etablissement.findOne({siret}).select("computed_type").lean()
-    }catch(e){
-      return undefined
-    }
+    const info_dgefp = await conventionController.findInfoDgefp(siret, siret);
+    const info_datadock = await conventionController.findInfoDatadock(siret, siret);
+    const info_datagouv_ofs = await conventionController.findInfoDataGouv(siret);
+
+    const conventionnementInfos = conventionController.conventionnement({
+      info_dgefp: info_dgefp.value,
+      info_datadock: info_datadock.value,
+      info_datagouv_ofs: info_datagouv_ofs.value,
+    });
 
     return {
       result: {
@@ -83,7 +86,6 @@ class EntrepriseApiData {
         pays_implantation_code: etablissementApiInfo.pays_implantation.code,
         pays_implantation_nom: etablissementApiInfo.pays_implantation.value,
 
-        entreprise_type: etablissementCatalogueInfo,
         entreprise_siren: entrepriseApiInfo.siren,
         entreprise_procedure_collective: entrepriseApiInfo.procedure_collective,
         entreprise_enseigne: entrepriseApiInfo.enseigne,
@@ -105,6 +107,8 @@ class EntrepriseApiData {
         entreprise_prenom: entrepriseApiInfo.prenom,
         entreprise_categorie: entrepriseApiInfo.categorie_entreprise,
         entreprise_tranche_effectif_salarie: entrepriseApiInfo.tranche_effectif_salarie_entreprise,
+
+        ...conventionnementInfos,
 
         api_entreprise_reference: true,
       },
