@@ -1,4 +1,5 @@
 const apiEntreprise = require("../../common/apis/apiEntreprise");
+const conventionController = require("./conventionController");
 
 class EntrepriseApiData {
   constructor() {}
@@ -39,6 +40,16 @@ class EntrepriseApiData {
         },
       };
     }
+
+    const info_dgefp = await conventionController.findInfoDgefp(siret, siret);
+    const info_datadock = await conventionController.findInfoDatadock(siret, siret);
+    const info_datagouv_ofs = await conventionController.findInfoDataGouv(siret);
+
+    const conventionnementInfos = conventionController.conventionnement({
+      info_dgefp: info_dgefp.value,
+      info_datadock: info_datadock.value,
+      info_datagouv_ofs: info_datagouv_ofs.value,
+    });
 
     return {
       result: {
@@ -96,6 +107,8 @@ class EntrepriseApiData {
         entreprise_prenom: entrepriseApiInfo.prenom,
         entreprise_categorie: entrepriseApiInfo.categorie_entreprise,
         entreprise_tranche_effectif_salarie: entrepriseApiInfo.tranche_effectif_salarie_entreprise,
+
+        ...conventionnementInfos,
 
         api_entreprise_reference: true,
       },
