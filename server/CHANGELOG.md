@@ -1,3 +1,15 @@
+# [2.19.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.18.1...v2.19.0) (2021-06-29)
+
+
+### Bug Fixes
+
+* swagger ([8e6b334](https://github.com/mission-apprentissage/tables-correspondances/commit/8e6b334083a66e8e4ac6583f6963cc31f4a93f3e))
+
+
+### Features
+
+* generate niveaux/diplomes tree from BCN ([#159](https://github.com/mission-apprentissage/tables-correspondances/issues/159)) ([567156a](https://github.com/mission-apprentissage/tables-correspondances/commit/567156a00e5c96a4e97e756246b770c1100ed9c2))
+
 ## [2.18.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.18.0...v2.18.1) (2021-05-24)
 
 
