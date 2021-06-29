@@ -203,6 +203,32 @@ export async function getCoordinatesFromAddressData({
     return null;
   }
 }
+
+interface Tree {
+  [key: string]: string[];
+}
+export async function getNiveauxDiplomesTree(): Promise<Tree> {
+  const { BcnFormationDiplome, BcnNNiveauFormationDiplome } = await import("../../common/model");
+  const { mappingCodesEnNiveau }: { mappingCodesEnNiveau: Tree } = await import(
+    "../../logic/controllers/bcn/Constants"
+  );
+
+  return Object.entries(mappingCodesEnNiveau).reduce(async (acc, [niveau, value]) => {
+    const accSync: Tree = await acc;
+    let regex = new RegExp(`^(${value.join("|")})`);
+
+    const niveauxFormationDiplome = await BcnFormationDiplome.distinct("NIVEAU_FORMATION_DIPLOME", {
+      FORMATION_DIPLOME: { $regex: regex },
+    });
+
+    accSync[niveau] = await BcnNNiveauFormationDiplome.distinct("LIBELLE_100", {
+      NIVEAU_FORMATION_DIPLOME: { $in: niveauxFormationDiplome },
+    });
+
+    return accSync;
+  }, {});
+}
+
 // TODO
 // const conventionFilesImporter = require("./convetionFilesImporter/index");
 // await conventionFilesImporter(db);

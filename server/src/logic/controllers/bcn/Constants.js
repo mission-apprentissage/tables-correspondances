@@ -79,9 +79,16 @@ const mappingNiveauCodeEn = {
   "01025407": 4,
 };
 
+const mappingCodesEnNiveau = niveaux.reduce((acc, niveau, index) => {
+  const filteredMapping = Object.entries(mappingNiveauCodeEn).filter(([, value]) => value === index + 3);
+  acc[niveau] = filteredMapping.map(([key]) => key);
+  return acc;
+}, {});
+
 module.exports = {
   infosCodes,
   computeCodes,
   mappingNiveauCodeEn,
   niveaux,
+  mappingCodesEnNiveau,
 };
