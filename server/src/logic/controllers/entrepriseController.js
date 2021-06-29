@@ -1,3 +1,4 @@
+const { Etablissement } = require("src/common/model");
 const apiEntreprise = require("../../common/apis/apiEntreprise");
 
 class EntrepriseApiData {
@@ -40,6 +41,13 @@ class EntrepriseApiData {
       };
     }
 
+    let etablissementCatalogueInfo;
+    try{
+      etablissementCatalogueInfo = await Etablissement.findOne({siret}).select("computed_type").lean()
+    }catch(e){
+      return undefined
+    }
+
     return {
       result: {
         siege_social: etablissementApiInfo.siege_social,
@@ -75,6 +83,7 @@ class EntrepriseApiData {
         pays_implantation_code: etablissementApiInfo.pays_implantation.code,
         pays_implantation_nom: etablissementApiInfo.pays_implantation.value,
 
+        entreprise_type: etablissementCatalogueInfo,
         entreprise_siren: entrepriseApiInfo.siren,
         entreprise_procedure_collective: entrepriseApiInfo.procedure_collective,
         entreprise_enseigne: entrepriseApiInfo.enseigne,
