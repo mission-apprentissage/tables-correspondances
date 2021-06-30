@@ -61,9 +61,12 @@ class ApiGeoAdresse {
   async searchMunicipalityByCode(code, options = {}) {
     return this.executeWithRateLimiting(async (client) => {
       try {
-        let params = `${options.isCityCode ? "citycode=" : ""}${code}&type=municipality`;
-        logger.debug(`[Adresse API] Searching municipality with parameters ${params}...`);
-        const response = await client.get(`search/?limit=1&q=${params}`);
+        let query = `${options.isCityCode ? "citycode=" : ""}${code}`;
+        if (options.codeInsee) {
+          query = `${code}&citycode=${options.codeInsee}`;
+        }
+        logger.debug(`[Adresse API] Searching municipality with query ${query}...`);
+        const response = await client.get(`search/?limit=1&q=${query}&type=municipality`);
         return response.data;
       } catch (e) {
         throw new ApiError("apiGeoAdresse", e.message, e.code || e.response.status);

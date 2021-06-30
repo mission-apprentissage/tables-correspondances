@@ -8,9 +8,12 @@ const isSdkReady = () => {
   }
 };
 
-export async function initTcoModel(mongooseInstanceFromParentProject: any) {
+type InitOptions = {
+  noElastic?: boolean;
+};
+export async function initTcoModel(mongooseInstanceFromParentProject: any, { noElastic = false }: InitOptions) {
   try {
-    setMongooseInstance(mongooseInstanceFromParentProject);
+    setMongooseInstance(mongooseInstanceFromParentProject, noElastic);
     mongooseInstanceShared = true;
   } catch (error) {
     console.error(`init: something went wrong!`, error);
@@ -42,11 +45,11 @@ export async function getModels() {
 //   }
 // }
 
-export async function getCpInfo(codePostal: string) {
+export async function getCpInfo(codePostal: string, codeInsee?: string) {
   isSdkReady();
   try {
     let { getDataFromCP } = await import("../../logic/handlers/geoHandler");
-    const result = await getDataFromCP(codePostal);
+    const result = await getDataFromCP(codePostal, codeInsee);
     return result;
   } catch (error) {
     console.error(`getCpInfo: something went wrong!`, error);
@@ -200,6 +203,32 @@ export async function getCoordinatesFromAddressData({
     return null;
   }
 }
+
+interface Tree {
+  [key: string]: string[];
+}
+export async function getNiveauxDiplomesTree(): Promise<Tree> {
+  const { BcnFormationDiplome, BcnNNiveauFormationDiplome } = await import("../../common/model");
+  const { mappingCodesEnNiveau }: { mappingCodesEnNiveau: Tree } = await import(
+    "../../logic/controllers/bcn/Constants"
+  );
+
+  return Object.entries(mappingCodesEnNiveau).reduce(async (acc, [niveau, value]) => {
+    const accSync: Tree = await acc;
+    let regex = new RegExp(`^(${value.join("|")})`);
+
+    const niveauxFormationDiplome = await BcnFormationDiplome.distinct("NIVEAU_FORMATION_DIPLOME", {
+      FORMATION_DIPLOME: { $regex: regex },
+    });
+
+    accSync[niveau] = await BcnNNiveauFormationDiplome.distinct("LIBELLE_100", {
+      NIVEAU_FORMATION_DIPLOME: { $in: niveauxFormationDiplome },
+    });
+
+    return accSync;
+  }, {});
+}
+
 // TODO
 // const conventionFilesImporter = require("./convetionFilesImporter/index");
 // await conventionFilesImporter(db);

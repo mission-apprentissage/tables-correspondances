@@ -45,8 +45,14 @@ const createEsInstance = () => {
   });
   return client;
 };
-const clientDefault = createEsInstance();
-const getElasticInstance = () => clientDefault;
+
+let clientDefault;
+const getElasticInstance = () => {
+  if (!clientDefault) {
+    clientDefault = createEsInstance();
+  }
+  return clientDefault;
+};
 
 module.exports = {
   getElasticInstance,
