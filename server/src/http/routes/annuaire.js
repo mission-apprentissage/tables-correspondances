@@ -21,6 +21,16 @@ module.exports = () => {
    *     summary: Récupérer la liste des établissements de l'annuaire
    *     parameters:
    *       - in: query
+   *         name: siret
+   *         description: Retourne uniquement l'établissement ayant ce siren/siret
+   *         type: string
+   *         required: false
+   *       - in: query
+   *         name: text
+   *         description: Retourne uniquement l'établissement ayant cet uai.
+   *         type: string
+   *         required: false
+   *       - in: query
    *         name: text
    *         description: Permet de faire une recherche sur tous les champs texte d'un établissement
    *         type: string
@@ -90,7 +100,9 @@ module.exports = () => {
   router.get(
     "/etablissements",
     tryCatch(async (req, res) => {
-      let { text, anomalies, page, items_par_page, tri, ordre, champs } = await Joi.object({
+      let { siret, uai, text, anomalies, page, items_par_page, tri, ordre, champs } = await Joi.object({
+        uai: Joi.string().pattern(/^[0-9]{7}[A-Z]{1}$/),
+        siret: Joi.string().pattern(/^([0-9]{9}|[0-9]{14})$/),
         text: Joi.string(),
         anomalies: Joi.boolean().default(null),
         page: Joi.number().default(1),
@@ -106,6 +118,8 @@ module.exports = () => {
         [
           {
             $match: {
+              ...(siret ? { siret } : {}),
+              ...(uai ? { "uais.uai": uai } : {}),
               ...(text ? { $text: { $search: text } } : {}),
               ...(anomalies !== null ? { "_meta.anomalies.0": { $exists: anomalies } } : {}),
             },
@@ -152,15 +166,16 @@ module.exports = () => {
   /**
    * @swagger
    *
-   * /annuaire/etablissements/:siret:
+   * /annuaire/etablissements/{siret}:
    *   get:
    *     summary: Récupérer les informations d'un établissement
    *     parameters:
    *       - in: path
-   *         name: text
-   *         description: Le numéro de siret de l'établissement
-   *         type: string
+   *         name: siret
    *         required: true
+   *         schema:
+   *          type: string
+   *         example: "42476141900045"
    *       - in: query
    *         name: champs
    *         description: |

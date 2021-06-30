@@ -30,9 +30,9 @@ class GeoController {
     }
   }
 
-  async findCode(code) {
+  async findCode(code, codeInsee) {
     try {
-      const { records = [] } = await geoAdresseData.getMunicipality(code);
+      const { records = [] } = await geoAdresseData.getMunicipality(code, codeInsee);
       if (records.length === 0) {
         return {
           info: "Erreur: Non trouvé",

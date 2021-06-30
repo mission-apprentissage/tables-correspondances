@@ -1,6 +1,6 @@
 const geoController = require("../controllers/geo/geoController");
 
-const getDataFromCP = async (providedCP) => {
+const getDataFromCP = async (providedCP, providedCodeInsee) => {
   if (!providedCP || !geoController.isValidCodePostal(providedCP.trim())) {
     return {
       result: {},
@@ -10,9 +10,19 @@ const getDataFromCP = async (providedCP) => {
     };
   }
 
-  let codePostal = `${providedCP}`.trim();
+  if (providedCodeInsee && !geoController.isValidCodePostal(providedCodeInsee.trim())) {
+    return {
+      result: {},
+      messages: {
+        error: `Erreur: Le code insee fourni doit être définit et au format 5 caractères ${providedCodeInsee}`,
+      },
+    };
+  }
 
-  const { info, value, update } = await geoController.findCode(codePostal);
+  const codePostal = `${providedCP}`.trim();
+  const codeInsee = providedCodeInsee ? `${providedCodeInsee}`.trim() : null;
+
+  const { info, value, update } = await geoController.findCode(codePostal, codeInsee);
 
   if (!value) {
     return {
