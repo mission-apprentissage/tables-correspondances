@@ -3,7 +3,7 @@ const { omit } = require("lodash");
 const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
-const collect = require("../../../../src/jobs/annuaire/collect");
+const collectSources = require("../../../../src/jobs/annuaire/collectSources");
 const { importReferentiel } = require("../../../utils/testUtils");
 const { getMockedApiSirene, getMockedApiGeoAddresse } = require("../../../utils/apiMocks");
 
@@ -26,7 +26,7 @@ integrationTests(__filename, () => {
     await importReferentiel();
     let source = await createSireneSource();
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.strictEqual(found.raison_sociale, "NOMAYO");
@@ -71,7 +71,7 @@ integrationTests(__filename, () => {
       }),
     });
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.adresse, {
@@ -139,7 +139,7 @@ integrationTests(__filename, () => {
       organismes: ["11111111111111", "11111111122222"],
     });
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.relations, [
@@ -167,7 +167,7 @@ integrationTests(__filename, () => {
       organismes: ["11111111111111"],
     });
 
-    let stats = await collect(source, { filters: { siret: "33333333333333" } });
+    let stats = await collectSources(source, { filters: { siret: "33333333333333" } });
 
     assert.deepStrictEqual(stats, {
       sirene: {
@@ -215,7 +215,7 @@ integrationTests(__filename, () => {
       organismes: ["2222222222222222"],
     });
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.strictEqual(found.relations.length, 1);
@@ -266,7 +266,7 @@ integrationTests(__filename, () => {
       organismes: ["11111111111111", "11111111122222"],
     });
 
-    await collect(source);
+    await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.relations, []);
@@ -280,7 +280,7 @@ integrationTests(__filename, () => {
       }),
     });
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
     assert.deepStrictEqual(found._meta.anomalies[0].details, "[Api Sirene] Request failed with status code 500");
@@ -301,7 +301,7 @@ integrationTests(__filename, () => {
       }),
     });
 
-    await collect(source);
+    await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
     assert.deepStrictEqual(found._meta.anomalies[0].details, "Etablissement inconnu pour l'entreprise 111111111");
@@ -315,7 +315,7 @@ integrationTests(__filename, () => {
       }),
     });
 
-    await collect(source);
+    await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
     assert.deepStrictEqual(found._meta.anomalies[0].details, "Entreprise inconnue");
@@ -334,7 +334,7 @@ integrationTests(__filename, () => {
       },
     });
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.strictEqual(found._meta.anomalies.length, 1);
@@ -365,7 +365,7 @@ integrationTests(__filename, () => {
       }),
     });
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.strictEqual(found._meta.anomalies.length, 1);

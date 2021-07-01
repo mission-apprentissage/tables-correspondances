@@ -2,7 +2,7 @@ const assert = require("assert");
 const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
-const collect = require("../../../../src/jobs/annuaire/collect");
+const collectSources = require("../../../../src/jobs/annuaire/collectSources");
 const { insertAnnuaire } = require("../../../utils/fixtures");
 const { getMockedApiEsSup } = require("../../../utils/apiMocks");
 
@@ -29,7 +29,7 @@ integrationTests(__filename, () => {
     });
     let source = await createAcademieSource();
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "11111111100000" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.academie, {
@@ -51,7 +51,7 @@ integrationTests(__filename, () => {
     });
     let source = await createAcademieSource();
 
-    let stats = await collect(source, { filters: { siret: "33333333333333" } });
+    let stats = await collectSources(source, { filters: { siret: "33333333333333" } });
 
     assert.deepStrictEqual(stats, {
       academie: {
@@ -69,7 +69,7 @@ integrationTests(__filename, () => {
     });
     let source = await createAcademieSource();
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
     assert.deepStrictEqual(stats, {
       academie: {
@@ -93,7 +93,7 @@ integrationTests(__filename, () => {
 
     let source = await createAcademieSource({ apiEsSup: api });
 
-    await collect(source);
+    await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "11111111100000" }).lean();
     assert.deepStrictEqual(found._meta.anomalies[0].details, "[Api EsSup] Request failed with status code 429");
@@ -126,7 +126,7 @@ integrationTests(__filename, () => {
     };
     let source = await createAcademieSource({ apiEsSup: failingApi });
 
-    await collect(source);
+    await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "11111111100000" }).lean();
     assert.deepStrictEqual(

@@ -3,7 +3,7 @@ const { Etablissement, Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
 const { importReferentiel } = require("../../../utils/testUtils");
-const collect = require("../../../../src/jobs/annuaire/collect");
+const collectSources = require("../../../../src/jobs/annuaire/collectSources");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations relatives aux établissements du catalogue", async () => {
@@ -15,7 +15,7 @@ integrationTests(__filename, () => {
     });
     let source = await createSource("etablissements");
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
     let found = await Annuaire.findOne({}, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais, [
@@ -43,7 +43,7 @@ integrationTests(__filename, () => {
     });
     let source = await createSource("etablissements");
 
-    let stats = await collect(source, {
+    let stats = await collectSources(source, {
       filters: { siret: "33333333333333" },
     });
 

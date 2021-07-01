@@ -5,7 +5,7 @@ const { Readable } = require("stream");
 const { Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
 const { insertAnnuaire } = require("../../utils/fixtures");
-const collect = require("../../../src/jobs/annuaire/collect");
+const collectSources = require("../../../src/jobs/annuaire/collectSources");
 
 integrationTests(__filename, () => {
   function createTestSource(array) {
@@ -31,7 +31,7 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
     let found = await Annuaire.findOne({}, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais, [
@@ -59,7 +59,7 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais[0], {
@@ -95,7 +95,7 @@ integrationTests(__filename, () => {
       ],
     });
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais, [
@@ -132,7 +132,7 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    await collect(source);
+    await collectSources(source);
 
     let found = await Annuaire.findOne({}, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais, found.uais, [
@@ -153,7 +153,7 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais, []);
@@ -175,7 +175,7 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
     let count = await Annuaire.countDocuments({ siret: "111111111111111" });
     assert.strictEqual(count, 0);
@@ -197,7 +197,7 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     let errors = found._meta.anomalies;
@@ -225,7 +225,7 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     let errors = found._meta.anomalies;
@@ -254,7 +254,7 @@ integrationTests(__filename, () => {
     ]);
 
     try {
-      await collect(source);
+      await collectSources(source);
       assert.fail();
     } catch (e) {
       assert.strictEqual(e.message, "Select must not be empty");
@@ -270,7 +270,7 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    await collect(source);
+    await collectSources(source);
 
     let found = await Annuaire.findOne({}, { _id: 0 }).lean();
     assert.deepStrictEqual(found.relations, [
@@ -304,7 +304,7 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    await collect(source);
+    await collectSources(source);
 
     let found = await Annuaire.findOne({}, { _id: 0 }).lean();
     assert.deepStrictEqual(found.relations[0].sources, ["other", "dummy"]);
@@ -330,7 +330,7 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    await collect(source);
+    await collectSources(source);
 
     let found = await Annuaire.findOne({}, { _id: 0 }).lean();
     assert.strictEqual(found.relations.length, 1);
@@ -348,7 +348,7 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    await collect(source);
+    await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.relations, [
@@ -370,7 +370,7 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    await collect(source);
+    await collectSources(source);
 
     let found = await Annuaire.findOne({}, { _id: 0 }).lean();
     assert.deepStrictEqual(found.reseaux, ["test"]);
@@ -388,7 +388,7 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    await collect(source);
+    await collectSources(source);
 
     let found = await Annuaire.findOne({}, { _id: 0 }).lean();
     assert.deepStrictEqual(found.reseaux, ["test"]);
@@ -403,7 +403,7 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    let stats = await collect(source, { filters: { siret: "33333333333333" } });
+    let stats = await collectSources(source, { filters: { siret: "33333333333333" } });
 
     assert.deepStrictEqual(stats, {
       dummy: {
@@ -433,7 +433,7 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.reseaux, ["test"]);

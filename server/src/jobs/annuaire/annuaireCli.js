@@ -7,7 +7,7 @@ const { createReferentiel, getDefaultReferentiels } = require("./referentiels/re
 const { createSource, getDefaultSourcesGroupedByPriority } = require("./sources/sources");
 const clearAnnuaire = require("./clearAnnuaire");
 const importReferentiel = require("./importReferentiel");
-const collect = require("./collect");
+const collectSources = require("./collectSources");
 const etablissementAsCsvStream = require("./utils/etablissementAsCsvStream");
 const computeStats = require("./computeStats");
 
@@ -52,7 +52,7 @@ cli
 
       for (let group of groups) {
         let sources = await Promise.all(group.map((name) => createSource(name, { input })));
-        let results = await collect(sources, options);
+        let results = await collectSources(sources, options);
         stats.push(results);
       }
 

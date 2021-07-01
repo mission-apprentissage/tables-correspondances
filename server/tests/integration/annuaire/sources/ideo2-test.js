@@ -3,7 +3,7 @@ const { omit } = require("lodash");
 const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
-const collect = require("../../../../src/jobs/annuaire/collect");
+const collectSources = require("../../../../src/jobs/annuaire/collectSources");
 const { createStream } = require("../../../utils/testUtils");
 const { insertAnnuaire } = require("../../../utils/fixtures");
 
@@ -18,7 +18,7 @@ integrationTests(__filename, () => {
       ),
     });
 
-    await collect(source);
+    await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
     assert.deepStrictEqual(omit(found.relations[0], ["label"]), {
