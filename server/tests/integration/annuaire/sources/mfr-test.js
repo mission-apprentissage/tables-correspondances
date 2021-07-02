@@ -8,22 +8,22 @@ const { insertAnnuaire } = require("../../../utils/fixtures");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier mfr avec le siret", async () => {
-    await insertAnnuaire({ siret: "11111111111111" });
+    await insertAnnuaire({ siret: "11111111100006" });
     let source = await createSource("mfr", {
       input: createStream(
         `uai;uai_code_educnationale;siret
-"0011073L";"0011073X";"11111111111111"`
+"1234567W";"0011073X";"11111111100006"`
       ),
     });
 
     let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.reseaux, ["mfr"]);
     assert.deepStrictEqual(found.uais, [
       {
         sources: ["mfr"],
-        uai: "0011073L",
+        uai: "1234567W",
         valide: true,
       },
       {
@@ -46,7 +46,7 @@ integrationTests(__filename, () => {
       uais: [
         {
           sources: ["mfr"],
-          uai: "0011073L",
+          uai: "1234567W",
           valide: true,
         },
       ],
@@ -54,13 +54,13 @@ integrationTests(__filename, () => {
     let source = await createSource("mfr", {
       input: createStream(
         `uai;uai_code_educnationale;siret
-"0011073L";"0011073X";"11111111111111"`
+"1234567W";"0011073X";"11111111100006"`
       ),
     });
 
     await collectSources(source);
 
-    let found = await Annuaire.findOne({ "uais.uai": "0011073L" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ "uais.uai": "1234567W" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.reseaux, ["mfr"]);
     assert.deepStrictEqual(found.uais[1], {
       sources: ["mfr"],
@@ -82,7 +82,7 @@ integrationTests(__filename, () => {
     let source = await createSource("mfr", {
       input: createStream(
         `uai;uai_code_educnationale;siret
-"0011073L";"0011073X";"11111111111111"`
+"1234567W";"0011073X";"11111111100006"`
       ),
     });
 
@@ -92,7 +92,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found.reseaux, ["mfr"]);
     assert.deepStrictEqual(found.uais[0], {
       sources: ["mfr"],
-      uai: "0011073L",
+      uai: "1234567W",
       valide: true,
     });
   });

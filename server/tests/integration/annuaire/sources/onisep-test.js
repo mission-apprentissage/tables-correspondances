@@ -11,17 +11,17 @@ integrationTests(__filename, () => {
     let source = await createSource("onisep", {
       input: createStream(
         `"code UAI";"n° SIRET";"nom"
-"0011073L";"11111111111111";"Centre de formation"`
+"1234567W";"11111111100006";"Centre de formation"`
       ),
     });
 
     let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais, [
       {
         sources: ["onisep"],
-        uai: "0011073L",
+        uai: "1234567W",
         valide: true,
       },
     ]);

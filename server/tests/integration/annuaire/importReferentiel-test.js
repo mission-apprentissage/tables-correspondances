@@ -16,13 +16,13 @@ function createTestReferentiel(array) {
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut initialiser un annuaire à partir d'un référentiel", async () => {
-    let referentiel = createTestReferentiel(["111111111111111"]);
+    let referentiel = createTestReferentiel(["11111111100006"]);
 
     let results = await importReferentiel(referentiel);
 
-    let found = await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.deepStrictEqual(omit(found, ["_meta"]), {
-      siret: "111111111111111",
+      siret: "11111111100006",
       referentiels: ["test"],
       uais: [],
       reseaux: [],
@@ -42,11 +42,11 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on ignore les établissements en double", async () => {
-    let referentiel = createTestReferentiel(["111111111111111", "111111111111111"]);
+    let referentiel = createTestReferentiel(["11111111100006", "11111111100006"]);
 
     let results = await importReferentiel(referentiel);
 
-    await Annuaire.findOne({ siret: "111111111111111" }, { _id: 0 }).lean();
+    await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.deepStrictEqual(results, {
       total: 2,
       created: 1,
@@ -64,7 +64,7 @@ integrationTests(__filename, () => {
 
     let results = await importReferentiel(referentiel);
 
-    let count = await Annuaire.countDocuments({ siret: "111111111111111" });
+    let count = await Annuaire.countDocuments({ siret: "11111111100006" });
     assert.strictEqual(count, 0);
     assert.deepStrictEqual(results, {
       total: 1,

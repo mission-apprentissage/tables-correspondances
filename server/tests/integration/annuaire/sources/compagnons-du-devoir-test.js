@@ -8,22 +8,22 @@ const { insertAnnuaire } = require("../../../utils/fixtures");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier compagnons-du-devoir", async () => {
-    await insertAnnuaire({ siret: "11111111111111" });
+    await insertAnnuaire({ siret: "11111111100006" });
     let source = await createSource("compagnons-du-devoir", {
       input: createStream(
         `siret;uai
-"11111111111111";"0011073L"`
+"11111111100006";"1234567W"`
       ),
     });
 
     let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.reseaux, ["compagnons-du-devoir"]);
     assert.deepStrictEqual(found.uais, [
       {
         sources: ["compagnons-du-devoir"],
-        uai: "0011073L",
+        uai: "1234567W",
         valide: true,
       },
     ]);

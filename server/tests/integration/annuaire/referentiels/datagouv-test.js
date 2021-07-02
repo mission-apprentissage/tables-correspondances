@@ -10,8 +10,8 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut ajouter le référentiel datagouv", async () => {
     let referentiel = await createReferentiel("datagouv", {
       input: createStream(`"siren";"num_etablissement";"cfa"
-"111111111";"11111";"Oui"
-"222222222";"22222";"Non"`),
+"111111111";"00006";"Oui"
+"222222222";"00002";"Non"`),
     });
 
     let results = await importReferentiel(referentiel);
@@ -19,7 +19,7 @@ integrationTests(__filename, () => {
     let docs = await Annuaire.find({}, { _id: 0 }).lean();
     assert.strictEqual(docs.length, 1);
     assert.deepStrictEqual(omit(docs[0], ["_meta"]), {
-      siret: "11111111111111",
+      siret: "11111111100006",
       referentiels: ["datagouv"],
       uais: [],
       reseaux: [],

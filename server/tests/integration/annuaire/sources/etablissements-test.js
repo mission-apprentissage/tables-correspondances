@@ -9,8 +9,8 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations relatives aux établissements du catalogue", async () => {
     await importReferentiel();
     await Etablissement.create({
-      uai: "0011073L",
-      siret: "11111111111111",
+      uai: "1234567W",
+      siret: "11111111100006",
       entreprise_raison_sociale: "Centre de formation",
     });
     let source = await createSource("etablissements");
@@ -21,7 +21,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found.uais, [
       {
         sources: ["etablissements"],
-        uai: "0011073L",
+        uai: "1234567W",
         valide: true,
       },
     ]);
@@ -37,14 +37,14 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut filter par siret", async () => {
     await importReferentiel();
     await Etablissement.create({
-      uai: "0011073L",
-      siret: "11111111111111",
+      uai: "1234567W",
+      siret: "11111111100006",
       entreprise_raison_sociale: "Centre de formation",
     });
     let source = await createSource("etablissements");
 
     let stats = await collectSources(source, {
-      filters: { siret: "33333333333333" },
+      filters: { siret: "33333333300008" },
     });
 
     assert.deepStrictEqual(stats, {

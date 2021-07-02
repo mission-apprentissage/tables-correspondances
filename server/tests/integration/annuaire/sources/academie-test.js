@@ -51,7 +51,7 @@ integrationTests(__filename, () => {
     });
     let source = await createAcademieSource();
 
-    let stats = await collectSources(source, { filters: { siret: "33333333333333" } });
+    let stats = await collectSources(source, { filters: { siret: "33333333300008" } });
 
     assert.deepStrictEqual(stats, {
       academie: {

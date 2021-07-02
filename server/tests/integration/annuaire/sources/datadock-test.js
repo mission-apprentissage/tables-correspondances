@@ -8,21 +8,21 @@ const { insertAnnuaire } = require("../../../utils/fixtures");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations datadock", async () => {
-    await insertAnnuaire({ siret: "11111111111111" });
-    await insertAnnuaire({ siret: "22222222222222" });
+    await insertAnnuaire({ siret: "11111111100006" });
+    await insertAnnuaire({ siret: "22222222200002" });
     let source = await createSource("datadock", {
       input: createStream(
         `siret;REFERENCABLE
-"11111111111111";"OUI"
-"22222222222222";"NON"`
+"11111111100006";"OUI"
+"22222222200002";"NON"`
       ),
     });
 
     let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.strictEqual(found.conformite_reglementaire.certificateur, "datadock");
-    found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0 }).lean();
+    found = await Annuaire.findOne({ siret: "22222222200002" }, { _id: 0 }).lean();
     assert.strictEqual(found.conformite_reglementaire.certificateur, undefined);
 
     assert.deepStrictEqual(stats, {
@@ -36,7 +36,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on peut préserver le conventionnement", async () => {
     await insertAnnuaire({
-      siret: "11111111111111",
+      siret: "11111111100006",
       conformite_reglementaire: {
         conventionne: true,
       },
@@ -44,13 +44,13 @@ integrationTests(__filename, () => {
     let source = await createSource("datadock", {
       input: createStream(
         `siret;REFERENCABLE
-"11111111111111";"OUI"`
+"11111111100006";"OUI"`
       ),
     });
 
     await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.strictEqual(found.conformite_reglementaire.conventionne, true);
   });
 });

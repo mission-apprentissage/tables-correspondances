@@ -31,9 +31,9 @@ integrationTests(__filename, () => {
           responses.formations({
             formations: [
               {
-                etablissement_gestionnaire_siret: "11111111111111",
+                etablissement_gestionnaire_siret: "11111111100006",
                 etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
-                etablissement_formateur_siret: "22222222222222",
+                etablissement_formateur_siret: "22222222200002",
                 etablissement_formateur_entreprise_raison_sociale: "Etablissement",
               },
             ],
@@ -44,12 +44,12 @@ integrationTests(__filename, () => {
 
     let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.ok(found.gestionnaire);
     assert.ok(!found.formateur);
     assert.deepStrictEqual(found.relations, [
       {
-        siret: "22222222222222",
+        siret: "22222222200002",
         label: "Etablissement",
         annuaire: false,
         type: "formateur",
@@ -74,9 +74,9 @@ integrationTests(__filename, () => {
           responses.formations({
             formations: [
               {
-                etablissement_gestionnaire_siret: "22222222222222",
+                etablissement_gestionnaire_siret: "22222222200002",
                 etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
-                etablissement_formateur_siret: "11111111111111",
+                etablissement_formateur_siret: "11111111100006",
                 etablissement_formateur_entreprise_raison_sociale: "Etablissement",
               },
             ],
@@ -87,12 +87,12 @@ integrationTests(__filename, () => {
 
     await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.ok(!found.gestionnaire);
     assert.ok(found.formateur);
     assert.deepStrictEqual(found.relations, [
       {
-        siret: "22222222222222",
+        siret: "22222222200002",
         label: "Entreprise",
         annuaire: false,
         type: "gestionnaire",
@@ -110,9 +110,9 @@ integrationTests(__filename, () => {
           responses.formations({
             formations: [
               {
-                etablissement_gestionnaire_siret: "22222222222222",
+                etablissement_gestionnaire_siret: "22222222200002",
                 etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
-                etablissement_formateur_siret: "11111111111111",
+                etablissement_formateur_siret: "11111111100006",
                 etablissement_formateur_entreprise_raison_sociale: "Etablissement",
               },
             ],
@@ -126,14 +126,14 @@ integrationTests(__filename, () => {
 
     await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.ok(!found.gestionnaire);
     assert.ok(!found.formateur);
   });
 
   it("Vérifie qu'on peut collecter des diplômes (cfd)", async () => {
     await importReferentiel(`"siren";"num_etablissement";"cfa"
-"222222222";"22222";"Oui"`);
+"222222222";"00002";"Oui"`);
     let source = await createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
@@ -141,7 +141,7 @@ integrationTests(__filename, () => {
           responses.formations({
             formations: [
               {
-                etablissement_formateur_siret: "22222222222222",
+                etablissement_formateur_siret: "22222222200002",
                 etablissement_formateur_entreprise_raison_sociale: "Etablissement",
                 cfd: "40030001",
                 cfd_specialite: null,
@@ -154,7 +154,7 @@ integrationTests(__filename, () => {
 
     let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "22222222200002" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.diplomes, [
       {
         code: "40030001",
@@ -177,7 +177,7 @@ integrationTests(__filename, () => {
       LIBELLE_COURT: "FORMATION",
     });
     await importReferentiel(`"siren";"num_etablissement";"cfa"
-"222222222";"22222";"Oui"`);
+"222222222";"00002";"Oui"`);
     let source = await createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
@@ -185,7 +185,7 @@ integrationTests(__filename, () => {
           responses.formations({
             formations: [
               {
-                etablissement_formateur_siret: "22222222222222",
+                etablissement_formateur_siret: "22222222200002",
                 etablissement_formateur_entreprise_raison_sociale: "Etablissement",
                 cfd: "40030001",
               },
@@ -197,7 +197,7 @@ integrationTests(__filename, () => {
 
     await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "22222222200002" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.diplomes, [
       {
         code: "40030001",
@@ -210,7 +210,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on ne collecte pas de diplômes pour les établissements gestionnaire", async () => {
     await importReferentiel(`"siren";"num_etablissement";"cfa"
-"111111111";"11111";"Oui"`);
+"111111111";"00006";"Oui"`);
     let source = await createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
@@ -218,7 +218,7 @@ integrationTests(__filename, () => {
           responses.formations({
             formations: [
               {
-                etablissement_gestionnaire_siret: "11111111111111",
+                etablissement_gestionnaire_siret: "11111111100006",
                 etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
                 cfd: "40030001",
               },
@@ -230,7 +230,7 @@ integrationTests(__filename, () => {
 
     let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.diplomes, []);
     assert.deepStrictEqual(stats, {
       catalogue: {
@@ -243,7 +243,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on peut collecter des certifications (rncp)", async () => {
     await importReferentiel(`"siren";"num_etablissement";"cfa"
-"222222222";"22222";"Oui"`);
+"222222222";"00002";"Oui"`);
     let source = await createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
@@ -251,7 +251,7 @@ integrationTests(__filename, () => {
           responses.formations({
             formations: [
               {
-                etablissement_formateur_siret: "22222222222222",
+                etablissement_formateur_siret: "22222222200002",
                 etablissement_formateur_entreprise_raison_sociale: "Etablissement",
                 rncp_code: "RNCP28662",
                 rncp_intitule: "Gestionnaire de l'administration des ventes et de la relation commerciale",
@@ -264,7 +264,7 @@ integrationTests(__filename, () => {
 
     let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "22222222200002" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.certifications, [
       {
         code: "RNCP28662",
@@ -283,7 +283,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on ne collecte pas de certifications pour les établissements gestionnaire", async () => {
     await importReferentiel(`"siren";"num_etablissement";"cfa"
-"111111111";"11111";"Oui"`);
+"111111111";"00006";"Oui"`);
     let source = await createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
@@ -291,7 +291,7 @@ integrationTests(__filename, () => {
           responses.formations({
             formations: [
               {
-                etablissement_gestionnaire_siret: "11111111111111",
+                etablissement_gestionnaire_siret: "11111111100006",
                 etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
                 rncp_code: "RNCP28662",
                 rncp_intitule: "Gestionnaire de l'administration des ventes et de la relation commerciale",
@@ -304,7 +304,7 @@ integrationTests(__filename, () => {
 
     let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.certifications, []);
     assert.deepStrictEqual(stats, {
       catalogue: {
@@ -317,7 +317,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on peut collecter des lieux de formation", async () => {
     await importReferentiel(`"siren";"num_etablissement";"cfa"
-"222222222";"22222";"Oui"`);
+"222222222";"00002";"Oui"`);
     let source = await createFormationsSource({
       apiGeoAdresse: getMockedApiGeoAddresse((mock, responses) => {
         mock.onGet(/reverse.*/).reply(
@@ -347,8 +347,8 @@ integrationTests(__filename, () => {
           responses.formations({
             formations: [
               {
-                etablissement_formateur_siret: "22222222222222",
-                lieu_formation_siret: "33333333333333",
+                etablissement_formateur_siret: "22222222200002",
+                lieu_formation_siret: "33333333300008",
                 lieu_formation_geo_coordonnees: "48.879706,2.396444",
               },
             ],
@@ -359,10 +359,10 @@ integrationTests(__filename, () => {
 
     let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "22222222200002" }, { _id: 0 }).lean();
 
     assert.deepStrictEqual(found.lieux_de_formation[0], {
-      siret: "33333333333333",
+      siret: "33333333300008",
       adresse: {
         label: "32 Rue des lilas 75019 Paris",
         code_postal: "75019",
@@ -390,7 +390,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on ne collecte pas des lieux de formation pour les établissements gestionnaire", async () => {
     await importReferentiel(`"siren";"num_etablissement";"cfa"
-"111111111";"11111";"Oui"`);
+"111111111";"00006";"Oui"`);
     let source = await createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
@@ -398,8 +398,8 @@ integrationTests(__filename, () => {
           responses.formations({
             formations: [
               {
-                etablissement_gestionnaire_siret: "11111111111111",
-                lieu_formation_siret: "33333333333333",
+                etablissement_gestionnaire_siret: "11111111100006",
+                lieu_formation_siret: "33333333300008",
                 lieu_formation_geo_coordonnees: "48.879706,2.396444",
               },
             ],
@@ -410,7 +410,7 @@ integrationTests(__filename, () => {
 
     let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
 
     assert.deepStrictEqual(found.lieux_de_formation, []);
     assert.deepStrictEqual(stats, {
@@ -424,7 +424,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on cherche une adresse quand ne peut pas reverse-geocoder un lieu de formation", async () => {
     await importReferentiel(`"siren";"num_etablissement";"cfa"
-"222222222";"22222";"Oui"`);
+"222222222";"00002";"Oui"`);
     let source = await createFormationsSource({
       apiGeoAdresse: getMockedApiGeoAddresse((mock, responses) => {
         mock.onGet(/reverse.*/).reply(400, {});
@@ -436,7 +436,7 @@ integrationTests(__filename, () => {
           responses.formations({
             formations: [
               {
-                etablissement_formateur_siret: "22222222222222",
+                etablissement_formateur_siret: "22222222200002",
               },
             ],
           })
@@ -446,7 +446,7 @@ integrationTests(__filename, () => {
 
     let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "22222222200002" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.lieux_de_formation[0].adresse, {
       geojson: {
         type: "Feature",
@@ -478,7 +478,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on créer une anomalie quand on ne peut pas trouver l'adresse d'un lieu de formation", async () => {
     await importReferentiel(`"siren";"num_etablissement";"cfa"
-"222222222";"22222";"Oui"`);
+"222222222";"00002";"Oui"`);
     let source = await createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
@@ -486,7 +486,7 @@ integrationTests(__filename, () => {
           responses.formations({
             formations: [
               {
-                etablissement_formateur_siret: "22222222222222",
+                etablissement_formateur_siret: "22222222200002",
               },
             ],
           })
@@ -500,7 +500,7 @@ integrationTests(__filename, () => {
 
     let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "22222222222222" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "22222222200002" }, { _id: 0 }).lean();
 
     assert.strictEqual(found.lieux_de_formation.length, 0);
     assert.strictEqual(found._meta.anomalies.length, 1);
@@ -524,7 +524,7 @@ integrationTests(__filename, () => {
     });
     let source = await createFormationsSource();
 
-    let stats = await collectSources(source, { filters: { siret: "33333333333333" } });
+    let stats = await collectSources(source, { filters: { siret: "33333333300008" } });
 
     assert.deepStrictEqual(stats, {
       catalogue: {
@@ -537,7 +537,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on peut détecter des relations avec des établissements déjà dans l'annuaire", async () => {
     await importReferentiel();
-    await insertAnnuaire({ siret: "22222222222222", raison_sociale: "Mon centre de formation" });
+    await insertAnnuaire({ siret: "22222222200002", raison_sociale: "Mon centre de formation" });
     let source = await createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
@@ -545,9 +545,9 @@ integrationTests(__filename, () => {
           responses.formations({
             formations: [
               {
-                etablissement_gestionnaire_siret: "11111111111111",
+                etablissement_gestionnaire_siret: "11111111100006",
                 etablissement_gestionnaire_entreprise_raison_sociale: "Entreprise",
-                etablissement_formateur_siret: "22222222222222",
+                etablissement_formateur_siret: "22222222200002",
                 etablissement_formateur_entreprise_raison_sociale: "Etablissement",
               },
             ],
@@ -558,7 +558,7 @@ integrationTests(__filename, () => {
 
     await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.strictEqual(found.relations[0].annuaire, true);
   });
 
@@ -573,7 +573,7 @@ integrationTests(__filename, () => {
 
     let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }).lean();
     assert.deepStrictEqual(found._meta.anomalies[0].details, "[api] HTTP error");
     assert.deepStrictEqual(stats, {
       catalogue: {

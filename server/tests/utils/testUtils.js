@@ -41,7 +41,7 @@ module.exports = {
       input: createStream(
         content ||
           `"siren";"num_etablissement";"cfa"
-"111111111";"11111";"Oui"`
+"111111111";"00006";"Oui"`
       ),
     });
 
