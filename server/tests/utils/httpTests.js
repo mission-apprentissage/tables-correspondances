@@ -31,7 +31,7 @@ async function startServer() {
       return computeStats({
         referentiels: [
           {
-            name: "dgefp",
+            name: "datagouv",
             stream: () => {
               return createStream(content || "11111111111111");
             },

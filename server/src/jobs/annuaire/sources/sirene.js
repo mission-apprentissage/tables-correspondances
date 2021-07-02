@@ -2,7 +2,7 @@ const { oleoduc, transformData, accumulateData, writeData } = require("oleoduc")
 const { Annuaire } = require("../../../common/model");
 const ApiSirene = require("../../../common/apis/ApiSirene");
 const ApiGeoAdresse = require("../../../common/apis/ApiGeoAdresse");
-const dgefp = require("../referentiels/dgefp");
+const datagouv = require("../referentiels/datagouv");
 const adresses = require("../utils/adresses");
 const categoriesJuridiques = require("../utils/categoriesJuridiques");
 
@@ -35,7 +35,7 @@ function getRelationLabel(e, uniteLegale) {
 
 async function loadOrganismeDeFormations() {
   let organismes = [];
-  let referentiel = await dgefp();
+  let referentiel = await datagouv();
 
   await oleoduc(
     referentiel.stream(),

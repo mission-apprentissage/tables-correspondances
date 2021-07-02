@@ -454,7 +454,7 @@ httpTests(__filename, ({ startServer }) => {
 
     strictEqual(response.status, 200);
     deepStrictEqual(omit(response.data.stats[0], ["created_at"]), {
-      referentiels: [{ name: "dgefp", nbSirens: 1, nbSirets: 1 }],
+      referentiels: [{ name: "datagouv", nbSirens: 1, nbSirets: 1 }],
       globale: {
         nbSirens: 1,
         nbSirets: 1,

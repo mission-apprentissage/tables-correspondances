@@ -7,8 +7,8 @@ const { createReferentiel } = require("../../../../src/jobs/annuaire/referentiel
 const { createStream } = require("../../../utils/testUtils");
 
 integrationTests(__filename, () => {
-  it("Vérifie qu'on peut ajouter le référentiel de la DGEFP", async () => {
-    let referentiel = await createReferentiel("dgefp", {
+  it("Vérifie qu'on peut ajouter le référentiel datagouv", async () => {
+    let referentiel = await createReferentiel("datagouv", {
       input: createStream(`"siren";"num_etablissement";"cfa"
 "111111111";"11111";"Oui"
 "222222222";"22222";"Non"`),
@@ -20,7 +20,7 @@ integrationTests(__filename, () => {
     assert.strictEqual(docs.length, 1);
     assert.deepStrictEqual(omit(docs[0], ["_meta"]), {
       siret: "11111111111111",
-      referentiels: ["dgefp"],
+      referentiels: ["datagouv"],
       uais: [],
       reseaux: [],
       relations: [],

@@ -45,7 +45,7 @@ module.exports = {
         {
           name: {
             type: String,
-            enum: ["dgefp", "depp", "catalogue"],
+            enum: ["datagouv"],
             required: true,
           },
           nbSirens: {

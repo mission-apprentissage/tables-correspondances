@@ -1,23 +1,19 @@
 const { oleoduc, filterData, transformData } = require("oleoduc");
-const csv = require("csv-parse");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
+const { parseCsv } = require("../utils/csvUtils");
 
 module.exports = async (custom = {}) => {
   let input = custom.input || (await getOvhFileAsStream("annuaire/DGEFP-20210505_public_ofs.csv"));
 
   return {
-    name: "dgefp",
-    stream(options = {}) {
-      let filter = options.filter || ((data) => data.cfa === "Oui");
-
+    name: "datagouv",
+    stream() {
       return oleoduc(
         input,
-        csv({
-          trim: true,
-          delimiter: ";",
+        parseCsv({
           columns: (header) => header.map((column) => column.replace(/ /g, "")),
         }),
-        filterData(filter),
+        filterData((data) => data.cfa === "Oui"),
         transformData((data) => `${data.siren}${data.num_etablissement}`),
         { promisify: false }
       );

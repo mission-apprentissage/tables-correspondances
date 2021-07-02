@@ -7,7 +7,7 @@ const { insertAnnuaire } = require("../../utils/fixtures");
 
 function createFakeReferentiel(content) {
   return {
-    name: "dgefp",
+    name: "datagouv",
     stream: () => {
       return createStream(content || "11111111111111");
     },
@@ -29,7 +29,7 @@ integrationTests(__filename, () => {
 
     let found = await AnnuaireStats.findOne({}, { _id: 0, created_at: 0 }).lean();
     let stats = {
-      referentiels: [{ name: "dgefp", nbSirens: 1, nbSirets: 1 }],
+      referentiels: [{ name: "datagouv", nbSirens: 1, nbSirets: 1 }],
       globale: {
         nbSirens: 2,
         nbSirets: 4,
