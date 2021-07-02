@@ -1,27 +1,22 @@
 const { oleoduc, transformData } = require("oleoduc");
-const csv = require("csv-parse");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
+const { parseCsv } = require("../utils/csvUtils");
 
 module.exports = async (custom = {}) => {
-  let name = "depp";
-  let input = custom.input || (await getOvhFileAsStream("annuaire/DEPP-CFASousConvRegionale_17122020_1.csv"));
+  let name = "sifa";
+  let input = custom.input || (await getOvhFileAsStream("annuaire/Liste_Etablissements_2021-06-04_SIFA_RAMSESE.csv"));
 
   return {
     name,
     stream() {
       return oleoduc(
         input,
-        csv({
-          delimiter: ";",
-          trim: true,
-          bom: true,
-          columns: true,
-        }),
+        parseCsv(),
         transformData((data) => {
           return {
             source: name,
-            selector: data["numero_siren_siret_uai"],
-            uais: [data["numero_uai"]],
+            selector: data.numero_siren_siret_uai,
+            uais: [data.numero_uai],
             data: {
               conformite_reglementaire: {
                 conventionne: true,

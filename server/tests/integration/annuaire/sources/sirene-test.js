@@ -160,8 +160,8 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on peut filter par siret", async () => {
-    await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
-"0011058V";"11111111111111"`);
+    await importReferentiel(`"siren";"num_etablissement";"cfa"
+"111111111";"11111";"Oui"`);
 
     let source = await createSireneSource({
       organismes: ["11111111111111"],
@@ -179,8 +179,8 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on ignore les relations qui ne sont pas des organismes de formations", async () => {
-    await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
-"0011058V";"11111111111111"`);
+    await importReferentiel(`"siren";"num_etablissement";"cfa"
+"111111111";"11111";"Oui"`);
     let api = getMockedApiSirene((mock, responses) => {
       mock.onGet("etablissements/11111111111111").reply(200, responses.etablissement());
       mock.onGet("unites_legales/111111111").reply(

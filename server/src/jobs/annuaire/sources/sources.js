@@ -17,8 +17,6 @@ module.exports = {
   createSource,
   getDefaultSourcesGroupedByPriority() {
     return [
-      ["depp"],
-      //Other groups contain sources that need data from the previous ones
       [
         "onisep",
         "onisep-structure",
@@ -34,6 +32,9 @@ module.exports = {
         "etablissements",
         "catalogue",
         "sirene",
+        "ramsese",
+        "deca",
+        "sifa",
       ],
       ["academie"],
       [
