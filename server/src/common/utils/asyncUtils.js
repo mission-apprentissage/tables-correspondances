@@ -13,4 +13,8 @@ async function promiseAllProps(data) {
   return Promise.all(data);
 }
 
-module.exports = { asyncForEach, promiseAllProps };
+function delay(milliseconds) {
+  return new Promise((resolve) => setTimeout(() => resolve(), milliseconds));
+}
+
+module.exports = { asyncForEach, promiseAllProps, delay };

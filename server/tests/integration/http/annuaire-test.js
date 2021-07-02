@@ -1,7 +1,6 @@
-const { omit } = require("lodash");
-const { strictEqual, deepStrictEqual } = require("assert");
+const { strictEqual, deepStrictEqual, ok } = require("assert");
 const httpTests = require("../../utils/httpTests");
-const { insertAnnuaire } = require("../../utils/fixtures");
+const { insertAnnuaire, insertAnnuaireStats } = require("../../utils/fixtures");
 
 httpTests(__filename, ({ startServer }) => {
   it("Vérifie qu'on peut lister des établissements", async () => {
@@ -446,39 +445,17 @@ httpTests(__filename, ({ startServer }) => {
   });
 
   it("Vérifie qu'on peut lister les stats", async () => {
-    const { httpClient, computeStats } = await startServer();
+    const { httpClient } = await startServer();
     await insertAnnuaire({ siret: "11111111100001" });
-    await computeStats();
+    await insertAnnuaireStats();
 
     let response = await httpClient.get("/api/v1/annuaire/stats");
 
     strictEqual(response.status, 200);
-    deepStrictEqual(omit(response.data.stats[0], ["created_at"]), {
-      referentiels: [{ name: "datagouv", nbSirens: 1, nbSirets: 1 }],
-      globale: {
-        nbSirens: 1,
-        nbSirets: 1,
-        nbSiretsGestionnairesEtFormateurs: 0,
-        nbSiretsGestionnaires: 0,
-        nbSiretsFormateurs: 0,
-        nbSiretsSansUAIs: 1,
-        nbSiretsAvecPlusieursUAIs: 0,
-      },
-      academies: [
-        {
-          academie: {
-            code: "01",
-            nom: "Paris",
-          },
-          nbSirens: 1,
-          nbSirets: 1,
-          nbSiretsGestionnairesEtFormateurs: 0,
-          nbSiretsGestionnaires: 0,
-          nbSiretsFormateurs: 0,
-          nbSiretsSansUAIs: 1,
-          nbSiretsAvecPlusieursUAIs: 0,
-        },
-      ],
-    });
+
+    let { created_at, ...rest } = response.data.stats[0];
+    ok(created_at);
+    ok(rest.validation);
+    ok(rest.matrix);
   });
 });

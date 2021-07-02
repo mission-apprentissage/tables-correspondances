@@ -321,7 +321,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found._meta.anomalies[0].details, "Entreprise inconnue");
   });
 
-  it("Vérifie qu'on créer une anomalie quand on ne peut pas trouver l'adresse", async () => {
+  it("Vérifie qu'on crée une anomalie quand on ne peut pas trouver l'adresse", async () => {
     await importReferentiel();
     let source = await createSireneSource({
       apiGeoAdresse: {

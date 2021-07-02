@@ -1,99 +1,19 @@
-const { oleoduc, accumulateData, writeData } = require("oleoduc");
-const { uniq } = require("lodash");
-const { Annuaire, AnnuaireStats } = require("../../common/model");
-const { promiseAllProps } = require("../../common/utils/asyncUtils");
-const { getDefaultReferentiels, createReferentiel } = require("./referentiels/referentiels");
+const { AnnuaireStats } = require("../../common/model");
+const validateSources = require("./validateSources");
+const buildMatrice = require("./buildMatrice");
+const datagouv = require("./referentiels/datagouv");
 
-async function computeReferentielStats(referentiel) {
-  let stats;
-  await oleoduc(
-    referentiel.stream(),
-    accumulateData(
-      (acc, siret) => {
-        return {
-          sirens: uniq([...acc.sirens, siret.substring(0, 9)]),
-          sirets: uniq([...acc.sirets, siret]),
-        };
-      },
-      { accumulator: { sirens: [], sirets: [] } }
-    ),
-    writeData((acc) => {
-      stats = {
-        name: referentiel.name,
-        nbSirens: acc.sirens.length,
-        nbSirets: acc.sirets.length,
-      };
-    })
-  );
+async function computeStats(sources) {
+  let referentiel = await datagouv();
 
-  return stats;
-}
-
-function computeAnnuaireStats(groupBy) {
-  return Annuaire.aggregate([
-    {
-      $group: {
-        ...groupBy,
-        sirens: { $addToSet: { $substr: ["$siret", 0, 9] } },
-        nbSirets: { $sum: 1 },
-        nbSiretsGestionnairesEtFormateurs: {
-          $sum: {
-            $cond: {
-              if: { $and: [{ $eq: ["$gestionnaire", true] }, { $eq: ["$formateur", true] }] },
-              then: 1,
-              else: 0,
-            },
-          },
-        },
-        nbSiretsGestionnaires: {
-          $sum: {
-            $cond: {
-              if: { $and: [{ $eq: ["$gestionnaire", true] }, { $ne: ["$formateur", true] }] },
-              then: 1,
-              else: 0,
-            },
-          },
-        },
-        nbSiretsFormateurs: {
-          $sum: {
-            $cond: {
-              if: { $and: [{ $ne: ["$gestionnaire", true] }, { $eq: ["$formateur", true] }] },
-              then: 1,
-              else: 0,
-            },
-          },
-        },
-        nbSiretsSansUAIs: { $sum: { $cond: { if: { $eq: [{ $size: "$uais" }, 0] }, then: 1, else: 0 } } },
-        nbSiretsAvecPlusieursUAIs: { $sum: { $cond: { if: { $gt: [{ $size: "$uais" }, 0] }, then: 1, else: 0 } } },
-      },
+  let stats = {
+    validation: await validateSources(sources),
+    matrices: {
+      uai_siret: await buildMatrice(sources, ["uai", "siret"]),
+      uai: await buildMatrice(sources, ["uai"]),
+      siret: await buildMatrice([...sources, referentiel.asSource()], ["siret"]),
     },
-    {
-      $addFields: {
-        nbSirens: { $size: "$sirens" },
-      },
-    },
-    {
-      $unset: ["sirens", "_id"],
-    },
-    {
-      $sort: { "academie.nom": 1 },
-    },
-  ]);
-}
-
-async function computeStats(options = {}) {
-  let referentiels = options.referentiels || (await Promise.all(getDefaultReferentiels().map(createReferentiel)));
-
-  let stats = await promiseAllProps({
-    referentiels: Promise.all(referentiels.map((r) => computeReferentielStats(r))),
-    globale: computeAnnuaireStats({
-      _id: null,
-    }).then((res) => res[0]),
-    academies: computeAnnuaireStats({
-      _id: "$academie.code",
-      academie: { $first: "$academie" },
-    }),
-  });
+  };
 
   await AnnuaireStats.create(stats);
 

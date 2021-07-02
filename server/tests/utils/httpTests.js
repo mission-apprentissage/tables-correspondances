@@ -1,8 +1,7 @@
 /* eslint-disable node/no-unpublished-require */
 const axiosist = require("axiosist");
 const createComponents = require("../../src/common/components/components");
-const computeStats = require("../../src/jobs/annuaire/computeStats");
-const { connectToMongoForTests, cleanAll, createStream } = require("./testUtils.js");
+const { connectToMongoForTests, cleanAll } = require("./testUtils.js");
 const server = require("../../src/http/server");
 
 // eslint-disable-next-line no-unused-vars
@@ -26,18 +25,6 @@ async function startServer() {
       return {
         Authorization: "Bearer " + response.data.token,
       };
-    },
-    computeStats(content) {
-      return computeStats({
-        referentiels: [
-          {
-            name: "datagouv",
-            stream: () => {
-              return createStream(content || "11111111100006");
-            },
-          },
-        ],
-      });
     },
   };
 }

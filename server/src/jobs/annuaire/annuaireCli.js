@@ -1,16 +1,18 @@
 const { program: cli } = require("commander");
 const { createWriteStream } = require("fs");
 const { oleoduc, writeToStdout } = require("oleoduc");
+const { computeChecksum } = require("../../../src/common/utils/uaiUtils");
 const { createReadStream } = require("fs");
 const { runScript } = require("../scriptWrapper");
 const { createReferentiel, getDefaultReferentiels } = require("./referentiels/referentiels");
-const { createSource, getDefaultSourcesGroupedByPriority } = require("./sources/sources");
+const { createSource, getDefaultSourcesGroupedByPriority, getSourcesToValidate } = require("./sources/sources");
 const clearAnnuaire = require("./clearAnnuaire");
 const importReferentiel = require("./importReferentiel");
 const collectSources = require("./collectSources");
-const { computeChecksum } = require("../../../src/common/utils/uaiUtils");
+const validateSources = require("./validateSources");
 const etablissementAsCsvStream = require("./utils/etablissementAsCsvStream");
 const computeStats = require("./computeStats");
+const buildMatrice = require("./buildMatrice");
 
 cli
   .command("clear")
@@ -21,9 +23,11 @@ cli
     });
   });
 
+cli.command("matrix", "Commandes pour manipuler la matrice des bases", { executableFile: "./matrix/matrixCli.js" });
+
 cli
   .command("import [name] [file]")
-  .description("Importe les établissements contenus dans le ou les référentiels")
+  .description("Import les données contenues dans le ou les référentiels")
   .action((name, file) => {
     runScript(async () => {
       let input = file ? createReadStream(file) : null;
@@ -76,11 +80,34 @@ cli
   });
 
 cli
-  .command("stats")
+  .command("validateSources [name]")
+  .description("Valide les sources de données")
+  .action((name) => {
+    runScript(async () => {
+      let sourceNames = name ? [name] : getSourcesToValidate();
+      let sources = await Promise.all(sourceNames.map((name) => createSource(name)));
+      return validateSources(sources);
+    });
+  });
+
+cli
+  .command("buildMatrice [name]")
+  .description("Permet de construire la matrice")
+  .action((name) => {
+    runScript(async () => {
+      let sourceNames = name ? [name] : getSourcesToValidate();
+      let sources = await Promise.all(sourceNames.map((name) => createSource(name)));
+      return buildMatrice(sources, ["siret"]);
+    });
+  });
+
+cli
+  .command("computeStats")
   .description("Génère les statistiques de l'annuaire")
   .action(() => {
-    runScript(() => {
-      return computeStats();
+    runScript(async () => {
+      let sources = await Promise.all(getSourcesToValidate().map((name) => createSource(name)));
+      return computeStats(sources);
     });
   });
 
@@ -94,5 +121,4 @@ cli
       };
     });
   });
-
 cli.parse(process.argv);

@@ -15,7 +15,7 @@ module.exports = () => {
           return {
             from: name,
             selector: etablissement.siret,
-            uais: [etablissement.uai],
+            uais: [etablissement.uai || undefined],
           };
         }),
         { promisify: false }

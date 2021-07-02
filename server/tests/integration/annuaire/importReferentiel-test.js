@@ -9,7 +9,7 @@ function createTestReferentiel(array) {
   return {
     name: "test",
     stream() {
-      return Readable.from(array);
+      return Readable.from(array.map((item) => ({ ...item, from: "test" })));
     },
   };
 }
