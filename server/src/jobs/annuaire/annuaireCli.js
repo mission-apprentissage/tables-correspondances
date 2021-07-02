@@ -8,6 +8,7 @@ const { createSource, getDefaultSourcesGroupedByPriority } = require("./sources/
 const clearAnnuaire = require("./clearAnnuaire");
 const importReferentiel = require("./importReferentiel");
 const collectSources = require("./collectSources");
+const { computeChecksum } = require("../../../src/common/utils/uaiUtils");
 const etablissementAsCsvStream = require("./utils/etablissementAsCsvStream");
 const computeStats = require("./computeStats");
 
@@ -80,6 +81,17 @@ cli
   .action(() => {
     runScript(() => {
       return computeStats();
+    });
+  });
+
+cli
+  .command("uai <code>")
+  .description("Génère un uai valide")
+  .action((code) => {
+    runScript(() => {
+      return {
+        uai: `${code}${computeChecksum(code)}`.toUpperCase(),
+      };
     });
   });
 
