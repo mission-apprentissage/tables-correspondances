@@ -13,7 +13,7 @@ module.exports = () => {
         Etablissement.find(filters, { siret: 1, uai: 1 }).lean().cursor(),
         transformData((etablissement) => {
           return {
-            source: name,
+            from: name,
             selector: etablissement.siret,
             uais: [etablissement.uai],
           };

@@ -14,7 +14,12 @@ module.exports = async (custom = {}) => {
           columns: (header) => header.map((column) => column.replace(/ /g, "")),
         }),
         filterData((data) => data.cfa === "Oui"),
-        transformData((data) => `${data.siren}${data.num_etablissement}`),
+        transformData((data) => {
+          return {
+            from: "datagouv",
+            siret: `${data.siren}${data.num_etablissement}`,
+          };
+        }),
         { promisify: false }
       );
     },

@@ -25,7 +25,7 @@ module.exports = async (custom = {}) => {
         stream,
         transformData((data) => {
           return {
-            source: name,
+            from: name,
             selector: data.numero_siren_siret_uai,
             uais: [data.numero_uai],
           };

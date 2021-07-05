@@ -20,7 +20,7 @@ module.exports = async (custom = {}) => {
         transformData((data) => {
           let uais = [...new Set([data["uai"], data["uai_code_educnationale"]])];
           return {
-            source: name,
+            from: name,
             selector: {
               $or: [{ siret: data["siret"] }, { "uais.uai": { $in: uais } }],
             },

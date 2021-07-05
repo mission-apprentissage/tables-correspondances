@@ -122,7 +122,7 @@ module.exports = async (options = {}) => {
           },
           { parallel: 5 }
         ),
-        transformData((data) => ({ ...data, source: name })),
+        transformData((data) => ({ ...data, from: name })),
         { promisify: false }
       );
     },

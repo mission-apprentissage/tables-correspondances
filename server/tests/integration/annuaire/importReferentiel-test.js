@@ -16,7 +16,7 @@ function createTestReferentiel(array) {
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut initialiser un annuaire à partir d'un référentiel", async () => {
-    let referentiel = createTestReferentiel(["11111111100006"]);
+    let referentiel = createTestReferentiel([{ siret: "11111111100006" }]);
 
     let results = await importReferentiel(referentiel);
 
@@ -42,7 +42,7 @@ integrationTests(__filename, () => {
   });
 
   it("Vérifie qu'on ignore les établissements en double", async () => {
-    let referentiel = createTestReferentiel(["11111111100006", "11111111100006"]);
+    let referentiel = createTestReferentiel([{ siret: "11111111100006" }, { siret: "11111111100006" }]);
 
     let results = await importReferentiel(referentiel);
 

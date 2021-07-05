@@ -13,7 +13,7 @@ module.exports = async (referentiel) => {
 
   await oleoduc(
     referentiel.stream(),
-    writeData(async (siret) => {
+    writeData(async ({ siret }) => {
       stats.total++;
       if (isEmpty(siret)) {
         stats.failed++;

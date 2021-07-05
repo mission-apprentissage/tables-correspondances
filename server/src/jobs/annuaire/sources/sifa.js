@@ -14,7 +14,7 @@ module.exports = async (custom = {}) => {
         parseCsv(),
         transformData((data) => {
           return {
-            source: name,
+            from: name,
             selector: data.numero_siren_siret_uai,
             uais: [data.numero_uai],
             data: {

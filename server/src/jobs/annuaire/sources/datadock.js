@@ -20,7 +20,7 @@ module.exports = async (custom = {}) => {
         filterData((data) => data["REFERENCABLE"] === "OUI"),
         transformData((data) => {
           return {
-            source: name,
+            from: name,
             selector: data["siret"],
             data: {
               conformite_reglementaire: {

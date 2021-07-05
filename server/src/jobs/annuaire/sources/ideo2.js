@@ -36,6 +36,7 @@ module.exports = async (custom = {}) => {
 
             return [
               {
+                from: name,
                 selector: siretGestionnaire,
                 relations: [
                   ...(isEmpty(siretFormateur)
@@ -50,6 +51,7 @@ module.exports = async (custom = {}) => {
                 ],
               },
               {
+                from: name,
                 selector: siretFormateur,
                 uais: [data["UAI_lieu_enseignement"]],
                 relations: [
@@ -69,7 +71,6 @@ module.exports = async (custom = {}) => {
           { parallel: 10 }
         ),
         flattenArray(),
-        transformData((data) => ({ ...data, source: name })),
         { promisify: false }
       );
     },

@@ -19,7 +19,7 @@ module.exports = async (custom = {}) => {
         }),
         transformData((data) => {
           return {
-            source: name,
+            from: name,
             selector: data["siret"],
             uais: [data["uai"]],
             reseaux: ["uimm"],

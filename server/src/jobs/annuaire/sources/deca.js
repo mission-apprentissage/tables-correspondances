@@ -14,7 +14,7 @@ module.exports = async (custom = {}) => {
         parseCsv(),
         transformData((data) => {
           return {
-            source: name,
+            from: name,
             selector: data.FORM_ETABSIRET,
             uais: [data.FORM_ETABUAI_R],
           };

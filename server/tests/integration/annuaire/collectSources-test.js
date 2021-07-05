@@ -15,7 +15,7 @@ integrationTests(__filename, () => {
       stream() {
         return oleoduc(
           Readable.from(array),
-          transformData((d) => ({ source: name, ...d })),
+          transformData((d) => ({ from: name, ...d })),
           { promisify: false }
         );
       },
