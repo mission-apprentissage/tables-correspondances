@@ -1,3 +1,15 @@
+# [2.20.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.19.0...v2.20.0) (2021-07-06)
+
+
+### Bug Fixes
+
+* handle bcn exception ([ca681c3](https://github.com/mission-apprentissage/tables-correspondances/commit/ca681c3f9b7da3af35c0d90629621d4656e49911))
+
+
+### Features
+
+* add etablissement info to "/siret" endpoint ([#158](https://github.com/mission-apprentissage/tables-correspondances/issues/158)) ([c3aad5c](https://github.com/mission-apprentissage/tables-correspondances/commit/c3aad5c966d830794ce21ce433a1e23375165170))
+
 # [2.19.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.18.1...v2.19.0) (2021-06-29)
 
 
