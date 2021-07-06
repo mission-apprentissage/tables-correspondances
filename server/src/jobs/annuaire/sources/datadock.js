@@ -4,11 +4,12 @@ const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
 module.exports = async (custom = {}) => {
   let name = "datadock";
-  let input = custom.input || (await getOvhFileAsStream("annuaire/BaseDataDock-latest.csv"));
 
   return {
     name,
-    stream() {
+    async stream() {
+      let input = custom.input || (await getOvhFileAsStream("annuaire/BaseDataDock-latest.csv"));
+
       return oleoduc(
         input,
         csv({

@@ -6,11 +6,11 @@ const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
 module.exports = async (custom = {}) => {
   let name = "ideo2";
-  let input = custom.input || (await getOvhFileAsStream("annuaire/ONISEP-Ideo2-T_Export_complet.csv"));
 
   return {
     name,
-    stream() {
+    async stream() {
+      let input = custom.input || (await getOvhFileAsStream("annuaire/ONISEP-Ideo2-T_Export_complet.csv"));
       let memory = [];
 
       return oleoduc(

@@ -12,7 +12,7 @@ module.exports = async (referentiel) => {
   };
 
   await oleoduc(
-    referentiel.stream(),
+    await referentiel.stream(),
     writeData(async ({ siret }) => {
       stats.total++;
       if (isEmpty(siret)) {

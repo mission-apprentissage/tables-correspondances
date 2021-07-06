@@ -4,15 +4,16 @@ const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
 module.exports = async (custom = {}) => {
   let name = "opcoep";
-  let input =
-    custom.input ||
-    (await getOvhFileAsStream(
-      "annuaire/OPCO EP-20201202 OPCO EP - Jeunes sans contrat par CFA, région et formation au 26 nov.csv"
-    ));
 
   return {
     name,
-    stream() {
+    async stream() {
+      let input =
+        custom.input ||
+        (await getOvhFileAsStream(
+          "annuaire/OPCO EP-20201202 OPCO EP - Jeunes sans contrat par CFA, région et formation au 26 nov.csv"
+        ));
+
       return oleoduc(
         input,
         csv({

@@ -4,11 +4,13 @@ const { parseCsv } = require("../utils/csvUtils");
 
 module.exports = async (custom = {}) => {
   let name = "sifa";
-  let input = custom.input || (await getOvhFileAsStream("annuaire/Liste_Etablissements_2021-06-04_SIFA_RAMSESE.csv"));
 
   return {
     name,
-    stream() {
+    async stream() {
+      let input =
+        custom.input || (await getOvhFileAsStream("annuaire/Liste_Etablissements_2021-06-04_SIFA_RAMSESE.csv"));
+
       return oleoduc(
         input,
         parseCsv(),

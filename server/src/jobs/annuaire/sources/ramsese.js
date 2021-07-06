@@ -16,13 +16,14 @@ async function defaultStream() {
 
 module.exports = async (custom = {}) => {
   let name = "ramsese";
-  let stream = custom.input ? readCsv(custom.input) : await defaultStream();
 
   return {
     name,
-    stream() {
+    async stream() {
+      let input = custom.input ? readCsv(custom.input) : await defaultStream();
+
       return oleoduc(
-        stream,
+        input,
         transformData((data) => {
           return {
             from: name,

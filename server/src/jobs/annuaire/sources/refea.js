@@ -4,11 +4,12 @@ const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
 module.exports = async (custom = {}) => {
   let name = "refea";
-  let input = custom.input || (await getOvhFileAsStream("annuaire/REFEA-liste-uai-avec-coordonnees.csv"));
 
   return {
     name,
-    stream() {
+    async stream() {
+      let input = custom.input || (await getOvhFileAsStream("annuaire/REFEA-liste-uai-avec-coordonnees.csv"));
+
       return oleoduc(
         input,
         csv({

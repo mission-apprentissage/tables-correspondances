@@ -4,11 +4,13 @@ const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
 module.exports = async (custom = {}) => {
   let name = "promotrans";
-  let input = custom.input || (await getOvhFileAsStream("cfas-reseaux/cfas-promotrans.csv", { storage: "mna-flux" }));
 
   return {
     name,
-    stream() {
+    async stream() {
+      let input =
+        custom.input || (await getOvhFileAsStream("cfas-reseaux/cfas-promotrans.csv", { storage: "mna-flux" }));
+
       return oleoduc(
         input,
         csv({

@@ -3,11 +3,11 @@ const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 const { parseCsv } = require("../utils/csvUtils");
 
 module.exports = async (custom = {}) => {
-  let input = custom.input || (await getOvhFileAsStream("annuaire/DGEFP-20210505_public_ofs.csv"));
-
   return {
     name: "datagouv",
-    stream() {
+    async stream() {
+      let input = custom.input || (await getOvhFileAsStream("annuaire/DGEFP-20210505_public_ofs.csv"));
+
       return oleoduc(
         input,
         parseCsv({
