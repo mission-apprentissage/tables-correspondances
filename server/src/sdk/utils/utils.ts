@@ -99,6 +99,7 @@ export async function bcnImporter() {
     await importBcnTables();
   } catch (error) {
     console.error(`bcnImporter: something went wrong!`, error);
+    throw new Error("@mission-apprentissage/tco-service-node: BCN Exception");
   }
 }
 
