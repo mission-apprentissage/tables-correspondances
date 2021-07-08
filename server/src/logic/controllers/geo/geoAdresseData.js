@@ -5,10 +5,16 @@ class GeoAdresseData {
     this.apiGeoAdresse = new ApiGeoAdresse();
   }
 
-  getAddress(numero_voie, type_voie, nom_voie, code_postal, localite) {
-    return `https://api-adresse.data.gouv.fr/search/?q=${numero_voie ? numero_voie + "+" : ""}${
+  getAddress(numero_voie, type_voie, nom_voie, code_postal, localite, code_insee) {
+    return `${
+      code_insee
+        ? `https://api-adresse.data.gouv.fr/search/?q=${numero_voie ? numero_voie + "+" : ""}${
+            type_voie ? type_voie + "+" : ""
+          }+${nom_voie ? nom_voie : ""}&citycode=${code_insee} or `
+        : ""
+    }https://api-adresse.data.gouv.fr/search/?q=${numero_voie ? numero_voie + "+" : ""}${
       type_voie ? type_voie + "+" : ""
-    }+${nom_voie ? nom_voie : ""}&postcode=${code_postal} - ${localite}`;
+    }+${nom_voie ? nom_voie : ""}&postcode=${code_postal} - ${localite} `;
   }
 
   // le code postal 75116 ne remonte rien, il doit être remplacé par 75016
@@ -19,7 +25,7 @@ class GeoAdresseData {
     else return postcode;
   }
 
-  async getGeoCoordinateFromAdresse({ numero_voie, type_voie, nom_voie, code_postal, localite }) {
+  async getGeoCoordinateFromAdresse({ numero_voie, type_voie, nom_voie, code_postal, localite, code_insee }) {
     // première tentative de recherche sur rue et code postal
 
     if (code_postal === "97133") {
@@ -33,7 +39,14 @@ class GeoAdresseData {
 
     if (!code_postal) {
       console.info(
-        `No postcode for establishment.\t${this.getAddress(numero_voie, type_voie, nom_voie, code_postal, localite)}`
+        `No postcode for establishment.\t${this.getAddress(
+          numero_voie,
+          type_voie,
+          nom_voie,
+          code_postal,
+          localite,
+          code_insee
+        )}`
       );
       return {
         geo_coordonnees: null,
@@ -43,24 +56,39 @@ class GeoAdresseData {
 
     let responseApiAdresse;
     let query = `${numero_voie ? numero_voie + "+" : ""}${type_voie ? type_voie + "+" : ""}${nom_voie ? nom_voie : ""}`;
-    let postcode = this.refinePostcode(code_postal);
-    try {
-      responseApiAdresse = await this.apiGeoAdresse.search(query, { postcode });
-    } catch (error) {
-      console.error(`geo search error : ${query} ${postcode} ${error}`);
-      responseApiAdresse = null;
+    // première recherche sur code insee
+    if (code_insee) {
+      try {
+        responseApiAdresse = await this.apiGeoAdresse.search(query, { citycode: code_insee });
+      } catch (error) {
+        console.error(`geo search error : ${query} ${code_insee} ${error}`);
+        responseApiAdresse = null;
+      }
     }
 
-    // si pas de réponse deuxième recherche sur ville et code postal
     if (!responseApiAdresse || responseApiAdresse.features.length === 0) {
-      console.info(`Second geoloc call with postcode and city\t${localite} ${code_postal}`);
+      if (code_insee) {
+        console.info(`Second geoloc call with postcode\t${code_postal}`);
+      }
+      let postcode = this.refinePostcode(code_postal);
+      try {
+        responseApiAdresse = await this.apiGeoAdresse.search(query, { postcode });
+      } catch (error) {
+        console.error(`geo search error : ${query} ${postcode} ${error}`);
+        responseApiAdresse = null;
+      }
+    }
+
+    // si pas de réponse troisième recherche sur ville et code postal
+    if (!responseApiAdresse || responseApiAdresse.features.length === 0) {
+      console.info(`${code_insee ? "Third" : "Second"} geoloc call with postcode and city\t${localite} ${code_postal}`);
       let query = `${localite ? localite : "a"}`; // hack si localite absente
       let postcode = this.refinePostcode(code_postal);
 
       try {
-        responseApiAdresse = await this.apiGeoAdresse.searchPostcodeOnly(query, { postcode });
+        responseApiAdresse = await this.apiGeoAdresse.search(query, { postcode });
       } catch (error) {
-        console.error(`geo searchPostcodeOnly error : #${query}# ${postcode} ${error}`);
+        console.error(`geo search error : ${query} ${postcode} ${error}`);
         responseApiAdresse = null;
       }
     }
@@ -78,7 +106,8 @@ class GeoAdresseData {
           type_voie,
           nom_voie,
           code_postal,
-          localite
+          localite,
+          code_insee
         )}`
       );
       return {
@@ -95,7 +124,8 @@ class GeoAdresseData {
           type_voie,
           nom_voie,
           code_postal,
-          localite
+          localite,
+          code_insee
         )}\t${responseApiAdresse.features[0].properties.label} ${responseApiAdresse.features[0].properties.postcode}`
       );
     }
