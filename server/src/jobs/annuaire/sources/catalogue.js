@@ -125,39 +125,42 @@ module.exports = async (custom = {}) => {
       let filters = options.filters || {};
 
       return oleoduc(
-        Annuaire.find(filters, { siret: 1 }).lean().cursor(),
-        transformData(async ({ siret }) => {
-          try {
-            let [_2020, _2021] = await Promise.all([
-              getFormations(api, siret),
-              getFormations(api, siret, { annee: "2021" }),
-            ]);
+        Annuaire.find(filters, { siret: 1 }).lean().batchSize(5).cursor(),
+        transformData(
+          async ({ siret }) => {
+            try {
+              let [_2020, _2021] = await Promise.all([
+                getFormations(api, siret),
+                getFormations(api, siret, { annee: "2021" }),
+              ]);
 
-            let formations = [..._2020, ..._2021];
-            let { relations } = await buildRelations(siret, formations);
-            let { diplomes } = await buildDiplomes(siret, formations);
-            let { certifications } = await buildCertifications(siret, formations);
-            let { lieux, anomalies } = await buildLieuxDeFormation(siret, formations, getAdresseFromCoordinates);
+              let formations = [..._2020, ..._2021];
+              let { relations } = await buildRelations(siret, formations);
+              let { diplomes } = await buildDiplomes(siret, formations);
+              let { certifications } = await buildCertifications(siret, formations);
+              let { lieux, anomalies } = await buildLieuxDeFormation(siret, formations, getAdresseFromCoordinates);
 
-            return {
-              selector: siret,
-              relations,
-              anomalies,
-              data: {
-                lieux_de_formation: lieux,
-                diplomes,
-                certifications,
-                gestionnaire: !!relations.find((r) => r.type === "formateur"),
-                formateur: !!relations.find((r) => r.type === "gestionnaire") && _2021.length > 0,
-              },
-            };
-          } catch (e) {
-            return {
-              selector: siret,
-              anomalies: [e],
-            };
-          }
-        }),
+              return {
+                selector: siret,
+                relations,
+                anomalies,
+                data: {
+                  lieux_de_formation: lieux,
+                  diplomes,
+                  certifications,
+                  gestionnaire: !!relations.find((r) => r.type === "formateur"),
+                  formateur: !!relations.find((r) => r.type === "gestionnaire") && _2021.length > 0,
+                },
+              };
+            } catch (e) {
+              return {
+                selector: siret,
+                anomalies: [e],
+              };
+            }
+          },
+          { parallel: 5 }
+        ),
         transformData((data) => ({ ...data, from: name })),
         { promisify: false }
       );

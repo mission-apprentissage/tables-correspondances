@@ -52,7 +52,7 @@ async function buildRelations(from, etablissement, relations) {
 }
 
 function handleAnomalies(from, etablissement, anomalies) {
-  logger.error(`[Collect][${from}] Erreur lors de la collecte pour l'établissement ${etablissement.siret}.`, anomalies);
+  logger.warn(`[Collect][${from}] Erreur lors de la collecte pour l'établissement ${etablissement.siret}.`, anomalies);
 
   return Annuaire.updateOne(
     { siret: etablissement.siret },

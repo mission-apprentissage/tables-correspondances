@@ -16,42 +16,46 @@ module.exports = async (custom = {}) => {
       let stream = oleoduc(
         Annuaire.find({ ...filters, $and: [{ adresse: { $exists: true } }, { adresse: { $ne: null } }] })
           .lean()
+          .batchSize(5)
           .cursor(),
-        transformData(async (etablissement) => {
-          let siret = etablissement.siret;
-          let codeInsee = etablissement.adresse.code_insee;
+        transformData(
+          async (etablissement) => {
+            let siret = etablissement.siret;
+            let codeInsee = etablissement.adresse.code_insee;
 
-          try {
-            let records = await cache.memo(codeInsee, async () => {
-              let { records } = await api.fetchInfoFromCodeCommune(codeInsee);
-              return records;
-            });
+            try {
+              let records = await cache.memo(codeInsee, async () => {
+                let { records } = await api.fetchInfoFromCodeCommune(codeInsee);
+                return records;
+              });
 
-            let data = records.length > 0 ? records[0].fields : null;
-            return {
-              selector: siret,
-              ...(data
-                ? {
-                    data: {
-                      academie: {
-                        code: data.aca_code,
-                        nom: data.aca_nom,
+              let data = records.length > 0 ? records[0].fields : null;
+              return {
+                selector: siret,
+                ...(data
+                  ? {
+                      data: {
+                        academie: {
+                          code: data.aca_code,
+                          nom: data.aca_nom,
+                        },
                       },
-                    },
-                  }
-                : {
-                    anomalies: [
-                      {
-                        code: "academie_inconnue",
-                        message: `Impossible de déterminer l'académie pour le code insee ${codeInsee}`,
-                      },
-                    ],
-                  }),
-            };
-          } catch (e) {
-            return { selector: siret, anomalies: [e] };
-          }
-        }),
+                    }
+                  : {
+                      anomalies: [
+                        {
+                          code: "academie_inconnue",
+                          message: `Impossible de déterminer l'académie pour le code insee ${codeInsee}`,
+                        },
+                      ],
+                    }),
+              };
+            } catch (e) {
+              return { selector: siret, anomalies: [e] };
+            }
+          },
+          { parallel: 5 }
+        ),
         transformData((data) => ({ ...data, from: name })),
         { promisify: false }
       );

@@ -59,74 +59,77 @@ module.exports = async (options = {}) => {
       let filters = options.filters || {};
 
       return oleoduc(
-        Annuaire.find(filters, { siret: 1 }).lean().cursor(),
-        transformData(async ({ siret }) => {
-          try {
-            let siren = siret.substring(0, 9);
-            let anomalies = [];
-            let uniteLegale = await api.getUniteLegale(siren);
-            let data = uniteLegale.etablissements.find((e) => e.siret === siret);
-            if (!data) {
-              return {
-                selector: siret,
-                anomalies: [
-                  { code: "etablissement_inconnu", message: `Etablissement inconnu pour l'entreprise ${siren}` },
-                ],
-              };
-            }
-
-            let relations = uniteLegale.etablissements
-              .filter((e) => {
-                return e.siret !== siret && e.etat_administratif === "A" && organismes.includes(e.siret);
-              })
-              .map((e) => {
+        Annuaire.find(filters, { siret: 1 }).lean().batchSize(5).cursor(),
+        transformData(
+          async ({ siret }) => {
+            try {
+              let siren = siret.substring(0, 9);
+              let anomalies = [];
+              let uniteLegale = await api.getUniteLegale(siren);
+              let data = uniteLegale.etablissements.find((e) => e.siret === siret);
+              if (!data) {
                 return {
-                  siret: e.siret,
-                  label: getRelationLabel(e, uniteLegale),
+                  selector: siret,
+                  anomalies: [
+                    { code: "etablissement_inconnu", message: `Etablissement inconnu pour l'entreprise ${siren}` },
+                  ],
                 };
-              });
+              }
 
-            let adresse;
-            if (data.longitude) {
-              try {
-                adresse = await getAdresseFromCoordinates(parseFloat(data.longitude), parseFloat(data.latitude), {
-                  label: data.geo_adresse,
+              let relations = uniteLegale.etablissements
+                .filter((e) => {
+                  return e.siret !== siret && e.etat_administratif === "A" && organismes.includes(e.siret);
+                })
+                .map((e) => {
+                  return {
+                    siret: e.siret,
+                    label: getRelationLabel(e, uniteLegale),
+                  };
                 });
-              } catch (e) {
+
+              let adresse;
+              if (data.longitude) {
+                try {
+                  adresse = await getAdresseFromCoordinates(parseFloat(data.longitude), parseFloat(data.latitude), {
+                    label: data.geo_adresse,
+                  });
+                } catch (e) {
+                  anomalies.push({
+                    code: "etablissement_geoloc_impossible",
+                    message: `Impossible de géolocaliser l'adresse de l'établissement: ${data.geo_adresse}. ${e.message}`,
+                  });
+                }
+              }
+
+              let formeJuridique = categoriesJuridiques.find((cj) => cj.code === uniteLegale.categorie_juridique);
+              if (!formeJuridique) {
                 anomalies.push({
-                  code: "etablissement_geoloc_impossible",
-                  message: `Impossible de géolocaliser l'adresse de l'établissement: ${data.geo_adresse}. ${e.message}`,
+                  code: "categorie_juridique_inconnue",
+                  message: `Impossible de trouver la catégorie juridique de l'entreprise : ${uniteLegale.categorie_juridique}`,
                 });
               }
-            }
 
-            let formeJuridique = categoriesJuridiques.find((cj) => cj.code === uniteLegale.categorie_juridique);
-            if (!formeJuridique) {
-              anomalies.push({
-                code: "categorie_juridique_inconnue",
-                message: `Impossible de trouver la catégorie juridique de l'entreprise : ${uniteLegale.categorie_juridique}`,
-              });
+              return {
+                selector: siret,
+                relations,
+                anomalies,
+                data: {
+                  raison_sociale: getEtablissementName(data, uniteLegale),
+                  siege_social: data.etablissement_siege === "true",
+                  statut: data.etat_administratif === "A" ? "actif" : "fermé",
+                  ...(adresse ? { adresse } : {}),
+                  ...(formeJuridique ? { forme_juridique: formeJuridique } : {}),
+                },
+              };
+            } catch (e) {
+              return {
+                selector: siret,
+                anomalies: [e.reason === 404 ? { code: "entreprise_inconnue", message: `Entreprise inconnue` } : e],
+              };
             }
-
-            return {
-              selector: siret,
-              relations,
-              anomalies,
-              data: {
-                raison_sociale: getEtablissementName(data, uniteLegale),
-                siege_social: data.etablissement_siege === "true",
-                statut: data.etat_administratif === "A" ? "actif" : "fermé",
-                ...(adresse ? { adresse } : {}),
-                ...(formeJuridique ? { forme_juridique: formeJuridique } : {}),
-              },
-            };
-          } catch (e) {
-            return {
-              selector: siret,
-              anomalies: [e.reason === 404 ? { code: "entreprise_inconnue", message: `Entreprise inconnue` } : e],
-            };
-          }
-        }),
+          },
+          { parallel: 5 }
+        ),
         transformData((data) => ({ ...data, from: name })),
         { promisify: false }
       );

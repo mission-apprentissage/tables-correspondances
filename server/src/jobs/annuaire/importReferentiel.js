@@ -17,7 +17,7 @@ module.exports = async (referentiel) => {
       stats.total++;
       if (isEmpty(siret)) {
         stats.failed++;
-        logger.error(`[Referentiel] Siret invalide pour l'établissement ${siret}`);
+        logger.warn(`[Referentiel] Siret invalide pour l'établissement ${siret}`);
         return;
       }
 

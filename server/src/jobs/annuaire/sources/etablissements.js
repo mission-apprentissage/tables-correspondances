@@ -10,7 +10,7 @@ module.exports = () => {
       let filters = options.filters || {};
 
       return oleoduc(
-        Etablissement.find(filters, { siret: 1, uai: 1 }).lean().cursor(),
+        Etablissement.find(filters, { siret: 1, uai: 1 }).batchSize(5).lean().cursor(),
         transformData((etablissement) => {
           return {
             from: name,
