@@ -25,4 +25,26 @@ function timeout(promise, millis) {
   return Promise.race([promise, timeout]).finally(() => clearTimeout(timeout));
 }
 
-module.exports = { asyncForEach, promiseAllProps, delay, timeout };
+function retry(callback, options = {}) {
+  return new Promise((resolve, reject) => {
+    let retries = 0;
+
+    async function execute(delay, maxRetries) {
+      try {
+        let res = await callback();
+        resolve(res);
+      } catch (e) {
+        if (retries++ > maxRetries) {
+          reject(e);
+        } else {
+          console.log(`Failed. Retrying in ${delay}ms...`);
+          setTimeout(() => execute(delay, maxRetries), delay);
+        }
+      }
+    }
+
+    execute(options.delay || 1000, options.maxRetries || 2);
+  });
+}
+
+module.exports = { asyncForEach, promiseAllProps, delay, timeout, retry };
