@@ -1,14 +1,17 @@
 const { oleoduc, filterData, transformData } = require("oleoduc");
-const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
+const { getFileAsStream } = require("../../../common/utils/httpUtils");
 const { parseCsv } = require("../utils/csvUtils");
 
+function downloadFromDatagouv() {
+  return getFileAsStream("https://www.monactiviteformation.emploi.gouv.fr/mon-activite-formation/public/getOFs");
+}
 module.exports = async (custom = {}) => {
   let name = "datagouv";
 
   return {
     name,
     async stream() {
-      let input = custom.input || (await getOvhFileAsStream("annuaire/DGEFP-20210505_public_ofs.csv"));
+      let input = custom.input || (await downloadFromDatagouv());
 
       return oleoduc(
         input,

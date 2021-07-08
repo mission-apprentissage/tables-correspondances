@@ -1,20 +1,12 @@
 import React from "react";
 import { sortBy } from "lodash-es";
-import styled from "styled-components";
 import { Card, Grid, Page, Table } from "tabler-react";
 import { Link } from "react-router-dom";
 import { useFetch } from "../../common/hooks/useFetch";
 import Error from "../../common/components/Error";
+import FixedTable from "./components/FixedTable";
 
 export default StatsPage;
-
-const FixedTable = styled(Table)`
-  table-layout: fixed;
-  .value {
-    color: darkgray;
-    font-size: 0.75rem;
-  }
-`;
 
 function Percentage({ total, value, label }) {
   return (
@@ -112,7 +104,7 @@ function StatsPage() {
                         <Table.Header>
                           <Table.ColHeader>Source</Table.ColHeader>
                           <Table.ColHeader>Total</Table.ColHeader>
-                          <Table.ColHeader>Valides</Table.ColHeader>
+                          <Table.ColHeader>Conformes et uniques</Table.ColHeader>
                           <Table.ColHeader>Dupliqués</Table.ColHeader>
                           <Table.ColHeader>Absents</Table.ColHeader>
                           <Table.ColHeader>Invalides</Table.ColHeader>
@@ -153,7 +145,7 @@ function StatsPage() {
                         <Table.Header>
                           <Table.ColHeader>Source</Table.ColHeader>
                           <Table.ColHeader>Total</Table.ColHeader>
-                          <Table.ColHeader>Valides</Table.ColHeader>
+                          <Table.ColHeader>Conformes et uniques</Table.ColHeader>
                           <Table.ColHeader>Dupliqués</Table.ColHeader>
                           <Table.ColHeader>Fermés</Table.ColHeader>
                           <Table.ColHeader>Inconnus</Table.ColHeader>

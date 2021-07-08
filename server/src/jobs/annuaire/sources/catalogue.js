@@ -1,6 +1,7 @@
 const { uniqBy, chain } = require("lodash");
 const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire, BcnFormationDiplome } = require("../../../common/model");
+const { timeout } = require("../../../common/utils/asyncUtils");
 const ApiCatalogue = require("../../../common/apis/ApiCatalogue");
 const ApiGeoAdresse = require("../../../common/apis/ApiGeoAdresse");
 const adresses = require("../utils/adresses");
@@ -92,9 +93,12 @@ async function buildLieuxDeFormation(siret, formations, getAdresseFromCoordinate
       .map(async (f) => {
         let [latitude, longitude] = f.lieu_formation_geo_coordonnees.split(",");
 
-        let adresse = await getAdresseFromCoordinates(longitude, latitude, {
-          label: f.lieu_formation_adresse,
-        }).catch((e) => {
+        let adresse = await timeout(
+          getAdresseFromCoordinates(longitude, latitude, {
+            label: f.lieu_formation_adresse,
+          }),
+          5000
+        ).catch((e) => {
           anomalies.push(`Lieu de formation inconnu : ${f.lieu_formation_adresse}. ${e.message}`);
         });
 
@@ -123,41 +127,38 @@ module.exports = async (custom = {}) => {
 
       return oleoduc(
         Annuaire.find(filters, { siret: 1 }).lean().cursor(),
-        transformData(
-          async ({ siret }) => {
-            try {
-              let [_2020, _2021] = await Promise.all([
-                getFormations(api, siret),
-                getFormations(api, siret, { annee: "2021" }),
-              ]);
+        transformData(async ({ siret }) => {
+          try {
+            let [_2020, _2021] = await Promise.all([
+              getFormations(api, siret),
+              getFormations(api, siret, { annee: "2021" }),
+            ]);
 
-              let formations = [..._2020, ..._2021];
-              let { relations } = await buildRelations(siret, formations);
-              let { diplomes } = await buildDiplomes(siret, formations);
-              let { certifications } = await buildCertifications(siret, formations);
-              let { lieux, anomalies } = await buildLieuxDeFormation(siret, formations, getAdresseFromCoordinates);
+            let formations = [..._2020, ..._2021];
+            let { relations } = await buildRelations(siret, formations);
+            let { diplomes } = await buildDiplomes(siret, formations);
+            let { certifications } = await buildCertifications(siret, formations);
+            let { lieux, anomalies } = await buildLieuxDeFormation(siret, formations, getAdresseFromCoordinates);
 
-              return {
-                selector: siret,
-                relations,
-                anomalies,
-                data: {
-                  lieux_de_formation: lieux,
-                  diplomes,
-                  certifications,
-                  gestionnaire: !!relations.find((r) => r.type === "formateur"),
-                  formateur: !!relations.find((r) => r.type === "gestionnaire") && _2021.length > 0,
-                },
-              };
-            } catch (e) {
-              return {
-                selector: siret,
-                anomalies: [e.reason === 404 ? "Entreprise inconnue" : e],
-              };
-            }
-          },
-          { parallel: 5 }
-        ),
+            return {
+              selector: siret,
+              relations,
+              anomalies,
+              data: {
+                lieux_de_formation: lieux,
+                diplomes,
+                certifications,
+                gestionnaire: !!relations.find((r) => r.type === "formateur"),
+                formateur: !!relations.find((r) => r.type === "gestionnaire") && _2021.length > 0,
+              },
+            };
+          } catch (e) {
+            return {
+              selector: siret,
+              anomalies: [e.reason === 404 ? "Entreprise inconnue" : e],
+            };
+          }
+        }),
         transformData((data) => ({ ...data, from: name })),
         { promisify: false }
       );

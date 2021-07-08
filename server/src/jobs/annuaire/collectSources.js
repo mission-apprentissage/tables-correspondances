@@ -147,9 +147,7 @@ module.exports = async (...args) => {
         let nbModifiedDocuments = getNbModifiedDocuments(res);
         if (nbModifiedDocuments) {
           stats[from].updated += nbModifiedDocuments;
-          logger.info(`[Annuaire][Collect][${from}] Etablissement ${etablissement.siret} updated`);
-        } else {
-          logger.debug(`[Annuaire][Collect][${from}] Etablissement ${etablissement.siret} ignored`);
+          logger.debug(`[Annuaire][Collect][${from}] Etablissement ${etablissement.siret} updated`);
         }
       } catch (e) {
         stats[from].failed++;

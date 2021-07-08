@@ -29,47 +29,44 @@ module.exports = async (custom = {}) => {
           memory.push(key);
           return data;
         }),
-        transformData(
-          async (data) => {
-            let siretFormateur = data["SIRET_lieu_enseignement"];
-            let siretGestionnaire = data["SIRET_gestionnaire"];
+        transformData(async (data) => {
+          let siretFormateur = data["SIRET_lieu_enseignement"];
+          let siretGestionnaire = data["SIRET_gestionnaire"];
 
-            return [
-              {
-                from: name,
-                selector: siretGestionnaire,
-                relations: [
-                  ...(isEmpty(siretFormateur)
-                    ? []
-                    : [
-                        {
-                          siret: siretFormateur,
-                          label: data["nom_lieu_enseignement"],
-                          type: "formateur",
-                        },
-                      ]),
-                ],
-              },
-              {
-                from: name,
-                selector: siretFormateur,
-                uais: [data["UAI_lieu_enseignement"]],
-                relations: [
-                  ...(isEmpty(siretGestionnaire)
-                    ? []
-                    : [
-                        {
-                          siret: siretGestionnaire,
-                          label: data["CFA_gestionnaire"],
-                          type: "gestionnaire",
-                        },
-                      ]),
-                ],
-              },
-            ];
-          },
-          { parallel: 10 }
-        ),
+          return [
+            {
+              from: name,
+              selector: siretGestionnaire,
+              relations: [
+                ...(isEmpty(siretFormateur)
+                  ? []
+                  : [
+                      {
+                        siret: siretFormateur,
+                        label: data["nom_lieu_enseignement"],
+                        type: "formateur",
+                      },
+                    ]),
+              ],
+            },
+            {
+              from: name,
+              selector: siretFormateur,
+              uais: [data["UAI_lieu_enseignement"]],
+              relations: [
+                ...(isEmpty(siretGestionnaire)
+                  ? []
+                  : [
+                      {
+                        siret: siretGestionnaire,
+                        label: data["CFA_gestionnaire"],
+                        type: "gestionnaire",
+                      },
+                    ]),
+              ],
+            },
+          ];
+        }),
         flattenArray(),
         { promisify: false }
       );

@@ -23,7 +23,6 @@ module.exports = {
       [
         "agri",
         "anasup",
-        "catalogue",
         "compagnons-du-devoir",
         "deca",
         "etablissements",
@@ -39,8 +38,9 @@ module.exports = {
         "sirene",
         "ymag",
       ],
-      ["academie"],
       [
+        "catalogue", //This source consumes the same API as the sirene source
+        "academie", // Needs data provided by sirene
         //Theses sources used uai as selector, so we tried to collect as many uais as possible before running them
         "ccca-btp",
         "cci-france",

@@ -1,7 +1,8 @@
 const { program: cli } = require("commander");
 const { createWriteStream } = require("fs");
 const { oleoduc, writeToStdout } = require("oleoduc");
-const { computeChecksum } = require("../../../src/common/utils/uaiUtils");
+const { computeChecksum } = require("../../common/utils/uaiUtils");
+const ApiGeoAdresse = require("../../common/apis/ApiGeoAdresse");
 const { createReadStream } = require("fs");
 const { runScript } = require("../scriptWrapper");
 const { createReferentiel, getDefaultReferentiels } = require("./referentiels/referentiels");
@@ -26,7 +27,7 @@ cli
 cli.command("matrix", "Commandes pour manipuler la matrice des bases", { executableFile: "./matrix/matrixCli.js" });
 
 cli
-  .command("import [name] [file]")
+  .command("importReferentiel [name] [file]")
   .description("Import les données contenues dans le ou les référentiels")
   .action((name, file) => {
     runScript(async () => {
@@ -45,7 +46,7 @@ cli
   });
 
 cli
-  .command("collect [name] [file]")
+  .command("collectSources [name] [file]")
   .option("--siret <siret>", "Limite la collecte pour le siret")
   .description("Parcoure la ou les sources pour trouver des données complémentaires")
   .action((name, file, { siret }) => {
@@ -56,7 +57,11 @@ cli
       let stats = [];
 
       for (let group of groups) {
-        let sources = await Promise.all(group.map((name) => createSource(name, { input })));
+        let sources = await Promise.all(
+          group.map((name) => {
+            return createSource(name, { input, apiGeoAdresse: new ApiGeoAdresse() });
+          })
+        );
         let results = await collectSources(sources, options);
         stats.push(results);
       }

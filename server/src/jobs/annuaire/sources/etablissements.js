@@ -14,7 +14,7 @@ module.exports = () => {
         transformData((etablissement) => {
           return {
             from: name,
-            selector: etablissement.siret,
+            selector: etablissement.siret.trim(),
             uais: [etablissement.uai || undefined],
           };
         }),

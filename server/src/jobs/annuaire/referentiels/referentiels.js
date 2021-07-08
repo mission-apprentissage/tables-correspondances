@@ -16,6 +16,6 @@ function createReferentiel(type, ...args) {
 module.exports = {
   createReferentiel,
   getDefaultReferentiels: () => {
-    return ["datagouv"];
+    return ["gof"];
   },
 };

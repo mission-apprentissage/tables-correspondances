@@ -17,4 +17,12 @@ function delay(milliseconds) {
   return new Promise((resolve) => setTimeout(() => resolve(), milliseconds));
 }
 
-module.exports = { asyncForEach, promiseAllProps, delay };
+function timeout(promise, millis) {
+  const timeout = new Promise((resolve, reject) => {
+    setTimeout(() => reject(`Timed out after ${millis} ms.`), millis);
+  });
+
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timeout));
+}
+
+module.exports = { asyncForEach, promiseAllProps, delay, timeout };
