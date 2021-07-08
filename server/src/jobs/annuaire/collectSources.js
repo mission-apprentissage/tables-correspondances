@@ -3,7 +3,7 @@ const { uniq, isEmpty } = require("lodash");
 const mergeStream = require("merge-stream");
 const { Annuaire } = require("../../common/model");
 const { getNbModifiedDocuments } = require("../../common/utils/mongooseUtils");
-const { flattenObject } = require("../../common/utils/objectUtils");
+const { flattenObject, isError } = require("../../common/utils/objectUtils");
 const { validateUAI } = require("../../common/utils/uaiUtils");
 const logger = require("../../common/logger");
 
@@ -62,12 +62,15 @@ function handleAnomalies(from, etablissement, anomalies) {
     {
       $push: {
         "_meta.anomalies": {
-          $each: anomalies.map((a) => ({
-            task: "collect",
-            source: from,
-            date: new Date(),
-            details: a.message || a,
-          })),
+          $each: anomalies.map((ano) => {
+            return {
+              job: "collect",
+              source: from,
+              date: new Date(),
+              code: isError(ano) ? "erreur" : ano.code,
+              details: ano.message,
+            };
+          }),
           // Max 10 elements ordered by date
           $slice: 10,
           $sort: { date: -1 },

@@ -40,7 +40,12 @@ module.exports = async (custom = {}) => {
                     },
                   }
                 : {
-                    anomalies: [`Impossible de déterminer l'académie pour le code insee ${codeInsee}`],
+                    anomalies: [
+                      {
+                        code: "academie_inconnue",
+                        message: `Impossible de déterminer l'académie pour le code insee ${codeInsee}`,
+                      },
+                    ],
                   }),
             };
           } catch (e) {

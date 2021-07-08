@@ -505,8 +505,9 @@ integrationTests(__filename, () => {
     assert.strictEqual(found.lieux_de_formation.length, 0);
     assert.strictEqual(found._meta.anomalies.length, 1);
     assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
-      task: "collect",
+      job: "collect",
       source: "catalogue",
+      code: "lieudeformation_geoloc_impossible",
       details: "Lieu de formation inconnu : 31 rue des lilas. Adresse inconnue [2.396444,48.879706]",
     });
     assert.deepStrictEqual(stats, {

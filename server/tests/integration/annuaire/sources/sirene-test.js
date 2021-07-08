@@ -339,8 +339,9 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.strictEqual(found._meta.anomalies.length, 1);
     assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
-      task: "collect",
+      job: "collect",
       source: "sirene",
+      code: "etablissement_geoloc_impossible",
       details:
         "Impossible de géolocaliser l'adresse de l'établissement: 31 rue des lilas Paris 75001. " +
         "Adresse inconnue [2.396147,48.880391]",
@@ -370,8 +371,9 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.strictEqual(found._meta.anomalies.length, 1);
     assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
-      task: "collect",
+      job: "collect",
       source: "sirene",
+      code: "categorie_juridique_inconnue",
       details: "Impossible de trouver la catégorie juridique de l'entreprise : INVALID",
     });
     assert.deepStrictEqual(stats, {

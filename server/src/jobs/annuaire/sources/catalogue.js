@@ -99,7 +99,10 @@ async function buildLieuxDeFormation(siret, formations, getAdresseFromCoordinate
           }),
           5000
         ).catch((e) => {
-          anomalies.push(`Lieu de formation inconnu : ${f.lieu_formation_adresse}. ${e.message}`);
+          anomalies.push({
+            code: "lieudeformation_geoloc_impossible",
+            message: `Lieu de formation inconnu : ${f.lieu_formation_adresse}. ${e.message}`,
+          });
         });
 
         return adresse
@@ -155,7 +158,7 @@ module.exports = async (custom = {}) => {
           } catch (e) {
             return {
               selector: siret,
-              anomalies: [e.reason === 404 ? "Entreprise inconnue" : e],
+              anomalies: [e],
             };
           }
         }),

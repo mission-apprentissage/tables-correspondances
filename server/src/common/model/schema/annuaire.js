@@ -306,7 +306,7 @@ const annuaireSchema = {
           type: [
             new Schema(
               {
-                task: {
+                job: {
                   type: String,
                   required: true,
                 },
@@ -314,13 +314,16 @@ const annuaireSchema = {
                   type: String,
                   required: true,
                 },
-                details: {
-                  type: String,
-                },
                 date: {
                   type: Date,
                   default: () => new Date(),
                   required: true,
+                },
+                code: {
+                  type: String,
+                },
+                details: {
+                  type: String,
                 },
               },
               { _id: false }

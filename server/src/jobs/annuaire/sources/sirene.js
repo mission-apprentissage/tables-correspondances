@@ -70,7 +70,9 @@ module.exports = async (options = {}) => {
             if (!data) {
               return {
                 selector: siret,
-                anomalies: [`Etablissement inconnu pour l'entreprise ${siren}`],
+                anomalies: [
+                  { code: "etablissement_inconnu", message: `Etablissement inconnu pour l'entreprise ${siren}` },
+                ],
               };
             }
 
@@ -92,17 +94,19 @@ module.exports = async (options = {}) => {
                   label: data.geo_adresse,
                 });
               } catch (e) {
-                anomalies.push(
-                  `Impossible de géolocaliser l'adresse de l'établissement: ${data.geo_adresse}. ${e.message}`
-                );
+                anomalies.push({
+                  code: "etablissement_geoloc_impossible",
+                  message: `Impossible de géolocaliser l'adresse de l'établissement: ${data.geo_adresse}. ${e.message}`,
+                });
               }
             }
 
             let formeJuridique = categoriesJuridiques.find((cj) => cj.code === uniteLegale.categorie_juridique);
             if (!formeJuridique) {
-              anomalies.push(
-                `Impossible de trouver la catégorie juridique de l'entreprise : ${uniteLegale.categorie_juridique}`
-              );
+              anomalies.push({
+                code: "categorie_juridique_inconnue",
+                message: `Impossible de trouver la catégorie juridique de l'entreprise : ${uniteLegale.categorie_juridique}`,
+              });
             }
 
             return {
@@ -118,7 +122,10 @@ module.exports = async (options = {}) => {
               },
             };
           } catch (e) {
-            return { selector: siret, anomalies: [e.reason === 404 ? "Entreprise inconnue" : e] };
+            return {
+              selector: siret,
+              anomalies: [e.reason === 404 ? { code: "entreprise_inconnue", message: `Entreprise inconnue` } : e],
+            };
           }
         }),
         transformData((data) => ({ ...data, from: name })),

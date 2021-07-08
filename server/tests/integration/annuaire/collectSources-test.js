@@ -205,7 +205,8 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(omit(errors[0], ["date"]), {
       details: "Erreur",
       source: "dummy",
-      task: "collect",
+      code: "erreur",
+      job: "collect",
     });
     assert.deepStrictEqual(stats, {
       dummy: {
@@ -233,7 +234,8 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(omit(errors[0], ["date"]), {
       details: "Cannot read property 'filter' of null",
       source: "dummy",
-      task: "collect",
+      code: "erreur",
+      job: "collect",
     });
     assert.deepStrictEqual(stats, {
       dummy: {
