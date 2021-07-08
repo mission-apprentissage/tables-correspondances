@@ -31,6 +31,7 @@ integrationTests(__filename, () => {
       agri: {
         total: 1,
         updated: 1,
+        ignored: 0,
         failed: 0,
       },
     });

@@ -8,14 +8,11 @@ const { validateUAI } = require("../../common/utils/uaiUtils");
 const logger = require("../../common/logger");
 
 function buildQuery(selector) {
-  if (typeof selector === "object") {
-    if (isEmpty(selector)) {
-      throw new Error("Select must not be empty");
-    }
-    return selector;
+  if (isEmpty(selector)) {
+    return { not: "matching" };
   }
 
-  return { $or: [{ siret: selector }, { "uais.uai": selector }] };
+  return typeof selector === "object" ? selector : { $or: [{ siret: selector }, { "uais.uai": selector }] };
 }
 
 function buildUAIs(from, etablissement, uais) {
@@ -88,6 +85,7 @@ function createStats(sources) {
       [source.name]: {
         total: 0,
         updated: 0,
+        ignored: 0,
         failed: 0,
       },
     };
@@ -121,6 +119,7 @@ module.exports = async (...args) => {
       let query = buildQuery(selector);
       let etablissement = await Annuaire.findOne(query).lean();
       if (!etablissement) {
+        stats[from].ignored++;
         return;
       }
 

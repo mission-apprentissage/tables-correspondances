@@ -8,7 +8,7 @@ function parseCsv(options = {}) {
     columns: true,
     on_record: (record) => {
       return pickBy(record, (v) => {
-        return !isEmpty(v) && v !== "NULL";
+        return !isEmpty(v) && v !== "NULL" && v.trim().length;
       });
     },
     ...options,

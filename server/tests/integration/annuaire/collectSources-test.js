@@ -44,8 +44,9 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(stats, {
       dummy: {
         total: 1,
-        failed: 0,
         updated: 1,
+        ignored: 0,
+        failed: 0,
       },
     });
   });
@@ -70,8 +71,9 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(stats, {
       dummy: {
         total: 1,
-        failed: 0,
         updated: 1,
+        ignored: 0,
+        failed: 0,
       },
     });
   });
@@ -108,8 +110,9 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(stats, {
       dummy: {
         total: 1,
-        failed: 0,
         updated: 0,
+        ignored: 0,
+        failed: 0,
       },
     });
   });
@@ -160,8 +163,9 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(stats, {
       dummy: {
         total: 1,
-        failed: 0,
         updated: 0,
+        ignored: 0,
+        failed: 0,
       },
     });
   });
@@ -182,8 +186,9 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(stats, {
       dummy: {
         total: 1,
-        failed: 0,
         updated: 0,
+        ignored: 1,
+        failed: 0,
       },
     });
   });
@@ -211,8 +216,9 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(stats, {
       dummy: {
         total: 1,
-        failed: 1,
         updated: 0,
+        ignored: 0,
+        failed: 1,
       },
     });
   });
@@ -240,13 +246,14 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(stats, {
       dummy: {
         total: 1,
-        failed: 1,
         updated: 0,
+        ignored: 0,
+        failed: 1,
       },
     });
   });
 
-  it("Vérifie qu'on rejete un selecteur vide", async () => {
+  it("Vérifie qu'on ignore un selecteur vide", async () => {
     await insertAnnuaire({ siret: "11111111100006" });
     let source = createTestSource([
       {
@@ -255,12 +262,16 @@ integrationTests(__filename, () => {
       },
     ]);
 
-    try {
-      await collectSources(source);
-      assert.fail();
-    } catch (e) {
-      assert.strictEqual(e.message, "Select must not be empty");
-    }
+    let stats = await collectSources(source);
+
+    assert.deepStrictEqual(stats, {
+      dummy: {
+        total: 1,
+        ignored: 1,
+        failed: 0,
+        updated: 0,
+      },
+    });
   });
 
   it("Vérifie qu'on peut collecter des relations", async () => {
@@ -411,6 +422,7 @@ integrationTests(__filename, () => {
       dummy: {
         total: 0,
         updated: 0,
+        ignored: 0,
         failed: 0,
       },
     });
@@ -442,8 +454,9 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(stats, {
       dummy: {
         total: 1,
-        failed: 0,
         updated: 1,
+        ignored: 0,
+        failed: 0,
       },
     });
   });

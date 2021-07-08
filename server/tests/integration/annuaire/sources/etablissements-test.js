@@ -29,6 +29,7 @@ integrationTests(__filename, () => {
       etablissements: {
         total: 1,
         updated: 1,
+        ignored: 0,
         failed: 0,
       },
     });
@@ -51,6 +52,7 @@ integrationTests(__filename, () => {
       etablissements: {
         total: 0,
         updated: 0,
+        ignored: 0,
         failed: 0,
       },
     });
