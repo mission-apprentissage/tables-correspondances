@@ -1,7 +1,6 @@
 const { uniqBy, chain } = require("lodash");
 const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire, BcnFormationDiplome } = require("../../../common/model");
-const { timeout } = require("../../../common/utils/asyncUtils");
 const ApiCatalogue = require("../../../common/apis/ApiCatalogue");
 const ApiGeoAdresse = require("../../../common/apis/ApiGeoAdresse");
 const adresses = require("../utils/adresses");
@@ -93,12 +92,9 @@ async function buildLieuxDeFormation(siret, formations, getAdresseFromCoordinate
       .map(async (f) => {
         let [latitude, longitude] = f.lieu_formation_geo_coordonnees.split(",");
 
-        let adresse = await timeout(
-          getAdresseFromCoordinates(longitude, latitude, {
-            label: f.lieu_formation_adresse,
-          }),
-          5000
-        ).catch((e) => {
+        let adresse = await getAdresseFromCoordinates(longitude, latitude, {
+          label: f.lieu_formation_adresse,
+        }).catch((e) => {
           anomalies.push({
             code: "lieudeformation_geoloc_impossible",
             message: `Lieu de formation inconnu : ${f.lieu_formation_adresse}. ${e.message}`,

@@ -1,5 +1,4 @@
 const { oleoduc, transformData, accumulateData, writeData } = require("oleoduc");
-const { timeout } = require("../../../common/utils/asyncUtils");
 const { Annuaire } = require("../../../common/model");
 const ApiSirene = require("../../../common/apis/ApiSirene");
 const ApiGeoAdresse = require("../../../common/apis/ApiGeoAdresse");
@@ -65,7 +64,7 @@ module.exports = async (options = {}) => {
           try {
             let siren = siret.substring(0, 9);
             let anomalies = [];
-            let uniteLegale = await timeout(api.getUniteLegale(siren), 10000);
+            let uniteLegale = await api.getUniteLegale(siren);
             let data = uniteLegale.etablissements.find((e) => e.siret === siret);
             if (!data) {
               return {
