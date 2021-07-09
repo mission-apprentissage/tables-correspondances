@@ -7,24 +7,28 @@ const { createReadStream } = require("fs");
 const { runScript } = require("../scriptWrapper");
 const { createReferentiel, getDefaultReferentiels } = require("./referentiels/referentiels");
 const { createSource, getDefaultSourcesGroupedByPriority, getSourcesToValidate } = require("./sources/sources");
-const clearAnnuaire = require("./clearAnnuaire");
+
 const importReferentiel = require("./importReferentiel");
 const collectSources = require("./collectSources");
-const validateSources = require("./validateSources");
+const clearAnnuaire = require("./clearAnnuaire");
 const etablissementAsCsvStream = require("./utils/etablissementAsCsvStream");
-const computeStats = require("./computeStats");
-const buildMatrice = require("./buildMatrice");
+const computeRecoupement = require("./computeRecoupement");
 
 cli
-  .command("clear")
-  .description("Vide l'annuaire avec les données de la DEPP")
-  .action(() => {
-    runScript(() => {
-      return clearAnnuaire();
+  .command("computeRecoupement")
+  .option("--validate", "Valide les établissements")
+  .option("--fields <fields>", "Les champs utilisés pour comparer les établissement", (v) => v.split(","), [
+    "uai",
+    "siret",
+  ])
+  .option("--save", "Sauvegarde les résultats dans les stats")
+  .action((options) => {
+    runScript(async () => {
+      let { fields, ...opts } = options;
+      let sources = await Promise.all(getSourcesToValidate().map((name) => createSource(name)));
+      return computeRecoupement(sources, fields, opts);
     });
   });
-
-cli.command("matrix", "Commandes pour manipuler la matrice des bases", { executableFile: "./matrix/matrixCli.js" });
 
 cli
   .command("importReferentiel [name] [file]")
@@ -85,34 +89,11 @@ cli
   });
 
 cli
-  .command("validateSources [name]")
-  .description("Valide les sources de données")
-  .action((name) => {
-    runScript(async () => {
-      let sourceNames = name ? [name] : getSourcesToValidate();
-      let sources = await Promise.all(sourceNames.map((name) => createSource(name)));
-      return validateSources(sources);
-    });
-  });
-
-cli
-  .command("buildMatrice [name]")
-  .description("Permet de construire la matrice")
-  .action((name) => {
-    runScript(async () => {
-      let sourceNames = name ? [name] : getSourcesToValidate();
-      let sources = await Promise.all(sourceNames.map((name) => createSource(name)));
-      return buildMatrice(sources, ["siret"]);
-    });
-  });
-
-cli
-  .command("computeStats")
-  .description("Génère les statistiques de l'annuaire")
+  .command("clear")
+  .description("Vide l'annuaire avec les données de la DEPP")
   .action(() => {
-    runScript(async () => {
-      let sources = await Promise.all(getSourcesToValidate().map((name) => createSource(name)));
-      return computeStats(sources);
+    runScript(() => {
+      return clearAnnuaire();
     });
   });
 
@@ -126,4 +107,5 @@ cli
       };
     });
   });
+
 cli.parse(process.argv);

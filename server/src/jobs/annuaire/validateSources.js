@@ -1,13 +1,38 @@
 const { oleoduc, writeData } = require("oleoduc");
 const luhn = require("fast-luhn");
+const mergeStream = require("merge-stream");
 const logger = require("../../common/logger");
 const ApiSirene = require("../../common/apis/ApiSirene");
 const Cache = require("../../common/apis/Cache");
 const { validateUAI } = require("../../common/utils/uaiUtils");
 
-async function validateSource(source, cache, apiSirene) {
-  let memo = new Set();
-  let stats = {
+async function getEtablissementStatus(siret, cache, apiSirene) {
+  if (!luhn(siret)) {
+    return "invalides";
+  }
+
+  try {
+    let etat_administratif = await cache.memo(siret, async () => {
+      let { etat_administratif } = await apiSirene.getEtablissement(siret);
+      return etat_administratif;
+    });
+
+    if (etat_administratif === "A") {
+      return "valides";
+    }
+    return "fermés";
+  } catch (e) {
+    if (e.reason === 404) {
+      return "inconnus";
+    }
+
+    logger.error(e);
+    return "erreurs";
+  }
+}
+
+function createSourceStats() {
+  return {
     total: 0,
     sirets: {
       total: 0,
@@ -27,71 +52,53 @@ async function validateSource(source, cache, apiSirene) {
       invalides: 0,
     },
   };
+}
 
-  async function getEtablissementStatus(siret) {
-    if (!luhn(siret)) {
-      return "invalides";
-    }
+async function validateSources(sources) {
+  let memo = new Set();
+  let apiSirene = new ApiSirene();
+  let cache = new Cache("siret");
+  let stats = {};
 
-    try {
-      let etat_administratif = await cache.memo(siret, async () => {
-        let { etat_administratif } = await apiSirene.getEtablissement(siret);
-        return etat_administratif;
-      });
+  let streams = await Promise.all(sources.map((source) => source.stream()));
 
-      if (etat_administratif === "A") {
-        return "valides";
-      }
-      return "fermés";
-    } catch (e) {
-      if (e.reason === 404) {
-        return "inconnus";
-      }
-
-      logger.error(e);
-      return "erreurs";
-    }
-  }
-
-  let input = await source.stream();
   await oleoduc(
-    input,
+    mergeStream(streams),
     writeData(
-      async (data) => {
-        stats.total++;
-        let uai = (data.uais || [])[0];
-        let siret = data.selector || data.siret;
+      async ({ from, selector: siret, uais = [] }) => {
+        stats[from] = stats[from] || createSourceStats();
+        stats[from].total++;
+        let uai = uais[0];
         logger.debug(`Validation de ${uai} ${siret}...`);
 
         if (uai) {
-          stats.uais.total++;
+          stats[from].uais.total++;
           if (memo.has(uai)) {
-            stats.uais.dupliqués++;
+            stats[from].uais.dupliqués++;
           } else {
             memo.add(uai);
             if (validateUAI(uai)) {
-              stats.uais.valides++;
+              stats[from].uais.valides++;
             } else {
-              stats.uais.invalides++;
+              stats[from].uais.invalides++;
             }
           }
         } else {
-          stats.uais.absents++;
+          stats[from].uais.absents++;
         }
 
         if (siret) {
-          stats.sirets.total++;
+          stats[from].sirets.total++;
           if (memo.has(siret)) {
-            stats.sirets.dupliqués++;
+            stats[from].sirets.dupliqués++;
           } else {
             memo.add(siret);
-            let status = await getEtablissementStatus(siret);
-            stats.sirets[status]++;
+            let status = await getEtablissementStatus(siret, cache, apiSirene);
+            stats[from].sirets[status]++;
           }
         } else {
-          stats.sirets.absents++;
+          stats[from].sirets.absents++;
         }
-        logger.debug(`Statut validation`, { source: source.name, ...stats });
       },
       { parallel: 5 }
     )
@@ -100,12 +107,4 @@ async function validateSource(source, cache, apiSirene) {
   return stats;
 }
 
-module.exports = async (sources) => {
-  let cache = new Cache("siret");
-  return sources.reduce(async (acc, source) => {
-    return {
-      ...(await acc),
-      [source.name]: await validateSource(source, cache, new ApiSirene()),
-    };
-  }, Promise.resolve({}));
-};
+module.exports = validateSources;

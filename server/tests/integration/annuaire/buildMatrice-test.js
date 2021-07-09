@@ -19,7 +19,7 @@ integrationTests(__filename, () => {
     };
   }
 
-  it("Vérifie qu'on construire une matrice", async () => {
+  it("Vérifie qu'on construire une matrice de similarités", async () => {
     let source1 = createTestSource(
       [
         {
@@ -33,6 +33,10 @@ integrationTests(__filename, () => {
         {
           selector: "11111111100006",
           uais: ["1234567W"],
+        },
+        {
+          selector: "11111111100006",
+          uais: [],
         },
       ],
       { name: "source1" }
@@ -55,14 +59,14 @@ integrationTests(__filename, () => {
 
     matrice = await buildMatrice([source1, source2], ["uai"]);
     assert.deepStrictEqual(matrice, {
-      source1: { source1: { intersection: 1, union: 1 }, source2: { intersection: 1, union: 1 } },
-      source2: { source1: { intersection: 1, union: 1 }, source2: { intersection: 1, union: 1 } },
+      source1: { source1: { intersection: 2, union: 2 }, source2: { intersection: 1, union: 2 } },
+      source2: { source1: { intersection: 1, union: 2 }, source2: { intersection: 1, union: 1 } },
     });
 
     matrice = await buildMatrice([source1, source2], ["uai", "siret"]);
     assert.deepStrictEqual(matrice, {
-      source1: { source1: { intersection: 2, union: 2 }, source2: { intersection: 1, union: 2 } },
-      source2: { source1: { intersection: 1, union: 2 }, source2: { intersection: 1, union: 1 } },
+      source1: { source1: { intersection: 3, union: 3 }, source2: { intersection: 1, union: 3 } },
+      source2: { source1: { intersection: 1, union: 3 }, source2: { intersection: 1, union: 1 } },
     });
   });
 });

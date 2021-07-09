@@ -1,4 +1,5 @@
 import React from "react";
+import styled from "styled-components";
 import { sortBy } from "lodash-es";
 import { Card, Grid, Page, Table } from "tabler-react";
 import { Link } from "react-router-dom";
@@ -7,6 +8,30 @@ import Error from "../../common/components/Error";
 import FixedTable from "./components/FixedTable";
 
 export default StatsPage;
+
+export const StatsCard = styled(({ children, ...rest }) => {
+  return (
+    <Card {...rest}>
+      <Card.Body className="stats">{children}</Card.Body>
+    </Card>
+  );
+})`
+  height: 75%;
+  .stats {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .value {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    .details {
+      font-size: 0.9rem;
+      font-weight: 400;
+    }
+  }
+`;
 
 function Percentage({ total, value, label }) {
   return (
@@ -17,8 +42,7 @@ function Percentage({ total, value, label }) {
   );
 }
 
-function Matrice({ matrices, type }) {
-  let matrice = matrices[type];
+function Matrice({ matrice }) {
   let sourcesNames = sortBy(Object.keys(matrice));
 
   return (
@@ -58,8 +82,8 @@ function Matrice({ matrices, type }) {
                         total={otherSource.union}
                         label={
                           <div>
-                            <div>{`${otherSource.union} ${type.toUpperCase()} uniques`}</div>
-                            <div>{`dont ${otherSource.intersection} en commun`}</div>
+                            <div>{`${otherSource.union} couples UAI-SIRET`}</div>
+                            <div>{`${otherSource.intersection} en commun`}</div>
                           </div>
                         }
                       />
@@ -77,7 +101,7 @@ function Matrice({ matrices, type }) {
 
 function StatsPage() {
   let [data, loading, error] = useFetch(`/api/v1/annuaire/stats`, { stats: [{}] });
-  let { validation, matrices } = data.stats[0];
+  let { validation, matrice, similarites } = data.stats[0];
 
   if (loading || data.stats.length === 0) {
     return <div>{loading ? "Chargement..." : "Pas de résultats"}</div>;
@@ -90,6 +114,7 @@ function StatsPage() {
           <Page.Header>
             <Link to={`/annuaire`}>Annuaire</Link>> Stats
           </Page.Header>
+          <h2>Validation</h2>
           <Grid.Row>
             {error && <Error>Une erreur est survenue</Error>}
             <Grid.Col>
@@ -97,7 +122,7 @@ function StatsPage() {
                 <>
                   <Card>
                     <Card.Header>
-                      <Card.Title>Validation des UAI</Card.Title>
+                      <Card.Title>UAI</Card.Title>
                     </Card.Header>
                     <Card.Body>
                       <FixedTable>
@@ -138,7 +163,7 @@ function StatsPage() {
                   </Card>
                   <Card>
                     <Card.Header>
-                      <Card.Title>Validation des SIRET</Card.Title>
+                      <Card.Title>SIRET</Card.Title>
                     </Card.Header>
                     <Card.Body>
                       <FixedTable>
@@ -191,37 +216,60 @@ function StatsPage() {
                   </Card>
                 </>
               )}
-              {matrices && (
-                <>
-                  <Card>
-                    <Card.Header>
-                      <Card.Title>Matrice de recoupement par UAI et SIRET</Card.Title>
-                    </Card.Header>
-                    <Card.Body>
-                      <Matrice type={"uai_siret"} matrices={matrices} />
-                    </Card.Body>
-                  </Card>
-
-                  <Card>
-                    <Card.Header>
-                      <Card.Title>Matrice de recoupement par UAI</Card.Title>
-                    </Card.Header>
-                    <Card.Body>
-                      <Matrice type={"uai"} matrices={matrices} />
-                    </Card.Body>
-                  </Card>
-                  <Card>
-                    <Card.Header>
-                      <Card.Title>Matrice de recoupement par Siret (+datagouv)</Card.Title>
-                    </Card.Header>
-                    <Card.Body>
-                      <Matrice type={"siret"} matrices={matrices} />
-                    </Card.Body>
-                  </Card>
-                </>
-              )}
             </Grid.Col>
           </Grid.Row>
+          {matrice && (
+            <>
+              <h2>Etablissements (UAI-SIRET)</h2>
+              <Grid.Row>
+                <Grid.Col width={3}>
+                  <StatsCard>
+                    <div>Nombre de couples uniques</div>
+                    <div className="value">{similarites.total}</div>
+                  </StatsCard>
+                </Grid.Col>
+              </Grid.Row>
+              <h4>Fiabilité des couples UAI-SIRET</h4>
+              <Grid.Row>
+                <Grid.Col width={3}>
+                  <StatsCard>
+                    <div>Trouvés dans toutes les sources</div>
+                    <div className="value">{similarites["4"]}</div>
+                  </StatsCard>
+                </Grid.Col>
+                <Grid.Col width={3}>
+                  <StatsCard>
+                    <div>Trouvés dans 3 sources sur 4</div>
+                    <div className="value">{similarites["3"]}</div>
+                  </StatsCard>
+                </Grid.Col>
+                <Grid.Col width={3}>
+                  <StatsCard>
+                    <div>Trouvés dans 2 sources sur 4</div>
+                    <div className="value">{similarites["2"]}</div>
+                  </StatsCard>
+                </Grid.Col>
+                <Grid.Col width={3}>
+                  <StatsCard>
+                    <div>Trouvés dans 1 source sur 4</div>
+                    <div className="value">{similarites["1"]}</div>
+                  </StatsCard>
+                </Grid.Col>
+              </Grid.Row>
+              <Grid.Row>
+                <Grid.Col>
+                  <Card>
+                    <Card.Header>
+                      <Card.Title>Pourcentage de recoupement par source</Card.Title>
+                    </Card.Header>
+                    <Card.Body>
+                      <Matrice matrice={matrice} />
+                    </Card.Body>
+                  </Card>
+                </Grid.Col>
+              </Grid.Row>
+            </>
+          )}
         </Page.Content>
       </Page.Main>
     </Page>
