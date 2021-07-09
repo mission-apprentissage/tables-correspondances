@@ -138,20 +138,22 @@ class GeoAdresseData {
     };
   }
 
+  formatMunicipality({ properties }) {
+    return {
+      fields: {
+        insee_com: properties.citycode,
+        postal_code: properties.postcode,
+        nom_comm: properties.city,
+        code_dept: properties.context.split(",")[0],
+      },
+    };
+  }
+
   /**
    * Format the results of apiGeoAdresse.searchMunicipalityByCode calls
    */
   async formatMunicipalityResponse(data) {
-    const records = data.features.map(({ properties }) => {
-      return {
-        fields: {
-          insee_com: properties.citycode,
-          postal_code: properties.postcode,
-          nom_comm: properties.city,
-          code_dept: properties.context.split(",")[0],
-        },
-      };
-    });
+    const records = data.features.map(this.formatMunicipality);
 
     return {
       records,
@@ -197,6 +199,44 @@ class GeoAdresseData {
     }
 
     return {};
+  }
+
+  async getAddressFromGeoCoordinates({ latitude, longitude }) {
+    try {
+      const data = await this.apiGeoAdresse.reverse(longitude, latitude, { type: "housenumber" });
+
+      if (!(data.features?.length > 0)) {
+        return {
+          address: null,
+          results_count: 0,
+        };
+      }
+
+      if (data.features.length > 1) {
+        console.info("Multiple results for lat,lon: ", latitude, longitude);
+      }
+
+      const { properties } = data.features[0];
+      const { housenumber, street } = properties;
+      const [type_voie, ...rest] = street.split(" ");
+
+      return {
+        address: {
+          ...this.formatMunicipality({ properties }).fields,
+          numero_voie: housenumber,
+          type_voie,
+          nom_voie: rest.join(" "),
+        },
+        results_count: data.features.length,
+      };
+    } catch (e) {
+      console.error("geo reverse error", e);
+    }
+
+    return {
+      address: null,
+      results_count: 0,
+    };
   }
 }
 
