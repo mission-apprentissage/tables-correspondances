@@ -217,7 +217,7 @@ class GeoAdresseData {
       }
 
       const { properties } = data.features[0];
-      const { housenumber, street } = properties;
+      const { housenumber, street = "" } = properties;
       const [type_voie, ...rest] = street.split(" ");
 
       return {
