@@ -1,3 +1,10 @@
+## [2.22.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.22.0...v2.22.1) (2021-07-09)
+
+
+### Bug Fixes
+
+* fix geo result destructurate ([8e37183](https://github.com/mission-apprentissage/tables-correspondances/commit/8e37183f53551723f4ec72893287f692cf049e2f))
+
 # [2.22.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.21.0...v2.22.0) (2021-07-09)
 
 
