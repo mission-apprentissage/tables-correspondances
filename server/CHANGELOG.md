@@ -1,3 +1,10 @@
+# [2.21.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.20.0...v2.21.0) (2021-07-09)
+
+
+### Features
+
+* **geoloc:** Search with code insee ([#162](https://github.com/mission-apprentissage/tables-correspondances/issues/162)) ([c1b6273](https://github.com/mission-apprentissage/tables-correspondances/commit/c1b62735a1417038631ce437a716dc2110e263ec))
+
 # [2.20.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.19.0...v2.20.0) (2021-07-06)
 
 
