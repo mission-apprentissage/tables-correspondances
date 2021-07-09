@@ -1,5 +1,4 @@
 import { setMongooseInstance } from "../../common/mongodb";
-import { message } from "aws-sdk/clients/sns";
 
 let mongooseInstanceShared = false;
 const isSdkReady = () => {
