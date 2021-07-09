@@ -15,9 +15,6 @@ function createSource(name, ...args) {
 
 module.exports = {
   createSource,
-  getSourcesToValidate() {
-    return ["deca", "etablissements", "ramsese", "sifa"];
-  },
   getDefaultSourcesGroupedByPriority() {
     return [
       [

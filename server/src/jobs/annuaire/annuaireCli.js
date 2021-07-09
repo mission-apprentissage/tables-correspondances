@@ -6,7 +6,7 @@ const ApiGeoAdresse = require("../../common/apis/ApiGeoAdresse");
 const { createReadStream } = require("fs");
 const { runScript } = require("../scriptWrapper");
 const { createReferentiel, getDefaultReferentiels } = require("./referentiels/referentiels");
-const { createSource, getDefaultSourcesGroupedByPriority, getSourcesToValidate } = require("./sources/sources");
+const { createSource, getDefaultSourcesGroupedByPriority } = require("./sources/sources");
 
 const importReferentiel = require("./importReferentiel");
 const collectSources = require("./collectSources");
@@ -17,16 +17,16 @@ const computeRecoupement = require("./computeRecoupement");
 cli
   .command("computeRecoupement")
   .option("--validate", "Valide les établissements")
-  .option("--fields <fields>", "Les champs utilisés pour comparer les établissement", (v) => v.split(","), [
-    "uai",
-    "siret",
-  ])
+  .option("--fields <fields>", "Les champs utilisés pour comparer les établissement", (v) => v.split(","))
   .option("--save", "Sauvegarde les résultats dans les stats")
   .action((options) => {
     runScript(async () => {
-      let { fields, ...opts } = options;
-      let sources = await Promise.all(getSourcesToValidate().map((name) => createSource(name)));
-      return computeRecoupement(sources, fields, opts);
+      let sources = await Promise.all(
+        getDefaultSourcesGroupedByPriority()
+          .flat()
+          .map((name) => createSource(name))
+      );
+      return computeRecoupement(sources, options);
     });
   });
 
