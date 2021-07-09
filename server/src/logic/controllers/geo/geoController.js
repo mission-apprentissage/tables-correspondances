@@ -137,13 +137,14 @@ class GeoController {
     };
   }
 
-  async findGeoCoordinateFromAdresse({ numero_voie, type_voie, nom_voie, code_postal, localite }) {
+  async findGeoCoordinateFromAdresse({ numero_voie, type_voie, nom_voie, code_postal, localite, code_insee }) {
     const { geo_coordonnees, results_count } = await geoAdresseData.getGeoCoordinateFromAdresse({
       numero_voie,
       type_voie,
       nom_voie,
       code_postal,
       localite,
+      code_insee,
     });
 
     return {
@@ -155,6 +156,13 @@ class GeoController {
 
   isValidCodePostal(codePostal) {
     return /^[0-9]{5}$/g.test(codePostal);
+  }
+
+  /**
+   * Le code commune Insee contient cinq chiffres ou lettres (Corse 2A - 2B)
+   */
+  isValidCodeInsee(codeInsee) {
+    return /^[a-zA-Z0-9]{5}$/g.test(codeInsee);
   }
 }
 

@@ -9,8 +9,15 @@ const getDataFromSiret = async (providedSiret) => {
     messages: {},
   };
   if (Object.keys(siretData.result).length > 0) {
-    const { numero_voie, type_voie, nom_voie, code_postal, localite } = siretData.result;
-    geoData = await getCoordinatesFromAddressData({ numero_voie, type_voie, nom_voie, code_postal, localite });
+    const { numero_voie, type_voie, nom_voie, code_postal, localite, code_insee_localite } = siretData.result;
+    geoData = await getCoordinatesFromAddressData({
+      numero_voie,
+      type_voie,
+      nom_voie,
+      code_postal,
+      localite,
+      code_insee: code_insee_localite,
+    });
   }
 
   return {

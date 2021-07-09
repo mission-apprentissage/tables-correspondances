@@ -122,6 +122,7 @@ const etablissementService = async (
         nom_voie: current.nom_voie,
         localite: current.commune,
         code_postal: current.code_postal,
+        code_insee: current.code_commune_insee,
       });
       error = parseErrors(geoMessages);
       if (error) {

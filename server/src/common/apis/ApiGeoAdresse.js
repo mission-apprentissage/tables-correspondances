@@ -45,19 +45,6 @@ class ApiGeoAdresse {
     });
   }
 
-  async searchPostcodeOnly(q, options = {}) {
-    return this.executeWithRateLimiting(async (client) => {
-      try {
-        let params = queryString.stringify({ q, ...options });
-        const response = await client.get(`search/?${params}`);
-        logger.debug(`[Adresse API] Searching Postcode with parameters ${params}...`);
-        return response.data;
-      } catch (e) {
-        throw new ApiError("apiGeoAdresse", e.message, e.code || e.response.status);
-      }
-    });
-  }
-
   async searchMunicipalityByCode(code, options = {}) {
     return this.executeWithRateLimiting(async (client) => {
       try {
