@@ -1,3 +1,10 @@
+# [2.22.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.21.0...v2.22.0) (2021-07-09)
+
+
+### Features
+
+* Get address data from geoloc ([#163](https://github.com/mission-apprentissage/tables-correspondances/issues/163)) ([b44ea0a](https://github.com/mission-apprentissage/tables-correspondances/commit/b44ea0a7a705abacb5538b21b610cc4f43cc30cb))
+
 # [2.21.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.20.0...v2.21.0) (2021-07-09)
 
 
