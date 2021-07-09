@@ -1,3 +1,10 @@
+## [2.22.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.22.1...v2.22.2) (2021-07-09)
+
+
+### Bug Fixes
+
+* rm unused import ([2613c95](https://github.com/mission-apprentissage/tables-correspondances/commit/2613c952eb361cca279b525e4a9a48b5b3e4d8d6))
+
 ## [2.22.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.22.0...v2.22.1) (2021-07-09)
 
 
