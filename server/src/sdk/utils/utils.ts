@@ -180,6 +180,7 @@ type AddressData = {
   nom_voie: string;
   localite: string;
   code_postal: string;
+  code_insee?: string;
 };
 
 export async function getCoordinatesFromAddressData({
@@ -188,6 +189,7 @@ export async function getCoordinatesFromAddressData({
   nom_voie,
   localite,
   code_postal,
+  code_insee,
 }: AddressData) {
   isSdkReady();
   try {
@@ -198,6 +200,7 @@ export async function getCoordinatesFromAddressData({
       nom_voie,
       localite,
       code_postal,
+      code_insee,
     });
   } catch (error) {
     console.error(`getCoordinatesFromAddressData: something went wrong!`, error);
