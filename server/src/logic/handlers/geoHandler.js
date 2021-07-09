@@ -10,7 +10,7 @@ const getDataFromCP = async (providedCP, providedCodeInsee) => {
     };
   }
 
-  if (providedCodeInsee && !geoController.isValidCodePostal(providedCodeInsee.trim())) {
+  if (providedCodeInsee && !geoController.isValidCodeInsee(providedCodeInsee.trim())) {
     return {
       result: {},
       messages: {
@@ -59,13 +59,21 @@ const getDataFromCP = async (providedCP, providedCodeInsee) => {
 };
 module.exports.getDataFromCP = getDataFromCP;
 
-const getCoordinatesFromAddressData = async ({ numero_voie, type_voie, nom_voie, code_postal, localite }) => {
+const getCoordinatesFromAddressData = async ({
+  numero_voie,
+  type_voie,
+  nom_voie,
+  code_postal,
+  localite,
+  code_insee,
+}) => {
   const coordUpdated = await geoController.findGeoCoordinateFromAdresse({
     numero_voie,
     type_voie,
     nom_voie,
     code_postal,
     localite,
+    code_insee,
   });
 
   return {
