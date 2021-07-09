@@ -9,7 +9,6 @@ const apiEsSup = new ApiEsSup();
 
 class GeoController {
   constructor() {
-    this.baseCodePostaux = [];
     this.departements = fs.readJsonSync(path.resolve(__dirname, "../../assets/dataDepartements.json"));
   }
 
@@ -150,6 +149,15 @@ class GeoController {
     return {
       info: `Ok`,
       value: geo_coordonnees,
+      count: results_count,
+    };
+  }
+
+  async findAddressFromGeoCoordinates({ latitude, longitude }) {
+    const { address, results_count } = await geoAdresseData.getAddressFromGeoCoordinates({ latitude, longitude });
+    return {
+      info: `Ok`,
+      value: address,
       count: results_count,
     };
   }
