@@ -1,4 +1,5 @@
 import { setMongooseInstance } from "../../common/mongodb";
+import { message } from "aws-sdk/clients/sns";
 
 let mongooseInstanceShared = false;
 const isSdkReady = () => {
@@ -231,6 +232,45 @@ export async function getNiveauxDiplomesTree(): Promise<Tree> {
 
     return accSync;
   }, {});
+}
+
+type AdressResult = {
+  result: {
+    adresse?: {
+      numero_voie: string;
+      type_voie: string;
+      nom_voie: string;
+      code_postal: string;
+      code_commune_insee: string;
+      commune: string;
+      num_departement: string;
+      nom_departement: string;
+      region: string;
+      num_region: string;
+      nom_academie: string;
+      num_academie: string;
+    };
+    results_count?: number;
+  };
+  messages: { error?: string; address?: string };
+};
+
+export async function getAddressFromCoordinates({
+  latitude,
+  longitude,
+}: {
+  latitude: number;
+  longitude: number;
+}): Promise<AdressResult | null> {
+  isSdkReady();
+  try {
+    let { getAddressDataFromCoordinates } = await import("../../logic/handlers/geoHandler");
+    const result = getAddressDataFromCoordinates({ latitude, longitude });
+    return result;
+  } catch (error) {
+    console.error(`getAddressFromCoordinates: something went wrong!`, error);
+    return null;
+  }
 }
 
 // TODO
