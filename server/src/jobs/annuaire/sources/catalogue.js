@@ -2,7 +2,7 @@ const { oleoduc, transformData } = require("oleoduc");
 const { Etablissement } = require("../../../common/model");
 
 module.exports = () => {
-  let name = "etablissements";
+  let name = "catalogue";
 
   return {
     name,

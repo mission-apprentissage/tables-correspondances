@@ -93,7 +93,7 @@ module.exports = {
                 invalides: 2033,
               },
             },
-            etablissements: {
+            catalogue: {
               total: 5679,
               sirets: {
                 total: 5679,

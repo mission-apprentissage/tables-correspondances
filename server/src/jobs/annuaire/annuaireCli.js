@@ -20,7 +20,7 @@ cli
   .option("--save", "Sauvegarde les résultats dans les stats")
   .action((options) => {
     runScript(async () => {
-      let sourceNames = ["deca", "etablissements", "ramsese", "sifa"];
+      let sourceNames = ["deca", "catalogue", "ramsese", "sifa"];
       let sources = await Promise.all(sourceNames.map((name) => createSource(name)));
       return computeRecoupement(sources, options);
     });

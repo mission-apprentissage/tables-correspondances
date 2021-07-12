@@ -22,7 +22,7 @@ module.exports = {
         "anasup",
         "compagnons-du-devoir",
         "deca",
-        "etablissements",
+        "catalogue",
         "gesti",
         "ideo2",
         "onisep",

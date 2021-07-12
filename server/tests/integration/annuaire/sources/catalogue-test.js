@@ -14,20 +14,20 @@ integrationTests(__filename, () => {
       siret: "11111111100006",
       entreprise_raison_sociale: "Centre de formation",
     });
-    let source = await createSource("etablissements");
+    let source = await createSource("catalogue");
 
     let stats = await collectSources(source);
 
     let found = await Annuaire.findOne({}, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais, [
       {
-        sources: ["etablissements"],
+        sources: ["catalogue"],
         uai: "1234567W",
         valide: true,
       },
     ]);
     assert.deepStrictEqual(stats, {
-      etablissements: {
+      catalogue: {
         total: 1,
         updated: 1,
         ignored: 0,
@@ -43,14 +43,14 @@ integrationTests(__filename, () => {
       siret: "11111111100006",
       entreprise_raison_sociale: "Centre de formation",
     });
-    let source = await createSource("etablissements");
+    let source = await createSource("catalogue");
 
     let stats = await collectSources(source, {
       filters: { siret: "33333333300008" },
     });
 
     assert.deepStrictEqual(stats, {
-      etablissements: {
+      catalogue: {
         total: 0,
         updated: 0,
         ignored: 0,
