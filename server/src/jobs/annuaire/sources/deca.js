@@ -1,4 +1,4 @@
-const { oleoduc, transformData } = require("oleoduc");
+const { oleoduc, transformData, filterData } = require("oleoduc");
 const { parseCsv } = require("../utils/csvUtils");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
@@ -13,6 +13,7 @@ module.exports = async (custom = {}) => {
       return oleoduc(
         input,
         parseCsv(),
+        filterData((data) => data["NB_CONTRATS_20201231"] !== "0"),
         transformData((data) => {
           return {
             from: name,

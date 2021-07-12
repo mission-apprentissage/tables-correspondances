@@ -2,7 +2,7 @@ const assert = require("assert");
 const { oleoduc, transformData } = require("oleoduc");
 const { Readable } = require("stream");
 const integrationTests = require("../../utils/integrationTests");
-const buildSimilarites = require("../../../src/jobs/annuaire/buildSimilarites");
+const buildSimilarites = require("../../../src/jobs/annuaire/recoupement/buildSimilarites");
 
 integrationTests(__filename, () => {
   function createTestSource(array, options = {}) {

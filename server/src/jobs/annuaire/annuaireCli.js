@@ -7,7 +7,6 @@ const { createReadStream } = require("fs");
 const { runScript } = require("../scriptWrapper");
 const { createReferentiel, getDefaultReferentiels } = require("./referentiels/referentiels");
 const { createSource, getDefaultSourcesGroupedByPriority } = require("./sources/sources");
-
 const importReferentiel = require("./importReferentiel");
 const collectSources = require("./collectSources");
 const clearAnnuaire = require("./clearAnnuaire");
@@ -21,11 +20,8 @@ cli
   .option("--save", "Sauvegarde les résultats dans les stats")
   .action((options) => {
     runScript(async () => {
-      let sources = await Promise.all(
-        getDefaultSourcesGroupedByPriority()
-          .flat()
-          .map((name) => createSource(name))
-      );
+      let sourceNames = ["deca", "etablissements", "ramsese", "sifa"];
+      let sources = await Promise.all(sourceNames.map((name) => createSource(name)));
       return computeRecoupement(sources, options);
     });
   });

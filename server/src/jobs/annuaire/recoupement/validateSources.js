@@ -1,10 +1,10 @@
 const { oleoduc, writeData } = require("oleoduc");
 const luhn = require("fast-luhn");
 const mergeStream = require("merge-stream");
-const logger = require("../../common/logger");
-const ApiSirene = require("../../common/apis/ApiSirene");
-const Cache = require("../../common/apis/Cache");
-const { validateUAI } = require("../../common/utils/uaiUtils");
+const logger = require("../../../common/logger");
+const ApiSirene = require("../../../common/apis/ApiSirene");
+const Cache = require("../../../common/apis/Cache");
+const { validateUAI } = require("../../../common/utils/uaiUtils");
 
 async function getEtablissementStatus(siret, cache, apiSirene) {
   if (!luhn(siret)) {

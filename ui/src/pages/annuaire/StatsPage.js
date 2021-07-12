@@ -43,7 +43,7 @@ function Percentage({ total, value, label }) {
 }
 
 function Matrice({ matrice }) {
-  let sourcesNames = sortBy(Object.keys(matrice));
+  let sourcesNames = Object.keys(matrice).sort();
 
   return (
     <FixedTable>
@@ -135,28 +135,30 @@ function StatsPage() {
                           <Table.ColHeader>Invalides</Table.ColHeader>
                         </Table.Header>
                         <Table.Body>
-                          {Object.keys(validation).map((key) => {
-                            let { total, uais } = validation[key];
+                          {Object.keys(validation)
+                            .sort()
+                            .map((key) => {
+                              let { total, uais } = validation[key];
 
-                            return (
-                              <Table.Row key={key}>
-                                <Table.Col>{key}</Table.Col>
-                                <Table.Col>{total}</Table.Col>
-                                <Table.Col>
-                                  <Percentage total={total} value={uais.valides} />
-                                </Table.Col>
-                                <Table.Col>
-                                  <Percentage total={total} value={uais["dupliqués"]} />
-                                </Table.Col>
-                                <Table.Col>
-                                  <Percentage total={total} value={uais.absents} />
-                                </Table.Col>
-                                <Table.Col>
-                                  <Percentage total={total} value={uais.invalides} />
-                                </Table.Col>
-                              </Table.Row>
-                            );
-                          })}
+                              return (
+                                <Table.Row key={key}>
+                                  <Table.Col>{key}</Table.Col>
+                                  <Table.Col>{total}</Table.Col>
+                                  <Table.Col>
+                                    <Percentage total={total} value={uais.valides} />
+                                  </Table.Col>
+                                  <Table.Col>
+                                    <Percentage total={total} value={uais["dupliqués"]} />
+                                  </Table.Col>
+                                  <Table.Col>
+                                    <Percentage total={total} value={uais.absents} />
+                                  </Table.Col>
+                                  <Table.Col>
+                                    <Percentage total={total} value={uais.invalides} />
+                                  </Table.Col>
+                                </Table.Row>
+                              );
+                            })}
                         </Table.Body>
                       </FixedTable>
                     </Card.Body>
@@ -179,37 +181,39 @@ function StatsPage() {
                           <Table.ColHeader>Erreurs</Table.ColHeader>
                         </Table.Header>
                         <Table.Body>
-                          {Object.keys(validation).map((key) => {
-                            let { total, sirets } = validation[key];
+                          {Object.keys(validation)
+                            .sort()
+                            .map((key) => {
+                              let { total, sirets } = validation[key];
 
-                            return (
-                              <Table.Row key={key}>
-                                <Table.Col>{key}</Table.Col>
-                                <Table.Col>{total}</Table.Col>
-                                <Table.Col>
-                                  <Percentage total={total} value={sirets.valides} />
-                                </Table.Col>
-                                <Table.Col>
-                                  <Percentage total={total} value={sirets["dupliqués"]} />
-                                </Table.Col>
-                                <Table.Col>
-                                  <Percentage total={total} value={sirets["fermés"]} />
-                                </Table.Col>
-                                <Table.Col>
-                                  <Percentage total={total} value={sirets.inconnus} />
-                                </Table.Col>
-                                <Table.Col>
-                                  <Percentage total={total} value={sirets.absents} />
-                                </Table.Col>
-                                <Table.Col>
-                                  <Percentage total={total} value={sirets.invalides} />
-                                </Table.Col>
-                                <Table.Col>
-                                  <Percentage total={total} value={sirets.erreurs} />
-                                </Table.Col>
-                              </Table.Row>
-                            );
-                          })}
+                              return (
+                                <Table.Row key={key}>
+                                  <Table.Col>{key}</Table.Col>
+                                  <Table.Col>{total}</Table.Col>
+                                  <Table.Col>
+                                    <Percentage total={total} value={sirets.valides} />
+                                  </Table.Col>
+                                  <Table.Col>
+                                    <Percentage total={total} value={sirets["dupliqués"]} />
+                                  </Table.Col>
+                                  <Table.Col>
+                                    <Percentage total={total} value={sirets["fermés"]} />
+                                  </Table.Col>
+                                  <Table.Col>
+                                    <Percentage total={total} value={sirets.inconnus} />
+                                  </Table.Col>
+                                  <Table.Col>
+                                    <Percentage total={total} value={sirets.absents} />
+                                  </Table.Col>
+                                  <Table.Col>
+                                    <Percentage total={total} value={sirets.invalides} />
+                                  </Table.Col>
+                                  <Table.Col>
+                                    <Percentage total={total} value={sirets.erreurs} />
+                                  </Table.Col>
+                                </Table.Row>
+                              );
+                            })}
                         </Table.Body>
                       </FixedTable>
                     </Card.Body>
@@ -235,24 +239,36 @@ function StatsPage() {
                   <StatsCard>
                     <div>Trouvés dans toutes les sources</div>
                     <div className="value">{similarites["4"]}</div>
+                    <div className="details">
+                      <Percentage total={similarites.total} value={similarites["4"]} label={<div />} />
+                    </div>
                   </StatsCard>
                 </Grid.Col>
                 <Grid.Col width={3}>
                   <StatsCard>
                     <div>Trouvés dans 3 sources sur 4</div>
                     <div className="value">{similarites["3"]}</div>
+                    <div className="details">
+                      <Percentage total={similarites.total} value={similarites["3"]} label={<div />} />
+                    </div>
                   </StatsCard>
                 </Grid.Col>
                 <Grid.Col width={3}>
                   <StatsCard>
                     <div>Trouvés dans 2 sources sur 4</div>
                     <div className="value">{similarites["2"]}</div>
+                    <div className="details">
+                      <Percentage total={similarites.total} value={similarites["2"]} label={<div />} />
+                    </div>
                   </StatsCard>
                 </Grid.Col>
                 <Grid.Col width={3}>
                   <StatsCard>
                     <div>Trouvés dans 1 source sur 4</div>
                     <div className="value">{similarites["1"]}</div>
+                    <div className="details">
+                      <Percentage total={similarites.total} value={similarites["1"]} label={<div />} />
+                    </div>
                   </StatsCard>
                 </Grid.Col>
               </Grid.Row>

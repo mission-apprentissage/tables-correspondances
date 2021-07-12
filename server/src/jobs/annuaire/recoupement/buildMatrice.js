@@ -9,7 +9,12 @@ async function loadDataBySource(sources) {
   await oleoduc(
     mergeStream(streams),
     transformData(({ from, selector: siret, uais = [] }) => {
-      return { from, uai: uais[0], siret };
+      let uai = uais[0];
+      if (!uai || !siret) {
+        return null;
+      }
+
+      return { from, uai: uai, siret };
     }),
     writeData(({ from, ...rest }) => {
       memo[from].push(rest);

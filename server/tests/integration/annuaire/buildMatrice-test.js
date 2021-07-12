@@ -2,7 +2,7 @@ const assert = require("assert");
 const { oleoduc, transformData } = require("oleoduc");
 const { Readable } = require("stream");
 const integrationTests = require("../../utils/integrationTests");
-const buildMatrice = require("../../../src/jobs/annuaire/buildMatrice");
+const buildMatrice = require("../../../src/jobs/annuaire/recoupement/buildMatrice");
 
 integrationTests(__filename, () => {
   function createTestSource(array, options = {}) {
@@ -51,22 +51,10 @@ integrationTests(__filename, () => {
       { name: "source2" }
     );
 
-    let matrice = await buildMatrice([source1, source2], ["siret"]);
+    let matrice = await buildMatrice([source1, source2], ["uai", "siret"]);
     assert.deepStrictEqual(matrice, {
       source1: { source1: { intersection: 2, union: 2 }, source2: { intersection: 1, union: 2 } },
       source2: { source1: { intersection: 1, union: 2 }, source2: { intersection: 1, union: 1 } },
-    });
-
-    matrice = await buildMatrice([source1, source2], ["uai"]);
-    assert.deepStrictEqual(matrice, {
-      source1: { source1: { intersection: 2, union: 2 }, source2: { intersection: 1, union: 2 } },
-      source2: { source1: { intersection: 1, union: 2 }, source2: { intersection: 1, union: 1 } },
-    });
-
-    matrice = await buildMatrice([source1, source2], ["uai", "siret"]);
-    assert.deepStrictEqual(matrice, {
-      source1: { source1: { intersection: 3, union: 3 }, source2: { intersection: 1, union: 3 } },
-      source2: { source1: { intersection: 1, union: 3 }, source2: { intersection: 1, union: 1 } },
     });
   });
 });

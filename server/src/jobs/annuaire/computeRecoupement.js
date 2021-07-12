@@ -1,7 +1,7 @@
 const { AnnuaireStats } = require("../../common/model");
-const validateSources = require("./validateSources");
-const buildMatrice = require("./buildMatrice");
-const buildSimilarites = require("./buildSimilarites");
+const validateSources = require("./recoupement/validateSources");
+const buildMatrice = require("./recoupement/buildMatrice");
+const buildSimilarites = require("./recoupement/buildSimilarites");
 
 async function computeRecoupement(sources, options) {
   let fields = options.fields || ["uai", "siret"];
