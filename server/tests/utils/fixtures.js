@@ -1,6 +1,6 @@
 const faker = require("faker"); // eslint-disable-line node/no-unpublished-require
 const { merge } = require("lodash"); // eslint-disable-line node/no-unpublished-require
-const { Annuaire, AnnuaireStats } = require("../../src/common/model");
+const { Annuaire, AnnuaireStats, Etablissement } = require("../../src/common/model");
 
 module.exports = {
   models: {
@@ -8,6 +8,20 @@ module.exports = {
       nom: "TEST",
       valeur: "Valeur",
     },
+  },
+  insertEtablissement(custom) {
+    return Etablissement.create(
+      merge(
+        {},
+        {
+          siret: faker.helpers.replaceSymbols("#########00015"),
+
+          uai: "0010856A",
+          tags: ["2020", "2021"],
+        },
+        custom
+      )
+    );
   },
   insertAnnuaire(custom) {
     return Annuaire.create(

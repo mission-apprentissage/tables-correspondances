@@ -380,7 +380,7 @@ integrationTests(__filename, () => {
         },
         region: {
           code: "11",
-          label: "Île-de-France",
+          nom: "Île-de-France",
         },
       },
     });
@@ -471,7 +471,7 @@ integrationTests(__filename, () => {
       localite: "Paris",
       region: {
         code: "11",
-        label: "Île-de-France",
+        nom: "Île-de-France",
       },
     });
     assert.deepStrictEqual(stats, {

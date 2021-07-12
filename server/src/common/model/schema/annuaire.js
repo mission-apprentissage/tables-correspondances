@@ -24,7 +24,7 @@ let adresseSchema = new Schema(
             type: String,
             required: true,
           },
-          label: {
+          nom: {
             type: String,
             required: true,
           },

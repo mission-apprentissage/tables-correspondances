@@ -50,7 +50,7 @@ integrationTests(__filename, () => {
       localite: "Paris",
       region: {
         code: "11",
-        label: "Île-de-France",
+        nom: "Île-de-France",
       },
     });
     assert.deepStrictEqual(stats, {
@@ -92,7 +92,7 @@ integrationTests(__filename, () => {
       localite: "Paris",
       region: {
         code: "11",
-        label: "Île-de-France",
+        nom: "Île-de-France",
       },
     });
     assert.deepStrictEqual(stats, {
