@@ -6,6 +6,10 @@ const FixedTable = styled(Table)`
   .value {
     color: darkgray;
     font-size: 0.75rem;
+    &.valid,
+    .valid {
+      color: darkgreen;
+    }
   }
 `;
 

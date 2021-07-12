@@ -114,47 +114,53 @@ function StatsPage() {
           <Page.Header>
             <Link to={`/annuaire`}>Annuaire</Link>> Stats
           </Page.Header>
-          <h2>Validation</h2>
-          <Grid.Row>
-            {error && <Error>Une erreur est survenue</Error>}
-            <Grid.Col>
-              {validation && (
-                <>
+          {validation && (
+            <>
+              <h2>Etablissements</h2>
+              <h3>UAI</h3>
+              {error && <Error>Une erreur est survenue</Error>}
+              <Grid.Row>
+                <Grid.Col width={6}>
+                  <StatsCard>
+                    <div>Nombre d'UAI uniques</div>
+                    <div className="value">{validation.global.nbUaiUniques}</div>
+                  </StatsCard>
+                </Grid.Col>
+              </Grid.Row>
+              <Grid.Row>
+                <Grid.Col width={7}>
                   <Card>
                     <Card.Header>
-                      <Card.Title>UAI</Card.Title>
+                      <Card.Title>Validité de l'UAI des établissements</Card.Title>
                     </Card.Header>
                     <Card.Body>
                       <FixedTable>
                         <Table.Header>
                           <Table.ColHeader>Source</Table.ColHeader>
-                          <Table.ColHeader>Total</Table.ColHeader>
-                          <Table.ColHeader>Conformes et uniques</Table.ColHeader>
-                          <Table.ColHeader>Dupliqués</Table.ColHeader>
-                          <Table.ColHeader>Absents</Table.ColHeader>
+                          <Table.ColHeader>Valides</Table.ColHeader>
                           <Table.ColHeader>Invalides</Table.ColHeader>
+                          <Table.ColHeader>Absents</Table.ColHeader>
                         </Table.Header>
                         <Table.Body>
-                          {Object.keys(validation)
+                          {Object.keys(validation.sources)
                             .sort()
                             .map((key) => {
-                              let { total, uais } = validation[key];
+                              let { total, uais } = validation.sources[key];
 
                               return (
                                 <Table.Row key={key}>
-                                  <Table.Col>{key}</Table.Col>
-                                  <Table.Col>{total}</Table.Col>
                                   <Table.Col>
-                                    <Percentage total={total} value={uais.valides} />
+                                    <div>{key}</div>
+                                    <div className="value">{total}</div>
                                   </Table.Col>
                                   <Table.Col>
-                                    <Percentage total={total} value={uais["dupliqués"]} />
-                                  </Table.Col>
-                                  <Table.Col>
-                                    <Percentage total={total} value={uais.absents} />
+                                    <Percentage total={total} value={uais.uniques + uais.dupliqués} />
                                   </Table.Col>
                                   <Table.Col>
                                     <Percentage total={total} value={uais.invalides} />
+                                  </Table.Col>
+                                  <Table.Col>
+                                    <Percentage total={total} value={uais.absents} />
                                   </Table.Col>
                                 </Table.Row>
                               );
@@ -163,50 +169,94 @@ function StatsPage() {
                       </FixedTable>
                     </Card.Body>
                   </Card>
+                </Grid.Col>
+                <Grid.Col width={5}>
                   <Card>
                     <Card.Header>
-                      <Card.Title>SIRET</Card.Title>
+                      <Card.Title>Unicité des UAI valides</Card.Title>
                     </Card.Header>
                     <Card.Body>
                       <FixedTable>
                         <Table.Header>
                           <Table.ColHeader>Source</Table.ColHeader>
-                          <Table.ColHeader>Total</Table.ColHeader>
-                          <Table.ColHeader>Conformes et uniques</Table.ColHeader>
+                          <Table.ColHeader>Uniques</Table.ColHeader>
                           <Table.ColHeader>Dupliqués</Table.ColHeader>
-                          <Table.ColHeader>Fermés</Table.ColHeader>
-                          <Table.ColHeader>Inconnus</Table.ColHeader>
-                          <Table.ColHeader>Absents</Table.ColHeader>
-                          <Table.ColHeader>Invalides</Table.ColHeader>
-                          <Table.ColHeader>Erreurs</Table.ColHeader>
                         </Table.Header>
                         <Table.Body>
-                          {Object.keys(validation)
+                          {Object.keys(validation.sources)
                             .sort()
                             .map((key) => {
-                              let { total, sirets } = validation[key];
+                              let uais = validation.sources[key].uais;
 
                               return (
                                 <Table.Row key={key}>
-                                  <Table.Col>{key}</Table.Col>
-                                  <Table.Col>{total}</Table.Col>
                                   <Table.Col>
-                                    <Percentage total={total} value={sirets.valides} />
+                                    <div>{key}</div>
+                                    <div className="value">{uais.valides} valides</div>
                                   </Table.Col>
                                   <Table.Col>
-                                    <Percentage total={total} value={sirets["dupliqués"]} />
+                                    <Percentage total={uais.valides} value={uais.uniques} />
+                                  </Table.Col>
+                                  <Table.Col>
+                                    <Percentage total={uais.valides} value={uais["dupliqués"]} />
+                                  </Table.Col>
+                                </Table.Row>
+                              );
+                            })}
+                        </Table.Body>
+                      </FixedTable>
+                    </Card.Body>
+                  </Card>
+                </Grid.Col>
+              </Grid.Row>
+              <h3>SIRET</h3>
+              <Grid.Row>
+                <Grid.Col width={6}>
+                  <StatsCard>
+                    <div>Nombre de SIRET uniques</div>
+                    <div className="value">{validation.global.nbSiretUniques}</div>
+                  </StatsCard>
+                </Grid.Col>
+              </Grid.Row>
+              <Grid.Row>
+                <Grid.Col width={7}>
+                  <Card>
+                    <Card.Header>
+                      <Card.Title>Validité des SIRET des établissements</Card.Title>
+                    </Card.Header>
+                    <Card.Body>
+                      <FixedTable>
+                        <Table.Header>
+                          <Table.ColHeader>Source</Table.ColHeader>
+                          <Table.ColHeader>Valides</Table.ColHeader>
+                          <Table.ColHeader>Fermés</Table.ColHeader>
+                          <Table.ColHeader>Invalides</Table.ColHeader>
+                          <Table.ColHeader>Absents</Table.ColHeader>
+                          <Table.ColHeader>Erreurs</Table.ColHeader>
+                        </Table.Header>
+                        <Table.Body>
+                          {Object.keys(validation.sources)
+                            .sort()
+                            .map((key) => {
+                              let { total, sirets } = validation.sources[key];
+
+                              return (
+                                <Table.Row key={key}>
+                                  <Table.Col>
+                                    <div>{key}</div>
+                                    <div className="value">{total}</div>
+                                  </Table.Col>
+                                  <Table.Col>
+                                    <Percentage total={total} value={sirets.valides} />
                                   </Table.Col>
                                   <Table.Col>
                                     <Percentage total={total} value={sirets["fermés"]} />
                                   </Table.Col>
                                   <Table.Col>
-                                    <Percentage total={total} value={sirets.inconnus} />
+                                    <Percentage total={total} value={sirets.invalides} />
                                   </Table.Col>
                                   <Table.Col>
                                     <Percentage total={total} value={sirets.absents} />
-                                  </Table.Col>
-                                  <Table.Col>
-                                    <Percentage total={total} value={sirets.invalides} />
                                   </Table.Col>
                                   <Table.Col>
                                     <Percentage total={total} value={sirets.erreurs} />
@@ -218,10 +268,48 @@ function StatsPage() {
                       </FixedTable>
                     </Card.Body>
                   </Card>
-                </>
-              )}
-            </Grid.Col>
-          </Grid.Row>
+                </Grid.Col>
+                <Grid.Col width={5}>
+                  <Card>
+                    <Card.Header>
+                      <Card.Title>Unicité des SIRET valides</Card.Title>
+                    </Card.Header>
+                    <Card.Body>
+                      <FixedTable>
+                        <Table.Header>
+                          <Table.ColHeader>Source</Table.ColHeader>
+                          <Table.ColHeader>Uniques</Table.ColHeader>
+                          <Table.ColHeader>Dupliqués</Table.ColHeader>
+                        </Table.Header>
+                        <Table.Body>
+                          {Object.keys(validation.sources)
+                            .sort()
+                            .map((key) => {
+                              let sirets = validation.sources[key].sirets;
+
+                              return (
+                                <Table.Row key={key}>
+                                  <Table.Col>
+                                    <div>{key}</div>
+                                    <div className="value">{sirets.valides}</div>
+                                  </Table.Col>
+                                  <Table.Col>
+                                    <Percentage total={sirets.valides} value={sirets.uniques} />
+                                  </Table.Col>
+                                  <Table.Col>
+                                    <Percentage total={sirets.valides} value={sirets["dupliqués"]} />
+                                  </Table.Col>
+                                </Table.Row>
+                              );
+                            })}
+                        </Table.Body>
+                      </FixedTable>
+                    </Card.Body>
+                  </Card>
+                </Grid.Col>
+              </Grid.Row>
+            </>
+          )}
           {matrice && (
             <>
               <h2>Etablissements (UAI-SIRET)</h2>

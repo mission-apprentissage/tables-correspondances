@@ -1,5 +1,6 @@
 const { oleoduc, writeData } = require("oleoduc");
 const luhn = require("fast-luhn");
+const { uniq } = require("lodash");
 const mergeStream = require("merge-stream");
 const logger = require("../../../common/logger");
 const ApiSirene = require("../../../common/apis/ApiSirene");
@@ -37,28 +38,33 @@ function createSourceStats() {
     sirets: {
       total: 0,
       valides: 0,
-      dupliqués: 0,
       fermés: 0,
-      inconnus: 0,
       absents: 0,
       invalides: 0,
+      uniques: 0,
+      dupliqués: 0,
       erreurs: 0,
     },
     uais: {
       total: 0,
       valides: 0,
-      dupliqués: 0,
       absents: 0,
       invalides: 0,
+      uniques: 0,
+      dupliqués: 0,
     },
   };
 }
 
+function createSourceMemo() {
+  return { uais: new Set(), sirets: new Set() };
+}
+
 async function validateSources(sources) {
-  let memo = new Set();
   let apiSirene = new ApiSirene();
   let cache = new Cache("siret");
-  let stats = {};
+  let stats = { global: { nbUaiUniques: 0, nbSiretUniques: 0 }, sources: {} };
+  let memo = {};
 
   let streams = await Promise.all(sources.map((source) => source.stream()));
 
@@ -66,44 +72,52 @@ async function validateSources(sources) {
     mergeStream(streams),
     writeData(
       async ({ from, selector: siret, uais = [] }) => {
-        stats[from] = stats[from] || createSourceStats();
-        stats[from].total++;
+        stats.sources[from] = stats.sources[from] || createSourceStats();
+        memo[from] = memo[from] || createSourceMemo();
+        stats.sources[from].total++;
         let uai = uais[0];
         logger.debug(`Validation de ${uai} ${siret}...`);
 
         if (uai) {
-          stats[from].uais.total++;
-          if (memo.has(uai)) {
-            stats[from].uais.dupliqués++;
-          } else {
-            memo.add(uai);
-            if (validateUAI(uai)) {
-              stats[from].uais.valides++;
+          stats.sources[from].uais.total++;
+
+          if (validateUAI(uai)) {
+            stats.sources[from].uais.valides++;
+            if (memo[from].uais.has(uai)) {
+              stats.sources[from].uais.dupliqués++;
             } else {
-              stats[from].uais.invalides++;
+              memo[from].uais.add(uai);
+              stats.sources[from].uais.uniques++;
             }
+          } else {
+            stats.sources[from].uais.invalides++;
           }
         } else {
-          stats[from].uais.absents++;
+          stats.sources[from].uais.absents++;
         }
 
         if (siret) {
-          stats[from].sirets.total++;
-          if (memo.has(siret)) {
-            stats[from].sirets.dupliqués++;
-          } else {
-            memo.add(siret);
-            let status = await getEtablissementStatus(siret, cache, apiSirene);
-            stats[from].sirets[status]++;
+          stats.sources[from].sirets.total++;
+          let status = await getEtablissementStatus(siret, cache, apiSirene);
+          stats.sources[from].sirets[status]++;
+          if (status === "valides") {
+            if (memo[from].sirets.has(siret)) {
+              stats.sources[from].sirets.dupliqués++;
+            } else {
+              memo[from].sirets.add(siret);
+              stats.sources[from].sirets.uniques++;
+            }
           }
         } else {
-          stats[from].sirets.absents++;
+          stats.sources[from].sirets.absents++;
         }
       },
       { parallel: 5 }
     )
   );
 
+  stats.global.nbUaiUniques = uniq(Object.keys(memo).reduce((acc, key) => [...acc, ...memo[key].uais], [])).length;
+  stats.global.nbSiretUniques = uniq(Object.keys(memo).reduce((acc, key) => [...acc, ...memo[key].sirets], [])).length;
   return stats;
 }
 
