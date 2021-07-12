@@ -36,7 +36,7 @@ module.exports = {
         "ymag",
       ],
       [
-        "catalogue", //This source consumes the same API as the sirene source
+        "formations", //This source consumes the same API as the sirene source
         "academie", // Needs data provided by sirene
         //Theses sources used uai as selector, so we tried to collect as many uais as possible before running them
         "ccca-btp",

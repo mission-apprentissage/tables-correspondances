@@ -197,7 +197,7 @@ httpTests(__filename, ({ startServer }) => {
         siret: "11111111100001",
         uais: [
           {
-            source: "catalogue",
+            source: "formations",
             uai: "1111111S",
             valide: true,
           },
@@ -207,12 +207,12 @@ httpTests(__filename, ({ startServer }) => {
         siret: "33333333300008",
         uais: [
           {
-            source: "catalogue",
+            source: "formations",
             uai: "1111111S",
             valide: true,
           },
           {
-            source: "catalogue",
+            source: "formations",
             uai: "2222222S",
             valide: true,
           },
