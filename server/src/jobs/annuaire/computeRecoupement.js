@@ -13,6 +13,10 @@ async function computeRecoupement(sources, options) {
             sources.filter((s) => ["deca", "catalogue", "ramsese", "sifa"].includes(s.name)),
             fields
           ),
+        }
+      : {}),
+    ...(options.similarites
+      ? {
           similarites: await buildSimilarites(
             sources.filter((s) => ["deca", "catalogue", "ramsese", "sifa"].includes(s.name)),
             fields
