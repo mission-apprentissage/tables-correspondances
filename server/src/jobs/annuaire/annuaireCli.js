@@ -16,6 +16,7 @@ const computeRecoupement = require("./computeRecoupement");
 cli
   .command("computeRecoupement")
   .option("--validate", "Valide les établissements")
+  .option("--matrice", "Calcule la matrice")
   .option("--fields <fields>", "Les champs utilisés pour comparer les établissement", (v) => v.split(","))
   .option("--save", "Sauvegarde les résultats dans les stats")
   .action((options) => {
