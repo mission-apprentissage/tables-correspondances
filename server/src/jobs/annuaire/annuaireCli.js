@@ -10,6 +10,7 @@ const importReferentiel = require("./importReferentiel");
 const collect = require("./collect");
 const etablissementAsCsvStream = require("./utils/etablissementAsCsvStream");
 const computeStats = require("./computeStats");
+const acceReconciliationCsvStream = require("./utils/acceReconciliationCsvStream");
 
 cli
   .command("clean")
@@ -69,6 +70,17 @@ cli
   .action(({ filter, limit, out }) => {
     runScript(() => {
       let input = etablissementAsCsvStream({ filter, limit });
+
+      return oleoduc(input, out || writeToStdout());
+    });
+  });
+
+cli
+  .command("acce <file>")
+  .option("--out <out>", "Fichier cible dans lequel sera stocké l'export (defaut: stdout)", createWriteStream)
+  .action((file, { out }) => {
+    runScript(() => {
+      let input = acceReconciliationCsvStream(createReadStream(file));
 
       return oleoduc(input, out || writeToStdout());
     });
