@@ -8,7 +8,7 @@ module.exports = () => {
     name,
     stream() {
       return oleoduc(
-        Etablissement.find({ tags: "2020" }, { siret: 1, uai: 1 }).batchSize(5).lean().cursor(),
+        Etablissement.find({}, { siret: 1, uai: 1 }).batchSize(5).lean().cursor(),
         transformData((etablissement) => {
           return {
             from: name,

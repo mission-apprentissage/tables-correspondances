@@ -11,20 +11,16 @@ const importReferentiel = require("./importReferentiel");
 const collectSources = require("./collectSources");
 const clearAnnuaire = require("./clearAnnuaire");
 const etablissementAsCsvStream = require("./utils/etablissementAsCsvStream");
-const computeRecoupement = require("./computeRecoupement");
+const computeStats = require("./computeStats");
 
 cli
-  .command("computeRecoupement")
-  .option("--validate", "Valide les établissements")
-  .option("--matrice", "Calcule la matrice")
-  .option("--similarites", "Calcule les similarités")
-  .option("--fields <fields>", "Les champs utilisés pour comparer les établissement", (v) => v.split(","))
+  .command("computeStats")
   .option("--save", "Sauvegarde les résultats dans les stats")
   .action((options) => {
     runScript(async () => {
       let sourceNames = ["deca", "catalogue", "ramsese", "sifa"];
       let sources = await Promise.all(sourceNames.map((name) => createSource(name)));
-      return computeRecoupement(sources, options);
+      return computeStats(sources, options);
     });
   });
 
