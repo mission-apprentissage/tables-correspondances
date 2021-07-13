@@ -1,29 +1,23 @@
 const { oleoduc, transformData } = require("oleoduc");
-const csv = require("csv-parse");
+const { parseCsv } = require("../utils/csvUtils");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
 module.exports = async (custom = {}) => {
-  let name = "anasup";
+  let name = "deca";
 
   return {
     name,
     async stream() {
-      let input = custom.input || (await getOvhFileAsStream("cfas-reseaux/cfas-anasup.csv", { storage: "mna-flux" }));
+      let input = custom.input || (await getOvhFileAsStream("annuaire/liste_etab_SIA_Dares.csv"));
 
       return oleoduc(
         input,
-        csv({
-          delimiter: ";",
-          trim: true,
-          bom: true,
-          columns: true,
-        }),
+        parseCsv(),
         transformData((data) => {
           return {
             from: name,
-            selector: data["siret"],
-            uais: [data["uai"]],
-            reseaux: ["anasup"],
+            selector: data.FORM_ETABSIRET,
+            uais: [data.FORM_ETABUAI_R],
           };
         }),
         { promisify: false }

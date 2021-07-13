@@ -1,13 +1,13 @@
 const { ok, strictEqual, deepStrictEqual } = require("assert");
 const httpTests = require("../../utils/httpTests");
-const { Etablissement } = require("../../../src/common/model");
+const { insertEtablissement } = require("../../utils/fixtures");
 
 httpTests(__filename, ({ startServer }) => {
   it("Vérifie qu'on peut lister des établissements", async () => {
     const { httpClient } = await startServer();
-    await new Etablissement({
+    await insertEtablissement({
       uai: "0010856A",
-    }).save();
+    });
 
     const response = await httpClient.get("/api/v1/entity/etablissements");
 
@@ -19,12 +19,12 @@ httpTests(__filename, ({ startServer }) => {
 
   it("Vérifie qu'on peut lister des établissements avec de la pagination", async () => {
     const { httpClient } = await startServer();
-    await new Etablissement({
+    await insertEtablissement({
       uai: "0010856A",
-    }).save();
-    await new Etablissement({
+    });
+    await insertEtablissement({
       uai: "0010856X",
-    }).save();
+    });
 
     const response = await httpClient.get("/api/v1/entity/etablissements?page=1&limit=1");
 
@@ -37,12 +37,12 @@ httpTests(__filename, ({ startServer }) => {
 
   it("Vérifie qu'on peut filtre les établissements avec une query", async () => {
     const { httpClient } = await startServer();
-    await new Etablissement({
+    await insertEtablissement({
       uai: "0010856A",
-    }).save();
-    await new Etablissement({
+    });
+    await insertEtablissement({
       uai: "0010856X",
-    }).save();
+    });
 
     const response = await httpClient.get(`/api/v1/entity/etablissements?query={"uai":"0010856A"}`);
 

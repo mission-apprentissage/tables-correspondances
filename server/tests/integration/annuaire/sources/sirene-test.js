@@ -3,7 +3,7 @@ const { omit } = require("lodash");
 const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
-const collect = require("../../../../src/jobs/annuaire/collect");
+const collectSources = require("../../../../src/jobs/annuaire/collectSources");
 const { importReferentiel } = require("../../../utils/testUtils");
 const { getMockedApiSirene, getMockedApiGeoAddresse } = require("../../../utils/apiMocks");
 
@@ -14,9 +14,9 @@ function createSireneSource(custom = {}) {
     }),
     apiSirene: getMockedApiSirene((mock, responses) => {
       mock.onGet("unites_legales/111111111").reply(200, responses.unitesLegales());
-      mock.onGet("etablissements/11111111111111").reply(200, responses.etablissement());
+      mock.onGet("etablissements/11111111100006").reply(200, responses.etablissement());
     }),
-    organismes: ["11111111111111"],
+    organismes: ["11111111100006"],
     ...custom,
   });
 }
@@ -26,9 +26,9 @@ integrationTests(__filename, () => {
     await importReferentiel();
     let source = await createSireneSource();
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.strictEqual(found.raison_sociale, "NOMAYO");
     assert.strictEqual(found.siege_social, true);
     assert.strictEqual(found.statut, "actif");
@@ -50,13 +50,14 @@ integrationTests(__filename, () => {
       localite: "Paris",
       region: {
         code: "11",
-        label: "Île-de-France",
+        nom: "Île-de-France",
       },
     });
     assert.deepStrictEqual(stats, {
       sirene: {
         total: 1,
         updated: 1,
+        ignored: 0,
         failed: 0,
       },
     });
@@ -71,9 +72,9 @@ integrationTests(__filename, () => {
       }),
     });
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.adresse, {
       geojson: {
         type: "Feature",
@@ -91,13 +92,14 @@ integrationTests(__filename, () => {
       localite: "Paris",
       region: {
         code: "11",
-        label: "Île-de-France",
+        nom: "Île-de-France",
       },
     });
     assert.deepStrictEqual(stats, {
       sirene: {
         total: 1,
         updated: 1,
+        ignored: 0,
         failed: 0,
       },
     });
@@ -106,14 +108,14 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des relations", async () => {
     await importReferentiel();
     let api = getMockedApiSirene((mock, responses) => {
-      mock.onGet("etablissements/11111111111111").reply(200, responses.etablissement());
+      mock.onGet("etablissements/11111111100006").reply(200, responses.etablissement());
       mock.onGet("unites_legales/111111111").reply(
         200,
         responses.unitesLegales({
           unite_legale: {
             etablissements: [
               {
-                siret: "11111111111111",
+                siret: "11111111100006",
                 etat_administratif: "A",
                 etablissement_siege: "true",
                 libelle_voie: "DES LILAS",
@@ -136,12 +138,12 @@ integrationTests(__filename, () => {
     });
     let source = await createSireneSource({
       apiSirene: api,
-      organismes: ["11111111111111", "11111111122222"],
+      organismes: ["11111111100006", "11111111122222"],
     });
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.relations, [
       {
         siret: "11111111122222",
@@ -154,42 +156,44 @@ integrationTests(__filename, () => {
       sirene: {
         total: 1,
         updated: 1,
+        ignored: 0,
         failed: 0,
       },
     });
   });
 
   it("Vérifie qu'on peut filter par siret", async () => {
-    await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
-"0011058V";"11111111111111"`);
+    await importReferentiel(`"siren";"num_etablissement";"cfa"
+"111111111";"00006";"Oui"`);
 
     let source = await createSireneSource({
-      organismes: ["11111111111111"],
+      organismes: ["11111111100006"],
     });
 
-    let stats = await collect(source, { filters: { siret: "33333333333333" } });
+    let stats = await collectSources(source, { filters: { siret: "33333333300008" } });
 
     assert.deepStrictEqual(stats, {
       sirene: {
         total: 0,
         updated: 0,
+        ignored: 0,
         failed: 0,
       },
     });
   });
 
   it("Vérifie qu'on ignore les relations qui ne sont pas des organismes de formations", async () => {
-    await importReferentiel(`"numero_uai";"numero_siren_siret_uai"
-"0011058V";"11111111111111"`);
+    await importReferentiel(`"siren";"num_etablissement";"cfa"
+"111111111";"00006";"Oui"`);
     let api = getMockedApiSirene((mock, responses) => {
-      mock.onGet("etablissements/11111111111111").reply(200, responses.etablissement());
+      mock.onGet("etablissements/11111111100006").reply(200, responses.etablissement());
       mock.onGet("unites_legales/111111111").reply(
         200,
         responses.unitesLegales({
           unite_legale: {
             etablissements: [
               {
-                siret: "11111111111111",
+                siret: "11111111100006",
                 etat_administratif: "A",
                 etablissement_siege: "true",
                 libelle_voie: "DES LILAS",
@@ -215,15 +219,16 @@ integrationTests(__filename, () => {
       organismes: ["2222222222222222"],
     });
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.strictEqual(found.relations.length, 1);
     assert.deepStrictEqual(found.relations[0].siret, "2222222222222222");
     assert.deepStrictEqual(stats, {
       sirene: {
         total: 1,
         updated: 1,
+        ignored: 0,
         failed: 0,
       },
     });
@@ -232,14 +237,14 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on ignore les relations pour des établissements fermés", async () => {
     await importReferentiel();
     let api = getMockedApiSirene((mock, responses) => {
-      mock.onGet("etablissements/11111111111111").reply(200, responses.etablissement());
+      mock.onGet("etablissements/11111111100006").reply(200, responses.etablissement());
       mock.onGet("unites_legales/111111111").reply(
         200,
         responses.unitesLegales({
           unite_legale: {
             etablissements: [
               {
-                siret: "11111111111111",
+                siret: "11111111100006",
                 etat_administratif: "A",
                 etablissement_siege: "true",
                 libelle_voie: "DES LILAS",
@@ -263,12 +268,12 @@ integrationTests(__filename, () => {
 
     let source = await createSireneSource({
       apiSirene: api,
-      organismes: ["11111111111111", "11111111122222"],
+      organismes: ["11111111100006", "11111111122222"],
     });
 
-    await collect(source);
+    await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.relations, []);
   });
 
@@ -280,14 +285,15 @@ integrationTests(__filename, () => {
       }),
     });
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }).lean();
     assert.deepStrictEqual(found._meta.anomalies[0].details, "[Api Sirene] Request failed with status code 500");
     assert.deepStrictEqual(stats, {
       sirene: {
         total: 1,
         updated: 0,
+        ignored: 0,
         failed: 1,
       },
     });
@@ -301,9 +307,9 @@ integrationTests(__filename, () => {
       }),
     });
 
-    await collect(source);
+    await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }).lean();
     assert.deepStrictEqual(found._meta.anomalies[0].details, "Etablissement inconnu pour l'entreprise 111111111");
   });
 
@@ -315,13 +321,13 @@ integrationTests(__filename, () => {
       }),
     });
 
-    await collect(source);
+    await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }).lean();
     assert.deepStrictEqual(found._meta.anomalies[0].details, "Entreprise inconnue");
   });
 
-  it("Vérifie qu'on créer une anomalie quand on ne peut pas trouver l'adresse", async () => {
+  it("Vérifie qu'on crée une anomalie quand on ne peut pas trouver l'adresse", async () => {
     await importReferentiel();
     let source = await createSireneSource({
       apiGeoAdresse: {
@@ -334,13 +340,14 @@ integrationTests(__filename, () => {
       },
     });
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.strictEqual(found._meta.anomalies.length, 1);
     assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
-      task: "collect",
+      job: "collect",
       source: "sirene",
+      code: "etablissement_geoloc_impossible",
       details:
         "Impossible de géolocaliser l'adresse de l'établissement: 31 rue des lilas Paris 75001. " +
         "Adresse inconnue [2.396147,48.880391]",
@@ -349,6 +356,7 @@ integrationTests(__filename, () => {
       sirene: {
         total: 1,
         updated: 1,
+        ignored: 0,
         failed: 1,
       },
     });
@@ -358,26 +366,28 @@ integrationTests(__filename, () => {
     await importReferentiel();
     let source = await createSireneSource({
       apiSirene: getMockedApiSirene((mock, responses) => {
-        mock.onGet("etablissements/11111111111111").reply(200, responses.etablissement());
+        mock.onGet("etablissements/11111111100006").reply(200, responses.etablissement());
         mock
           .onGet(/unites_legales.*/)
           .reply(200, responses.unitesLegales({ unite_legale: { categorie_juridique: "INVALID" } }));
       }),
     });
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.strictEqual(found._meta.anomalies.length, 1);
     assert.deepStrictEqual(omit(found._meta.anomalies[0], ["date"]), {
-      task: "collect",
+      job: "collect",
       source: "sirene",
+      code: "categorie_juridique_inconnue",
       details: "Impossible de trouver la catégorie juridique de l'entreprise : INVALID",
     });
     assert.deepStrictEqual(stats, {
       sirene: {
         total: 1,
         updated: 1,
+        ignored: 0,
         failed: 1,
       },
     });

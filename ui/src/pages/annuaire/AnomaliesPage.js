@@ -3,16 +3,17 @@ import { Card, Grid, Page, Table } from "tabler-react";
 import Pagination from "./components/Pagination";
 import { Link } from "react-router-dom";
 import { useSearch } from "./hooks/useSearch";
+import FixedTable from "./components/FixedTable";
 
 const AnomaliesTable = ({ anomalies }) => {
   return (
-    <Table>
+    <FixedTable>
       <Table.Header>
         <Table.Row>
           <Table.ColHeader>Tâche</Table.ColHeader>
           <Table.ColHeader>Source</Table.ColHeader>
           <Table.ColHeader>Date</Table.ColHeader>
-          <Table.ColHeader>Message</Table.ColHeader>
+          <Table.ColHeader colSpan={2}>Message</Table.ColHeader>
         </Table.Row>
       </Table.Header>
       <Table.Body>
@@ -22,12 +23,12 @@ const AnomaliesTable = ({ anomalies }) => {
               <Table.Col>{ano.task}</Table.Col>
               <Table.Col>{ano.source}</Table.Col>
               <Table.Col>{ano.date}</Table.Col>
-              <Table.Col>{ano.details}</Table.Col>
+              <Table.Col colSpan={2}>{ano.details}</Table.Col>
             </Table.Row>
           );
         })}
       </Table.Body>
-    </Table>
+    </FixedTable>
   );
 };
 

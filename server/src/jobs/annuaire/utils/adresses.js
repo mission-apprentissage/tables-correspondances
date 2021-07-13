@@ -1,4 +1,4 @@
-const regions = require("./regions");
+const { findRegionByName } = require("./regions");
 const MIN_GEOCODE_SCORE = 0.6;
 
 class GeocodingError extends Error {
@@ -26,7 +26,7 @@ function selectBestResults(results, adresse) {
     code_postal: properties.postcode,
     code_insee: properties.citycode,
     localite: properties.city,
-    region: regions.find((r) => r.label === regionName),
+    region: findRegionByName(regionName),
     geojson: {
       type: best.type,
       geometry: best.geometry,

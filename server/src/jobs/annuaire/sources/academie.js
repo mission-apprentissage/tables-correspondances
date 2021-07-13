@@ -16,6 +16,7 @@ module.exports = async (custom = {}) => {
       let stream = oleoduc(
         Annuaire.find({ ...filters, $and: [{ adresse: { $exists: true } }, { adresse: { $ne: null } }] })
           .lean()
+          .batchSize(5)
           .cursor(),
         transformData(
           async (etablissement) => {
@@ -41,7 +42,12 @@ module.exports = async (custom = {}) => {
                       },
                     }
                   : {
-                      anomalies: [`Impossible de déterminer l'académie pour le code insee ${codeInsee}`],
+                      anomalies: [
+                        {
+                          code: "academie_inconnue",
+                          message: `Impossible de déterminer l'académie pour le code insee ${codeInsee}`,
+                        },
+                      ],
                     }),
               };
             } catch (e) {
@@ -50,7 +56,7 @@ module.exports = async (custom = {}) => {
           },
           { parallel: 5 }
         ),
-        transformData((data) => ({ ...data, source: name })),
+        transformData((data) => ({ ...data, from: name })),
         { promisify: false }
       );
 

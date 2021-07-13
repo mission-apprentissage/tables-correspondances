@@ -12,12 +12,12 @@ module.exports = async (referentiel) => {
   };
 
   await oleoduc(
-    referentiel.stream(),
-    writeData(async (siret) => {
+    await referentiel.stream(),
+    writeData(async ({ from, siret }) => {
       stats.total++;
       if (isEmpty(siret)) {
         stats.failed++;
-        logger.error(`[Referentiel] Siret invalide pour l'établissement ${siret}`);
+        logger.warn(`[Referentiel] Siret invalide pour l'établissement ${siret}`);
         return;
       }
 
@@ -29,14 +29,21 @@ module.exports = async (referentiel) => {
               siret,
             },
             $addToSet: {
-              referentiels: referentiel.name,
+              referentiels: from || referentiel.name,
             },
           },
           { upsert: true, setDefaultsOnInsert: true, runValidators: true }
         );
 
-        stats.updated += res.nModified || 0;
-        stats.created += (res.upserted && res.upserted.length) || 0;
+        let created = res.upserted && res.upserted.length;
+        let modified = res.nModified;
+        if (created) {
+          logger.debug(`[Annuaire][Referentiel] Etablissement ${siret} created`);
+          stats.created += created || 0;
+        } else if (modified) {
+          stats.updated += modified || 0;
+          logger.debug(`[Annuaire][Referentiel] Etablissement ${siret} updated`);
+        }
       } catch (e) {
         stats.failed++;
         logger.error(`[Referentiel] Impossible d'ajouter le document avec le siret ${siret} dans l'annuaire`, e);

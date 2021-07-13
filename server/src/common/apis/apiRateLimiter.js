@@ -1,4 +1,5 @@
 const { RateLimiterMemory, RateLimiterQueue } = require("rate-limiter-flexible");
+const { timeout } = require("../utils/asyncUtils");
 
 module.exports = (name, options = {}) => {
   let rateLimiter = new RateLimiterMemory({
@@ -12,7 +13,7 @@ module.exports = (name, options = {}) => {
   });
 
   return async (callback) => {
-    await queue.removeTokens(1);
+    await timeout(queue.removeTokens(1), options.timeout || 10000);
     return callback(options.client);
   };
 };

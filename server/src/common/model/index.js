@@ -36,6 +36,9 @@ module.exports = {
   }),
   AnnuaireStats: createModel("annuaireStats", schema.annuaireStatsSchema, {
     collectionName: "annuaireStats",
+    schemaOptions: {
+      strict: false,
+    },
   }),
   FicheRncp: createModel("ficherncp", schema.ficheRncpSchema),
   ConventionFile: createModel("conventionfile", schema.conventionFileSchema),

@@ -7,7 +7,7 @@ class ApiSirene {
   constructor(options = {}) {
     this.executeWithRateLimiting = apiRateLimiter("apiSirene", {
       //Documentation : https://entreprise.data.gouv.fr/api_doc/sirene
-      nbRequests: 5,
+      nbRequests: 4,
       durationInSeconds: 1,
       client:
         options.axios ||

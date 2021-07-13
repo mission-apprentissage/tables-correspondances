@@ -4,7 +4,7 @@ const Boom = require("boom");
 const { oleoduc, transformIntoJSON } = require("oleoduc");
 const Joi = require("joi");
 const { Annuaire, AnnuaireStats } = require("../../common/model");
-const { paginateAggregationWithCursor } = require("../../common/utils/mongooseUtils");
+const { paginateAggregationWithCursor, paginate } = require("../../common/utils/mongooseUtils");
 const { sendJsonStream } = require("../utils/httpUtils");
 const buildProjection = require("../utils/buildProjection");
 const { stringList } = require("../utils/validators");
@@ -223,15 +223,27 @@ module.exports = () => {
   router.get(
     "/stats",
     tryCatch(async (req, res) => {
-      sendJsonStream(
-        oleoduc(
-          AnnuaireStats.find({}, { _id: 0 }).sort({ created_at: -1 }).lean().cursor(),
-          transformIntoJSON({
-            arrayPropertyName: "stats",
-          })
-        ),
-        res
+      let { page, limit } = await Joi.object({
+        page: Joi.number().default(1),
+        limit: Joi.number().default(1),
+      }).validateAsync(req.query, { abortEarly: false });
+
+      let { find, pagination } = await paginate(
+        AnnuaireStats,
+        {},
+        { page, limit, projection: { _id: 0 }, sort: { created_at: -1 } }
       );
+      let stream = oleoduc(
+        find.cursor(),
+        transformIntoJSON({
+          arrayWrapper: {
+            pagination,
+          },
+          arrayPropertyName: "stats",
+        })
+      );
+
+      return sendJsonStream(stream, res);
     })
   );
 
