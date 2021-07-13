@@ -295,24 +295,9 @@ function StatsPage() {
                     <div className="value">{recoupements.uais_sirets.total}</div>
                   </StatsCard>
                 </Grid.Col>
-              </Grid.Row>
-              <Grid.Row>
                 <Grid.Col width={3}>
                   <StatsCard>
                     <div>Trouvés dans toutes les sources</div>
-                    <div className="value">{recoupements["4"]}</div>
-                    <div className="details">
-                      <Percentage
-                        total={recoupements.uais_sirets.total}
-                        value={recoupements.uais_sirets["4"]}
-                        label={<div />}
-                      />
-                    </div>
-                  </StatsCard>
-                </Grid.Col>
-                <Grid.Col width={3}>
-                  <StatsCard>
-                    <div>Trouvés dans 3 sources sur 4</div>
                     <div className="value">{recoupements["3"]}</div>
                     <div className="details">
                       <Percentage
@@ -325,7 +310,7 @@ function StatsPage() {
                 </Grid.Col>
                 <Grid.Col width={3}>
                   <StatsCard>
-                    <div>Trouvés dans 2 sources sur 4</div>
+                    <div>Trouvés dans 2 sources sur 3</div>
                     <div className="value">{recoupements["2"]}</div>
                     <div className="details">
                       <Percentage
@@ -338,7 +323,7 @@ function StatsPage() {
                 </Grid.Col>
                 <Grid.Col width={3}>
                   <StatsCard>
-                    <div>Trouvés dans 1 source sur 4</div>
+                    <div>Trouvés dans 1 sources sur 3</div>
                     <div className="value">{recoupements["1"]}</div>
                     <div className="details">
                       <Percentage
@@ -370,20 +355,9 @@ function StatsPage() {
                     <div className="value">{recoupements.uais.total}</div>
                   </StatsCard>
                 </Grid.Col>
-              </Grid.Row>
-              <Grid.Row>
                 <Grid.Col width={3}>
                   <StatsCard>
                     <div>Trouvés dans toutes les sources</div>
-                    <div className="value">{recoupements["4"]}</div>
-                    <div className="details">
-                      <Percentage total={recoupements.uais.total} value={recoupements.uais["4"]} label={<div />} />
-                    </div>
-                  </StatsCard>
-                </Grid.Col>
-                <Grid.Col width={3}>
-                  <StatsCard>
-                    <div>Trouvés dans 3 sources sur 4</div>
                     <div className="value">{recoupements["3"]}</div>
                     <div className="details">
                       <Percentage total={recoupements.uais.total} value={recoupements.uais["3"]} label={<div />} />
@@ -392,7 +366,7 @@ function StatsPage() {
                 </Grid.Col>
                 <Grid.Col width={3}>
                   <StatsCard>
-                    <div>Trouvés dans 2 sources sur 4</div>
+                    <div>Trouvés dans 2 sources sur 3</div>
                     <div className="value">{recoupements["2"]}</div>
                     <div className="details">
                       <Percentage total={recoupements.uais.total} value={recoupements.uais["2"]} label={<div />} />
@@ -401,7 +375,7 @@ function StatsPage() {
                 </Grid.Col>
                 <Grid.Col width={3}>
                   <StatsCard>
-                    <div>Trouvés dans 1 source sur 4</div>
+                    <div>Trouvés dans 1 sources sur 3</div>
                     <div className="value">{recoupements["1"]}</div>
                     <div className="details">
                       <Percentage total={recoupements.uais.total} value={recoupements.uais["1"]} label={<div />} />
@@ -429,20 +403,9 @@ function StatsPage() {
                     <div className="value">{recoupements.sirets.total}</div>
                   </StatsCard>
                 </Grid.Col>
-              </Grid.Row>
-              <Grid.Row>
                 <Grid.Col width={3}>
                   <StatsCard>
                     <div>Trouvés dans toutes les sources</div>
-                    <div className="value">{recoupements["4"]}</div>
-                    <div className="details">
-                      <Percentage total={recoupements.sirets.total} value={recoupements.sirets["4"]} label={<div />} />
-                    </div>
-                  </StatsCard>
-                </Grid.Col>
-                <Grid.Col width={3}>
-                  <StatsCard>
-                    <div>Trouvés dans 3 sources sur 4</div>
                     <div className="value">{recoupements["3"]}</div>
                     <div className="details">
                       <Percentage total={recoupements.sirets.total} value={recoupements.sirets["3"]} label={<div />} />
@@ -451,7 +414,7 @@ function StatsPage() {
                 </Grid.Col>
                 <Grid.Col width={3}>
                   <StatsCard>
-                    <div>Trouvés dans 2 sources sur 4</div>
+                    <div>Trouvés dans 2 sources sur 3</div>
                     <div className="value">{recoupements["2"]}</div>
                     <div className="details">
                       <Percentage total={recoupements.sirets.total} value={recoupements.sirets["2"]} label={<div />} />
@@ -460,7 +423,7 @@ function StatsPage() {
                 </Grid.Col>
                 <Grid.Col width={3}>
                   <StatsCard>
-                    <div>Trouvés dans 1 source sur 4</div>
+                    <div>Trouvés dans 1 sources sur 3</div>
                     <div className="value">{recoupements["1"]}</div>
                     <div className="details">
                       <Percentage total={recoupements.sirets.total} value={recoupements.sirets["1"]} label={<div />} />

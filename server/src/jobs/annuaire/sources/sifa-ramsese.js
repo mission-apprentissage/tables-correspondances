@@ -10,12 +10,13 @@ function readCsv(stream) {
 async function defaultStream() {
   return mergeStream(
     readCsv(await getOvhFileAsStream("annuaire/Liste_Etablissements_2021-06-17_RAMSESE_AOuvrir.csv")),
-    readCsv(await getOvhFileAsStream("annuaire/Liste_Etablissements_2021-06-18_RAMSESE_Complement.csv"))
+    readCsv(await getOvhFileAsStream("annuaire/Liste_Etablissements_2021-06-18_RAMSESE_Complement.csv")),
+    readCsv(await getOvhFileAsStream("annuaire/Liste_Etablissements_2021-06-04_SIFA_RAMSESE.csv"))
   );
 }
 
 module.exports = async (custom = {}) => {
-  let name = "ramsese";
+  let name = "sifa-ramsese";
 
   return {
     name,

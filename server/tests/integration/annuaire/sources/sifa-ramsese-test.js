@@ -11,7 +11,7 @@ integrationTests(__filename, () => {
     await insertAnnuaire({
       siret: "11111111100006",
     });
-    let source = await createSource("ramsese", {
+    let source = await createSource("sifa-ramsese", {
       input: createStream(`"numero_uai";"numero_siren_siret_uai"
 "1234567W";"11111111100006"`),
     });
@@ -21,13 +21,13 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais, [
       {
-        sources: ["ramsese"],
+        sources: ["sifa-ramsese"],
         uai: "1234567W",
         valide: true,
       },
     ]);
     assert.deepStrictEqual(stats, {
-      ramsese: {
+      ["sifa-ramsese"]: {
         total: 1,
         updated: 1,
         ignored: 0,
