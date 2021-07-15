@@ -42,15 +42,15 @@ async function validateSiret(siret) {
   return { isValid: true, category: found.etatAdministratifEtablissement === "A" ? "actifs" : "fermés" };
 }
 
-function buildMatrice(valides, field) {
+function buildMatrice(valides, field, mapValues = (values) => values) {
   return Object.keys(valides).reduce((matrice, sourceName) => {
-    let values = Array.from(valides[sourceName][field]);
+    let values = mapValues(Array.from(valides[sourceName][field]));
     let otherSourceNames = Object.keys(valides).filter((name) => name !== sourceName);
 
     return {
       ...matrice,
       [sourceName]: otherSourceNames.reduce((acc, otherSourceName) => {
-        let otherValues = Array.from(valides[otherSourceName][field]);
+        let otherValues = mapValues(Array.from(valides[otherSourceName][field]));
 
         return {
           ...acc,
@@ -60,7 +60,7 @@ function buildMatrice(valides, field) {
           },
           [otherSourceName]: {
             intersection: intersection(values, otherValues).length,
-            union: union(values, otherValues).length,
+            union: union(values).length,
           },
         };
       }, {}),
@@ -68,9 +68,10 @@ function buildMatrice(valides, field) {
   }, {});
 }
 
-function buildRecoupement(valides, field) {
+function buildRecoupement(valides, field, mapValues = (values) => values) {
   let data = Object.keys(valides).reduce((acc, sourceName) => {
-    valides[sourceName][field].forEach((value) => {
+    let values = mapValues(Array.from(valides[sourceName][field]));
+    values.forEach((value) => {
       let found = acc.find((a) => a.value === value);
       if (found) {
         found.sources = uniq([...(found.sources || []), sourceName]);
@@ -182,18 +183,29 @@ async function validateSources(sources) {
 
 async function computeStats(sources, options) {
   let { validation, valides } = await validateSources(sources);
-
   let stats = {
     validation,
     matrices: {
       uais: buildMatrice(valides, "uais"),
       sirets: buildMatrice(valides, "sirets"),
+      sirens: buildMatrice(valides, "sirets", (values) => {
+        return uniq(values.map((siret) => siret.substring(0, 9)));
+      }),
       uais_sirets: buildMatrice(valides, "uais_sirets"),
+      uais_sirens: buildMatrice(valides, "uais_sirets", (values) => {
+        return uniq(values.map((siret) => siret.substring(0, 18)));
+      }),
     },
     recoupements: {
       uais: buildRecoupement(valides, "uais"),
       sirets: buildRecoupement(valides, "sirets"),
+      sirens: buildRecoupement(valides, "sirets", (values) => {
+        return uniq(values.map((siret) => siret.substring(0, 9)));
+      }),
       uais_sirets: buildRecoupement(valides, "uais_sirets"),
+      uais_sirens: buildRecoupement(valides, "uais_sirets", (values) => {
+        return uniq(values.map((siret) => siret.substring(0, 18)));
+      }),
     },
   };
 

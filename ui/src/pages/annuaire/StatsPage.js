@@ -335,20 +335,6 @@ function StatsPage() {
           )}
           {recoupements && matrices && (
             <>
-              <h2>Recoupement des uais-sirets</h2>
-              <Recoupement recoupement={recoupements.uais_sirets} />
-              <Grid.Row>
-                <Grid.Col>
-                  <Card>
-                    <Card.Header>
-                      <Card.Title>Recoupement par source</Card.Title>
-                    </Card.Header>
-                    <Card.Body>
-                      <Matrice matrice={matrices["uais_sirets"]} />
-                    </Card.Body>
-                  </Card>
-                </Grid.Col>
-              </Grid.Row>
               <h2>Recoupement des uais</h2>
               <Recoupement recoupement={recoupements.uais} />
               <Grid.Row>
@@ -373,6 +359,48 @@ function StatsPage() {
                     </Card.Header>
                     <Card.Body>
                       <Matrice matrice={matrices["sirets"]} />
+                    </Card.Body>
+                  </Card>
+                </Grid.Col>
+              </Grid.Row>
+              <h2>Recoupement des sirens</h2>
+              <Recoupement recoupement={recoupements.sirens} />
+              <Grid.Row>
+                <Grid.Col>
+                  <Card>
+                    <Card.Header>
+                      <Card.Title>Recoupement par source</Card.Title>
+                    </Card.Header>
+                    <Card.Body>
+                      <Matrice matrice={matrices["sirens"]} />
+                    </Card.Body>
+                  </Card>
+                </Grid.Col>
+              </Grid.Row>
+              <h2>Recoupement des uais-sirets</h2>
+              <Recoupement recoupement={recoupements.uais_sirets} />
+              <Grid.Row>
+                <Grid.Col>
+                  <Card>
+                    <Card.Header>
+                      <Card.Title>Recoupement par source</Card.Title>
+                    </Card.Header>
+                    <Card.Body>
+                      <Matrice matrice={matrices["uais_sirets"]} />
+                    </Card.Body>
+                  </Card>
+                </Grid.Col>
+              </Grid.Row>
+              <h2>Recoupement des uais-sirens</h2>
+              <Recoupement recoupement={recoupements.uais_sirens} />
+              <Grid.Row>
+                <Grid.Col>
+                  <Card>
+                    <Card.Header>
+                      <Card.Title>Recoupement par source</Card.Title>
+                    </Card.Header>
+                    <Card.Body>
+                      <Matrice matrice={matrices["uais_sirens"]} />
                     </Card.Body>
                   </Card>
                 </Grid.Col>
