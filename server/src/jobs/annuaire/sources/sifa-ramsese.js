@@ -11,6 +11,7 @@ async function defaultStream() {
   return mergeStream(
     readCsv(await getOvhFileAsStream("annuaire/Liste_Etablissements_2021-06-17_RAMSESE_AOuvrir.csv")),
     readCsv(await getOvhFileAsStream("annuaire/Liste_Etablissements_2021-06-18_RAMSESE_Complement.csv")),
+    readCsv(await getOvhFileAsStream("annuaire/Liste_Etablissements_2021-07-15_RAMSESE_Complement2.csv")),
     readCsv(await getOvhFileAsStream("annuaire/Liste_Etablissements_2021-06-04_SIFA_RAMSESE.csv"))
   );
 }

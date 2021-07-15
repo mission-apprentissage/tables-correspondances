@@ -33,11 +33,12 @@ export const StatsCard = styled(({ children, ...rest }) => {
   }
 `;
 
-function Percentage({ total, value, label }) {
+function Percentage({ total, value, details = () => value }) {
+  let computed = Math.round((value * 100) / total);
   return (
     <div>
-      <div>{Math.round((value * 100) / total)}%</div>
-      {<div className={"value"}>{label || value}</div>}
+      <div>{computed}%</div>
+      {<div className={"value"}>{details(computed)}</div>}
     </div>
   );
 }
@@ -83,11 +84,13 @@ function Matrice({ matrice }) {
                       <Percentage
                         value={otherSource.intersection}
                         total={total}
-                        label={
+                        details={() => (
                           <div>
-                            {`${otherSource.intersection} en commun`} et {`${otherSource.union} uniques`}
+                            <div>trouvés dans {otherSourceName.toUpperCase()}</div>
+                            <div>{`${otherSource.union} uniques dans les 2 sources`}</div>
+                            <div>{`dont ${otherSource.intersection} en commun`}</div>
                           </div>
-                        }
+                        )}
                       />
                     )}
                   </Table.Col>
@@ -114,7 +117,7 @@ function Recoupement({ recoupement }) {
         <StatsCard>
           <div>Trouvés dans toutes les sources</div>
           <div className="value">
-            <Percentage total={recoupement.total} value={recoupement["3"]} label={<div />} />
+            <Percentage total={recoupement.total} value={recoupement["3"]} details={() => <div />} />
           </div>
         </StatsCard>
       </Grid.Col>
@@ -122,7 +125,7 @@ function Recoupement({ recoupement }) {
         <StatsCard>
           <div>Trouvés dans 2 sources sur 3</div>
           <div className="value">
-            <Percentage total={recoupement.total} value={recoupement["2"]} label={<div />} />
+            <Percentage total={recoupement.total} value={recoupement["2"]} details={() => <div />} />
           </div>
         </StatsCard>
       </Grid.Col>
@@ -130,7 +133,7 @@ function Recoupement({ recoupement }) {
         <StatsCard>
           <div>Trouvés dans 1 sources sur 3</div>
           <div className="value">
-            <Percentage total={recoupement.total} value={recoupement["1"]} label={<div />} />
+            <Percentage total={recoupement.total} value={recoupement["1"]} details={() => <div />} />
           </div>
         </StatsCard>
       </Grid.Col>
@@ -161,7 +164,7 @@ function StatsPage() {
                 <Grid.Col width={7}>
                   <Card>
                     <Card.Header>
-                      <Card.Title>Validité des UAI</Card.Title>
+                      <Card.Title>Validité des uais</Card.Title>
                     </Card.Header>
                     <Card.Body>
                       <FixedTable>
@@ -203,7 +206,7 @@ function StatsPage() {
                 <Grid.Col width={5}>
                   <Card>
                     <Card.Header>
-                      <Card.Title>Unicité des UAI valides</Card.Title>
+                      <Card.Title>Unicité des uais valides</Card.Title>
                     </Card.Header>
                     <Card.Body>
                       <FixedTable>
@@ -243,7 +246,7 @@ function StatsPage() {
                 <Grid.Col width={7}>
                   <Card>
                     <Card.Header>
-                      <Card.Title>Validité des SIRET</Card.Title>
+                      <Card.Title>Validité des sirets</Card.Title>
                     </Card.Header>
                     <Card.Body>
                       <FixedTable>
@@ -269,7 +272,9 @@ function StatsPage() {
                                     <Percentage
                                       total={total}
                                       value={sirets.actifs + sirets["fermés"]}
-                                      label={`${sirets.actifs + sirets["fermés"]} dont ${sirets["fermés"]} fermés `}
+                                      details={() =>
+                                        `${sirets.actifs + sirets["fermés"]} dont ${sirets["fermés"]} fermés `
+                                      }
                                     />
                                   </Table.Col>
                                   <Table.Col>
@@ -289,7 +294,7 @@ function StatsPage() {
                 <Grid.Col width={5}>
                   <Card>
                     <Card.Header>
-                      <Card.Title>Unicité des SIRET valides</Card.Title>
+                      <Card.Title>Unicité des sirets valides</Card.Title>
                     </Card.Header>
                     <Card.Body>
                       <FixedTable>
@@ -330,7 +335,7 @@ function StatsPage() {
           )}
           {recoupements && matrices && (
             <>
-              <h2>Recoupement des UAI-SIRET</h2>
+              <h2>Recoupement des uais-sirets</h2>
               <Recoupement recoupement={recoupements.uais_sirets} />
               <Grid.Row>
                 <Grid.Col>
@@ -344,7 +349,7 @@ function StatsPage() {
                   </Card>
                 </Grid.Col>
               </Grid.Row>
-              <h2>Recoupement des UAI</h2>
+              <h2>Recoupement des uais</h2>
               <Recoupement recoupement={recoupements.uais} />
               <Grid.Row>
                 <Grid.Col>
@@ -358,7 +363,7 @@ function StatsPage() {
                   </Card>
                 </Grid.Col>
               </Grid.Row>
-              <h2>Recoupement des SIRET</h2>
+              <h2>Recoupement des sirets</h2>
               <Recoupement recoupement={recoupements.sirets} />
               <Grid.Row>
                 <Grid.Col>
