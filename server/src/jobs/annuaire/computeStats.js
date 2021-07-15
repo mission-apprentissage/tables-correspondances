@@ -1,7 +1,7 @@
 const { AnnuaireStats } = require("../../common/model");
 const { oleoduc, writeData } = require("oleoduc");
 const luhn = require("fast-luhn");
-const { intersectionWith, unionWith, range, uniq } = require("lodash");
+const { intersection, union, range, uniq } = require("lodash");
 const mergeStream = require("merge-stream");
 const logger = require("../../common/logger");
 const ApiSirene = require("../../common/apis/ApiSirene");
@@ -59,8 +59,8 @@ function buildMatrice(valides, field) {
             union: values.length,
           },
           [otherSourceName]: {
-            intersection: intersectionWith(values, otherValues).length,
-            union: unionWith(values, otherValues).length,
+            intersection: intersection(values, otherValues).length,
+            union: union(values, otherValues).length,
           },
         };
       }, {}),
