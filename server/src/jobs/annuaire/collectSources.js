@@ -3,27 +3,24 @@ const { uniq, isEmpty } = require("lodash");
 const mergeStream = require("merge-stream");
 const { Annuaire } = require("../../common/model");
 const { getNbModifiedDocuments } = require("../../common/utils/mongooseUtils");
-const { flattenObject } = require("../../common/utils/objectUtils");
+const { flattenObject, isError } = require("../../common/utils/objectUtils");
 const { validateUAI } = require("../../common/utils/uaiUtils");
 const logger = require("../../common/logger");
 
 function buildQuery(selector) {
-  if (typeof selector === "object") {
-    if (isEmpty(selector)) {
-      throw new Error("Select must not be empty");
-    }
-    return selector;
+  if (isEmpty(selector)) {
+    return { not: "matching" };
   }
 
-  return { $or: [{ siret: selector }, { "uais.uai": selector }] };
+  return typeof selector === "object" ? selector : { $or: [{ siret: selector }, { "uais.uai": selector }] };
 }
 
-function buildUAIs(source, etablissement, uais) {
+function buildUAIs(from, etablissement, uais) {
   let updated = uais
     .filter((uai) => uai && uai !== "NULL")
     .reduce((acc, uai) => {
       let found = etablissement.uais.find((u) => u.uai === uai) || {};
-      let sources = uniq([...(found.sources || []), source]);
+      let sources = uniq([...(found.sources || []), from]);
       acc.push({ ...found, uai, sources, valide: validateUAI(uai) });
       return acc;
     }, []);
@@ -33,10 +30,10 @@ function buildUAIs(source, etablissement, uais) {
   return [...updated, ...previous];
 }
 
-async function buildRelations(source, etablissement, relations) {
+async function buildRelations(from, etablissement, relations) {
   let updated = relations.reduce((acc, relation) => {
     let found = etablissement.relations.find((r) => r.siret === relation.siret) || {};
-    let sources = uniq([...(found.sources || []), source]);
+    let sources = uniq([...(found.sources || []), from]);
     acc.push({ ...found, ...relation, sources });
     return acc;
   }, []);
@@ -54,23 +51,23 @@ async function buildRelations(source, etablissement, relations) {
   );
 }
 
-function handleAnomalies(etablissement, source, anomalies) {
-  logger.error(
-    `[Collect][${source}] Erreur lors de la collecte pour l'établissement ${etablissement.siret}.`,
-    anomalies
-  );
+function handleAnomalies(from, etablissement, anomalies) {
+  logger.warn(`[Collect][${from}] Erreur lors de la collecte pour l'établissement ${etablissement.siret}.`, anomalies);
 
   return Annuaire.updateOne(
     { siret: etablissement.siret },
     {
       $push: {
         "_meta.anomalies": {
-          $each: anomalies.map((a) => ({
-            task: "collect",
-            source,
-            date: new Date(),
-            details: a.message || a,
-          })),
+          $each: anomalies.map((ano) => {
+            return {
+              job: "collect",
+              source: from,
+              date: new Date(),
+              code: isError(ano) ? "erreur" : ano.code,
+              details: ano.message,
+            };
+          }),
           // Max 10 elements ordered by date
           $slice: 10,
           $sort: { date: -1 },
@@ -88,6 +85,7 @@ function createStats(sources) {
       [source.name]: {
         total: 0,
         updated: 0,
+        ignored: 0,
         failed: 0,
       },
     };
@@ -116,18 +114,19 @@ module.exports = async (...args) => {
     filterData((data) => {
       return filters.siret ? filters.siret === data.selector : !!data;
     }),
-    writeData(async ({ source, selector, uais = [], relations = [], reseaux = [], data = {}, anomalies = [] }) => {
-      stats[source].total++;
+    writeData(async ({ from, selector, uais = [], relations = [], reseaux = [], data = {}, anomalies = [] }) => {
+      stats[from].total++;
       let query = buildQuery(selector);
       let etablissement = await Annuaire.findOne(query).lean();
       if (!etablissement) {
+        stats[from].ignored++;
         return;
       }
 
       try {
         if (anomalies.length > 0) {
-          stats[source].failed++;
-          await handleAnomalies(etablissement, source, anomalies);
+          stats[from].failed++;
+          await handleAnomalies(from, etablissement, anomalies);
         }
 
         let res = await Annuaire.updateOne(
@@ -135,8 +134,8 @@ module.exports = async (...args) => {
           {
             $set: {
               ...flattenObject(data),
-              uais: buildUAIs(source, etablissement, uais),
-              relations: await buildRelations(source, etablissement, relations),
+              uais: buildUAIs(from, etablissement, uais),
+              relations: await buildRelations(from, etablissement, relations),
             },
             $addToSet: {
               reseaux: {
@@ -149,14 +148,12 @@ module.exports = async (...args) => {
 
         let nbModifiedDocuments = getNbModifiedDocuments(res);
         if (nbModifiedDocuments) {
-          stats[source].updated += nbModifiedDocuments;
-          logger.info(`[Annuaire][Collect][${source}] Etablissement ${etablissement.siret} updated`);
-        } else {
-          logger.debug(`[Annuaire][Collect][${source}] Etablissement ${etablissement.siret} ignored`);
+          stats[from].updated += nbModifiedDocuments;
+          logger.debug(`[Annuaire][Collect][${from}] Etablissement ${etablissement.siret} updated`);
         }
       } catch (e) {
-        stats[source].failed++;
-        await handleAnomalies(etablissement, source, [e]);
+        stats[from].failed++;
+        await handleAnomalies(from, etablissement, [e]);
       }
     })
   );

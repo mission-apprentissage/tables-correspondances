@@ -8,7 +8,7 @@ class ApiGeoAdresse {
   constructor(options = {}) {
     // Cf Documentation : https://geo.api.gouv.fr/adresse
     this.executeWithRateLimiting = apiRateLimiter("apiAdresse", {
-      nbRequests: 5,
+      nbRequests: 25,
       durationInSeconds: 1,
       client:
         options.axios ||

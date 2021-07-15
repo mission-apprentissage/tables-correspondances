@@ -5,12 +5,13 @@ const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
 module.exports = async (custom = {}) => {
   let name = "gesti";
-  let input =
-    custom.input || (await getOvhFileAsStream("cfas-clients-erps/referentielCfas_gesti.csv", { storage: "mna-flux" }));
-
   return {
     name,
-    stream() {
+    async stream() {
+      let input =
+        custom.input ||
+        (await getOvhFileAsStream("cfas-clients-erps/referentielCfas_gesti.csv", { storage: "mna-flux" }));
+
       return oleoduc(
         input,
         decodeStream("iso-8859-1"),
@@ -21,7 +22,7 @@ module.exports = async (custom = {}) => {
         }),
         transformData((data) => {
           return {
-            source: name,
+            from: name,
             selector: data["siret"],
             uais: [data["uai_code_educnationale"]],
           };

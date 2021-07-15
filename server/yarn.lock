@@ -3512,6 +3512,11 @@ fast-levenshtein@^2.0.6:
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha1-PYpcZog6FqMMqGQ+hR8Zuqd5eRc=
 
+fast-luhn@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/fast-luhn/-/fast-luhn-2.0.0.tgz#aa41d6ffbda40e55e12f005ab5d09e542e023817"
+  integrity sha512-REI/GKhchu+SflfR6DOusv/KJGp2+rZ0FCANa2GWsxr669BuuLPKrXqImtbGVXlRkkCOM7mZlk8icdLmZeGBog==
+
 fast-safe-stringify@^2.0.4:
   version "2.0.7"
   resolved "https://registry.yarnpkg.com/fast-safe-stringify/-/fast-safe-stringify-2.0.7.tgz#124aa885899261f68aedb42a7c080de9da608743"
@@ -6785,10 +6790,10 @@ object.values@^1.1.1:
     es-abstract "^1.18.0-next.1"
     has "^1.0.3"
 
-oleoduc@0.5.2:
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/oleoduc/-/oleoduc-0.5.2.tgz#f17ae0dadd3b7f7dae40dd58c25658721a360a95"
-  integrity sha512-wJc0bnutHTlCFF6rWp3YL6AVOSqyZd8fZwmRRzJoFA7SoD8jdEqBgqUthksswZZgYQd6y6DsVuxiaUPakzIvhQ==
+oleoduc@0.5.9:
+  version "0.5.9"
+  resolved "https://registry.yarnpkg.com/oleoduc/-/oleoduc-0.5.9.tgz#f888e2a7776b3774e457887d6e425c108d04eac4"
+  integrity sha512-3fQqs/KghgB7xPUlh36HnMlBZ0lvOBlm8eZudDn+3TeBf1W7BrpiHy9dtWOe4rUDKk7rlQW4c0Mjjeu2ByHl7w==
   dependencies:
     cyclist "1.0.1"
     duplexer3 "0.1.4"

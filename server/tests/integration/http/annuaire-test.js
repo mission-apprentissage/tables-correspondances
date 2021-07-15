@@ -1,7 +1,6 @@
-const { omit } = require("lodash");
-const { strictEqual, deepStrictEqual } = require("assert");
+const { strictEqual, deepStrictEqual, ok } = require("assert");
 const httpTests = require("../../utils/httpTests");
-const { insertAnnuaire } = require("../../utils/fixtures");
+const { insertAnnuaire, insertAnnuaireStats } = require("../../utils/fixtures");
 
 httpTests(__filename, ({ startServer }) => {
   it("Vérifie qu'on peut lister des établissements", async () => {
@@ -154,7 +153,7 @@ httpTests(__filename, ({ startServer }) => {
         siret: "11111111100001",
         relations: [
           {
-            siret: "22222222222222",
+            siret: "22222222200002",
             label: "NOMAYO",
             annuaire: true,
             source: "test",
@@ -162,7 +161,7 @@ httpTests(__filename, ({ startServer }) => {
         ],
       }),
       insertAnnuaire({
-        siret: "33333333333333",
+        siret: "33333333300008",
         relations: [
           {
             siret: "11111111100001",
@@ -171,7 +170,7 @@ httpTests(__filename, ({ startServer }) => {
             source: "test",
           },
           {
-            siret: "22222222222222",
+            siret: "22222222200002",
             label: "NOMAYO",
             annuaire: true,
             source: "test",
@@ -182,13 +181,13 @@ httpTests(__filename, ({ startServer }) => {
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements?tri=relations&ordre=desc");
     strictEqual(response.status, 200);
-    strictEqual(response.data.etablissements[0].siret, "33333333333333");
+    strictEqual(response.data.etablissements[0].siret, "33333333300008");
     strictEqual(response.data.etablissements[1].siret, "11111111100001");
 
     response = await httpClient.get("/api/v1/annuaire/etablissements?tri=relations&ordre=asc");
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "11111111100001");
-    strictEqual(response.data.etablissements[1].siret, "33333333333333");
+    strictEqual(response.data.etablissements[1].siret, "33333333300008");
   });
 
   it("Vérifie qu'on peut trier les établissements par nombre d'uais secondaires", async () => {
@@ -198,22 +197,22 @@ httpTests(__filename, ({ startServer }) => {
         siret: "11111111100001",
         uais: [
           {
-            source: "catalogue",
+            source: "formations",
             uai: "1111111S",
             valide: true,
           },
         ],
       }),
       insertAnnuaire({
-        siret: "33333333333333",
+        siret: "33333333300008",
         uais: [
           {
-            source: "catalogue",
+            source: "formations",
             uai: "1111111S",
             valide: true,
           },
           {
-            source: "catalogue",
+            source: "formations",
             uai: "2222222S",
             valide: true,
           },
@@ -223,13 +222,13 @@ httpTests(__filename, ({ startServer }) => {
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements?tri=uais&ordre=desc");
     strictEqual(response.status, 200);
-    strictEqual(response.data.etablissements[0].siret, "33333333333333");
+    strictEqual(response.data.etablissements[0].siret, "33333333300008");
     strictEqual(response.data.etablissements[1].siret, "11111111100001");
 
     response = await httpClient.get("/api/v1/annuaire/etablissements?tri=uais&ordre=asc");
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "11111111100001");
-    strictEqual(response.data.etablissements[1].siret, "33333333333333");
+    strictEqual(response.data.etablissements[1].siret, "33333333300008");
   });
 
   it("Vérifie qu'on peut limiter les champs renvoyés pour la liste des établissements", async () => {
@@ -265,8 +264,8 @@ httpTests(__filename, ({ startServer }) => {
     const { httpClient } = await startServer();
     await Promise.all([
       insertAnnuaire({ siret: "11111111100001" }),
-      insertAnnuaire({ siret: "22222222222222" }),
-      insertAnnuaire({ siret: "33333333333333" }),
+      insertAnnuaire({ siret: "22222222200002" }),
+      insertAnnuaire({ siret: "33333333300008" }),
     ]);
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements?items_par_page=1&page=1");
@@ -286,7 +285,7 @@ httpTests(__filename, ({ startServer }) => {
         _meta: {
           anomalies: [
             {
-              task: "collect",
+              job: "collect",
               source: "sirene",
               reason: "Etablissement inconnu",
               date: new Date("2021-02-10T08:31:58.572Z"),
@@ -295,7 +294,7 @@ httpTests(__filename, ({ startServer }) => {
         },
       }),
       insertAnnuaire({
-        siret: "333333333333333",
+        siret: "333333333000083",
       }),
     ]);
 
@@ -305,7 +304,7 @@ httpTests(__filename, ({ startServer }) => {
 
     response = await httpClient.get("/api/v1/annuaire/etablissements?anomalies=false");
     strictEqual(response.status, 200);
-    strictEqual(response.data.etablissements[0].siret, "333333333333333");
+    strictEqual(response.data.etablissements[0].siret, "333333333000083");
 
     response = await httpClient.get("/api/v1/annuaire/etablissements");
     strictEqual(response.status, 200);
@@ -446,39 +445,17 @@ httpTests(__filename, ({ startServer }) => {
   });
 
   it("Vérifie qu'on peut lister les stats", async () => {
-    const { httpClient, computeStats } = await startServer();
+    const { httpClient } = await startServer();
     await insertAnnuaire({ siret: "11111111100001" });
-    await computeStats();
+    await insertAnnuaireStats();
 
     let response = await httpClient.get("/api/v1/annuaire/stats");
 
     strictEqual(response.status, 200);
-    deepStrictEqual(omit(response.data.stats[0], ["created_at"]), {
-      referentiels: [{ name: "dgefp", nbSirens: 1, nbSirets: 1 }],
-      globale: {
-        nbSirens: 1,
-        nbSirets: 1,
-        nbSiretsGestionnairesEtFormateurs: 0,
-        nbSiretsGestionnaires: 0,
-        nbSiretsFormateurs: 0,
-        nbSiretsSansUAIs: 1,
-        nbSiretsAvecPlusieursUAIs: 0,
-      },
-      academies: [
-        {
-          academie: {
-            code: "01",
-            nom: "Paris",
-          },
-          nbSirens: 1,
-          nbSirets: 1,
-          nbSiretsGestionnairesEtFormateurs: 0,
-          nbSiretsGestionnaires: 0,
-          nbSiretsFormateurs: 0,
-          nbSiretsSansUAIs: 1,
-          nbSiretsAvecPlusieursUAIs: 0,
-        },
-      ],
-    });
+
+    let { created_at, ...rest } = response.data.stats[0];
+    ok(created_at);
+    ok(rest.validation);
+    ok(rest.matrix);
   });
 });
