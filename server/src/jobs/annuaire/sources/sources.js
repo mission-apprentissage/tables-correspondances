@@ -30,6 +30,7 @@ module.exports = {
         "opcoep",
         "promotrans",
         "sifa-ramsese",
+        "depp",
         "refea",
         "sirene",
         "ymag",
