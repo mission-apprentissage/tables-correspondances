@@ -11,6 +11,7 @@ const importReferentiel = require("./importReferentiel");
 const collectSources = require("./collectSources");
 const clearAnnuaire = require("./clearAnnuaire");
 const etablissementAsCsvStream = require("./utils/etablissementAsCsvStream");
+const etablissementAsJsonStream = require("./utils/etablissementAsJsonStream");
 const computeStats = require("./computeStats");
 
 cli
@@ -73,10 +74,12 @@ cli
   .description("Exporte l'annuaire")
   .option("--filter <filter>", "Filtre au format json", JSON.parse)
   .option("--limit <limit>", "Nombre maximum d'éléments à exporter", parseInt)
+  .option("--json", "Exporte les données au format json")
   .option("--out <out>", "Fichier cible dans lequel sera stocké l'export (defaut: stdout)", createWriteStream)
-  .action(({ filter, limit, out }) => {
+  .action(({ filter, limit, json, out }) => {
     runScript(() => {
-      let input = etablissementAsCsvStream({ filter, limit });
+      let options = { filter, limit };
+      let input = json ? etablissementAsJsonStream(options) : etablissementAsCsvStream(options);
 
       return oleoduc(input, out || writeToStdout());
     });
