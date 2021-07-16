@@ -1,8 +1,8 @@
 const { strictEqual, deepStrictEqual, ok } = require("assert");
-const httpTests = require("../../utils/httpTests");
+const describe = require("../../utils/httpTests");
 const { insertAnnuaire, insertAnnuaireStats } = require("../../utils/fixtures");
 
-httpTests(__filename, ({ startServer }) => {
+describe(__filename, ({ startServer }) => {
   it("Vérifie qu'on peut lister des établissements", async () => {
     const { httpClient } = await startServer();
     await insertAnnuaire({
@@ -49,6 +49,10 @@ httpTests(__filename, ({ startServer }) => {
             code_postal: "75001",
             code_insee: "75000",
             localite: "PARIS",
+            region: {
+              code: "11",
+              nom: "Île-de-France",
+            },
           },
           academie: {
             code: "01",
@@ -141,6 +145,40 @@ httpTests(__filename, ({ startServer }) => {
     });
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements?text=11111111100001");
+
+    strictEqual(response.status, 200);
+    strictEqual(response.data.etablissements[0].siret, "11111111100001");
+  });
+
+  it("Vérifie qu'on peut rechercher des établissements à partir d'une académie", async () => {
+    const { httpClient } = await startServer();
+    await insertAnnuaire({
+      siret: "11111111100001",
+      academie: { code: "01", nom: "Paris" },
+    });
+    await insertAnnuaire({
+      siret: "22222222200002",
+      academie: { code: "02", nom: "Aix-Marseille" },
+    });
+
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?academie=01");
+
+    strictEqual(response.status, 200);
+    strictEqual(response.data.etablissements[0].siret, "11111111100001");
+  });
+
+  it("Vérifie qu'on peut rechercher des établissements à partir d'une académie", async () => {
+    const { httpClient } = await startServer();
+    await insertAnnuaire({
+      siret: "11111111100001",
+      region: { code: "11", nom: "Île-de-France" },
+    });
+    await insertAnnuaire({
+      siret: "22222222200002",
+      region: { code: "93", nom: "Provence-Alpes-Côte d'Azur" },
+    });
+
+    let response = await httpClient.get("/api/v1/annuaire/etablissements?region=11");
 
     strictEqual(response.status, 200);
     strictEqual(response.data.etablissements[0].siret, "11111111100001");
@@ -386,6 +424,10 @@ httpTests(__filename, ({ startServer }) => {
         code_postal: "75001",
         code_insee: "75000",
         localite: "PARIS",
+        region: {
+          code: "11",
+          nom: "Île-de-France",
+        },
       },
       academie: {
         code: "01",
