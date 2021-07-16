@@ -1,4 +1,4 @@
-const regions = [
+const REGIONS = [
   {
     code: "00",
     nom: "Collectivités d'outre-mer",
@@ -201,7 +201,7 @@ function findRegionByUai(uai) {
   }
 
   let metropole = ["0", "6", "7"].includes(uai.substring(0, 1));
-  let found = regions.find((region) => {
+  let found = REGIONS.find((region) => {
     let code = metropole ? uai.substring(1, 3) : uai.substring(0, 3);
     return region.departements.map((d) => d.code).includes(code);
   });
@@ -210,16 +210,15 @@ function findRegionByUai(uai) {
 }
 
 function findRegionByName(name) {
-  if (!name) {
-    return null;
-  }
+  return REGIONS.find((region) => region.nom === name) || null;
+}
 
-  let found = regions.find((region) => region.nom === name);
-
-  return found || null;
+function getRegions() {
+  return REGIONS;
 }
 
 module.exports = {
   findRegionByUai,
   findRegionByName,
+  getRegions,
 };
