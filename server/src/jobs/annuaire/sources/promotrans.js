@@ -4,11 +4,13 @@ const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
 module.exports = async (custom = {}) => {
   let name = "promotrans";
-  let input = custom.input || (await getOvhFileAsStream("cfas-reseaux/cfas-promotrans.csv", { storage: "mna-flux" }));
 
   return {
     name,
-    stream() {
+    async stream() {
+      let input =
+        custom.input || (await getOvhFileAsStream("cfas-reseaux/cfas-promotrans.csv", { storage: "mna-flux" }));
+
       return oleoduc(
         input,
         csv({
@@ -19,7 +21,7 @@ module.exports = async (custom = {}) => {
         }),
         transformData((data) => {
           return {
-            source: name,
+            from: name,
             selector: data["siret"],
             uais: [data["uai"]],
             reseaux: ["promotrans"],

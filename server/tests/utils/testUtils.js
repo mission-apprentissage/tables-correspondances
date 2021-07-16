@@ -37,11 +37,11 @@ module.exports = {
   },
   createStream,
   importReferentiel: async (content) => {
-    let referentiel = await createReferentiel("depp", {
+    let referentiel = await createReferentiel("datagouv", {
       input: createStream(
         content ||
-          `"numero_uai";"numero_siren_siret_uai"
-"0011058V";"11111111111111"`
+          `"siren";"num_etablissement";"cfa"
+"111111111";"00006";"Oui"`
       ),
     });
 

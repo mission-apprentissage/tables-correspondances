@@ -3,7 +3,7 @@ const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
 const { importReferentiel, createStream } = require("../../../utils/testUtils");
-const collect = require("../../../../src/jobs/annuaire/collect");
+const collectSources = require("../../../../src/jobs/annuaire/collectSources");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier OPCO EP", async () => {
@@ -11,17 +11,17 @@ integrationTests(__filename, () => {
     let source = await createSource("opcoep", {
       input: createStream(
         `SIRET CFA;N UAI CFA;Nom CFA
-"11111111111111";"0011073L";"Centre de formation"`
+"11111111100006";"1234567W";"Centre de formation"`
       ),
     });
 
-    let stats = await collect(source);
+    let stats = await collectSources(source);
 
-    let found = await Annuaire.findOne({ siret: "11111111111111" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.uais, [
       {
         sources: ["opcoep"],
-        uai: "0011073L",
+        uai: "1234567W",
         valide: true,
       },
     ]);
@@ -29,6 +29,7 @@ integrationTests(__filename, () => {
       opcoep: {
         total: 1,
         updated: 1,
+        ignored: 0,
         failed: 0,
       },
     });

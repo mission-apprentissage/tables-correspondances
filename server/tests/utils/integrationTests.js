@@ -4,7 +4,7 @@ module.exports = (desc, cb) => {
   describe(desc, function () {
     let context;
 
-    beforeEach(async () => {
+    beforeEach(async function () {
       const { db } = await connectToMongoForTests();
       context = { db };
     });

@@ -4,11 +4,12 @@ const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
 module.exports = async (custom = {}) => {
   let name = "mfr";
-  let input = custom.input || (await getOvhFileAsStream("cfas-reseaux/cfas-mfr.csv", { storage: "mna-flux" }));
 
   return {
     name,
-    stream() {
+    async stream() {
+      let input = custom.input || (await getOvhFileAsStream("cfas-reseaux/cfas-mfr.csv", { storage: "mna-flux" }));
+
       return oleoduc(
         input,
         csv({
@@ -20,7 +21,7 @@ module.exports = async (custom = {}) => {
         transformData((data) => {
           let uais = [...new Set([data["uai"], data["uai_code_educnationale"]])];
           return {
-            source: name,
+            from: name,
             selector: {
               $or: [{ siret: data["siret"] }, { "uais.uai": { $in: uais } }],
             },
