@@ -217,15 +217,21 @@ class GeoAdresseData {
       }
 
       const { properties } = data.features[0];
-      const { housenumber, street = "" } = properties;
+      const { housenumber = "", street = "" } = properties;
       const [type_voie, ...rest] = street.split(" ");
+      let nom_voie = rest.join(" ");
+
+      // handle edge case where api adresse sends a street instead of a housenumber
+      if (properties.type === "street") {
+        nom_voie = properties.name;
+      }
 
       return {
         address: {
           ...this.formatMunicipality({ properties }).fields,
           numero_voie: housenumber,
           type_voie,
-          nom_voie: rest.join(" "),
+          nom_voie,
         },
         results_count: data.features.length,
       };
