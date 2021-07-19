@@ -1,3 +1,10 @@
+## [2.22.3](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.22.2...v2.22.3) (2021-07-19)
+
+
+### Bug Fixes
+
+* quick fix to handle api adresse edge case ([cb73270](https://github.com/mission-apprentissage/tables-correspondances/commit/cb732700c6ca3ad538ae6b42ccecc85e6e01c966))
+
 ## [2.22.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.22.1...v2.22.2) (2021-07-09)
 
 
