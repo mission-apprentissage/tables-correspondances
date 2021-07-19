@@ -3142,6 +3142,14 @@ eslint-plugin-jsx-a11y@^6.4.1:
     jsx-ast-utils "^3.1.0"
     language-tags "^1.0.5"
 
+eslint-plugin-mocha@8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-mocha/-/eslint-plugin-mocha-8.1.0.tgz#b9aebbede46a808e46e622c8fd99d2a2f353e725"
+  integrity sha512-1EgHvXKRl7W3mq3sntZAi5T24agRMyiTPL4bSXe+B4GksYOjAPEWYx+J3eJg4It1l2NMNZJtk0gQyQ6mfiPhQg==
+  dependencies:
+    eslint-utils "^2.1.0"
+    ramda "^0.27.1"
+
 eslint-plugin-node@11.1.0:
   version "11.1.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-node/-/eslint-plugin-node-11.1.0.tgz#c95544416ee4ada26740a30474eefc5402dc671d"
@@ -3503,6 +3511,11 @@ fast-levenshtein@^2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha1-PYpcZog6FqMMqGQ+hR8Zuqd5eRc=
+
+fast-luhn@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/fast-luhn/-/fast-luhn-2.0.0.tgz#aa41d6ffbda40e55e12f005ab5d09e542e023817"
+  integrity sha512-REI/GKhchu+SflfR6DOusv/KJGp2+rZ0FCANa2GWsxr669BuuLPKrXqImtbGVXlRkkCOM7mZlk8icdLmZeGBog==
 
 fast-safe-stringify@^2.0.4:
   version "2.0.7"
@@ -6777,10 +6790,10 @@ object.values@^1.1.1:
     es-abstract "^1.18.0-next.1"
     has "^1.0.3"
 
-oleoduc@0.5.2:
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/oleoduc/-/oleoduc-0.5.2.tgz#f17ae0dadd3b7f7dae40dd58c25658721a360a95"
-  integrity sha512-wJc0bnutHTlCFF6rWp3YL6AVOSqyZd8fZwmRRzJoFA7SoD8jdEqBgqUthksswZZgYQd6y6DsVuxiaUPakzIvhQ==
+oleoduc@0.5.9:
+  version "0.5.9"
+  resolved "https://registry.yarnpkg.com/oleoduc/-/oleoduc-0.5.9.tgz#f888e2a7776b3774e457887d6e425c108d04eac4"
+  integrity sha512-3fQqs/KghgB7xPUlh36HnMlBZ0lvOBlm8eZudDn+3TeBf1W7BrpiHy9dtWOe4rUDKk7rlQW4c0Mjjeu2ByHl7w==
   dependencies:
     cyclist "1.0.1"
     duplexer3 "0.1.4"
@@ -7501,6 +7514,11 @@ qw@~1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/qw/-/qw-1.0.1.tgz#efbfdc740f9ad054304426acb183412cc8b996d4"
   integrity sha1-77/cdA+a0FQwRCassYNBLMi5ltQ=
+
+ramda@^0.27.1:
+  version "0.27.1"
+  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.27.1.tgz#66fc2df3ef873874ffc2da6aa8984658abacf5c9"
+  integrity sha512-PgIdVpn5y5Yns8vqb8FzBUEYn98V3xcPgawAkkgj0YJ0qDsnHCiNmZYfOGMgOvoB0eWFLpYbhxUR3mxfDIMvpw==
 
 range-parser@~1.2.1:
   version "1.2.1"
@@ -9438,15 +9456,15 @@ uuid@3.3.2:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
   integrity sha512-yXJmeNaw3DnnKAOKJE51sL/ZaYfWJRl1pK9dr19YFCu0ObS231AB1/LbqTKRAQ5kw8A90rA6fr4riOUpTZvQZA==
 
+uuid@8.3.2, uuid@^8.3.0:
+  version "8.3.2"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
+  integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
+
 uuid@^3.3.2, uuid@^3.3.3:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
-
-uuid@^8.3.0:
-  version "8.3.2"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
-  integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
 
 v8-compile-cache@^2.0.3:
   version "2.1.1"

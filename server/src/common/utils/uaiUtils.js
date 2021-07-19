@@ -24,17 +24,27 @@ const ALPHABET_23_LETTERS = [
   "z",
 ];
 
+function computeChecksum(numbers) {
+  if (!numbers || numbers.length !== 7) {
+    throw new Error(`Le code ne doit contenir que 7 caractères sans le checksum`);
+  }
+
+  return ALPHABET_23_LETTERS[numbers % 23];
+}
+
+/**
+ * https://blog.juliendelmas.fr/?qu-est-ce-que-le-code-rne-ou-uai
+ */
 module.exports = {
   validateUAI(code) {
     if (!code || code.length !== 8) {
       return false;
     }
 
-    //https://blog.juliendelmas.fr/?qu-est-ce-que-le-code-rne-ou-uai
     let numbers = code.substring(0, 7);
     let checksum = code.substring(7, 8).toLowerCase();
 
-    let res = ALPHABET_23_LETTERS[numbers % 23];
-    return res === checksum;
+    return checksum === computeChecksum(numbers);
   },
+  computeChecksum,
 };
