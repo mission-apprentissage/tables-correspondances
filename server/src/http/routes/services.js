@@ -26,7 +26,6 @@ module.exports = () => {
       const { scope: reqScope, ...item } = req.body;
       const scope = reqScope || {
         siret: true,
-        location: true,
         geoloc: true,
         conventionnement: true,
       };

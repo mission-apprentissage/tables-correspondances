@@ -8,7 +8,6 @@ const optionDefinitions = [
   { name: "filter", alias: "f", type: String, defaultValue: "{}" },
   { name: "withHistoryUpdate", alias: "h", type: Boolean, defaultValue: true },
   { name: "siret", alias: "s", type: Boolean, defaultValue: false },
-  { name: "location", alias: "l", type: Boolean, defaultValue: false },
   { name: "geoloc", alias: "g", type: Boolean, defaultValue: false },
   { name: "conventionnement", alias: "c", type: Boolean, defaultValue: false },
   { name: "onisep", alias: "o", type: Boolean, defaultValue: false },
@@ -23,12 +22,7 @@ const EtablissementsUpdater = async () => {
 
     const optionsCmd = commandLineArgs(optionDefinitions);
 
-    const all =
-      !optionsCmd.siret &&
-      !optionsCmd.location &&
-      !optionsCmd.geoloc &&
-      !optionsCmd.conventionnement &&
-      !optionsCmd.onisep;
+    const all = !optionsCmd.siret && !optionsCmd.geoloc && !optionsCmd.conventionnement && !optionsCmd.onisep;
 
     const filter = JSON.parse(optionsCmd.filter);
 
@@ -37,14 +31,12 @@ const EtablissementsUpdater = async () => {
       scope: all
         ? {
             siret: true,
-            location: true,
             geoloc: true,
             conventionnement: true,
             onisep: true,
           }
         : {
             siret: optionsCmd.siret,
-            location: optionsCmd.location,
             geoloc: optionsCmd.geoloc,
             conventionnement: optionsCmd.conventionnement,
             onisep: optionsCmd.onisep,

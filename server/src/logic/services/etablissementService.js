@@ -1,7 +1,7 @@
 const logger = require("../../common/logger");
 //const Joi = require("joi");
 const { getDataFromSiret } = require("../handlers/siretHandler");
-const { getDataFromCP, getCoordinatesFromAddressData } = require("../handlers/geoHandler");
+const { getCoordinatesFromAddressData } = require("../handlers/geoHandler");
 const conventionController = require("../controllers/conventionController");
 const { findOnisepInfosEtablissementFromUAI } = require("../controllers/onisep/onisepController");
 const { diffEtablissement } = require("../../common/utils/diffUtils");
@@ -33,10 +33,7 @@ const parseErrors = (messages) => {
 
 const etablissementService = async (
   etablissement,
-  {
-    withHistoryUpdate = true,
-    scope = { siret: true, location: true, geoloc: true, conventionnement: true, onisep: true },
-  } = {}
+  { withHistoryUpdate = true, scope = { siret: true, geoloc: true, conventionnement: true, onisep: true } } = {}
 ) => {
   try {
     // await etablissementSchema.validateAsync(etablissement, { abortEarly: false });
@@ -74,6 +71,9 @@ const etablissementService = async (
         return { updates: null, etablissement, error };
       }
 
+      updatedEtablissement.code_commune_insee = siretMapping.commune_implantation_code;
+      updatedEtablissement.commune = siretMapping.commune_implantation_nom;
+
       current.code_postal = siretMapping.code_postal;
       current.siret = siretMapping.siret;
       current.etablissement_siege_siret = siretMapping.etablissement_siege_siret;
@@ -81,6 +81,9 @@ const etablissementService = async (
       current.numero_voie = siretMapping.numero_voie;
       current.type_voie = siretMapping.type_voie;
       current.nom_voie = siretMapping.nom_voie;
+      current.code_commune_insee = siretMapping.commune_implantation_code;
+      current.commune = siretMapping.commune_implantation_nom;
+      current.nom_academie = siretMapping.nom_academie;
 
       updatedEtablissement = {
         ...updatedEtablissement,
@@ -88,33 +91,10 @@ const etablissementService = async (
       };
     }
 
-    // CODE POSTAL DATA
-    if (scope.location) {
-      // console.log("Update location info");
-      const { result: cpMapping, messages: cpMessages } = await getDataFromCP(current.code_postal);
-      error = parseErrors(cpMessages);
-      if (error) {
-        return { updates: null, etablissement, error };
-      }
-
-      current.code_postal = cpMapping.postal_code;
-      current.code_commune_insee = cpMapping.code_commune_insee;
-      current.commune = cpMapping.commune;
-      current.num_departement = cpMapping.num_departement;
-      current.nom_departement = cpMapping.nom_departement;
-      current.region = cpMapping.region;
-      current.num_region = cpMapping.num_region;
-      current.nom_academie = cpMapping.nom_academie;
-      current.num_academie = cpMapping.num_academie;
-
-      updatedEtablissement = {
-        ...updatedEtablissement,
-        ...cpMapping,
-      };
-    }
-
     // GEOLOC DATA
-    if (scope.geoloc) {
+    if (scope.geoloc && !scope.siret) {
+      // check scope.siret because geoloc is already retrieved by getDataFromSiret
+
       // console.log("Update geoloc info");
       const { result: geoMapping, messages: geoMessages } = await getCoordinatesFromAddressData({
         numero_voie: current.numero_voie,
