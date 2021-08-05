@@ -1,5 +1,6 @@
 const apiEntreprise = require("../../common/apis/apiEntreprise");
 const conventionController = require("./conventionController");
+const geoController = require("../controllers/geo/geoController");
 
 class EntrepriseApiData {
   constructor() {}
@@ -51,6 +52,10 @@ class EntrepriseApiData {
       info_datagouv_ofs: info_datagouv_ofs.value,
     });
 
+    const { nom_dept, nom_region, code_region, nom_academie, num_academie } = geoController.findDataByDepartementNum(
+      etablissementApiInfo.adresse.code_postal.substring(0, 2)
+    );
+
     return {
       result: {
         siege_social: etablissementApiInfo.siege_social,
@@ -72,6 +77,9 @@ class EntrepriseApiData {
         complement_adresse: etablissementApiInfo.adresse.complement_adresse,
         code_postal: etablissementApiInfo.adresse.code_postal,
         num_departement: etablissementApiInfo.adresse.code_postal.substring(0, 2),
+        nom_departement: nom_dept,
+        nom_academie: nom_academie,
+        num_academie: num_academie,
         localite: etablissementApiInfo.adresse.localite,
         code_insee_localite: etablissementApiInfo.adresse.code_insee_localite,
         cedex: etablissementApiInfo.adresse.cedex,
@@ -81,6 +89,8 @@ class EntrepriseApiData {
 
         region_implantation_code: etablissementApiInfo.region_implantation.code,
         region_implantation_nom: etablissementApiInfo.region_implantation.value,
+        region: nom_region,
+        num_region: code_region,
         commune_implantation_code: etablissementApiInfo.commune_implantation.code,
         commune_implantation_nom: etablissementApiInfo.commune_implantation.value,
         pays_implantation_code: etablissementApiInfo.pays_implantation.code,
