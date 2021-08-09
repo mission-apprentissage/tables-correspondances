@@ -66,6 +66,7 @@ class ConventionController {
       info_depp: info_depp.value,
       info_dgefp: info_dgefp.value,
       info_datadock: info_datadock.value,
+      info_qualiopi: info_datadock.qualiopi ? "OUI" : "NON",
       info_datagouv_ofs: info_datagouv_ofs.value,
       info_depp_info: info_depp.info,
       info_dgefp_info: info_dgefp.info,
@@ -222,9 +223,10 @@ class ConventionController {
       return {
         info: "Ok",
         value: infosCodes.infoDATADOCK[result.REFERENCABLE === "OUI" ? "Referencable" : "NotReferencable"],
+        qualiopi: result.QUALIOPI === "QUALIOPI",
       };
     }
-    return { info: "Erreur: Datadock Non trouvé", value: infosCodes.infoDATADOCK.NotFound };
+    return { info: "Erreur: Datadock Non trouvé", value: infosCodes.infoDATADOCK.NotFound, qualiopi: false };
   }
 
   async findInfoDataGouv(siret) {
