@@ -20,7 +20,12 @@ function mergeObjectsAndConcatArray(...args) {
   });
 }
 
+function isError(obj) {
+  return obj && obj.stack && obj.message;
+}
+
 module.exports = {
   flattenObject,
   mergeObjectsAndConcatArray,
+  isError,
 };

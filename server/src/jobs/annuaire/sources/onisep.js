@@ -15,7 +15,7 @@ function parseCSV(stream) {
     }),
     transformData((data) => {
       return {
-        source: "onisep",
+        from: "onisep",
         selector: data["n° SIRET"],
         uais: [data["code UAI"]],
       };

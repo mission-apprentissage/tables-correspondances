@@ -7,7 +7,11 @@ module.exports = {
     let skip = (page - 1) * limit;
 
     return {
-      find: Model.find(query).skip(skip).limit(limit).lean(),
+      find: Model.find(query, options.projection || {})
+        .sort(options.sort || {})
+        .skip(skip)
+        .limit(limit)
+        .lean(),
       pagination: {
         page,
         resultats_par_page: limit,

@@ -2,7 +2,7 @@ const { oleoduc, transformData, accumulateData, writeData } = require("oleoduc")
 const { Annuaire } = require("../../../common/model");
 const ApiSirene = require("../../../common/apis/ApiSirene");
 const ApiGeoAdresse = require("../../../common/apis/ApiGeoAdresse");
-const dgefp = require("../referentiels/dgefp");
+const datagouv = require("../referentiels/datagouv");
 const adresses = require("../utils/adresses");
 const categoriesJuridiques = require("../utils/categoriesJuridiques");
 
@@ -35,10 +35,11 @@ function getRelationLabel(e, uniteLegale) {
 
 async function loadOrganismeDeFormations() {
   let organismes = [];
-  let referentiel = await dgefp();
+  let referentiel = await datagouv();
+  let stream = await referentiel.stream();
 
   await oleoduc(
-    referentiel.stream(),
+    stream,
     accumulateData((acc, data) => [...acc, data.siret], { accumulator: [] }),
     writeData((acc) => (organismes = acc))
   );
@@ -58,7 +59,7 @@ module.exports = async (options = {}) => {
       let filters = options.filters || {};
 
       return oleoduc(
-        Annuaire.find(filters, { siret: 1 }).lean().cursor(),
+        Annuaire.find(filters, { siret: 1 }).lean().batchSize(5).cursor(),
         transformData(
           async ({ siret }) => {
             try {
@@ -69,7 +70,9 @@ module.exports = async (options = {}) => {
               if (!data) {
                 return {
                   selector: siret,
-                  anomalies: [`Etablissement inconnu pour l'entreprise ${siren}`],
+                  anomalies: [
+                    { code: "etablissement_inconnu", message: `Etablissement inconnu pour l'entreprise ${siren}` },
+                  ],
                 };
               }
 
@@ -91,17 +94,19 @@ module.exports = async (options = {}) => {
                     label: data.geo_adresse,
                   });
                 } catch (e) {
-                  anomalies.push(
-                    `Impossible de géolocaliser l'adresse de l'établissement: ${data.geo_adresse}. ${e.message}`
-                  );
+                  anomalies.push({
+                    code: "etablissement_geoloc_impossible",
+                    message: `Impossible de géolocaliser l'adresse de l'établissement: ${data.geo_adresse}. ${e.message}`,
+                  });
                 }
               }
 
               let formeJuridique = categoriesJuridiques.find((cj) => cj.code === uniteLegale.categorie_juridique);
               if (!formeJuridique) {
-                anomalies.push(
-                  `Impossible de trouver la catégorie juridique de l'entreprise : ${uniteLegale.categorie_juridique}`
-                );
+                anomalies.push({
+                  code: "categorie_juridique_inconnue",
+                  message: `Impossible de trouver la catégorie juridique de l'entreprise : ${uniteLegale.categorie_juridique}`,
+                });
               }
 
               return {
@@ -117,12 +122,15 @@ module.exports = async (options = {}) => {
                 },
               };
             } catch (e) {
-              return { selector: siret, anomalies: [e.reason === 404 ? "Entreprise inconnue" : e] };
+              return {
+                selector: siret,
+                anomalies: [e.reason === 404 ? { code: "entreprise_inconnue", message: `Entreprise inconnue` } : e],
+              };
             }
           },
           { parallel: 5 }
         ),
-        transformData((data) => ({ ...data, source: name })),
+        transformData((data) => ({ ...data, from: name })),
         { promisify: false }
       );
     },

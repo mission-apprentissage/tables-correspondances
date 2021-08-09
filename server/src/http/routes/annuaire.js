@@ -4,11 +4,13 @@ const Boom = require("boom");
 const { oleoduc, transformIntoJSON } = require("oleoduc");
 const Joi = require("joi");
 const { Annuaire, AnnuaireStats } = require("../../common/model");
-const { paginateAggregationWithCursor } = require("../../common/utils/mongooseUtils");
+const { paginateAggregationWithCursor, paginate } = require("../../common/utils/mongooseUtils");
 const { sendJsonStream } = require("../utils/httpUtils");
 const buildProjection = require("../utils/buildProjection");
 const { stringList } = require("../utils/validators");
 const tryCatch = require("../middlewares/tryCatchMiddleware");
+const { getAcademies } = require("../../jobs/annuaire/utils/academies");
+const { getRegions } = require("../../jobs/annuaire/utils/regions");
 
 module.exports = () => {
   const router = express.Router();
@@ -100,9 +102,23 @@ module.exports = () => {
   router.get(
     "/etablissements",
     tryCatch(async (req, res) => {
-      let { siret, uai, text, anomalies, page, items_par_page, tri, ordre, champs } = await Joi.object({
+      let {
+        siret,
+        uai,
+        academie,
+        region,
+        text,
+        anomalies,
+        page,
+        items_par_page,
+        tri,
+        ordre,
+        champs,
+      } = await Joi.object({
         uai: Joi.string().pattern(/^[0-9]{7}[A-Z]{1}$/),
         siret: Joi.string().pattern(/^([0-9]{9}|[0-9]{14})$/),
+        academie: Joi.string().valid(...getAcademies().map((a) => a.code)),
+        region: Joi.string().valid(...getRegions().map((r) => r.code)),
         text: Joi.string(),
         anomalies: Joi.boolean().default(null),
         page: Joi.number().default(1),
@@ -120,6 +136,8 @@ module.exports = () => {
             $match: {
               ...(siret ? { siret } : {}),
               ...(uai ? { "uais.uai": uai } : {}),
+              ...(academie ? { "academie.code": academie } : {}),
+              ...(region ? { "adresse.region.code": region } : {}),
               ...(text ? { $text: { $search: text } } : {}),
               ...(anomalies !== null ? { "_meta.anomalies.0": { $exists: anomalies } } : {}),
             },
@@ -223,15 +241,27 @@ module.exports = () => {
   router.get(
     "/stats",
     tryCatch(async (req, res) => {
-      sendJsonStream(
-        oleoduc(
-          AnnuaireStats.find({}, { _id: 0 }).sort({ created_at: -1 }).lean().cursor(),
-          transformIntoJSON({
-            arrayPropertyName: "stats",
-          })
-        ),
-        res
+      let { page, limit } = await Joi.object({
+        page: Joi.number().default(1),
+        limit: Joi.number().default(1),
+      }).validateAsync(req.query, { abortEarly: false });
+
+      let { find, pagination } = await paginate(
+        AnnuaireStats,
+        {},
+        { page, limit, projection: { _id: 0 }, sort: { created_at: -1 } }
       );
+      let stream = oleoduc(
+        find.cursor(),
+        transformIntoJSON({
+          arrayWrapper: {
+            pagination,
+          },
+          arrayPropertyName: "stats",
+        })
+      );
+
+      return sendJsonStream(stream, res);
     })
   );
 

@@ -17,26 +17,27 @@ module.exports = {
   createSource,
   getDefaultSourcesGroupedByPriority() {
     return [
-      ["depp"],
-      //Other groups contain sources that need data from the previous ones
       [
-        "onisep",
-        "onisep-structure",
-        "opcoep",
-        "refea",
-        "gesti",
-        "ymag",
         "agri",
         "anasup",
         "compagnons-du-devoir",
-        "promotrans",
-        "ideo2",
-        "etablissements",
+        "deca",
         "catalogue",
+        "gesti",
+        "ideo2",
+        "onisep",
+        "onisep-structure",
+        "opcoep",
+        "promotrans",
+        "sifa-ramsese",
+        "depp",
+        "refea",
         "sirene",
+        "ymag",
       ],
-      ["academie"],
       [
+        "formations", //This source consumes the same API as the sirene source
+        "academie", // Needs data provided by sirene
         //Theses sources used uai as selector, so we tried to collect as many uais as possible before running them
         "ccca-btp",
         "cci-france",
