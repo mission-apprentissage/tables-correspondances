@@ -246,11 +246,11 @@ const etablissementSchema = {
     description: "L'établissement est présent ou pas dans le fichier dataDock",
   },
 
-  // info_qualiopi_info: {
-  //   type: String,
-  //   default: null,
-  //   description: "L'établissement est présent ou pas dans le fichier qualiopi",
-  // },
+  info_qualiopi_info: {
+    type: String,
+    default: null,
+    description: "L'établissement est présent ou pas dans le fichier qualiopi",
+  },
 
   computed_type: {
     type: String,
