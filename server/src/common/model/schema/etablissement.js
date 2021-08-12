@@ -581,6 +581,21 @@ const etablissementSchema = {
     implicit_type: "geo_point",
     description: "Latitude et longitude de l'établissement RCO",
   },
+  idcc: {
+    type: Number,
+    default: 0,
+    description: "id convention collective",
+  },
+  opco_nom: {
+    type: String,
+    default: null,
+    description: "Nom de l'opérateur de compétence",
+  },
+  opco_siren: {
+    type: String,
+    default: null,
+    description: "Siren de l'opérateur de compétence",
+  },
 };
 
 module.exports = etablissementSchema;
