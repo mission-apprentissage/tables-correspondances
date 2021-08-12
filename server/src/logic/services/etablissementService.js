@@ -6,6 +6,8 @@ const conventionController = require("../controllers/conventionController");
 const { findOnisepInfosEtablissementFromUAI } = require("../controllers/onisep/onisepController");
 const { diffEtablissement } = require("../../common/utils/diffUtils");
 
+const apiCfaDock = require("../../common/apis/apiCfaDock");
+
 // const etablissementSchema = Joi.object({
 //   siret: Joi.string().required(),
 //   uai: Joi.string().allow(null).required(),
@@ -145,6 +147,18 @@ const etablissementService = async (
         }
       }
     }
+
+    // Todo add scope
+    let resultsCfadock = {};
+    try {
+      resultsCfadock = await apiCfaDock.getOpcoData(updatedEtablissement.siren);
+    } catch (error) {
+      console.log(error);
+    }
+    updatedEtablissement = {
+      ...updatedEtablissement,
+      ...resultsCfadock,
+    };
 
     if (Object.keys(updatedEtablissement).length > 0) {
       updatedEtablissement = {
