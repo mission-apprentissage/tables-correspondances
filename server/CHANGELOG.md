@@ -1,3 +1,19 @@
+# [2.23.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.22.3...v2.23.0) (2021-08-17)
+
+
+### Bug Fixes
+
+* qualiopi ([14f100d](https://github.com/mission-apprentissage/tables-correspondances/commit/14f100d65ae92136f599956212424d236a42c04f))
+* **etablissement:** remove legacy call to BAN ([#167](https://github.com/mission-apprentissage/tables-correspondances/issues/167)) ([9816ff1](https://github.com/mission-apprentissage/tables-correspondances/commit/9816ff10d2ba548a17ad6e2bd0fca6fde4130e37))
+
+
+### Features
+
+* add API route /gps ([0715fdb](https://github.com/mission-apprentissage/tables-correspondances/commit/0715fdbecbd391321ec7ff54fe9f28b4235af0eb))
+* add cfaDock data ([61cf8c1](https://github.com/mission-apprentissage/tables-correspondances/commit/61cf8c169586b7ae52eb422f3504328dbd6ddd81))
+* add qualiopi info ([f56de24](https://github.com/mission-apprentissage/tables-correspondances/commit/f56de241c80b406014bf3d7461662b65c7ae45b0))
+* bump mongoose sorry ˁ(⦿ᴥ⦿)ˀ ([c8b2a8f](https://github.com/mission-apprentissage/tables-correspondances/commit/c8b2a8f5f8938aa0edbf3e763ad2eb07e8e47dd1))
+
 ## [2.22.3](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.22.2...v2.22.3) (2021-07-19)
 
 
