@@ -15,7 +15,7 @@ const performUpdates = async (filter = {}, options = null) => {
 
   let etablissementServiceOptions = options || {
     withHistoryUpdate: true,
-    scope: { siret: true, location: true, geoloc: true, conventionnement: true, onisep: true },
+    scope: { siret: true, geoloc: true, conventionnement: true, onisep: true },
   };
 
   const etablissements = await Etablissement.find(filter);

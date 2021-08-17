@@ -2,7 +2,7 @@ const express = require("express");
 const logger = require("../../common/logger");
 const Joi = require("joi");
 const tryCatch = require("../middlewares/tryCatchMiddleware");
-const { getCoordinatesFromAddressData } = require("../../logic/handlers/geoHandler");
+const { getCoordinatesFromAddressData, getAddressDataFromCoordinates } = require("../../logic/handlers/geoHandler");
 
 /**
  * Request body validation
@@ -13,6 +13,11 @@ const requestSchema = Joi.object({
   nom_voie: Joi.string().required(),
   code_postal: Joi.string().required(),
   localite: Joi.string().required(),
+});
+
+const gpsSchema = Joi.object({
+  latitude: Joi.string().required(),
+  longitude: Joi.string().required(),
 });
 
 /**
@@ -73,6 +78,17 @@ module.exports = () => {
       const item = req.body;
       logger.info("Looking for data on give adresse: ", item);
       const result = await getCoordinatesFromAddressData(item);
+      return res.json(result);
+    })
+  );
+
+  router.post(
+    "/gps",
+    tryCatch(async (req, res) => {
+      await gpsSchema.validateAsync(req.body, { abortEarly: false });
+      const item = req.body;
+      logger.info("Looking for data on the given coordinate: ", item);
+      const result = await getAddressDataFromCoordinates(item);
       return res.json(result);
     })
   );
