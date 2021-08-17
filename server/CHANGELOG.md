@@ -1,3 +1,10 @@
+## [2.23.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.23.0...v2.23.1) (2021-08-17)
+
+
+### Bug Fixes
+
+* skip ts errors (bad) ([e83cc2b](https://github.com/mission-apprentissage/tables-correspondances/commit/e83cc2bee113de0da9b9b7e1bd6a1cf9dd21b93e))
+
 # [2.23.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.22.3...v2.23.0) (2021-08-17)
 
 
