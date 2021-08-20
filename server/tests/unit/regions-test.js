@@ -1,6 +1,6 @@
 const assert = require("assert");
 
-const { findRegionByUai, findRegionByName } = require("../../src/jobs/annuaire/utils/regions");
+const { findRegionByUai, findRegionByName, findRegionByCodeInsee } = require("../../src/jobs/annuaire/utils/regions");
 
 describe(__filename, () => {
   it("Permet de trouver une région avec son UAI", () => {
@@ -8,6 +8,12 @@ describe(__filename, () => {
     assert.deepStrictEqual(findRegionByUai("6200001G").nom, "Corse");
     assert.deepStrictEqual(findRegionByUai("9871234J").nom, "Collectivités d'outre-mer");
     assert.deepStrictEqual(findRegionByUai("UNKNOWN"), null);
+  });
+
+  it("Permet de trouver une région à partir d'un code INSEE", () => {
+    assert.deepStrictEqual(findRegionByCodeInsee("97416").nom, "La Réunion");
+    assert.deepStrictEqual(findRegionByCodeInsee("2B042").nom, "Corse");
+    assert.deepStrictEqual(findRegionByCodeInsee("75001").nom, "Île-de-France");
   });
 
   it("Permet de trouver une région avec son nom", () => {
