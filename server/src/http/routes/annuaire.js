@@ -136,7 +136,7 @@ module.exports = () => {
             $match: {
               ...(siret ? { siret } : {}),
               ...(uai ? { "uais.uai": uai } : {}),
-              ...(academie ? { "academie.code": academie } : {}),
+              ...(academie ? { "adresse.academie.code": academie } : {}),
               ...(region ? { "adresse.region.code": region } : {}),
               ...(text ? { $text: { $search: text } } : {}),
               ...(anomalies !== null ? { "_meta.anomalies.0": { $exists: anomalies } } : {}),

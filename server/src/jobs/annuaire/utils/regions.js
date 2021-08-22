@@ -214,7 +214,7 @@ function findRegionByName(name) {
 }
 
 function findRegionByCodeInsee(code) {
-  return REGIONS.find((academie) => academie.departements.find((d) => code.startsWith(d.code))) || null;
+  return REGIONS.find((region) => region.departements.find((d) => code.startsWith(d.code))) || null;
 }
 
 function getRegions() {

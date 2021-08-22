@@ -61,10 +61,10 @@ module.exports = {
               code: "11",
               nom: "Île-de-France",
             },
-          },
-          academie: {
-            code: "01",
-            nom: "Paris",
+            academie: {
+              code: "01",
+              nom: "Paris",
+            },
           },
         },
         custom

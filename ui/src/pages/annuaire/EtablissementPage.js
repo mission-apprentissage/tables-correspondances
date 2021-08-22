@@ -89,15 +89,21 @@ export default () => {
                         <span>Siège social</span>
                         <span>{etablissement.siege_social ? "Oui" : "Non"}</span>
                       </Item>
-                      <Item>
-                        <span>Adresse</span>
-                        <span>{!adresse ? "" : adresse.label || `${adresse.code_postal} ${adresse.localite}`}</span>
-                      </Item>
-                      {etablissement.academie && (
-                        <Item>
-                          <span>Académie</span>
-                          <span>{etablissement.academie.nom}</span>
-                        </Item>
+                      {adresse && (
+                        <>
+                          <Item>
+                            <span>Adresse</span>
+                            <span>{adresse.label || `${adresse.code_postal} ${adresse.localite}`}</span>
+                          </Item>
+                          <Item>
+                            <span>Région</span>
+                            <span>{etablissement.adresse.region.nom}</span>
+                          </Item>
+                          <Item>
+                            <span>Académie</span>
+                            <span>{etablissement.adresse.academie.nom}</span>
+                          </Item>
+                        </>
                       )}
                       <Item>
                         <span>Réseaux</span>

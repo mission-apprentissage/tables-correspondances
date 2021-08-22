@@ -410,6 +410,10 @@ integrationTests(__filename, () => {
           code: "11",
           nom: "Île-de-France",
         },
+        academie: {
+          code: "01",
+          nom: "Paris",
+        },
       },
     });
     assert.deepStrictEqual(stats, {
@@ -500,6 +504,10 @@ integrationTests(__filename, () => {
       region: {
         code: "11",
         nom: "Île-de-France",
+      },
+      academie: {
+        code: "01",
+        nom: "Paris",
       },
     });
     assert.deepStrictEqual(stats, {

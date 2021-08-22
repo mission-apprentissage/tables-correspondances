@@ -53,10 +53,10 @@ describe(__filename, ({ startServer }) => {
               code: "11",
               nom: "Île-de-France",
             },
-          },
-          academie: {
-            code: "01",
-            nom: "Paris",
+            academie: {
+              code: "01",
+              nom: "Paris",
+            },
           },
           _meta: {
             anomalies: [],
@@ -154,7 +154,9 @@ describe(__filename, ({ startServer }) => {
     const { httpClient } = await startServer();
     await insertAnnuaire({
       siret: "11111111100001",
-      academie: { code: "01", nom: "Paris" },
+      adresse: {
+        academie: { code: "01", nom: "Paris" },
+      },
     });
     await insertAnnuaire({
       siret: "22222222200002",
@@ -167,7 +169,7 @@ describe(__filename, ({ startServer }) => {
     strictEqual(response.data.etablissements[0].siret, "11111111100001");
   });
 
-  it("Vérifie qu'on peut rechercher des établissements à partir d'une académie", async () => {
+  it("Vérifie qu'on peut rechercher des établissements à partir d'une région", async () => {
     const { httpClient } = await startServer();
     await insertAnnuaire({
       siret: "11111111100001",
@@ -428,10 +430,10 @@ describe(__filename, ({ startServer }) => {
           code: "11",
           nom: "Île-de-France",
         },
-      },
-      academie: {
-        code: "01",
-        nom: "Paris",
+        academie: {
+          code: "01",
+          nom: "Paris",
+        },
       },
     });
   });
