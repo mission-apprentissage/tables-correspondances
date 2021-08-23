@@ -1,3 +1,10 @@
+## [2.23.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.23.1...v2.23.2) (2021-08-23)
+
+
+### Bug Fixes
+
+* handler fiche rncp null ([6f8d23c](https://github.com/mission-apprentissage/tables-correspondances/commit/6f8d23c70e91aa3094badcaca2d54bd59c4488e4))
+
 ## [2.23.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.23.0...v2.23.1) (2021-08-17)
 
 
