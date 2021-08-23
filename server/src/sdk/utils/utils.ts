@@ -158,6 +158,7 @@ export async function getBcnInfo({ page = 1, limit = 10, query = {} }) {
   try {
     const { BcnFormationDiplome } = await import("../../common/model");
 
+    // @ts-ignore
     const allData = await BcnFormationDiplome.paginate(query, { page, limit });
     return {
       formationsDiplomes: allData.docs,
@@ -221,10 +222,12 @@ export async function getNiveauxDiplomesTree(): Promise<Tree> {
     const accSync: Tree = await acc;
     let regex = new RegExp(`^(${value.join("|")})`);
 
+        // @ts-ignore
     const niveauxFormationDiplome = await BcnFormationDiplome.distinct("NIVEAU_FORMATION_DIPLOME", {
       FORMATION_DIPLOME: { $regex: regex },
     });
 
+        // @ts-ignore
     accSync[niveau] = await BcnNNiveauFormationDiplome.distinct("LIBELLE_100", {
       NIVEAU_FORMATION_DIPLOME: { $in: niveauxFormationDiplome },
     });
