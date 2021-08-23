@@ -20,6 +20,15 @@ class RncpController {
 
     const fiche = await FicheRncp.findOne({ code_rncp: providedRncp });
 
+    if (!fiche) {
+      return {
+        result: {},
+        messages: {
+          code_rncp: "Erreur: Non trouvé",
+        },
+      };
+    }
+
     return {
       result: {
         ...fiche._doc,
