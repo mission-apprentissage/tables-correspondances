@@ -1,23 +1,89 @@
-const { oleoduc, transformIntoCSV } = require("oleoduc");
+const { oleoduc, transformIntoCSV, transformData } = require("oleoduc");
 const { Annuaire } = require("../../../common/model");
+
+function getUAI(source, etablissement) {
+  let uais = etablissement.uais.filter((u) => u.sources.includes(source));
+
+  let found = uais.find((u) => u.uai === etablissement.uai);
+  if (etablissement.uai && found) {
+    return found.uai;
+  } else {
+    return uais.reduce((acc, u) => {
+      if (!acc) {
+        return u;
+      }
+      return acc.sources.length < u.sources.length ? u : acc;
+    }, null)?.uai;
+  }
+}
+
+function computeCorrespondance(etablissement) {
+  let sources = {
+    deca: getUAI("deca", etablissement),
+    sifa_ramsese: getUAI("sifa-ramsese", etablissement),
+    catalogue: getUAI("catalogue", etablissement),
+  };
+
+  if (etablissement.uai) {
+    return {
+      uai: etablissement.uai,
+      task: "à vérifier",
+      sources,
+    };
+  }
+
+  let uaiAValider = etablissement.uais.find((u) => {
+    let sources = u.sources.filter((s) => s.includes("deca") || s.includes("sifa-ramsese") || s.includes("catalogue"));
+    return sources.length > 1;
+  })?.uai;
+
+  if (uaiAValider) {
+    return {
+      uai: uaiAValider,
+      task: "à valider",
+      sources,
+    };
+  } else {
+    return {
+      task: "à expertiser",
+      sources,
+    };
+  }
+}
+
+function sanitize(value) {
+  return value ? value.replace(/[.,;]/g, "") : "";
+}
 
 function etablissementAsCsvStream(options = {}) {
   let filter = options.filter || {};
   let limit = options.limit || Number.MAX_SAFE_INTEGER;
 
   return oleoduc(
-    Annuaire.find(filter).limit(limit).cursor(),
+    Annuaire.find(filter).lean().limit(limit).cursor(),
+    transformData((etablissement) => {
+      let correspondance = computeCorrespondance(etablissement);
+      let gestionnaire = `${etablissement.gestionnaire ? "gestionnaire" : ""}`;
+      let formateur = etablissement.formateur ? "formateur" : "";
+
+      return {
+        ...etablissement,
+        statut: `${gestionnaire} ${gestionnaire && formateur ? "et" : ""} ${formateur}`.trim(),
+        correspondance,
+      };
+    }),
     transformIntoCSV({
+      separator: ",",
       columns: {
+        Académie: (a) => a.adresse?.academie.nom,
         Siret: (a) => a.siret,
-        "Raison sociale": (a) => a.raison_sociale,
+        "Raison sociale": (a) => sanitize(a.raison_sociale),
         Statut: (a) => a.statut,
-        "Code Postal": (a) => a.adresse?.code_postal || "",
-        Ville: (a) => a.adresse?.localite || "",
-        Académie: (a) => a.academie?.nom || "",
-        Reseaux: (a) => a.reseaux.join("|"),
-        UAIs: (a) => a.uais.map(({ uai }) => uai).join("|"),
-        Sources: (a) => a.uais.flatMap(({ sources }) => sources).join("|"),
+        DECA: (a) => a.correspondance.sources.deca,
+        "SIFA RAMSESE": (a) => a.correspondance.sources.sifa_ramsese,
+        Catalogue: (a) => a.correspondance.sources.catalogue,
+        UAI: (a) => a.correspondance.uai,
+        Tache: (a) => a.correspondance.task,
       },
     }),
     { promisify: false }
