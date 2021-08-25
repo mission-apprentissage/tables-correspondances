@@ -78,6 +78,10 @@ export default () => {
                         <span>{etablissement.siret}</span>
                       </Item>
                       <Item>
+                        <span>UAI</span>
+                        <span>{etablissement.uai}</span>
+                      </Item>
+                      <Item>
                         <span>Forme juridique</span>
                         <span>{etablissement.forme_juridique ? etablissement.forme_juridique.label : "-"}</span>
                       </Item>
@@ -110,7 +114,7 @@ export default () => {
                         <span>{etablissement.reseaux.length === 0 ? "-" : etablissement.reseaux.join(",")}</span>
                       </Item>
                       <List>
-                        <div>UAIs</div>
+                        <div>UAI potentiels</div>
                         <Table>
                           <Table.Header>
                             <Table.ColHeader>UAI</Table.ColHeader>

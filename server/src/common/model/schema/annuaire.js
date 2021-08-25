@@ -89,6 +89,13 @@ const annuaireSchema = {
     unique: true,
     index: true,
   },
+  uai: {
+    type: String,
+    description: "L'uai de l'établissement",
+    unique: true,
+    index: true,
+    sparse: true,
+  },
   raison_sociale: {
     type: String,
     description: "La raison sociale de l'établissement",
