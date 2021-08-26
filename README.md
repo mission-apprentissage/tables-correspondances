@@ -75,5 +75,41 @@ TABLES_CORRESPONDANCE_FRANCE_COMPETENCES_USERNAME=
 TABLES_CORRESPONDANCE_FRANCE_COMPETENCES_PASSWORD=
 ```
 
+### Tests unitaires avec utilisation du SDK 
+Pour simplifier les test unitaires dans les projets qui utilisent le SDK, des mocks sont disponibles.
+```
+const { mock } = require("@mission-apprentissage/tco-service-node");
+```
+
+Pour les utiliser on peut par exemple installer la librairie rewiremock :
+
+```
+yarn add --dev rewiremock
+```
+
+Dans vos tests, si vous appelez un module qui utilise le SDK, il faudra mocker avant de l'importer, voici un exemple complet :
+
+```js
+// fichier de test.js
+const rewiremock = require("rewiremock/node");
+const { mock } = require("@mission-apprentissage/tco-service-node");
+rewiremock("@mission-apprentissage/tco-service-node").with(mock);
+rewiremock.enable();
+
+// now you can require some module using TCO below
+const myModuleUsingSDK = require(./some-module");
+
+describe(__filename, () => {
+  after(() => {
+    rewiremock.disable();
+  });
+
+  it("My test", async () => {
+      await myModuleUsingSDK.someFunction(); // calls to SDK are mocked inside
+      ... 
+  });
+});
+
+```
 
 
