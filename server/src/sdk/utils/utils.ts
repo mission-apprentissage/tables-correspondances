@@ -143,7 +143,6 @@ export async function getSiretInfo(siret: string) {
 }
 
 export async function isValideUAI(uai: string) {
-  isSdkReady();
   try {
     let { validateUAI } = await import("../../common/utils/uaiUtils");
     return validateUAI(uai);
@@ -222,12 +221,12 @@ export async function getNiveauxDiplomesTree(): Promise<Tree> {
     const accSync: Tree = await acc;
     let regex = new RegExp(`^(${value.join("|")})`);
 
-        // @ts-ignore
+    // @ts-ignore
     const niveauxFormationDiplome = await BcnFormationDiplome.distinct("NIVEAU_FORMATION_DIPLOME", {
       FORMATION_DIPLOME: { $regex: regex },
     });
 
-        // @ts-ignore
+    // @ts-ignore
     accSync[niveau] = await BcnNNiveauFormationDiplome.distinct("LIBELLE_100", {
       NIVEAU_FORMATION_DIPLOME: { $in: niveauxFormationDiplome },
     });
