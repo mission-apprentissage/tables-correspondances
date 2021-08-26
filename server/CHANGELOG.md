@@ -1,3 +1,10 @@
+# [2.24.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.23.2...v2.24.0) (2021-08-26)
+
+
+### Features
+
+* mock sdk ([#169](https://github.com/mission-apprentissage/tables-correspondances/issues/169)) ([8fe5d18](https://github.com/mission-apprentissage/tables-correspondances/commit/8fe5d1898e86c2d7bdfed6dd9d5d199c5d126ba1))
+
 ## [2.23.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.23.1...v2.23.2) (2021-08-23)
 
 
