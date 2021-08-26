@@ -94,17 +94,14 @@ Dans vos tests, si vous appelez un module qui utilise le SDK, il faudra mocker a
 const rewiremock = require("rewiremock/node");
 const { mock } = require("@mission-apprentissage/tco-service-node");
 rewiremock("@mission-apprentissage/tco-service-node").with(mock);
-rewiremock.enable();
-
-// now you can require some module using TCO below
-const myModuleUsingSDK = require(./some-module");
 
 describe(__filename, () => {
-  after(() => {
-    rewiremock.disable();
-  });
+  beforeEach(() => rewiremock.enable());
+  afterEach(() => rewiremock.disable());
 
   it("My test", async () => {
+      // l'import du module doit se faire dans le test pour être exécuter après rewiremock.enable()
+      const myModuleUsingSDK = require(./some-module");
       await myModuleUsingSDK.someFunction(); // calls to SDK are mocked inside
       ... 
   });
