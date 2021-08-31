@@ -11,7 +11,7 @@ integrationTests(__filename, () => {
     await insertAnnuaire({ siret: "11111111100006" });
     let source = await createSource("deca", {
       input: createStream(`"FORM_ETABUAI_R";"FORM_ETABSIRET"
-"1234567W";"11111111100006"`),
+"0111111Y";"11111111100006"`),
     });
 
     let stats = await collectSources(source);
@@ -20,7 +20,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found.uais, [
       {
         sources: ["deca"],
-        uai: "1234567W",
+        uai: "0111111Y",
         valide: true,
       },
     ]);

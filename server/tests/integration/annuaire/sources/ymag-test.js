@@ -12,7 +12,7 @@ integrationTests(__filename, () => {
     let source = await createSource("ymag", {
       input: createStream(
         `siret;uai
-"11 111 111 100 006";"1234567W"`
+"11 111 111 100 006";"0111111Y"`
       ),
     });
 
@@ -22,7 +22,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found.uais, [
       {
         sources: ["ymag"],
-        uai: "1234567W",
+        uai: "0111111Y",
         valide: true,
       },
     ]);

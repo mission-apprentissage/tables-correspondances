@@ -99,6 +99,8 @@ module.exports = async (options = {}) => {
                     message: `Impossible de géolocaliser l'adresse de l'établissement: ${data.geo_adresse}. ${e.message}`,
                   });
                 }
+              } else {
+                // TODO getAdresseFromLabel
               }
 
               let formeJuridique = categoriesJuridiques.find((cj) => cj.code === uniteLegale.categorie_juridique);

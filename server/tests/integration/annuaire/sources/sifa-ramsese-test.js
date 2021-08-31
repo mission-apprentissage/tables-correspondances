@@ -13,7 +13,7 @@ integrationTests(__filename, () => {
     });
     let source = await createSource("sifa-ramsese", {
       input: createStream(`"numero_uai";"numero_siren_siret_uai"
-"1234567W";"11111111100006"`),
+"0111111Y";"11111111100006"`),
     });
 
     let stats = await collectSources(source);
@@ -22,7 +22,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found.uais, [
       {
         sources: ["sifa-ramsese"],
-        uai: "1234567W",
+        uai: "0111111Y",
         valide: true,
       },
     ]);

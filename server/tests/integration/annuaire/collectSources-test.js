@@ -27,7 +27,7 @@ integrationTests(__filename, () => {
     let source = createTestSource([
       {
         selector: "11111111100006",
-        uais: ["1234567W"],
+        uais: ["0111111Y"],
       },
     ]);
 
@@ -37,7 +37,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found.uais, [
       {
         sources: ["dummy"],
-        uai: "1234567W",
+        uai: "0111111Y",
         valide: true,
       },
     ]);
@@ -82,7 +82,7 @@ integrationTests(__filename, () => {
     let source = createTestSource([
       {
         selector: "11111111100006",
-        uais: ["1234567W"],
+        uais: ["0111111Y"],
       },
     ]);
     await insertAnnuaire({
@@ -91,7 +91,7 @@ integrationTests(__filename, () => {
       uais: [
         {
           sources: ["dummy"],
-          uai: "1234567W",
+          uai: "0111111Y",
           valide: true,
         },
       ],
@@ -103,7 +103,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found.uais, [
       {
         sources: ["dummy"],
-        uai: "1234567W",
+        uai: "0111111Y",
         valide: true,
       },
     ]);
@@ -123,7 +123,7 @@ integrationTests(__filename, () => {
       uais: [
         {
           sources: ["other"],
-          uai: "1234567W",
+          uai: "0111111Y",
           valide: true,
         },
       ],
@@ -131,7 +131,7 @@ integrationTests(__filename, () => {
     let source = createTestSource([
       {
         selector: "11111111100006",
-        uais: ["1234567W"],
+        uais: ["0111111Y"],
       },
     ]);
 
@@ -141,7 +141,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found.uais, found.uais, [
       {
         sources: ["other", "dummy"],
-        uai: "1234567W",
+        uai: "0111111Y",
         valide: true,
       },
     ]);
