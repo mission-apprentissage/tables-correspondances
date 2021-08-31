@@ -3,6 +3,7 @@ const { Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
 const { insertAnnuaire } = require("../../utils/fixtures");
 const consolidate = require("../../../src/jobs/annuaire/consolidate");
+const { omit } = require("lodash");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut valider un UAI", async () => {
@@ -11,7 +12,7 @@ integrationTests(__filename, () => {
       uais: [
         {
           sources: ["deca", "sifa-ramsese"],
-          uai: "0751234J",
+          uai: "0111111Y",
           valide: true,
         },
       ],
@@ -20,76 +21,16 @@ integrationTests(__filename, () => {
     let stats = await consolidate();
 
     let found = await Annuaire.findOne().lean();
-    assert.deepStrictEqual(found.uai, "0751234J");
+    assert.deepStrictEqual(found.uai, "0111111Y");
     assert.deepStrictEqual(stats, {
       validateUAI: {
         validated: 1,
-        removed: 0,
         conflicted: 0,
       },
     });
   });
 
-  it("Vérifie que quand un UAI est validé alors il est supprimé dans les autres établissements", async () => {
-    await Promise.all([
-      insertAnnuaire({
-        siret: "11111111100006",
-        uais: [
-          {
-            sources: ["deca", "sifa-ramsese"],
-            uai: "0751234J",
-            valide: true,
-          },
-        ],
-      }),
-      insertAnnuaire({
-        siret: "22222222200022",
-        uais: [
-          {
-            sources: ["deca", "sifa-ramsese"],
-            uai: "0011073X",
-            valide: true,
-          },
-          {
-            sources: ["deca", "other"],
-            uai: "0751234J",
-            valide: true,
-          },
-        ],
-      }),
-      insertAnnuaire({
-        siret: "33333333300008",
-        uais: [
-          {
-            sources: ["other"],
-            uai: "1234567Z",
-            valide: true,
-          },
-        ],
-      }),
-    ]);
-
-    let stats = await consolidate();
-
-    let found = await Annuaire.findOne({ siret: "11111111100006" }).lean();
-    assert.deepStrictEqual(found.uai, "0751234J");
-
-    found = await Annuaire.findOne({ siret: "22222222200022" }).lean();
-    assert.deepStrictEqual(found.uai, "0011073X");
-    assert.strictEqual(
-      found.uais.find((u) => u.uai === "0751234J"),
-      undefined
-    );
-    assert.deepStrictEqual(stats, {
-      validateUAI: {
-        validated: 2,
-        removed: 1,
-        conflicted: 0,
-      },
-    });
-  });
-
-  it("Vérifie qu'on détecte un UAI est en conflict", async () => {
+  it("Vérifie qu'on détecte un UAI en conflict", async () => {
     await Promise.all([
       insertAnnuaire(
         {
@@ -97,7 +38,7 @@ integrationTests(__filename, () => {
           uais: [
             {
               sources: ["deca", "sifa-ramsese"],
-              uai: "0751234J",
+              uai: "0111111Y",
               valide: true,
             },
           ],
@@ -107,17 +48,7 @@ integrationTests(__filename, () => {
           uais: [
             {
               sources: ["deca", "sifa-ramsese"],
-              uai: "0751234J",
-              valide: true,
-            },
-          ],
-        }),
-        insertAnnuaire({
-          siret: "33333333300008",
-          uais: [
-            {
-              sources: ["deca", "sifa-ramsese"],
-              uai: "0011073X",
+              uai: "0111111Y",
               valide: true,
             },
           ],
@@ -129,10 +60,20 @@ integrationTests(__filename, () => {
 
     let found = await Annuaire.findOne({ siret: "22222222200022" }).lean();
     assert.ok(!found.uai);
+    assert.deepStrictEqual(
+      found._meta.anomalies.map((a) => omit(a, ["date"])),
+      [
+        {
+          code: "conflit_uai",
+          details: "UAI 0111111Y en conflict avec 1 autres établissements",
+          job: "consolidate",
+          source: "annuaire",
+        },
+      ]
+    );
     assert.deepStrictEqual(stats, {
       validateUAI: {
-        validated: 1,
-        removed: 0,
+        validated: 0,
         conflicted: 2,
       },
     });
@@ -144,7 +85,7 @@ integrationTests(__filename, () => {
       uais: [
         {
           sources: ["deca"],
-          uai: "0751234J",
+          uai: "0111111Y",
           valide: true,
         },
       ],
@@ -157,7 +98,6 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(stats, {
       validateUAI: {
         validated: 0,
-        removed: 0,
         conflicted: 0,
       },
     });
