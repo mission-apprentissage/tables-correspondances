@@ -11,7 +11,7 @@ integrationTests(__filename, () => {
     let source = await createSource("onisep", {
       input: createStream(
         `"code UAI";"n° SIRET";"nom"
-"1234567W";"11111111100006";"Centre de formation"`
+"0111111Y";"11111111100006";"Centre de formation"`
       ),
     });
 
@@ -21,7 +21,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found.uais, [
       {
         sources: ["onisep"],
-        uai: "1234567W",
+        uai: "0111111Y",
         valide: true,
       },
     ]);

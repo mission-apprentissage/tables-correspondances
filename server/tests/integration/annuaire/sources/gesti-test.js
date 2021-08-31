@@ -12,7 +12,7 @@ integrationTests(__filename, () => {
     let source = await createSource("gesti", {
       input: createStream(
         `uai_code_educnationale;siret
-"1234567W";"11111111100006"`
+"0111111Y";"11111111100006"`
       ),
     });
 
@@ -22,7 +22,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found.uais, [
       {
         sources: ["gesti"],
-        uai: "1234567W",
+        uai: "0111111Y",
         valide: true,
       },
     ]);

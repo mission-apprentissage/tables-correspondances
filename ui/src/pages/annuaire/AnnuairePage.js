@@ -84,13 +84,7 @@ export default () => {
                               <Table.Col>
                                 <Link to={`/annuaire/etablissements/${e.siret}`}>{e.siret}</Link>
                               </Table.Col>
-                              <Table.Col>
-                                {
-                                  e.uais.reduce((acc, u) => {
-                                    return acc.sources.length < u.sources.length ? u : acc;
-                                  }).uai
-                                }
-                              </Table.Col>
+                              <Table.Col>{e.uai} </Table.Col>
                               <Table.Col>{e.raison_sociale}</Table.Col>
                               <Table.Col>{e.uais.length}</Table.Col>
                               <Table.Col>{e.relations.length}</Table.Col>

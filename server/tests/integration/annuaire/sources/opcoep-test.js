@@ -11,7 +11,7 @@ integrationTests(__filename, () => {
     let source = await createSource("opcoep", {
       input: createStream(
         `SIRET CFA;N UAI CFA;Nom CFA
-"11111111100006";"1234567W";"Centre de formation"`
+"11111111100006";"0111111Y";"Centre de formation"`
       ),
     });
 
@@ -21,7 +21,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found.uais, [
       {
         sources: ["opcoep"],
-        uai: "1234567W",
+        uai: "0111111Y",
         valide: true,
       },
     ]);

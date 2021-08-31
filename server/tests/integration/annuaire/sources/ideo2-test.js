@@ -14,7 +14,7 @@ integrationTests(__filename, () => {
     let source = await createSource("ideo2", {
       input: createStream(
         `"UAI_gestionnaire";"SIRET_gestionnaire";"SIRET_lieu_enseignement";"UAI_lieu_enseignement"
-"1234567W";"11111111100006";"22222222200002";"0011073X"`
+"0111111Y";"11111111100006";"22222222200002";"0011073X"`
       ),
     });
 
