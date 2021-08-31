@@ -1,4 +1,6 @@
 const { findRegionByName } = require("./regions");
+const { findAcademieByCodeInsee } = require("./academies");
+const { pick } = require("lodash");
 const MIN_GEOCODE_SCORE = 0.6;
 
 class GeocodingError extends Error {
@@ -20,13 +22,14 @@ function selectBestResults(results, adresse) {
   let properties = best.properties;
   let context = properties.context.split(",");
   let regionName = context[context.length - 1].trim();
-
+  let codeInsee = properties.citycode;
   return {
     label: properties.label,
     code_postal: properties.postcode,
-    code_insee: properties.citycode,
+    code_insee: codeInsee,
     localite: properties.city,
-    region: findRegionByName(regionName),
+    region: pick(findRegionByName(regionName), ["code", "nom"]),
+    academie: pick(findAcademieByCodeInsee(codeInsee), ["code", "nom"]),
     geojson: {
       type: best.type,
       geometry: best.geometry,
