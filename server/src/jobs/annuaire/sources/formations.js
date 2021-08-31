@@ -33,24 +33,31 @@ async function getFormations(api, siret, options = {}) {
 }
 
 async function buildRelations(siret, formations) {
-  let relations = await Promise.all(
-    formations
-      .filter((f) => f.etablissement_gestionnaire_siret !== f.etablissement_formateur_siret)
-      .map(async (f) => {
-        let isFormateurType = siret === f.etablissement_gestionnaire_siret;
-        let relationSiret = isFormateurType ? f.etablissement_formateur_siret : f.etablissement_gestionnaire_siret;
-        let label = isFormateurType
-          ? f.etablissement_formateur_entreprise_raison_sociale
-          : f.etablissement_gestionnaire_entreprise_raison_sociale;
+  let relations = formations
+    .filter((f) => f.etablissement_gestionnaire_siret !== f.etablissement_formateur_siret)
+    .map((f) => {
+      let isFormateurType = siret === f.etablissement_gestionnaire_siret;
+      let relationSiret = isFormateurType ? f.etablissement_formateur_siret : f.etablissement_gestionnaire_siret;
+      let label = isFormateurType
+        ? f.etablissement_formateur_entreprise_raison_sociale
+        : f.etablissement_gestionnaire_entreprise_raison_sociale;
 
-        return {
-          siret: relationSiret,
-          label,
-          type: isFormateurType ? "formateur" : "gestionnaire",
-        };
-      })
-  );
-  return { relations: uniqBy(relations, "siret") };
+      return {
+        siret: relationSiret,
+        label,
+        type: isFormateurType ? "formateur" : "gestionnaire",
+      };
+    });
+
+  return {
+    relations: uniqBy(relations, "siret"),
+    gestionnaire:
+      formations.some((f) => f.etablissement_gestionnaire_siret === f.etablissement_formateur_siret) ||
+      relations.some((r) => r.type === "formateur"),
+    formateur:
+      formations.some((f) => f.etablissement_gestionnaire_siret === f.etablissement_formateur_siret) ||
+      relations.some((r) => r.type === "gestionnaire"),
+  };
 }
 
 async function buildDiplomes(siret, formations) {
@@ -135,7 +142,7 @@ module.exports = async (custom = {}) => {
               ]);
 
               let formations = [..._2020, ..._2021];
-              let { relations } = await buildRelations(siret, formations);
+              let { relations, gestionnaire, formateur } = await buildRelations(siret, formations);
               let { diplomes } = await buildDiplomes(siret, formations);
               let { certifications } = await buildCertifications(siret, formations);
               let { lieux, anomalies } = await buildLieuxDeFormation(siret, formations, getAdresseFromCoordinates);
@@ -148,8 +155,8 @@ module.exports = async (custom = {}) => {
                   lieux_de_formation: lieux,
                   diplomes,
                   certifications,
-                  gestionnaire: !!relations.find((r) => r.type === "formateur"),
-                  formateur: !!relations.find((r) => r.type === "gestionnaire") && _2021.length > 0,
+                  gestionnaire,
+                  formateur: formateur && _2021.length > 0,
                 },
               };
             } catch (e) {
