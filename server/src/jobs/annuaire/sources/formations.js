@@ -52,11 +52,11 @@ async function buildRelations(siret, formations) {
   return {
     relations: uniqBy(relations, "siret"),
     gestionnaire:
-      !!formations.find((f) => f.etablissement_gestionnaire_siret === f.etablissement_formateur_siret) ||
-      !!relations.find((r) => r.type === "formateur"),
+      formations.some((f) => f.etablissement_gestionnaire_siret === f.etablissement_formateur_siret) ||
+      relations.some((r) => r.type === "formateur"),
     formateur:
-      !!formations.find((f) => f.etablissement_gestionnaire_siret === f.etablissement_formateur_siret) ||
-      !!relations.find((r) => r.type === "gestionnaire"),
+      formations.some((f) => f.etablissement_gestionnaire_siret === f.etablissement_formateur_siret) ||
+      relations.some((r) => r.type === "gestionnaire"),
   };
 }
 
