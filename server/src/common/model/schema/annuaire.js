@@ -32,6 +32,21 @@ let adresseSchema = new Schema(
         { _id: false }
       ),
     },
+    academie: {
+      type: new Schema(
+        {
+          code: {
+            type: String,
+            required: true,
+          },
+          nom: {
+            type: String,
+            required: true,
+          },
+        },
+        { _id: false }
+      ),
+    },
     geojson: {
       type: new Schema(
         {
@@ -73,6 +88,13 @@ const annuaireSchema = {
     description: "Le siret de l'établissement",
     unique: true,
     index: true,
+  },
+  uai: {
+    type: String,
+    description: "L'uai de l'établissement",
+    unique: true,
+    index: true,
+    sparse: true,
   },
   raison_sociale: {
     type: String,
@@ -124,21 +146,6 @@ const annuaireSchema = {
     type: [String],
     default: [],
     description: "Les réseaux auquels appartient l'établissement",
-  },
-  academie: {
-    type: new Schema(
-      {
-        code: {
-          type: String,
-          required: true,
-        },
-        nom: {
-          type: String,
-          required: true,
-        },
-      },
-      { _id: false }
-    ),
   },
   conformite_reglementaire: {
     description: "Informations relatives à la conformité réglementaire",

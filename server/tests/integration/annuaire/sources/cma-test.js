@@ -13,7 +13,7 @@ integrationTests(__filename, () => {
       uais: [
         {
           source: "test",
-          uai: "1234567W",
+          uai: "0111111Y",
           valide: true,
         },
       ],
@@ -21,7 +21,7 @@ integrationTests(__filename, () => {
     let source = await createSource("cma", {
       input: createStream(
         `uai
-"1234567W"`
+"0111111Y"`
       ),
     });
 

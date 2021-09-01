@@ -13,6 +13,7 @@ const clearAnnuaire = require("./clearAnnuaire");
 const etablissementAsCsvStream = require("./utils/etablissementAsCsvStream");
 const etablissementAsJsonStream = require("./utils/etablissementAsJsonStream");
 const computeStats = require("./computeStats");
+const consolidate = require("./consolidate");
 
 cli
   .command("computeStats")
@@ -66,6 +67,15 @@ cli
       }
 
       return stats;
+    });
+  });
+
+cli
+  .command("consolidate")
+  .description("Corrige les données qui viennent d'être collectées")
+  .action(() => {
+    runScript(async () => {
+      return consolidate();
     });
   });
 

@@ -12,7 +12,7 @@ integrationTests(__filename, () => {
     let source = await createSource("mfr", {
       input: createStream(
         `uai;uai_code_educnationale;siret
-"1234567W";"0011073X";"11111111100006"`
+"0111111Y";"0011073X";"11111111100006"`
       ),
     });
 
@@ -23,7 +23,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found.uais, [
       {
         sources: ["mfr"],
-        uai: "1234567W",
+        uai: "0111111Y",
         valide: true,
       },
       {
@@ -47,7 +47,7 @@ integrationTests(__filename, () => {
       uais: [
         {
           sources: ["mfr"],
-          uai: "1234567W",
+          uai: "0111111Y",
           valide: true,
         },
       ],
@@ -55,13 +55,13 @@ integrationTests(__filename, () => {
     let source = await createSource("mfr", {
       input: createStream(
         `uai;uai_code_educnationale;siret
-"1234567W";"0011073X";"11111111100006"`
+"0111111Y";"0011073X";"11111111100006"`
       ),
     });
 
     await collectSources(source);
 
-    let found = await Annuaire.findOne({ "uais.uai": "1234567W" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ "uais.uai": "0111111Y" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.reseaux, ["mfr"]);
     assert.deepStrictEqual(found.uais[1], {
       sources: ["mfr"],
@@ -83,7 +83,7 @@ integrationTests(__filename, () => {
     let source = await createSource("mfr", {
       input: createStream(
         `uai;uai_code_educnationale;siret
-"1234567W";"0011073X";"11111111100006"`
+"0111111Y";"0011073X";"11111111100006"`
       ),
     });
 
@@ -93,7 +93,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found.reseaux, ["mfr"]);
     assert.deepStrictEqual(found.uais[0], {
       sources: ["mfr"],
-      uai: "1234567W",
+      uai: "0111111Y",
       valide: true,
     });
   });

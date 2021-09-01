@@ -10,7 +10,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations relatives aux établissements du catalogue", async () => {
     await importReferentiel();
     await insertEtablissement({
-      uai: "1234567W",
+      uai: "0111111Y",
       siret: "11111111100006",
       entreprise_raison_sociale: "Centre de formation",
     });
@@ -22,7 +22,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found.uais, [
       {
         sources: ["catalogue"],
-        uai: "1234567W",
+        uai: "0111111Y",
         valide: true,
       },
     ]);
@@ -39,7 +39,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut filter par siret", async () => {
     await importReferentiel();
     await insertEtablissement({
-      uai: "1234567W",
+      uai: "0111111Y",
       siret: "11111111100006",
       entreprise_raison_sociale: "Centre de formation",
     });

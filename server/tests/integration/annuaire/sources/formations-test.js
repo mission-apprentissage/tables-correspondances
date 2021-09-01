@@ -102,6 +102,34 @@ integrationTests(__filename, () => {
     ]);
   });
 
+  it("Vérifie qu'on identifie un etablissement sans relations comme formateur et gestionnaire", async () => {
+    await importReferentiel();
+    let source = await createFormationsSource({
+      apiCatalogue: getMockedApiCatalogue((mock, responses) => {
+        mock.onGet(/.*formations.*/).reply(
+          200,
+          responses.formations({
+            formations: [
+              {
+                etablissement_gestionnaire_siret: "11111111100006",
+                etablissement_gestionnaire_entreprise_raison_sociale: "Etablissement",
+                etablissement_formateur_siret: "11111111100006",
+                etablissement_formateur_entreprise_raison_sociale: "Etablissement",
+              },
+            ],
+          })
+        );
+      }),
+    });
+
+    await collectSources(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
+    assert.ok(found.gestionnaire);
+    assert.ok(found.formateur);
+    assert.deepStrictEqual(found.relations, []);
+  });
+
   it("Vérifie que seuls les établissements avec au moins une formation active en 2021 sont formateurs", async () => {
     await importReferentiel();
     let source = await createFormationsSource({
@@ -382,6 +410,10 @@ integrationTests(__filename, () => {
           code: "11",
           nom: "Île-de-France",
         },
+        academie: {
+          code: "01",
+          nom: "Paris",
+        },
       },
     });
     assert.deepStrictEqual(stats, {
@@ -472,6 +504,10 @@ integrationTests(__filename, () => {
       region: {
         code: "11",
         nom: "Île-de-France",
+      },
+      academie: {
+        code: "01",
+        nom: "Paris",
       },
     });
     assert.deepStrictEqual(stats, {

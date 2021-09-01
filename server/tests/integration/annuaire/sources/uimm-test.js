@@ -12,7 +12,7 @@ integrationTests(__filename, () => {
     let source = await createSource("uimm", {
       input: createStream(
         `siret;uai
-"11111111100006";"1234567W"`
+"11111111100006";"0111111Y"`
       ),
     });
 
@@ -23,7 +23,7 @@ integrationTests(__filename, () => {
     assert.deepStrictEqual(found.uais, [
       {
         sources: ["uimm"],
-        uai: "1234567W",
+        uai: "0111111Y",
         valide: true,
       },
     ]);
