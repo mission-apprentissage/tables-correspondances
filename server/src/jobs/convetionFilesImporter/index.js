@@ -2,7 +2,7 @@ const logger = require("../../common/logger");
 const { runScript } = require("../scriptWrapper");
 const importConventionFiles = require("./importConventionFiles");
 const { downloadAndSaveFileFromS3 } = require("../../common/utils/awsUtils");
-const { getJsonFromCsvFile, readXLSXFile } = require("../../common/utils/fileUtils");
+const { getJsonFromCsvFile, readXLSXFile, downloadFile } = require("../../common/utils/fileUtils");
 const config = require("config");
 const path = require("path");
 const XLSX = require("xlsx");
@@ -23,7 +23,7 @@ const conventionFilesImporter = async (db) => {
 
   // CSV import
   const PUBLIC_OFS_PATH = path.join(__dirname, "./assets/latest_public_ofs.csv");
-  await downloadAndSaveFileFromS3(`${config.conventionFiles.path}/latest_public_ofs.csv`, PUBLIC_OFS_PATH);
+  await downloadFile("https://www.data.gouv.fr/fr/datasets/r/745a5413-d2b5-4d61-b743-8b0ace68083b", PUBLIC_OFS_PATH); // latest_public_ofs.csv
   const publicOfs = getJsonFromCsvFile(PUBLIC_OFS_PATH);
 
   // Xlsx import
