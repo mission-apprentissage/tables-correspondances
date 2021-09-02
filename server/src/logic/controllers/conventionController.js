@@ -72,6 +72,7 @@ class ConventionController {
       info_datadock_info: info_datadock.info,
       info_qualiopi_info: info_datadock.qualiopi ? "OUI" : "NON",
       info_datagouv_ofs_info: info_datagouv_ofs.info,
+      nda: info_datagouv_ofs.data?.num_da || null,
       ...conventionnementInfos,
       computed_info_datadock: datadockValue[info_datadock.value],
     };
@@ -231,11 +232,11 @@ class ConventionController {
 
   async findInfoDataGouv(siret) {
     const siren = siret.substring(0, 9);
-    const result = await ConventionFile.findOne({ type: "DATAGOUV", siren, cfa: "Oui" });
+    const result = await ConventionFile.findOne({ type: "DATAGOUV", siren, cfa: "Oui" }).lean();
     if (!result) {
-      return { info: "Erreur: DataGouv Non trouvé", value: infosCodes.infoDATAGOUV.NotFound };
+      return { info: "Erreur: DataGouv Non trouvé", value: infosCodes.infoDATAGOUV.NotFound, data: null };
     }
-    return { info: "Ok", value: infosCodes.infoDATAGOUV.Found };
+    return { info: "Ok", value: infosCodes.infoDATAGOUV.Found, data: result };
   }
 }
 
