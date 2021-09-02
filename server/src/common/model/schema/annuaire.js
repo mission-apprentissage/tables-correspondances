@@ -191,6 +191,25 @@ const annuaireSchema = {
       ),
     ],
   },
+  contacts: {
+    required: true,
+    default: [],
+    type: [
+      new Schema(
+        {
+          email: {
+            type: String,
+            required: true,
+          },
+          sources: {
+            type: [String],
+            required: true,
+          },
+        },
+        { _id: false }
+      ),
+    ],
+  },
   relations: {
     description: "La liste des établissements liés",
     required: true,

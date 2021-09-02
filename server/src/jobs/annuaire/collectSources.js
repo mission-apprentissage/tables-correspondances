@@ -51,6 +51,19 @@ async function mergeRelations(from, etablissement, relations) {
   );
 }
 
+async function mergeContacts(from, etablissement, contacts) {
+  let updated = contacts.reduce((acc, contact) => {
+    let found = etablissement.contacts.find((c) => c.email === contact.email) || {};
+    let sources = uniq([...(found.sources || []), from]);
+    acc.push({ ...found, ...contact, sources });
+    return acc;
+  }, []);
+
+  let previous = etablissement.contacts.filter((r) => !updated.map(({ email }) => email).includes(r.email));
+
+  return [...updated, ...previous];
+}
+
 function handleAnomalies(from, etablissement, anomalies) {
   logger.warn(`[Collect][${from}] Erreur lors de la collecte pour l'établissement ${etablissement.siret}.`, anomalies);
 
@@ -114,7 +127,8 @@ module.exports = async (...args) => {
     filterData((data) => {
       return filters.siret ? filters.siret === data.selector : !!data;
     }),
-    writeData(async ({ from, selector, uais = [], relations = [], reseaux = [], data = {}, anomalies = [] }) => {
+    writeData(async (res) => {
+      let { from, selector, uais = [], contacts = [], relations = [], reseaux = [], data = {}, anomalies = [] } = res;
       stats[from].total++;
       let query = buildQuery(selector);
       let etablissement = await Annuaire.findOne(query).lean();
@@ -136,6 +150,7 @@ module.exports = async (...args) => {
               ...flattenObject(data),
               uais: mergeUAI(from, etablissement, uais),
               relations: await mergeRelations(from, etablissement, relations),
+              contacts: await mergeContacts(from, etablissement, contacts),
             },
             $addToSet: {
               reseaux: {

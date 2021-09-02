@@ -74,4 +74,34 @@ integrationTests(__filename, () => {
       },
     });
   });
+
+  it("Vérifie qu'on peut collecter des contacts", async () => {
+    await importReferentiel();
+    let source = await createAcceSource([
+      {
+        uai: "0111111Y",
+        siret: "11111111100006",
+        email: "jacques@dupont.fr",
+        rattachements: { fille: [], mere: [] },
+      },
+    ]);
+
+    let stats = await collectSources(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
+    assert.deepStrictEqual(found.contacts, [
+      {
+        email: "jacques@dupont.fr",
+        sources: ["acce"],
+      },
+    ]);
+    assert.deepStrictEqual(stats, {
+      acce: {
+        total: 1,
+        updated: 1,
+        ignored: 0,
+        failed: 0,
+      },
+    });
+  });
 });
