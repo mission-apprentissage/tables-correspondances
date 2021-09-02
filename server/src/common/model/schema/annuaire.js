@@ -1,6 +1,34 @@
 const { Schema } = require("mongoose");
 
-let adresseSchema = new Schema(
+let GeojsonSchema = new Schema(
+  {
+    type: {
+      type: String,
+      required: true,
+    },
+    geometry: {
+      type: new Schema(
+        {
+          type: {
+            type: String,
+            required: true,
+          },
+          coordinates: {
+            type: Array,
+            required: true,
+          },
+        },
+        { _id: false }
+      ),
+    },
+    properties: {
+      type: Object,
+    },
+  },
+  { _id: false }
+);
+
+let AdresseSchema = new Schema(
   {
     label: {
       type: String,
@@ -48,33 +76,7 @@ let adresseSchema = new Schema(
       ),
     },
     geojson: {
-      type: new Schema(
-        {
-          type: {
-            type: String,
-            required: true,
-          },
-          geometry: {
-            type: new Schema(
-              {
-                type: {
-                  type: String,
-                  required: true,
-                },
-                coordinates: {
-                  type: Array,
-                  required: true,
-                },
-              },
-              { _id: false }
-            ),
-          },
-          properties: {
-            type: Object,
-          },
-        },
-        { _id: false }
-      ),
+      type: GeojsonSchema,
     },
   },
   { _id: false }
@@ -111,7 +113,7 @@ const annuaireSchema = {
     description: "Statut de l'entreprise",
   },
   adresse: {
-    type: adresseSchema,
+    type: AdresseSchema,
   },
   forme_juridique: {
     description: "Informations relatives à la forme juridique de l'entreprise",
@@ -214,7 +216,7 @@ const annuaireSchema = {
           },
           type: {
             type: String,
-            enum: ["formateur", "gestionnaire"],
+            enum: ["formateur", "gestionnaire", "fille", "mère"],
             default: undefined,
           },
         },
@@ -235,7 +237,7 @@ const annuaireSchema = {
           },
           adresse: {
             required: true,
-            type: adresseSchema,
+            type: AdresseSchema,
           },
         },
         { _id: false }

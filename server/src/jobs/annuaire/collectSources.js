@@ -15,7 +15,7 @@ function buildQuery(selector) {
   return typeof selector === "object" ? selector : { $or: [{ siret: selector }, { "uais.uai": selector }] };
 }
 
-function buildUAIs(from, etablissement, uais) {
+function mergeUAI(from, etablissement, uais) {
   let updated = uais
     .filter((uai) => uai && uai !== "NULL")
     .reduce((acc, uai) => {
@@ -30,7 +30,7 @@ function buildUAIs(from, etablissement, uais) {
   return [...updated, ...previous];
 }
 
-async function buildRelations(from, etablissement, relations) {
+async function mergeRelations(from, etablissement, relations) {
   let updated = relations.reduce((acc, relation) => {
     let found = etablissement.relations.find((r) => r.siret === relation.siret) || {};
     let sources = uniq([...(found.sources || []), from]);
@@ -134,8 +134,8 @@ module.exports = async (...args) => {
           {
             $set: {
               ...flattenObject(data),
-              uais: buildUAIs(from, etablissement, uais),
-              relations: await buildRelations(from, etablissement, relations),
+              uais: mergeUAI(from, etablissement, uais),
+              relations: await mergeRelations(from, etablissement, relations),
             },
             $addToSet: {
               reseaux: {
