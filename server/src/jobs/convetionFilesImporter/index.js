@@ -7,9 +7,11 @@ const config = require("config");
 const path = require("path");
 const XLSX = require("xlsx");
 
-const downloadXlsxAndGetJson = async (filename) => {
+const downloadXlsxAndGetJson = async (filename, download = true) => {
   const local_path = path.join(__dirname, `./assets/${filename}`);
-  await downloadAndSaveFileFromS3(`${config.conventionFiles.path}/${filename}`, local_path);
+  if (download) {
+    await downloadAndSaveFileFromS3(`${config.conventionFiles.path}/${filename}`, local_path);
+  }
   const datadockWb = readXLSXFile(local_path);
   return XLSX.utils.sheet_to_json(datadockWb.workbook.Sheets[datadockWb.sheet_name_list[0]]);
 };
@@ -28,7 +30,7 @@ const conventionFilesImporter = async (db) => {
 
   // Xlsx import
   const datadock = await downloadXlsxAndGetJson("BaseDataDock-latest.xlsx");
-  const depp = await downloadXlsxAndGetJson("CFASousConvRegionale_latest.xlsx");
+  const depp = await downloadXlsxAndGetJson("CFASousConvRegionale_latest.xlsx", false);
   const dgefp = await downloadXlsxAndGetJson("DGEFP - Extraction au 10 01 2020.xlsx");
 
   // Push into Db
