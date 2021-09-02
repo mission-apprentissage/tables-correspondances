@@ -9,6 +9,7 @@ exception="$exception|codes_diplomes.v1.3.csv|rncp_blocs_competences.v1.3.csv|rn
 exception="$exception|codes_diplomes.v1.4.csv|rncp_blocs_competences.v1.4.csv|rncp_certificateurs.v1.4.csv|rncp_info.v1.4.csv|rncp_nsf.v1.4.csv|rncp_rome.v1.4.csv|rncp_voix_acces.v1.4.csv|rncp_blocs_competences.v1.4.csv|rncp_certificateurs.v1.4.csv"
 exception="$exception|referentielCodesIdccOpco.csv"
 exception="$exception|CFASousConvRegionale_latest.xlsx"
+exception="$exception|CFASousConvRegionale_latest-UAI.csv"
 exception="$exception|sample.json"
 exception="$exception|tsconfig.base.json|tsconfig.json"
 exception="$exception)$"

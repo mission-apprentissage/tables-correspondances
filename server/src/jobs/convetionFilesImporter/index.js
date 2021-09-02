@@ -28,9 +28,11 @@ const conventionFilesImporter = async (db) => {
   await downloadFile("https://www.data.gouv.fr/fr/datasets/r/745a5413-d2b5-4d61-b743-8b0ace68083b", PUBLIC_OFS_PATH); // latest_public_ofs.csv
   const publicOfs = getJsonFromCsvFile(PUBLIC_OFS_PATH);
 
+  const DEPP_PATH = path.join(__dirname, "./assets/CFASousConvRegionale_latest-UAI.csv");
+  const depp = getJsonFromCsvFile(DEPP_PATH);
+
   // Xlsx import
   const datadock = await downloadXlsxAndGetJson("BaseDataDock-latest.xlsx");
-  const depp = await downloadXlsxAndGetJson("CFASousConvRegionale_latest.xlsx", false);
   const dgefp = await downloadXlsxAndGetJson("DGEFP - Extraction au 10 01 2020.xlsx");
 
   // Push into Db
