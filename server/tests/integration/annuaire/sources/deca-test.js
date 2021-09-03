@@ -9,7 +9,7 @@ const { insertAnnuaire } = require("../../../utils/fixtures");
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter l'uai", async () => {
     await insertAnnuaire({ siret: "11111111100006" });
-    let source = await createSource("deca", {
+    let source = createSource("deca", {
       input: createStream(`"FORM_ETABUAI_R";"FORM_ETABSIRET"
 "0111111Y";"11111111100006"`),
     });

@@ -121,7 +121,7 @@ async function buildLieuxDeFormation(siret, formations, getAdresseFromCoordinate
   return { lieux: lieux.filter((a) => a), anomalies };
 }
 
-module.exports = async (custom = {}) => {
+module.exports = (custom = {}) => {
   let name = "formations";
   let api = custom.apiCatalogue || new ApiCatalogue();
   let { getAdresseFromCoordinates } = adresses(custom.apiGeoAdresse || new ApiGeoAdresse());

@@ -17,7 +17,7 @@ function createAcceSource(array = {}) {
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des relations (siret)", async () => {
     await importReferentiel();
-    let source = await createAcceSource([
+    let source = createAcceSource([
       {
         uai: "0111111Y",
         siret: "11111111100006",
@@ -77,7 +77,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on peut collecter des contacts", async () => {
     await importReferentiel();
-    let source = await createAcceSource([
+    let source = createAcceSource([
       {
         uai: "0111111Y",
         siret: "11111111100006",

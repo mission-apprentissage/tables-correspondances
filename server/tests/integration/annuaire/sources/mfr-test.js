@@ -9,7 +9,7 @@ const { insertAnnuaire } = require("../../../utils/fixtures");
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier mfr avec le siret", async () => {
     await insertAnnuaire({ siret: "11111111100006" });
-    let source = await createSource("mfr", {
+    let source = createSource("mfr", {
       input: createStream(
         `uai;uai_code_educnationale;siret
 "0111111Y";"0011073X";"11111111100006"`
@@ -52,7 +52,7 @@ integrationTests(__filename, () => {
         },
       ],
     });
-    let source = await createSource("mfr", {
+    let source = createSource("mfr", {
       input: createStream(
         `uai;uai_code_educnationale;siret
 "0111111Y";"0011073X";"11111111100006"`
@@ -80,7 +80,7 @@ integrationTests(__filename, () => {
         },
       ],
     });
-    let source = await createSource("mfr", {
+    let source = createSource("mfr", {
       input: createStream(
         `uai;uai_code_educnationale;siret
 "0111111Y";"0011073X";"11111111100006"`

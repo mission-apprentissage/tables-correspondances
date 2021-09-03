@@ -10,7 +10,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations datadock", async () => {
     await insertAnnuaire({ siret: "11111111100006" });
     await insertAnnuaire({ siret: "22222222200002" });
-    let source = await createSource("datadock", {
+    let source = createSource("datadock", {
       input: createStream(
         `siret;REFERENCABLE
 "11111111100006";"OUI"
@@ -42,7 +42,7 @@ integrationTests(__filename, () => {
         conventionne: true,
       },
     });
-    let source = await createSource("datadock", {
+    let source = createSource("datadock", {
       input: createStream(
         `siret;REFERENCABLE
 "11111111100006";"OUI"`

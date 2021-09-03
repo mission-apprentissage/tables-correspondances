@@ -9,7 +9,7 @@ const { insertAnnuaire } = require("../../../utils/fixtures");
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier promotrans", async () => {
     await insertAnnuaire({ siret: "11111111100006" });
-    let source = await createSource("promotrans", {
+    let source = createSource("promotrans", {
       input: createStream(
         `siret;uai
 "11111111100006";"0111111Y"`

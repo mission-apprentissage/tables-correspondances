@@ -18,7 +18,7 @@ integrationTests(__filename, () => {
         },
       ],
     });
-    let source = await createSource("ccca-btp", {
+    let source = createSource("ccca-btp", {
       input: createStream(
         `uai
 "0111111Y"`

@@ -19,7 +19,7 @@ integrationTests(__filename, () => {
       ],
     });
 
-    let source = await createSource("cci-france", {
+    let source = createSource("cci-france", {
       input: createStream(
         `uai
 "0111111Y"`

@@ -8,7 +8,7 @@ const collectSources = require("../../../../src/jobs/annuaire/collectSources");
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier OPCO EP", async () => {
     await importReferentiel();
-    let source = await createSource("opcoep", {
+    let source = createSource("opcoep", {
       input: createStream(
         `SIRET CFA;N UAI CFA;Nom CFA
 "11111111100006";"0111111Y";"Centre de formation"`

@@ -11,7 +11,7 @@ integrationTests(__filename, () => {
     await insertAnnuaire({
       siret: "11111111111111",
     });
-    let source = await createSource("depp", {
+    let source = createSource("depp", {
       input: createStream(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"11111111111111"`),
     });

@@ -9,7 +9,7 @@ const { insertAnnuaire } = require("../../../utils/fixtures");
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier ymag", async () => {
     await insertAnnuaire({ siret: "11111111100006", uai: "1111111A" });
-    let source = await createSource("ymag", {
+    let source = createSource("ymag", {
       input: createStream(
         `siret;uai
 "11 111 111 100 006";"0111111Y"`

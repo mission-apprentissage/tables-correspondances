@@ -8,7 +8,7 @@ const { importReferentiel, createStream } = require("../../../utils/testUtils");
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier ONISEP", async () => {
     await importReferentiel();
-    let source = await createSource("onisep", {
+    let source = createSource("onisep", {
       input: createStream(
         `"code UAI";"n° SIRET";"nom"
 "0111111Y";"11111111100006";"Centre de formation"`

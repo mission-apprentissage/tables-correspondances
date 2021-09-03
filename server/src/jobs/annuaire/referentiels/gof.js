@@ -7,8 +7,8 @@ module.exports = async () => {
     name: "gof",
     stream: async function () {
       let inputs = await Promise.all(
-        ["deca", "catalogue", "sifa-ramsese"].map(async (name) => {
-          let source = await createSource(name);
+        ["deca", "catalogue", "sifa-ramsese"].map((name) => {
+          let source = createSource(name);
           return source.stream();
         })
       );

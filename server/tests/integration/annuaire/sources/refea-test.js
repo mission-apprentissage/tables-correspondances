@@ -8,7 +8,7 @@ const { importReferentiel, createStream } = require("../../../utils/testUtils");
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier REFEA", async () => {
     await importReferentiel();
-    let source = await createSource("refea", {
+    let source = createSource("refea", {
       input: createStream(
         `uai_code_siret;uai_code_educnationale;uai_libelle_educnationale
 "11111111100006";"0111111Y";"Centre de formation"`

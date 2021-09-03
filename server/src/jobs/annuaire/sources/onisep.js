@@ -31,7 +31,7 @@ async function defaultStream() {
   );
 }
 
-module.exports = async (custom = {}) => {
+module.exports = (custom = {}) => {
   let name = "onisep";
 
   return {

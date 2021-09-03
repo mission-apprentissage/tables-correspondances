@@ -24,7 +24,7 @@ function createFormationsSource(custom = {}) {
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des relations (formateur)", async () => {
     await importReferentiel();
-    let source = await createFormationsSource({
+    let source = createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
           200,
@@ -68,7 +68,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on peut collecter des relations (gestionnaire)", async () => {
     await importReferentiel();
-    let source = await createFormationsSource({
+    let source = createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
           200,
@@ -104,7 +104,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on identifie un etablissement sans relations comme formateur et gestionnaire", async () => {
     await importReferentiel();
-    let source = await createFormationsSource({
+    let source = createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
           200,
@@ -132,7 +132,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie que seuls les établissements avec au moins une formation active en 2021 sont formateurs", async () => {
     await importReferentiel();
-    let source = await createFormationsSource({
+    let source = createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations(?!2021).*/).reply(
           200,
@@ -163,7 +163,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des diplômes (cfd)", async () => {
     await importReferentiel(`"siren";"num_etablissement";"cfa"
 "222222222";"00002";"Oui"`);
-    let source = await createFormationsSource({
+    let source = createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
           200,
@@ -208,7 +208,7 @@ integrationTests(__filename, () => {
     });
     await importReferentiel(`"siren";"num_etablissement";"cfa"
 "222222222";"00002";"Oui"`);
-    let source = await createFormationsSource({
+    let source = createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
           200,
@@ -241,7 +241,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on ne collecte pas de diplômes pour les établissements gestionnaire", async () => {
     await importReferentiel(`"siren";"num_etablissement";"cfa"
 "111111111";"00006";"Oui"`);
-    let source = await createFormationsSource({
+    let source = createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
           200,
@@ -275,7 +275,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des certifications (rncp)", async () => {
     await importReferentiel(`"siren";"num_etablissement";"cfa"
 "222222222";"00002";"Oui"`);
-    let source = await createFormationsSource({
+    let source = createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
           200,
@@ -316,7 +316,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on ne collecte pas de certifications pour les établissements gestionnaire", async () => {
     await importReferentiel(`"siren";"num_etablissement";"cfa"
 "111111111";"00006";"Oui"`);
-    let source = await createFormationsSource({
+    let source = createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
           200,
@@ -351,7 +351,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des lieux de formation", async () => {
     await importReferentiel(`"siren";"num_etablissement";"cfa"
 "222222222";"00002";"Oui"`);
-    let source = await createFormationsSource({
+    let source = createFormationsSource({
       apiGeoAdresse: getMockedApiGeoAddresse((mock, responses) => {
         mock.onGet(/reverse.*/).reply(
           200,
@@ -429,7 +429,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on ne collecte pas des lieux de formation pour les établissements gestionnaire", async () => {
     await importReferentiel(`"siren";"num_etablissement";"cfa"
 "111111111";"00006";"Oui"`);
-    let source = await createFormationsSource({
+    let source = createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
           200,
@@ -464,7 +464,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on cherche une adresse quand ne peut pas reverse-geocoder un lieu de formation", async () => {
     await importReferentiel(`"siren";"num_etablissement";"cfa"
 "222222222";"00002";"Oui"`);
-    let source = await createFormationsSource({
+    let source = createFormationsSource({
       apiGeoAdresse: getMockedApiGeoAddresse((mock, responses) => {
         mock.onGet(/reverse.*/).reply(400, {});
         mock.onGet(/search.*/).reply(200, responses.search());
@@ -523,7 +523,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on créer une anomalie quand on ne peut pas trouver l'adresse d'un lieu de formation", async () => {
     await importReferentiel(`"siren";"num_etablissement";"cfa"
 "222222222";"00002";"Oui"`);
-    let source = await createFormationsSource({
+    let source = createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
           200,
@@ -568,7 +568,7 @@ integrationTests(__filename, () => {
     await insertAnnuaire({
       siret: "11111111100000",
     });
-    let source = await createFormationsSource();
+    let source = createFormationsSource();
 
     let stats = await collectSources(source, { filters: { siret: "33333333300008" } });
 
@@ -585,7 +585,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut détecter des relations avec des établissements déjà dans l'annuaire", async () => {
     await importReferentiel();
     await insertAnnuaire({ siret: "22222222200002", raison_sociale: "Mon centre de formation" });
-    let source = await createFormationsSource({
+    let source = createFormationsSource({
       apiCatalogue: getMockedApiCatalogue((mock, responses) => {
         mock.onGet(/.*formations.*/).reply(
           200,
@@ -616,7 +616,7 @@ integrationTests(__filename, () => {
         throw new ApiError("api", "HTTP error");
       },
     };
-    let source = await createFormationsSource({ apiCatalogue: failingApi });
+    let source = createFormationsSource({ apiCatalogue: failingApi });
 
     let stats = await collectSources(source);
 

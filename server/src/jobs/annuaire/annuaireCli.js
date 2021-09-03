@@ -21,7 +21,7 @@ cli
   .action((options) => {
     runScript(async () => {
       let sourceNames = ["deca", "catalogue", "sifa-ramsese"];
-      let sources = await Promise.all(sourceNames.map((name) => createSource(name)));
+      let sources = sourceNames.map((name) => createSource(name));
       return computeStats(sources, options);
     });
   });
@@ -57,11 +57,10 @@ cli
       let stats = [];
 
       for (let group of groups) {
-        let sources = await Promise.all(
-          group.map((name) => {
-            return createSource(name, { input, apiGeoAdresse: new ApiGeoAdresse() });
-          })
-        );
+        let sources = group.map((name) => {
+          return createSource(name, { input, apiGeoAdresse: new ApiGeoAdresse() });
+        });
+
         let results = await collectSources(sources, options);
         stats.push(results);
       }

@@ -2,7 +2,7 @@ const { oleoduc, transformData } = require("oleoduc");
 const { parseCsv } = require("../utils/csvUtils");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
-module.exports = async (custom = {}) => {
+module.exports = (custom = {}) => {
   let name = "deca";
 
   return {

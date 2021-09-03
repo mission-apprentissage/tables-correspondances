@@ -18,7 +18,7 @@ integrationTests(__filename, () => {
         },
       ],
     });
-    let source = await createSource("cma", {
+    let source = createSource("cma", {
       input: createStream(
         `uai
 "0111111Y"`

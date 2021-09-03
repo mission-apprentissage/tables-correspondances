@@ -9,7 +9,7 @@ const { insertAnnuaire } = require("../../../utils/fixtures");
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier uimm", async () => {
     await insertAnnuaire({ siret: "11111111100006" });
-    let source = await createSource("uimm", {
+    let source = createSource("uimm", {
       input: createStream(
         `siret;uai
 "11111111100006";"0111111Y"`

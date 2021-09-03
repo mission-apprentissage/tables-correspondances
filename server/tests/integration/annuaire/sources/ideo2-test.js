@@ -11,7 +11,7 @@ integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des relations pour le fichier ideo2 de l'ONISEP", async () => {
     await insertAnnuaire({ siret: "11111111100006" });
     await insertAnnuaire({ siret: "22222222200002" });
-    let source = await createSource("ideo2", {
+    let source = createSource("ideo2", {
       input: createStream(
         `"UAI_gestionnaire";"SIRET_gestionnaire";"SIRET_lieu_enseignement";"UAI_lieu_enseignement"
 "0111111Y";"11111111100006";"22222222200002";"0011073X"`

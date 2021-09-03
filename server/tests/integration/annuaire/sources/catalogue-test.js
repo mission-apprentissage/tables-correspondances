@@ -14,7 +14,7 @@ integrationTests(__filename, () => {
       siret: "11111111100006",
       entreprise_raison_sociale: "Centre de formation",
     });
-    let source = await createSource("catalogue");
+    let source = createSource("catalogue");
 
     let stats = await collectSources(source);
 
@@ -43,7 +43,7 @@ integrationTests(__filename, () => {
       siret: "11111111100006",
       entreprise_raison_sociale: "Centre de formation",
     });
-    let source = await createSource("catalogue");
+    let source = createSource("catalogue");
 
     let stats = await collectSources(source, {
       filters: { siret: "33333333300008" },
