@@ -2,7 +2,7 @@ const { oleoduc, transformData, filterData } = require("oleoduc");
 const { createSource } = require("../sources/sources");
 const mergeStream = require("merge-stream");
 
-module.exports = async () => {
+module.exports = () => {
   return {
     name: "gof",
     stream: async function () {

@@ -5,7 +5,7 @@ const { parseCsv } = require("../utils/csvUtils");
 function downloadFromDatagouv() {
   return getFileAsStream("https://www.monactiviteformation.emploi.gouv.fr/mon-activite-formation/public/getOFs");
 }
-module.exports = async (custom = {}) => {
+module.exports = (custom = {}) => {
   let name = "datagouv";
 
   return {

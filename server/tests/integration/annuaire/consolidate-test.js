@@ -2,7 +2,7 @@ const assert = require("assert");
 const { Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
 const { insertAnnuaire } = require("../../utils/fixtures");
-const consolidate = require("../../../src/jobs/annuaire/consolidate");
+const consolidate = require("../../../src/jobs/annuaire/tasks/consolidate");
 const { omit } = require("lodash");
 
 integrationTests(__filename, () => {

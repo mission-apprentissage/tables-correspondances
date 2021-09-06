@@ -3,7 +3,7 @@ const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
 const { importReferentiel, createStream } = require("../../../utils/testUtils");
-const collectSources = require("../../../../src/jobs/annuaire/collectSources");
+const collectSources = require("../../../../src/jobs/annuaire/tasks/collectSources");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier OPCO EP", async () => {

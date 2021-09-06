@@ -2,41 +2,34 @@ const { program: cli } = require("commander");
 const { createWriteStream } = require("fs");
 const { oleoduc, writeToStdout } = require("oleoduc");
 const { computeChecksum } = require("../../common/utils/uaiUtils");
-const ApiGeoAdresse = require("../../common/apis/ApiGeoAdresse");
 const { createReadStream } = require("fs");
 const { runScript } = require("../scriptWrapper");
-const { createReferentiel, getDefaultReferentiels } = require("./referentiels/referentiels");
-const { createSource, getDefaultSourcesGroupedByPriority } = require("./sources/sources");
-const importReferentiel = require("./importReferentiel");
-const collectSources = require("./collectSources");
+const { createReferentiel } = require("./referentiels/referentiels");
+const { createSource } = require("./sources/sources");
+const collectSources = require("./tasks/collectSources");
+const consolidate = require("./tasks/consolidate");
+const etablissementAsCsvStream = require("./tasks/etablissementAsCsvStream");
+const etablissementAsJsonStream = require("./tasks/etablissementAsJsonStream");
 const clearAnnuaire = require("./clearAnnuaire");
-const etablissementAsCsvStream = require("./utils/etablissementAsCsvStream");
-const etablissementAsJsonStream = require("./utils/etablissementAsJsonStream");
 const computeStats = require("./computeStats");
-const consolidate = require("./consolidate");
+const importReferentiel = require("./importReferentiel");
+const rebuild = require("./rebuild");
+
+cli.command("rebuild").action(() => {
+  runScript(() => rebuild());
+});
 
 cli
-  .command("computeStats")
-  .option("--save", "Sauvegarde les résultats dans les stats")
-  .action((options) => {
-    runScript(async () => {
-      let sourceNames = ["deca", "catalogue", "sifa-ramsese"];
-      let sources = sourceNames.map((name) => createSource(name));
-      return computeStats(sources, options);
-    });
-  });
-
-cli
-  .command("importReferentiel [name] [file]")
+  .command("importReferentiel <names> [file]")
   .description("Import les données contenues dans le ou les référentiels")
-  .action((name, file) => {
+  .action((names, file) => {
     runScript(async () => {
+      let referentielNames = names.split(",");
       let input = file ? createReadStream(file) : null;
-      let referentiels = name ? [name] : await getDefaultReferentiels();
       let stats = [];
 
-      for (let name of referentiels) {
-        let referentiel = await createReferentiel(name, { input });
+      let referentiels = referentielNames.map((name) => createReferentiel(name, { input }));
+      for (let referentiel of referentiels) {
         let results = await importReferentiel(referentiel);
         stats.push({ [referentiel.name]: results });
       }
@@ -46,34 +39,25 @@ cli
   });
 
 cli
-  .command("collectSources [name] [file]")
+  .command("collectSources <names> [file]")
   .option("--siret <siret>", "Limite la collecte pour le siret")
   .description("Parcourt la ou les sources pour trouver des données complémentaires")
-  .action((name, file, { siret }) => {
-    runScript(async () => {
+  .action((names, file, { siret }) => {
+    runScript(() => {
+      let sourceNames = names.split(",");
       let input = file ? createReadStream(file) : null;
       let options = siret ? { filters: { siret } } : {};
-      let groups = name ? [[name]] : getDefaultSourcesGroupedByPriority();
-      let stats = [];
 
-      for (let group of groups) {
-        let sources = group.map((name) => {
-          return createSource(name, { input, apiGeoAdresse: new ApiGeoAdresse() });
-        });
-
-        let results = await collectSources(sources, options);
-        stats.push(results);
-      }
-
-      return stats;
+      let sources = sourceNames.map((name) => createSource(name, { input }));
+      return collectSources(sources, options);
     });
   });
 
 cli
   .command("consolidate")
-  .description("Corrige les données qui viennent d'être collectées")
+  .description("Consolide les données collectées")
   .action(() => {
-    runScript(async () => {
+    runScript(() => {
       return consolidate();
     });
   });
@@ -100,6 +84,17 @@ cli
   .action(() => {
     runScript(() => {
       return clearAnnuaire();
+    });
+  });
+
+cli
+  .command("computeStats")
+  .option("--save", "Sauvegarde les résultats dans les stats")
+  .action((options) => {
+    runScript(async () => {
+      let sourceNames = ["deca", "catalogue", "sifa-ramsese"];
+      let sources = sourceNames.map((name) => createSource(name));
+      return computeStats(sources, options);
     });
   });
 

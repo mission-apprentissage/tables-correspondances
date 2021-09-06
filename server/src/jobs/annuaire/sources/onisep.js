@@ -1,17 +1,14 @@
 const { oleoduc, transformData } = require("oleoduc");
-const csv = require("csv-parse");
-const mergeStream = require("merge-stream");
+const mergeStreams = require("merge-stream");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
+const { parseCsv } = require("../utils/csvUtils");
 
-function parseCSV(stream) {
+function readCSV(stream) {
   return oleoduc(
     stream,
-    csv({
-      delimiter: ";",
-      trim: true,
+    parseCsv({
       bom: true,
       skip_lines_with_error: true,
-      columns: true,
     }),
     transformData((data) => {
       return {
@@ -25,10 +22,10 @@ function parseCSV(stream) {
 }
 
 async function defaultStream() {
-  return mergeStream(
-    parseCSV(await getOvhFileAsStream("annuaire/ONISEP-ideo-structures_denseignement_secondaire.csv")),
-    parseCSV(await getOvhFileAsStream("annuaire/ONISEP-ideo-structures_denseignement_superieur.csv"))
-  );
+  return mergeStreams([
+    readCSV(await getOvhFileAsStream("annuaire/ONISEP-ideo-structures_denseignement_secondaire.csv")),
+    readCSV(await getOvhFileAsStream("annuaire/ONISEP-ideo-structures_denseignement_superieur.csv")),
+  ]);
 }
 
 module.exports = (custom = {}) => {
@@ -37,7 +34,7 @@ module.exports = (custom = {}) => {
   return {
     name,
     async stream() {
-      return custom.input ? parseCSV(custom.input) : await defaultStream();
+      return custom.input ? readCSV(custom.input) : await defaultStream();
     },
   };
 };

@@ -2,7 +2,7 @@ const assert = require("assert");
 const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
-const collectSources = require("../../../../src/jobs/annuaire/collectSources");
+const collectSources = require("../../../../src/jobs/annuaire/tasks/collectSources");
 const { importReferentiel, createStream } = require("../../../utils/testUtils");
 
 integrationTests(__filename, () => {

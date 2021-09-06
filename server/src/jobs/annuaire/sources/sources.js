@@ -9,41 +9,15 @@ let sources = fs.readdirSync(__dirname).reduce((acc, filename) => {
   };
 }, {});
 
-function createSource(name, ...args) {
-  return sources[name](...args);
+function createSource(name, options) {
+  let create = sources[name];
+  if (!create) {
+    throw new Error(`La source '${name}' n'existe pas`);
+  }
+
+  return create(options);
 }
 
 module.exports = {
   createSource,
-  getDefaultSourcesGroupedByPriority() {
-    return [
-      [
-        "agri",
-        "anasup",
-        "compagnons-du-devoir",
-        "deca",
-        "catalogue",
-        "gesti",
-        "ideo2",
-        "onisep",
-        "onisep-structure",
-        "opcoep",
-        "promotrans",
-        "sifa-ramsese",
-        "depp",
-        "refea",
-        "sirene",
-        "ymag",
-        "tableau-de-bord",
-        "acce",
-      ],
-      [
-        "formations", //This source consumes the same API as the sirene source
-        //Theses sources used uai as selector, so we tried to collect as many uais as possible before running them
-        "ccca-btp",
-        "cci-france",
-        "cma",
-      ],
-    ];
-  },
 };

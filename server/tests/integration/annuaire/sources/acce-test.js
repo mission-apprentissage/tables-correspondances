@@ -3,7 +3,7 @@ const { Readable } = require("stream");
 const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
-const collectSources = require("../../../../src/jobs/annuaire/collectSources");
+const collectSources = require("../../../../src/jobs/annuaire/tasks/collectSources");
 const { importReferentiel } = require("../../../utils/testUtils");
 
 function createAcceSource(array = {}) {
