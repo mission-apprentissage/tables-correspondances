@@ -9,14 +9,8 @@ const { insertAnnuaire } = require("../../../utils/fixtures");
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier cci-france", async () => {
     await insertAnnuaire({
+      uai: "0111111Y",
       siret: "11111111100006",
-      uais: [
-        {
-          source: "test",
-          uai: "0111111Y",
-          valide: true,
-        },
-      ],
     });
 
     let source = createSource("cci-france", {

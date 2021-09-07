@@ -44,13 +44,8 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on peut collecter des informations du fichier mfr avec un uai", async () => {
     await insertAnnuaire({
-      uais: [
-        {
-          sources: ["mfr"],
-          uai: "0111111Y",
-          valide: true,
-        },
-      ],
+      uai: "0111111Y",
+      siret: "11111111100006",
     });
     let source = createSource("mfr", {
       input: createStream(
@@ -61,7 +56,7 @@ integrationTests(__filename, () => {
 
     await collectSources(source);
 
-    let found = await Annuaire.findOne({ "uais.uai": "0111111Y" }, { _id: 0 }).lean();
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.reseaux, ["mfr"]);
     assert.deepStrictEqual(found.uais[1], {
       sources: ["mfr"],
@@ -72,13 +67,8 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on peut collecter des informations du fichier mfr avec un uai_code_educnationale", async () => {
     await insertAnnuaire({
-      uais: [
-        {
-          sources: ["mfr"],
-          uai: "0011073X",
-          valide: false,
-        },
-      ],
+      uai: "0011073X",
+      siret: "11111111100006",
     });
     let source = createSource("mfr", {
       input: createStream(

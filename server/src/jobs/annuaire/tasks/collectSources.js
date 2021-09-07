@@ -11,7 +11,7 @@ function buildQuery(selector) {
     return { not: "matching" };
   }
 
-  return typeof selector === "object" ? selector : { $or: [{ siret: selector }, { "uais.uai": selector }] };
+  return typeof selector === "object" ? selector : { $or: [{ siret: selector }, { uai: selector }] };
 }
 
 function mergeUAI(from, etablissement, uais) {

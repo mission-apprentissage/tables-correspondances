@@ -78,19 +78,13 @@ describe(__filename, ({ startServer }) => {
     const { httpClient } = await startServer();
     await insertAnnuaire();
     await insertAnnuaire({
-      uais: [
-        {
-          source: "dummy",
-          uai: "0010856A",
-          valide: true,
-        },
-      ],
+      uai: "0010856A",
     });
 
     let response = await httpClient.get("/api/v1/annuaire/etablissements?uai=0010856A");
 
     strictEqual(response.status, 200);
-    strictEqual(response.data.etablissements[0].uais[0].uai, "0010856A");
+    ok(response.data.etablissements.every((e) => e.uai === "0010856A"));
   });
 
   it("Vérifie qu'on peut rechercher des établissements à partir d'un siret", async () => {
