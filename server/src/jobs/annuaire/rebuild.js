@@ -25,7 +25,7 @@ async function rebuild(options = {}) {
     "deca",
     "catalogue",
     "gesti",
-    "ideo2",
+    //"ideo2",
     "opcoep",
     "promotrans",
     "sifa-ramsese",
