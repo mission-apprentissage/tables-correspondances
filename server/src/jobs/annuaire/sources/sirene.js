@@ -47,16 +47,16 @@ async function loadOrganismeDeFormations() {
   return organismes;
 }
 
-module.exports = async (options = {}) => {
+module.exports = (options = {}) => {
   let name = "sirene";
   let api = options.apiSirene || new ApiSirene();
   let { getAdresseFromCoordinates } = adresses(options.apiGeoAdresse || new ApiGeoAdresse());
-  let organismes = options.organismes || (await loadOrganismeDeFormations());
 
   return {
     name,
-    stream(options = {}) {
-      let filters = options.filters || {};
+    async stream(opts = {}) {
+      let filters = opts.filters || {};
+      let organismes = options.organismes || (await loadOrganismeDeFormations());
 
       return oleoduc(
         Annuaire.find(filters, { siret: 1 }).lean().batchSize(5).cursor(),

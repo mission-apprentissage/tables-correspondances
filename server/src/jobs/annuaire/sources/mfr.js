@@ -2,7 +2,7 @@ const { oleoduc, transformData } = require("oleoduc");
 const csv = require("csv-parse");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
-module.exports = async (custom = {}) => {
+module.exports = (custom = {}) => {
   let name = "mfr";
 
   return {
@@ -23,7 +23,7 @@ module.exports = async (custom = {}) => {
           return {
             from: name,
             selector: {
-              $or: [{ siret: data["siret"] }, { "uais.uai": { $in: uais } }],
+              $or: [{ siret: data["siret"] }, { uai: { $in: uais } }],
             },
             uais,
             reseaux: ["mfr"],

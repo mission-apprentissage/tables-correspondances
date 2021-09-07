@@ -2,7 +2,7 @@ const { oleoduc, transformData, filterData } = require("oleoduc");
 const csv = require("csv-parse");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
-module.exports = async (custom = {}) => {
+module.exports = (custom = {}) => {
   let name = "datadock";
 
   return {

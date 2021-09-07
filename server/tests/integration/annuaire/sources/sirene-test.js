@@ -3,7 +3,7 @@ const { omit } = require("lodash");
 const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
-const collectSources = require("../../../../src/jobs/annuaire/collectSources");
+const collectSources = require("../../../../src/jobs/annuaire/tasks/collectSources");
 const { importReferentiel } = require("../../../utils/testUtils");
 const { getMockedApiSirene, getMockedApiGeoAddresse } = require("../../../utils/apiMocks");
 
@@ -24,7 +24,7 @@ function createSireneSource(custom = {}) {
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations de l'API Sirene", async () => {
     await importReferentiel();
-    let source = await createSireneSource();
+    let source = createSireneSource();
 
     let stats = await collectSources(source);
 
@@ -69,7 +69,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on recherche une adresse quand ne peut pas reverse-geocoder", async () => {
     await importReferentiel();
-    let source = await createSireneSource({
+    let source = createSireneSource({
       apiGeoAdresse: getMockedApiGeoAddresse((mock, responses) => {
         mock.onGet(/reverse.*/).reply(400, {});
         mock.onGet(/search.*/).reply(200, responses.search());
@@ -144,7 +144,7 @@ integrationTests(__filename, () => {
         })
       );
     });
-    let source = await createSireneSource({
+    let source = createSireneSource({
       apiSirene: api,
       organismes: ["11111111100006", "11111111122222"],
     });
@@ -174,7 +174,7 @@ integrationTests(__filename, () => {
     await importReferentiel(`"siren";"num_etablissement";"cfa"
 "111111111";"00006";"Oui"`);
 
-    let source = await createSireneSource({
+    let source = createSireneSource({
       organismes: ["11111111100006"],
     });
 
@@ -222,7 +222,7 @@ integrationTests(__filename, () => {
       );
     });
 
-    let source = await createSireneSource({
+    let source = createSireneSource({
       apiSirene: api,
       organismes: ["2222222222222222"],
     });
@@ -274,7 +274,7 @@ integrationTests(__filename, () => {
       );
     });
 
-    let source = await createSireneSource({
+    let source = createSireneSource({
       apiSirene: api,
       organismes: ["11111111100006", "11111111122222"],
     });
@@ -287,7 +287,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on gère une erreur lors de la récupération des informations de l'API Sirene", async () => {
     await importReferentiel();
-    let source = await createSireneSource({
+    let source = createSireneSource({
       apiSirene: getMockedApiSirene((mock) => {
         mock.onGet(/unites_legales.*/).reply(500, {});
       }),
@@ -309,7 +309,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on gère une erreur spécifique quand l'établissement n'existe pas", async () => {
     await importReferentiel();
-    let source = await createSireneSource({
+    let source = createSireneSource({
       apiSirene: getMockedApiSirene((mock) => {
         mock.onGet(/unites_legales.*/).reply(200, { unite_legale: { etablissements: [] } });
       }),
@@ -323,7 +323,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on gère une erreur spécifique quand l'entreprise n'existe pas", async () => {
     await importReferentiel();
-    let source = await createSireneSource({
+    let source = createSireneSource({
       apiSirene: getMockedApiSirene((mock) => {
         mock.onGet(/unites_legales.*/).reply(404, {});
       }),
@@ -337,7 +337,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on crée une anomalie quand on ne peut pas trouver l'adresse", async () => {
     await importReferentiel();
-    let source = await createSireneSource({
+    let source = createSireneSource({
       apiGeoAdresse: {
         search() {
           return Promise.reject(new Error());
@@ -372,7 +372,7 @@ integrationTests(__filename, () => {
 
   it("Vérifie qu'on crée une anomalie quand on ne peut pas trouver la catégorie juridique", async () => {
     await importReferentiel();
-    let source = await createSireneSource({
+    let source = createSireneSource({
       apiSirene: getMockedApiSirene((mock, responses) => {
         mock.onGet("etablissements/11111111100006").reply(200, responses.etablissement());
         mock

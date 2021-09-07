@@ -7,7 +7,7 @@ const { createStream } = require("../../../utils/testUtils");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut ajouter le référentiel datagouv", async () => {
-    let referentiel = await createReferentiel("datagouv", {
+    let referentiel = createReferentiel("datagouv", {
       input: createStream(`"siren";"num_etablissement";"cfa"
 "111111111";"00006";"Oui"
 "222222222";"00002";"Non"`),

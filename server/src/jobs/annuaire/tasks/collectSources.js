@@ -1,18 +1,17 @@
-const { oleoduc, writeData, filterData } = require("oleoduc");
+const { oleoduc, writeData, filterData, mergeStreams } = require("oleoduc");
 const { uniq, isEmpty } = require("lodash");
-const mergeStream = require("merge-stream");
-const { Annuaire } = require("../../common/model");
-const { getNbModifiedDocuments } = require("../../common/utils/mongooseUtils");
-const { flattenObject, isError } = require("../../common/utils/objectUtils");
-const { validateUAI } = require("../../common/utils/uaiUtils");
-const logger = require("../../common/logger");
+const { Annuaire } = require("../../../common/model");
+const { getNbModifiedDocuments } = require("../../../common/utils/mongooseUtils");
+const { flattenObject, isError } = require("../../../common/utils/objectUtils");
+const { validateUAI } = require("../../../common/utils/uaiUtils");
+const logger = require("../../../common/logger");
 
 function buildQuery(selector) {
   if (isEmpty(selector)) {
     return { not: "matching" };
   }
 
-  return typeof selector === "object" ? selector : { $or: [{ siret: selector }, { "uais.uai": selector }] };
+  return typeof selector === "object" ? selector : { $or: [{ siret: selector }, { uai: selector }] };
 }
 
 function mergeUAI(from, etablissement, uais) {
@@ -105,25 +104,15 @@ function createStats(sources) {
   }, {});
 }
 
-function parseArgs(...args) {
-  let options = typeof args[args.length - 1].stream !== "function" ? args.pop() : {};
-
-  let rest = args.pop();
-  return {
-    sources: Array.isArray(rest) ? rest : [rest],
-    options,
-  };
-}
-
-module.exports = async (...args) => {
-  let { sources, options } = parseArgs(...args);
+module.exports = async (array, options = {}) => {
+  let sources = Array.isArray(array) ? array : [array];
   let filters = options.filters || {};
   let stats = createStats(sources);
 
   let streams = await Promise.all(sources.map((source) => source.stream({ filters })));
 
   await oleoduc(
-    mergeStream(streams),
+    mergeStreams(streams),
     filterData((data) => {
       return filters.siret ? filters.siret === data.selector : !!data;
     }),

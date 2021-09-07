@@ -2,23 +2,17 @@ const assert = require("assert");
 const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
-const collectSources = require("../../../../src/jobs/annuaire/collectSources");
+const collectSources = require("../../../../src/jobs/annuaire/tasks/collectSources");
 const { createStream } = require("../../../utils/testUtils");
 const { insertAnnuaire } = require("../../../utils/fixtures");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier cma", async () => {
     await insertAnnuaire({
+      uai: "0111111Y",
       siret: "11111111100006",
-      uais: [
-        {
-          source: "test",
-          uai: "0111111Y",
-          valide: true,
-        },
-      ],
     });
-    let source = await createSource("cma", {
+    let source = createSource("cma", {
       input: createStream(
         `uai
 "0111111Y"`

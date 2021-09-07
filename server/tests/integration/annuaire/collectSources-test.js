@@ -5,7 +5,7 @@ const { Readable } = require("stream");
 const { Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
 const { insertAnnuaire } = require("../../utils/fixtures");
-const collectSources = require("../../../src/jobs/annuaire/collectSources");
+const collectSources = require("../../../src/jobs/annuaire/tasks/collectSources");
 
 integrationTests(__filename, () => {
   function createTestSource(array) {
@@ -494,21 +494,14 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on peut collecter en se basant sur un uai", async () => {
+  it("Vérifie qu'on peut collecter en se basant sur l'uai", async () => {
     await insertAnnuaire({
       uai: "0011073X",
       siret: "11111111100006",
-      uais: [
-        {
-          source: "dummy",
-          uai: "SECONDAIRE",
-          valide: true,
-        },
-      ],
     });
     let source = createTestSource([
       {
-        selector: "SECONDAIRE",
+        selector: "0011073X",
         reseaux: ["test"],
       },
     ]);

@@ -1,5 +1,5 @@
-const logger = require("../../common/logger");
-const { Annuaire } = require("../../common/model");
+const logger = require("../../../common/logger");
+const { Annuaire } = require("../../../common/model");
 
 async function validateUAI() {
   let stats = {
