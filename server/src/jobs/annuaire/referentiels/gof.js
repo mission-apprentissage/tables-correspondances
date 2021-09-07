@@ -1,6 +1,5 @@
-const { oleoduc, transformData, filterData } = require("oleoduc");
+const { oleoduc, transformData, filterData, mergeStreams } = require("oleoduc");
 const { createSource } = require("../sources/sources");
-const mergeStream = require("merge-stream");
 
 module.exports = () => {
   return {
@@ -14,7 +13,7 @@ module.exports = () => {
       );
 
       return oleoduc(
-        mergeStream(inputs),
+        mergeStreams(inputs),
         filterData((data) => data.selector),
         transformData((data) => {
           return {

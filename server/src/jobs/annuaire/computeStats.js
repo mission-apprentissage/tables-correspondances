@@ -1,8 +1,7 @@
 const { AnnuaireStats } = require("../../common/model");
-const { oleoduc, writeData } = require("oleoduc");
+const { oleoduc, writeData, mergeStreams } = require("oleoduc");
 const luhn = require("fast-luhn");
 const { intersection, union, range, uniq } = require("lodash");
-const mergeStream = require("merge-stream");
 const logger = require("../../common/logger");
 const ApiSirene = require("../../common/apis/ApiSirene");
 const Cache = require("../../common/apis/Cache");
@@ -125,7 +124,7 @@ async function validateSources(sources) {
   let streams = await Promise.all(sources.map((source) => source.stream()));
 
   await oleoduc(
-    mergeStream(streams),
+    mergeStreams(streams),
     writeData(
       async ({ from, selector: siret, uais = [] }) => {
         let uai = uais[0];

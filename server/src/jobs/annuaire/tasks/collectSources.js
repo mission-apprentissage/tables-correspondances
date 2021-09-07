@@ -1,6 +1,5 @@
-const { oleoduc, writeData, filterData } = require("oleoduc");
+const { oleoduc, writeData, filterData, mergeStreams } = require("oleoduc");
 const { uniq, isEmpty } = require("lodash");
-const mergeStream = require("merge-stream");
 const { Annuaire } = require("../../../common/model");
 const { getNbModifiedDocuments } = require("../../../common/utils/mongooseUtils");
 const { flattenObject, isError } = require("../../../common/utils/objectUtils");
@@ -113,7 +112,7 @@ module.exports = async (array, options = {}) => {
   let streams = await Promise.all(sources.map((source) => source.stream({ filters })));
 
   await oleoduc(
-    mergeStream(streams),
+    mergeStreams(streams),
     filterData((data) => {
       return filters.siret ? filters.siret === data.selector : !!data;
     }),

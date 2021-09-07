@@ -1,5 +1,4 @@
-const { oleoduc, transformData } = require("oleoduc");
-const mergeStreams = require("merge-stream");
+const { oleoduc, transformData, mergeStreams } = require("oleoduc");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 const { parseCsv } = require("../utils/csvUtils");
 
