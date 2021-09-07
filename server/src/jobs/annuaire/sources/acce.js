@@ -29,7 +29,7 @@ function buildContacts(email) {
     return [];
   }
 
-  return [{ email }];
+  return [{ email, confirmé: false }];
 }
 
 module.exports = (custom = {}) => {

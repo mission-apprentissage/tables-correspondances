@@ -279,7 +279,7 @@ integrationTests(__filename, () => {
     let source = createTestSource([
       {
         selector: "11111111100006",
-        contacts: [{ email: "jacques@dupont.fr" }],
+        contacts: [{ email: "robert@formation.fr" }],
       },
     ]);
 
@@ -288,7 +288,8 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({}, { _id: 0 }).lean();
     assert.deepStrictEqual(found.contacts, [
       {
-        email: "jacques@dupont.fr",
+        email: "robert@formation.fr",
+        confirmé: false,
         sources: ["dummy"],
       },
     ]);
