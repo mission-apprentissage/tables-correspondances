@@ -34,6 +34,7 @@ module.exports = {
         "refea",
         "sirene",
         "ymag",
+        "tableau-de-bord",
         "acce",
       ],
       [
