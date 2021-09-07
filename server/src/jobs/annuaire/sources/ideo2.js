@@ -1,8 +1,8 @@
 const { oleoduc, transformData, flattenArray, filterData } = require("oleoduc");
-const csv = require("csv-parse");
 const { isEmpty } = require("lodash");
 const { decodeStream } = require("iconv-lite");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
+const { parseCsv } = require("../utils/csvUtils");
 
 module.exports = (custom = {}) => {
   let name = "ideo2";
@@ -16,10 +16,8 @@ module.exports = (custom = {}) => {
       return oleoduc(
         input,
         decodeStream("iso-8859-1"),
-        csv({
-          delimiter: ";",
-          trim: true,
-          columns: true,
+        parseCsv({
+          skip_lines_with_error: true,
         }),
         filterData((data) => {
           let key = `${data["SIRET_gestionnaire"]}_${data["SIRET_lieu_enseignement"]}`;
