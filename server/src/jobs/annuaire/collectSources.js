@@ -15,7 +15,7 @@ function buildQuery(selector) {
   return typeof selector === "object" ? selector : { $or: [{ siret: selector }, { "uais.uai": selector }] };
 }
 
-function buildUAIs(from, etablissement, uais) {
+function mergeUAI(from, etablissement, uais) {
   let updated = uais
     .filter((uai) => uai && uai !== "NULL")
     .reduce((acc, uai) => {
@@ -30,7 +30,7 @@ function buildUAIs(from, etablissement, uais) {
   return [...updated, ...previous];
 }
 
-async function buildRelations(from, etablissement, relations) {
+async function mergeRelations(from, etablissement, relations) {
   let updated = relations.reduce((acc, relation) => {
     let found = etablissement.relations.find((r) => r.siret === relation.siret) || {};
     let sources = uniq([...(found.sources || []), from]);
@@ -49,6 +49,19 @@ async function buildRelations(from, etablissement, relations) {
       };
     })
   );
+}
+
+async function mergeContacts(from, etablissement, contacts) {
+  let updated = contacts.reduce((acc, contact) => {
+    let found = etablissement.contacts.find((c) => c.email === contact.email) || {};
+    let sources = uniq([...(found.sources || []), from]);
+    acc.push({ ...found, ...contact, sources });
+    return acc;
+  }, []);
+
+  let previous = etablissement.contacts.filter((r) => !updated.map(({ email }) => email).includes(r.email));
+
+  return [...updated, ...previous];
 }
 
 function handleAnomalies(from, etablissement, anomalies) {
@@ -114,7 +127,8 @@ module.exports = async (...args) => {
     filterData((data) => {
       return filters.siret ? filters.siret === data.selector : !!data;
     }),
-    writeData(async ({ from, selector, uais = [], relations = [], reseaux = [], data = {}, anomalies = [] }) => {
+    writeData(async (res) => {
+      let { from, selector, uais = [], contacts = [], relations = [], reseaux = [], data = {}, anomalies = [] } = res;
       stats[from].total++;
       let query = buildQuery(selector);
       let etablissement = await Annuaire.findOne(query).lean();
@@ -134,8 +148,9 @@ module.exports = async (...args) => {
           {
             $set: {
               ...flattenObject(data),
-              uais: buildUAIs(from, etablissement, uais),
-              relations: await buildRelations(from, etablissement, relations),
+              uais: mergeUAI(from, etablissement, uais),
+              relations: await mergeRelations(from, etablissement, relations),
+              contacts: await mergeContacts(from, etablissement, contacts),
             },
             $addToSet: {
               reseaux: {
