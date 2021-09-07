@@ -7,28 +7,27 @@ const { createStream } = require("../../../utils/testUtils");
 const { insertAnnuaire } = require("../../../utils/fixtures");
 
 integrationTests(__filename, () => {
-  it("Vérifie qu'on peut collecter des informations du fichier uimm", async () => {
-    await insertAnnuaire({ siret: "11111111100006" });
-    let source = createSource("uimm", {
+  it("Vérifie qu'on peut collecter des emails à partir du fichier des voeux-affelnet", async () => {
+    await insertAnnuaire({ siret: "11111111100006", uai: "0111111Y" });
+    let source = await createSource("voeux-affelnet", {
       input: createStream(
-        `siret;uai
-"11111111100006";"0111111Y"`
+        `email;uai
+"robert@formation.fr";"0111111Y"`
       ),
     });
 
     let stats = await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
-    assert.deepStrictEqual(found.reseaux, ["uimm"]);
-    assert.deepStrictEqual(found.uais, [
+    assert.deepStrictEqual(found.contacts, [
       {
-        sources: ["uimm"],
-        uai: "0111111Y",
-        valide: true,
+        email: "robert@formation.fr",
+        confirmé: true,
+        sources: ["voeux-affelnet"],
       },
     ]);
     assert.deepStrictEqual(stats, {
-      uimm: {
+      "voeux-affelnet": {
         total: 1,
         updated: 1,
         ignored: 0,

@@ -2,14 +2,14 @@ const assert = require("assert");
 const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
-const collectSources = require("../../../../src/jobs/annuaire/collectSources");
+const collectSources = require("../../../../src/jobs/annuaire/tasks/collectSources");
 const { createStream } = require("../../../utils/testUtils");
 const { insertAnnuaire } = require("../../../utils/fixtures");
 
 integrationTests(__filename, () => {
   it("Vérifie qu'on peut collecter des informations du fichier anasup", async () => {
     await insertAnnuaire({ siret: "11111111100006", uai: "1111111A" });
-    let source = await createSource("anasup", {
+    let source = createSource("anasup", {
       input: createStream(
         `siret;uai
 "11111111100006";"0111111Y"`

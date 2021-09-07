@@ -4,7 +4,7 @@ const { isEmpty } = require("lodash");
 const { decodeStream } = require("iconv-lite");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
-module.exports = async (custom = {}) => {
+module.exports = (custom = {}) => {
   let name = "ideo2";
 
   return {

@@ -5,7 +5,7 @@ const { Readable } = require("stream");
 const { Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
 const { insertAnnuaire } = require("../../utils/fixtures");
-const collectSources = require("../../../src/jobs/annuaire/collectSources");
+const collectSources = require("../../../src/jobs/annuaire/tasks/collectSources");
 
 integrationTests(__filename, () => {
   function createTestSource(array) {
@@ -274,6 +274,73 @@ integrationTests(__filename, () => {
     });
   });
 
+  it("Vérifie qu'on peut collecter des contacts", async () => {
+    await insertAnnuaire({ siret: "11111111100006" });
+    let source = createTestSource([
+      {
+        selector: "11111111100006",
+        contacts: [{ email: "robert@formation.fr" }],
+      },
+    ]);
+
+    await collectSources(source);
+
+    let found = await Annuaire.findOne({}, { _id: 0 }).lean();
+    assert.deepStrictEqual(found.contacts, [
+      {
+        email: "robert@formation.fr",
+        confirmé: false,
+        sources: ["dummy"],
+      },
+    ]);
+  });
+
+  it("Vérifie qu'on peut fusionner un contact déjà collecté", async () => {
+    await insertAnnuaire({
+      siret: "11111111100006",
+      contacts: [
+        {
+          email: "jacques@dupont.fr",
+          sources: ["other"],
+        },
+      ],
+    });
+    let source = createTestSource([
+      {
+        selector: "11111111100006",
+        contacts: [{ email: "jacques@dupont.fr" }],
+      },
+    ]);
+
+    await collectSources(source);
+
+    let found = await Annuaire.findOne({}, { _id: 0 }).lean();
+    assert.deepStrictEqual(found.contacts[0].sources, ["other", "dummy"]);
+  });
+
+  it("Vérifie qu'on ne duplique pas les contacts", async () => {
+    await insertAnnuaire({
+      siret: "11111111100006",
+      contacts: [
+        {
+          email: "jacques@dupont.fr",
+          sources: ["dummy"],
+        },
+      ],
+    });
+    let source = createTestSource([
+      {
+        selector: "11111111100006",
+        relations: [{ siret: "22222222200002", annuaire: false, label: "test", type: "gestionnaire" }],
+      },
+    ]);
+
+    await collectSources(source);
+
+    let found = await Annuaire.findOne({}, { _id: 0 }).lean();
+    assert.strictEqual(found.contacts.length, 1);
+  });
+
   it("Vérifie qu'on peut collecter des relations", async () => {
     await insertAnnuaire({ siret: "11111111100006" });
     let source = createTestSource([
@@ -428,21 +495,14 @@ integrationTests(__filename, () => {
     });
   });
 
-  it("Vérifie qu'on peut collecter en se basant sur un uai", async () => {
+  it("Vérifie qu'on peut collecter en se basant sur l'uai", async () => {
     await insertAnnuaire({
       uai: "0011073X",
       siret: "11111111100006",
-      uais: [
-        {
-          source: "dummy",
-          uai: "SECONDAIRE",
-          valide: true,
-        },
-      ],
     });
     let source = createTestSource([
       {
-        selector: "SECONDAIRE",
+        selector: "0011073X",
         reseaux: ["test"],
       },
     ]);

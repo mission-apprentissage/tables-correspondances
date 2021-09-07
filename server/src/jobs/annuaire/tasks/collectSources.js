@@ -1,21 +1,20 @@
-const { oleoduc, writeData, filterData } = require("oleoduc");
+const { oleoduc, writeData, filterData, mergeStreams } = require("oleoduc");
 const { uniq, isEmpty } = require("lodash");
-const mergeStream = require("merge-stream");
-const { Annuaire } = require("../../common/model");
-const { getNbModifiedDocuments } = require("../../common/utils/mongooseUtils");
-const { flattenObject, isError } = require("../../common/utils/objectUtils");
-const { validateUAI } = require("../../common/utils/uaiUtils");
-const logger = require("../../common/logger");
+const { Annuaire } = require("../../../common/model");
+const { getNbModifiedDocuments } = require("../../../common/utils/mongooseUtils");
+const { flattenObject, isError } = require("../../../common/utils/objectUtils");
+const { validateUAI } = require("../../../common/utils/uaiUtils");
+const logger = require("../../../common/logger");
 
 function buildQuery(selector) {
   if (isEmpty(selector)) {
     return { not: "matching" };
   }
 
-  return typeof selector === "object" ? selector : { $or: [{ siret: selector }, { "uais.uai": selector }] };
+  return typeof selector === "object" ? selector : { $or: [{ siret: selector }, { uai: selector }] };
 }
 
-function buildUAIs(from, etablissement, uais) {
+function mergeUAI(from, etablissement, uais) {
   let updated = uais
     .filter((uai) => uai && uai !== "NULL")
     .reduce((acc, uai) => {
@@ -30,7 +29,7 @@ function buildUAIs(from, etablissement, uais) {
   return [...updated, ...previous];
 }
 
-async function buildRelations(from, etablissement, relations) {
+async function mergeRelations(from, etablissement, relations) {
   let updated = relations.reduce((acc, relation) => {
     let found = etablissement.relations.find((r) => r.siret === relation.siret) || {};
     let sources = uniq([...(found.sources || []), from]);
@@ -49,6 +48,19 @@ async function buildRelations(from, etablissement, relations) {
       };
     })
   );
+}
+
+async function mergeContacts(from, etablissement, contacts) {
+  let updated = contacts.reduce((acc, contact) => {
+    let found = etablissement.contacts.find((c) => c.email === contact.email) || {};
+    let sources = uniq([...(found.sources || []), from]);
+    acc.push({ ...found, ...contact, sources });
+    return acc;
+  }, []);
+
+  let previous = etablissement.contacts.filter((r) => !updated.map(({ email }) => email).includes(r.email));
+
+  return [...updated, ...previous];
 }
 
 function handleAnomalies(from, etablissement, anomalies) {
@@ -92,29 +104,20 @@ function createStats(sources) {
   }, {});
 }
 
-function parseArgs(...args) {
-  let options = typeof args[args.length - 1].stream !== "function" ? args.pop() : {};
-
-  let rest = args.pop();
-  return {
-    sources: Array.isArray(rest) ? rest : [rest],
-    options,
-  };
-}
-
-module.exports = async (...args) => {
-  let { sources, options } = parseArgs(...args);
+module.exports = async (array, options = {}) => {
+  let sources = Array.isArray(array) ? array : [array];
   let filters = options.filters || {};
   let stats = createStats(sources);
 
   let streams = await Promise.all(sources.map((source) => source.stream({ filters })));
 
   await oleoduc(
-    mergeStream(streams),
+    mergeStreams(streams),
     filterData((data) => {
       return filters.siret ? filters.siret === data.selector : !!data;
     }),
-    writeData(async ({ from, selector, uais = [], relations = [], reseaux = [], data = {}, anomalies = [] }) => {
+    writeData(async (res) => {
+      let { from, selector, uais = [], contacts = [], relations = [], reseaux = [], data = {}, anomalies = [] } = res;
       stats[from].total++;
       let query = buildQuery(selector);
       let etablissement = await Annuaire.findOne(query).lean();
@@ -134,8 +137,9 @@ module.exports = async (...args) => {
           {
             $set: {
               ...flattenObject(data),
-              uais: buildUAIs(from, etablissement, uais),
-              relations: await buildRelations(from, etablissement, relations),
+              uais: mergeUAI(from, etablissement, uais),
+              relations: await mergeRelations(from, etablissement, relations),
+              contacts: await mergeContacts(from, etablissement, contacts),
             },
             $addToSet: {
               reseaux: {

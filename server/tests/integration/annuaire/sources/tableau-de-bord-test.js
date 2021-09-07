@@ -7,9 +7,9 @@ const { createStream } = require("../../../utils/testUtils");
 const { insertAnnuaire } = require("../../../utils/fixtures");
 
 integrationTests(__filename, () => {
-  it("Vérifie qu'on peut collecter des informations du fichier uimm", async () => {
+  it("Vérifie qu'on peut collecter des informations du fichier agri", async () => {
     await insertAnnuaire({ siret: "11111111100006" });
-    let source = createSource("uimm", {
+    let source = await createSource("tableau-de-bord", {
       input: createStream(
         `siret;uai
 "11111111100006";"0111111Y"`
@@ -19,16 +19,15 @@ integrationTests(__filename, () => {
     let stats = await collectSources(source);
 
     let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
-    assert.deepStrictEqual(found.reseaux, ["uimm"]);
     assert.deepStrictEqual(found.uais, [
       {
-        sources: ["uimm"],
+        sources: ["tableau-de-bord"],
         uai: "0111111Y",
         valide: true,
       },
     ]);
     assert.deepStrictEqual(stats, {
-      uimm: {
+      "tableau-de-bord": {
         total: 1,
         updated: 1,
         ignored: 0,

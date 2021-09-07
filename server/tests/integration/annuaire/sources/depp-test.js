@@ -2,7 +2,7 @@ const assert = require("assert");
 const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
 const { createSource } = require("../../../../src/jobs/annuaire/sources/sources");
-const collectSources = require("../../../../src/jobs/annuaire/collectSources");
+const collectSources = require("../../../../src/jobs/annuaire/tasks/collectSources");
 const { createStream } = require("../../../utils/testUtils");
 const { insertAnnuaire } = require("../../../utils/fixtures");
 
@@ -11,7 +11,7 @@ integrationTests(__filename, () => {
     await insertAnnuaire({
       siret: "11111111111111",
     });
-    let source = await createSource("depp", {
+    let source = createSource("depp", {
       input: createStream(`"numero_uai";"numero_siren_siret_uai"
 "0011058V";"11111111111111"`),
     });

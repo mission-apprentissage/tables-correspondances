@@ -1,20 +1,19 @@
-const { oleoduc, transformData, filterData } = require("oleoduc");
+const { oleoduc, transformData, filterData, mergeStreams } = require("oleoduc");
 const { createSource } = require("../sources/sources");
-const mergeStream = require("merge-stream");
 
-module.exports = async () => {
+module.exports = () => {
   return {
     name: "gof",
     stream: async function () {
       let inputs = await Promise.all(
-        ["deca", "catalogue", "sifa-ramsese"].map(async (name) => {
-          let source = await createSource(name);
+        ["deca", "catalogue", "sifa-ramsese"].map((name) => {
+          let source = createSource(name);
           return source.stream();
         })
       );
 
       return oleoduc(
-        mergeStream(inputs),
+        mergeStreams(inputs),
         filterData((data) => data.selector),
         transformData((data) => {
           return {

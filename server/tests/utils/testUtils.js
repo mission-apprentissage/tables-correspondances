@@ -36,8 +36,8 @@ module.exports = {
     return Promise.all([emptyDir(testDataDir), ...Object.values(models).map((m) => m.deleteMany())]);
   },
   createStream,
-  importReferentiel: async (content) => {
-    let referentiel = await createReferentiel("datagouv", {
+  importReferentiel: (content) => {
+    let referentiel = createReferentiel("datagouv", {
       input: createStream(
         content ||
           `"siren";"num_etablissement";"cfa"

@@ -3,7 +3,7 @@ const csv = require("csv-parse");
 const { decodeStream } = require("iconv-lite");
 const { getOvhFileAsStream } = require("../../../common/utils/ovhUtils");
 
-module.exports = async (custom = {}) => {
+module.exports = (custom = {}) => {
   let name = "gesti";
   return {
     name,
