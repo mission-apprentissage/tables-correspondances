@@ -201,6 +201,11 @@ const annuaireSchema = {
             type: String,
             required: true,
           },
+          confirmé: {
+            type: Boolean,
+            default: false,
+            required: true,
+          },
           sources: {
             type: [String],
             required: true,

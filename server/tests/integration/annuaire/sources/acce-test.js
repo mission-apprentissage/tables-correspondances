@@ -81,7 +81,7 @@ integrationTests(__filename, () => {
       {
         uai: "0111111Y",
         siret: "11111111100006",
-        email: "jacques@dupont.fr",
+        email: "robert@formation.fr",
         rattachements: { fille: [], mere: [] },
       },
     ]);
@@ -91,7 +91,8 @@ integrationTests(__filename, () => {
     let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
     assert.deepStrictEqual(found.contacts, [
       {
-        email: "jacques@dupont.fr",
+        email: "robert@formation.fr",
+        confirmé: false,
         sources: ["acce"],
       },
     ]);
