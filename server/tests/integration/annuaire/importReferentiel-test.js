@@ -26,6 +26,7 @@ integrationTests(__filename, () => {
       referentiels: ["test"],
       uais: [],
       reseaux: [],
+      contacts: [],
       relations: [],
       lieux_de_formation: [],
       diplomes: [],

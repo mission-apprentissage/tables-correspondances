@@ -48,7 +48,7 @@ cli
 cli
   .command("collectSources [name] [file]")
   .option("--siret <siret>", "Limite la collecte pour le siret")
-  .description("Parcoure la ou les sources pour trouver des données complémentaires")
+  .description("Parcourt la ou les sources pour trouver des données complémentaires")
   .action((name, file, { siret }) => {
     runScript(async () => {
       let input = file ? createReadStream(file) : null;

@@ -1,5 +1,4 @@
 const assert = require("assert");
-const { omit } = require("lodash");
 const { Annuaire } = require("../../../../src/common/model");
 const integrationTests = require("../../../utils/integrationTests");
 const importReferentiel = require("../../../../src/jobs/annuaire/importReferentiel");
@@ -18,16 +17,7 @@ integrationTests(__filename, () => {
 
     let docs = await Annuaire.find({}, { _id: 0 }).lean();
     assert.strictEqual(docs.length, 1);
-    assert.deepStrictEqual(omit(docs[0], ["_meta"]), {
-      siret: "11111111100006",
-      referentiels: ["datagouv"],
-      uais: [],
-      reseaux: [],
-      relations: [],
-      lieux_de_formation: [],
-      diplomes: [],
-      certifications: [],
-    });
+    assert.deepStrictEqual(docs[0].referentiels, ["datagouv"]);
     assert.deepStrictEqual(results, {
       total: 1,
       created: 1,

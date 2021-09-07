@@ -34,6 +34,7 @@ module.exports = {
         "refea",
         "sirene",
         "ymag",
+        "acce",
       ],
       [
         "formations", //This source consumes the same API as the sirene source
