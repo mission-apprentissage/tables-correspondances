@@ -52,7 +52,7 @@ class ConventionController {
 
     const info_depp = await this.findInfoDepp(uai);
     const info_dgefp = await this.findInfoDgefp(siret, siretSiegeSocial);
-    const info_datadock = await this.findInfoDatadock(siret, siretSiegeSocial);
+    const info_datadock = await this.findInfoDatadock(siret);
     const info_datagouv_ofs = await this.findInfoDataGouv(siret);
 
     const conventionnementInfos = this.conventionnement({
@@ -213,12 +213,10 @@ class ConventionController {
     return { info: "Ok siren", value: infosCodes.infoDGEFP.SirenMatch };
   }
 
-  async findInfoDatadock(siret, siret_siege_social) {
-    const siren = siret.substring(0, 9);
-
+  async findInfoDatadock(siret) {
     const result = await ConventionFile.findOne({
       type: "DATADOCK",
-      $or: [{ siren }, { siret }, { siret_siege_social }],
+      siret,
     }).lean();
     if (result) {
       return {
