@@ -4,9 +4,9 @@ const collectSources = require("./tasks/collectSources");
 const consolidate = require("./tasks/consolidate");
 const importReferentiel = require("./importReferentiel");
 const { createReferentiel } = require("./referentiels/referentiels");
-const clearAnnuaire = require("./clearAnnuaire");
+const clearAnnuaire = require("./clear");
 
-async function rebuild(options = {}) {
+async function build(options = {}) {
   let apiGeoAdresse = new ApiGeoAdresse(); //Allow all sources to share the same api instance (ie. rate limit)
   let stats = [];
   let collectAll = (sourceNames, bulkOptions = {}) => {
@@ -33,6 +33,7 @@ async function rebuild(options = {}) {
     "refea",
     "ymag",
     "acce",
+    "voeux-affelnet",
   ]);
 
   await collectAll(["onisep", "onisep-structure"]);
@@ -46,4 +47,4 @@ async function rebuild(options = {}) {
   return stats;
 }
 
-module.exports = rebuild;
+module.exports = build;

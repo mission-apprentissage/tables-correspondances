@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { Annuaire } = require("../../../src/common/model");
 const integrationTests = require("../../utils/integrationTests");
-const cleanAll = require("../../../src/jobs/annuaire/clearAnnuaire");
+const cleanAll = require("../../../src/jobs/annuaire/clear");
 const { insertAnnuaire } = require("../../utils/fixtures");
 
 integrationTests(__filename, () => {
