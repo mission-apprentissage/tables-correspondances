@@ -10,13 +10,13 @@ const collectSources = require("./tasks/collectSources");
 const consolidate = require("./tasks/consolidate");
 const etablissementAsCsvStream = require("./tasks/etablissementAsCsvStream");
 const etablissementAsJsonStream = require("./tasks/etablissementAsJsonStream");
-const clearAnnuaire = require("./clearAnnuaire");
+const clear = require("./clear");
 const computeStats = require("./computeStats");
 const importReferentiel = require("./importReferentiel");
-const rebuild = require("./rebuild");
+const build = require("./build");
 
-cli.command("rebuild").action(() => {
-  runScript(() => rebuild());
+cli.command("build").action(() => {
+  runScript(() => build());
 });
 
 cli
@@ -83,7 +83,7 @@ cli
   .description("Vide l'annuaire avec les données de la DEPP")
   .action(() => {
     runScript(() => {
-      return clearAnnuaire();
+      return clear();
     });
   });
 
