@@ -10,6 +10,7 @@ exception="$exception|codes_diplomes.v1.4.csv|rncp_blocs_competences.v1.4.csv|rn
 exception="$exception|referentielCodesIdccOpco.csv"
 exception="$exception|CFASousConvRegionale_latest.xlsx"
 exception="$exception|CFASousConvRegionale_latest-UAI.csv"
+exception="$exception|BaseDataDock-latest.csv"
 exception="$exception|sample.json"
 exception="$exception|tsconfig.base.json|tsconfig.json"
 exception="$exception)$"
