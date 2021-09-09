@@ -564,6 +564,46 @@ integrationTests(__filename, () => {
     });
   });
 
+  it("Vérifie qu'on peut collecter des contacts", async () => {
+    await importReferentiel();
+    let source = createFormationsSource({
+      apiCatalogue: getMockedApiCatalogue((mock, responses) => {
+        mock.onGet(/.*formations.*/).reply(
+          200,
+          responses.formations({
+            formations: [
+              {
+                email: "robert@formation.fr",
+                id_rco_formation: "01_GE107880|01_GE339324|01_GE520062|76930",
+                etablissement_gestionnaire_siret: "11111111100006",
+              },
+            ],
+          })
+        );
+      }),
+    });
+
+    let stats = await collectSources(source);
+
+    let found = await Annuaire.findOne({ siret: "11111111100006" }, { _id: 0 }).lean();
+    assert.deepStrictEqual(found.contacts, [
+      {
+        email: "robert@formation.fr",
+        confirmé: false,
+        sources: ["formations"],
+        _meta: { formations: { id_rco_formations: ["01_GE107880|01_GE339324|01_GE520062|76930"] } },
+      },
+    ]);
+    assert.deepStrictEqual(stats, {
+      formations: {
+        total: 1,
+        updated: 1,
+        ignored: 0,
+        failed: 0,
+      },
+    });
+  });
+
   it("Vérifie qu'on peut filter par siret", async () => {
     await insertAnnuaire({
       siret: "11111111100000",

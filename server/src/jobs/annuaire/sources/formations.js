@@ -1,4 +1,4 @@
-const { uniqBy, chain } = require("lodash");
+const { uniqBy, chain, uniq } = require("lodash");
 const { oleoduc, transformData } = require("oleoduc");
 const { Annuaire, BcnFormationDiplome } = require("../../../common/model");
 const ApiCatalogue = require("../../../common/apis/ApiCatalogue");
@@ -23,6 +23,8 @@ async function getFormations(api, siret, options = {}) {
         rncp_intitule: 1,
         cfd: 1,
         cfd_specialite: 1,
+        email: 1,
+        id_rco_formation: 1,
       },
       limit: 600, // no pagination needed for the moment
       ...options,
@@ -121,6 +123,27 @@ async function buildLieuxDeFormation(siret, formations, getAdresseFromCoordinate
   return { lieux: lieux.filter((a) => a), anomalies };
 }
 
+function buildContacts(formations) {
+  let contacts = formations
+    .filter((f) => f.email && f.id_rco_formation)
+    .reduce((acc, f) => {
+      let found = acc.find((a) => a.email === f.email);
+      if (!found) {
+        acc.push({
+          email: f.email,
+          confirmé: false,
+          _meta: { id_rco_formations: [f.id_rco_formation] },
+        });
+      } else {
+        found._meta.id_rco_formations = uniq([...found._meta.id_rco_formations, f.id_rco_formation]);
+      }
+
+      return acc;
+    }, []);
+
+  return { contacts };
+}
+
 module.exports = (custom = {}) => {
   let name = "formations";
   let api = custom.apiCatalogue || new ApiCatalogue();
@@ -143,6 +166,7 @@ module.exports = (custom = {}) => {
 
               let formations = [..._2020, ..._2021];
               let { relations, gestionnaire, formateur } = await buildRelations(siret, formations);
+              let { contacts } = buildContacts(formations);
               let { diplomes } = await buildDiplomes(siret, formations);
               let { certifications } = await buildCertifications(siret, formations);
               let { lieux, anomalies } = await buildLieuxDeFormation(siret, formations, getAdresseFromCoordinates);
@@ -150,6 +174,7 @@ module.exports = (custom = {}) => {
               return {
                 selector: siret,
                 relations,
+                contacts,
                 anomalies,
                 data: {
                   lieux_de_formation: lieux,

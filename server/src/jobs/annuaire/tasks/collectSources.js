@@ -53,8 +53,12 @@ async function mergeRelations(from, etablissement, relations) {
 async function mergeContacts(from, etablissement, contacts) {
   let updated = contacts.reduce((acc, contact) => {
     let found = etablissement.contacts.find((c) => c.email === contact.email) || {};
-    let sources = uniq([...(found.sources || []), from]);
-    acc.push({ ...found, ...contact, sources });
+    acc.push({
+      ...found,
+      ...contact,
+      sources: uniq([...(found.sources || []), from]),
+      ...(contact._meta ? { _meta: { ...(found._meta || {}), [from]: contact._meta } } : {}),
+    });
     return acc;
   }, []);
 
