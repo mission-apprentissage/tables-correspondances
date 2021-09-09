@@ -211,6 +211,9 @@ const annuaireSchema = {
             type: [String],
             required: true,
           },
+          _meta: {
+            type: new Schema({}, { _id: false, strict: false }),
+          },
         },
         { _id: false }
       ),
