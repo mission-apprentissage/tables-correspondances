@@ -291,6 +291,7 @@ integrationTests(__filename, () => {
         email: "robert@formation.fr",
         confirmé: false,
         sources: ["dummy"],
+        details: [],
       },
     ]);
   });

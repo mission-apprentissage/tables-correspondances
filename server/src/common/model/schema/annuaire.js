@@ -211,6 +211,10 @@ const annuaireSchema = {
             type: [String],
             required: true,
           },
+          details: {
+            type: [String],
+            required: true,
+          },
         },
         { _id: false }
       ),
