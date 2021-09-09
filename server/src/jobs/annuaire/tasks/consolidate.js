@@ -56,7 +56,11 @@ async function validateUAI() {
     .lean()
     .cursor()
     .eachAsync(async (etablissement) => {
-      let mostPopularUAI = etablissement.uais.reduce((acc, u) => (acc.sources.length < u.sources.length ? u : acc)).uai;
+      let mostPopularUAI = etablissement.uais.reduce((acc, u) => {
+        let filterSources = (array) => array.filter((s) => ["deca", "sifa-ramsese", "catalogue"].includes(s));
+        return filterSources(acc.sources).length < filterSources(u.sources).length ? u : acc;
+      }).uai;
+
       let nbConflicts = await Annuaire.count({
         siret: { $ne: etablissement.siret },
         ...withPopularUAIAndSources(mostPopularUAI),
@@ -64,7 +68,7 @@ async function validateUAI() {
 
       if (nbConflicts === 0) {
         logger.info(`UAI ${mostPopularUAI} validé pour l'établissement ${etablissement.siret}`);
-        await Annuaire.update({ siret: etablissement.siret }, { $set: { uai: mostPopularUAI } });
+        await Annuaire.updateMany({ siret: etablissement.siret }, { $set: { uai: mostPopularUAI } });
         stats.validated++;
       } else {
         stats.conflicted++;

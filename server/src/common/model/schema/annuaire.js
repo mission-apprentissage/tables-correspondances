@@ -110,6 +110,7 @@ const annuaireSchema = {
   statut: {
     type: String,
     required: true,
+    enum: ["actif", "fermé"],
     description: "Statut de l'entreprise",
   },
   adresse: {

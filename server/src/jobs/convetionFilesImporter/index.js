@@ -31,8 +31,10 @@ const conventionFilesImporter = async (db) => {
   const DEPP_PATH = path.join(__dirname, "./assets/CFASousConvRegionale_latest-UAI.csv");
   const depp = getJsonFromCsvFile(DEPP_PATH);
 
+  const Datadock_PATH = path.join(__dirname, "./assets/BaseDataDock-latest.csv");
+  const datadock = getJsonFromCsvFile(Datadock_PATH, ",");
+
   // Xlsx import
-  const datadock = await downloadXlsxAndGetJson("BaseDataDock-latest.xlsx");
   const dgefp = await downloadXlsxAndGetJson("DGEFP - Extraction au 10 01 2020.xlsx");
 
   // Push into Db

@@ -24,28 +24,35 @@ function computeCorrespondance(etablissement) {
     catalogue: getUAI("catalogue", etablissement),
   };
 
-  if (etablissement.uai) {
+  if (!etablissement.statut || etablissement.statut === "fermé") {
     return {
-      uai: etablissement.uai,
-      task: "à vérifier",
+      task: "inconnu",
       sources,
     };
   }
 
-  let uaiAValider = etablissement.uais.find((u) => {
+  if (etablissement.uai) {
+    return {
+      uai: etablissement.uai,
+      task: "à confirmer",
+      sources,
+    };
+  }
+
+  let uaiAExpertiser = etablissement.uais.find((u) => {
     let sources = u.sources.filter((s) => s.includes("deca") || s.includes("sifa-ramsese") || s.includes("catalogue"));
     return sources.length > 1;
   })?.uai;
 
-  if (uaiAValider) {
+  if (uaiAExpertiser) {
     return {
-      uai: uaiAValider,
-      task: "à valider",
+      uai: uaiAExpertiser,
+      task: "à expertiser",
       sources,
     };
   } else {
     return {
-      task: "à expertiser",
+      task: "à expertiser v2",
       sources,
     };
   }
