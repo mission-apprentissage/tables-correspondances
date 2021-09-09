@@ -291,7 +291,6 @@ integrationTests(__filename, () => {
         email: "robert@formation.fr",
         confirmé: false,
         sources: ["dummy"],
-        details: [],
       },
     ]);
   });
@@ -340,6 +339,21 @@ integrationTests(__filename, () => {
 
     let found = await Annuaire.findOne({}, { _id: 0 }).lean();
     assert.strictEqual(found.contacts.length, 1);
+  });
+
+  it("Vérifie qu'on peut ajouter des meta à un contact", async () => {
+    await insertAnnuaire({ siret: "11111111100006" });
+    let source = createTestSource([
+      {
+        selector: "11111111100006",
+        contacts: [{ email: "jacques@dupont.fr", _meta: { aSource: "some-data-to-store" } }],
+      },
+    ]);
+
+    await collectSources(source);
+
+    let found = await Annuaire.findOne({}, { _id: 0 }).lean();
+    assert.deepStrictEqual(found.contacts[0]._meta, { dummy: { aSource: "some-data-to-store" } });
   });
 
   it("Vérifie qu'on peut collecter des relations", async () => {

@@ -94,7 +94,6 @@ integrationTests(__filename, () => {
         email: "robert@formation.fr",
         confirmé: false,
         sources: ["acce"],
-        details: [],
       },
     ]);
     assert.deepStrictEqual(stats, {

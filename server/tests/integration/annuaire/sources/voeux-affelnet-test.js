@@ -24,7 +24,6 @@ integrationTests(__filename, () => {
         email: "robert@formation.fr",
         confirmé: true,
         sources: ["voeux-affelnet"],
-        details: [],
       },
     ]);
     assert.deepStrictEqual(stats, {
