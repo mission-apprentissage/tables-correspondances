@@ -591,7 +591,7 @@ integrationTests(__filename, () => {
         email: "robert@formation.fr",
         confirmé: false,
         sources: ["formations"],
-        _meta: { formations: { id_rco_formations: ["01_GE107880|01_GE339324|01_GE520062|76930"] } },
+        _extra: { formations: ["01_GE107880|01_GE339324|01_GE520062|76930"] },
       },
     ]);
     assert.deepStrictEqual(stats, {

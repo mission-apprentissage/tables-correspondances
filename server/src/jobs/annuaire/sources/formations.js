@@ -132,10 +132,10 @@ function buildContacts(formations) {
         acc.push({
           email: f.email,
           confirmé: false,
-          _meta: { id_rco_formations: [f.id_rco_formation] },
+          _extra: [f.id_rco_formation],
         });
       } else {
-        found._meta.id_rco_formations = uniq([...found._meta.id_rco_formations, f.id_rco_formation]);
+        found._extra = uniq([...found._extra, f.id_rco_formation]);
       }
 
       return acc;
