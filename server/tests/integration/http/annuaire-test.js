@@ -232,7 +232,7 @@ describe(__filename, ({ startServer }) => {
         siret: "11111111100001",
         uais: [
           {
-            source: "formations",
+            source: "catalogue-formations",
             uai: "1111111S",
             valide: true,
           },
@@ -242,12 +242,12 @@ describe(__filename, ({ startServer }) => {
         siret: "33333333300008",
         uais: [
           {
-            source: "formations",
+            source: "catalogue-formations",
             uai: "1111111S",
             valide: true,
           },
           {
-            source: "formations",
+            source: "catalogue-formations",
             uai: "2222222S",
             valide: true,
           },

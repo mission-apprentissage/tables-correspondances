@@ -145,7 +145,7 @@ function buildContacts(formations) {
 }
 
 module.exports = (custom = {}) => {
-  let name = "formations";
+  let name = "catalogue-formations";
   let api = custom.apiCatalogue || new ApiCatalogue();
   let { getAdresseFromCoordinates } = adresses(custom.apiGeoAdresse || new ApiGeoAdresse());
 
