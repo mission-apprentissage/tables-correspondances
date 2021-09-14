@@ -1,3 +1,10 @@
+## [2.24.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.24.0...v2.24.1) (2021-09-14)
+
+
+### Bug Fixes
+
+* right code to find academie in Corsica ([#179](https://github.com/mission-apprentissage/tables-correspondances/issues/179)) ([fd7402a](https://github.com/mission-apprentissage/tables-correspondances/commit/fd7402a4a40c2a22aac6ec02b4c6f87aae58d508))
+
 # [2.24.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.23.2...v2.24.0) (2021-08-26)
 
 
