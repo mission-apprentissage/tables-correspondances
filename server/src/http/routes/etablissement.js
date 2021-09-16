@@ -1,6 +1,6 @@
 const express = require("express");
 const Joi = require("joi");
-const { oleoduc, transformIntoJSON } = require("oleoduc");
+const { oleoduc, transformIntoJSON, transformData } = require("oleoduc");
 const tryCatch = require("../middlewares/tryCatchMiddleware");
 const { sendJsonStream } = require("../utils/httpUtils");
 const { paginate } = require("../../common/utils/mongooseUtils");
@@ -95,6 +95,25 @@ module.exports = () => {
           },
           arrayPropertyName: "etablissements",
         })
+      );
+
+      return sendJsonStream(stream, res);
+    })
+  );
+
+  router.get(
+    "/etablissements.ndjson",
+    tryCatch(async (req, res) => {
+      let { query, limit } = await Joi.object({
+        query: Joi.string().default("{}"),
+        limit: Joi.number().default(10),
+      }).validateAsync(req.query, { abortEarly: false });
+
+      let json = JSON.parse(query);
+
+      let stream = oleoduc(
+        Etablissement.find(json).limit(limit).cursor(),
+        transformData((etablissement) => `${JSON.stringify(etablissement)}\n`)
       );
 
       return sendJsonStream(stream, res);
