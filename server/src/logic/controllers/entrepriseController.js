@@ -53,7 +53,7 @@ class EntrepriseApiData {
     });
 
     const { nom_dept, nom_region, code_region, nom_academie, num_academie } = geoController.findDataByDepartementNum(
-      etablissementApiInfo.adresse.code_postal.substring(0, 2)
+      etablissementApiInfo.adresse.code_insee_localite.substring(0, 2)
     );
 
     return {

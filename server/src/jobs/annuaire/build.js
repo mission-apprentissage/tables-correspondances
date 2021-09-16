@@ -37,7 +37,7 @@ async function build(options = {}) {
   ]);
 
   await collectAll(["onisep", "onisep-structure"]);
-  await collectAll(["sirene", "formations"], { apiGeoAdresse });
+  await collectAll(["sirene", "catalogue-formations"], { apiGeoAdresse });
 
   await consolidate().then((res) => stats.push({ consolidation: res }));
 

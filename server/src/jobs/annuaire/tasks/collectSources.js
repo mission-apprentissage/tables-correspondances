@@ -57,7 +57,7 @@ async function mergeContacts(from, etablissement, contacts) {
       ...found,
       ...contact,
       sources: uniq([...(found.sources || []), from]),
-      ...(contact._meta ? { _meta: { ...(found._meta || {}), [from]: contact._meta } } : {}),
+      ...(contact._extra ? { _extra: { ...(found._extra || {}), [from]: contact._extra } } : {}),
     });
     return acc;
   }, []);
