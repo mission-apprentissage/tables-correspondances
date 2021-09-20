@@ -222,7 +222,7 @@ class ConventionController {
       return {
         info: "Ok",
         value: infosCodes.infoDATADOCK[result.REFERENCABLE === "OUI" ? "Referencable" : "NotReferencable"],
-        qualiopi: result.QUALIOPI === "QUALIOPI",
+        qualiopi: result.QUALIOPI && `${result.QUALIOPI}`.toUpperCase() === "QUALIOPI",
       };
     }
     return { info: "Erreur: Datadock Non trouvé", value: infosCodes.infoDATADOCK.NotFound, qualiopi: false };
