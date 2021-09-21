@@ -34,7 +34,6 @@
     "etablissements:updater": "yarn job -- src/jobs/EtablissementsUpdater/index.js",
     "es:index": "yarn job -- src/jobs/esIndex/index.js",
     "generate:swaggerschema": "yarn job -- src/jobs/generateSwaggerSchema/index.js",
-    "annuaire": "yarn --silent job -- src/jobs/annuaire/annuaireCli.js",
     "sdk:build": "tsc -b; yarn sdk:postbuild",
     "sdk:postbuild": "cpy --cwd=src --parents '**/*.json' '**/*.csv' ../lib/",
     "sdk:clean": "tsc -b --clean && rm -rf lib",
