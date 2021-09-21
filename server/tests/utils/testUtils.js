@@ -3,8 +3,6 @@ const path = require("path");
 const config = require("config");
 const { emptyDir } = require("fs-extra");
 const { connectToMongo } = require("../../src/common/mongodb");
-const { createReferentiel } = require("../../src/jobs/annuaire/referentiels/referentiels");
-const importReferentiel = require("../../src/jobs/annuaire/importReferentiel");
 
 const testDataDir = path.join(__dirname, "../../.local/test");
 let mongoHolder = null;
@@ -36,15 +34,4 @@ module.exports = {
     return Promise.all([emptyDir(testDataDir), ...Object.values(models).map((m) => m.deleteMany())]);
   },
   createStream,
-  importReferentiel: (content) => {
-    let referentiel = createReferentiel("datagouv", {
-      input: createStream(
-        content ||
-          `"siren";"num_etablissement";"cfa"
-"111111111";"00006";"Oui"`
-      ),
-    });
-
-    return importReferentiel(referentiel);
-  },
 };

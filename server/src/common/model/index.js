@@ -28,19 +28,6 @@ const createModel = (modelName, descriptor, options = {}) => {
 module.exports = {
   User: createModel("user", schema.userSchema),
   Log: createModel("log", schema.logSchema),
-  Annuaire: createModel("annuaire", schema.annuaireSchema, {
-    collectionName: "annuaire",
-    createMongoDBIndexes: (schema) => {
-      schema.index({ "$**": "text" }, { default_language: "french" });
-      schema.index({ "adresse.geojson.geometry": "2dsphere" });
-    },
-  }),
-  AnnuaireStats: createModel("annuaireStats", schema.annuaireStatsSchema, {
-    collectionName: "annuaireStats",
-    schemaOptions: {
-      strict: false,
-    },
-  }),
   FicheRncp: createModel("ficherncp", schema.ficheRncpSchema),
   ConventionFile: createModel("conventionfile", schema.conventionFileSchema),
   Onisep: createModel("onisep", schema.onisepSchema),
