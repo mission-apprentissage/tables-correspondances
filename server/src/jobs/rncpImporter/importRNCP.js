@@ -1,9 +1,7 @@
 const logger = require("../../common/logger");
-// const kitApprentissageController = require("./kitApprentissageController");
 const { asyncForEach } = require("../../common/utils/asyncUtils");
 const { FicheRncp } = require("../../common/model/index");
 const { getJsonFromCsvFile } = require("../../common/utils/fileUtils");
-// const { getFileFromS3 } = require("../../common/utils/awsUtils");
 const parseFichesFile = require("./parseFichesFile");
 const path = require("path");
 const config = require("config");
