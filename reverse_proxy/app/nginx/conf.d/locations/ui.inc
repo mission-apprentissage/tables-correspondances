@@ -11,3 +11,7 @@ location / {
     proxy_set_header        X-Forwarded-Host $server_name;
     proxy_set_header        X-Forwarded-Proto $scheme; 
 }
+
+location /annuaire {
+    return 301              http://referentiel.apprentissage.beta.gouv.fr/;
+}
