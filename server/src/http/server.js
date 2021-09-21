@@ -18,7 +18,6 @@ const services = require("./routes/services");
 const cp = require("./routes/cp");
 const rncp = require("./routes/rncp");
 const uai = require("./routes/uai");
-const annuaire = require("./routes/annuaire");
 const siret = require("./routes/siret");
 const coordinate = require("./routes/coordinate");
 const entity = require("./routes/entity");
@@ -97,7 +96,6 @@ module.exports = async (components) => {
   app.use("/api/v1/code-postal", cp());
   app.use("/api/v1/rncp", rncp());
   app.use("/api/v1/uai", uai());
-  app.use("/api/v1/annuaire", annuaire());
   app.use("/api/v1/siret", siret());
   app.use("/api/v1/coordinate", coordinate());
   app.use("/api/v1/entity", entity());
