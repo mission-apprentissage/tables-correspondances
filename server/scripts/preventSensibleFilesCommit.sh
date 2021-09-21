@@ -13,6 +13,7 @@ exception="$exception|CFASousConvRegionale_latest-UAI.csv"
 exception="$exception|BaseDataDock-latest.csv"
 exception="$exception|sample.json"
 exception="$exception|tsconfig.base.json|tsconfig.json"
+exception="$exception|CodeDiplome_RNCP_latest_kit.csv"
 exception="$exception)$"
 
 files=$(git diff --cached --name-only | grep -v -E "$exception" | grep -E "$sensible_files_pattern")
