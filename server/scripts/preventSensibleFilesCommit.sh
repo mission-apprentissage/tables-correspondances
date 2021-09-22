@@ -8,8 +8,12 @@ exception="$exception|codes_diplomes.v1.2.csv|rncp_blocs_competences.v1.2.csv|rn
 exception="$exception|codes_diplomes.v1.3.csv|rncp_blocs_competences.v1.3.csv|rncp_certificateurs.v1.3.csv|rncp_info.v1.3.csv|rncp_nsf.v1.3.csv|rncp_rome.v1.3.csv|rncp_voix_acces.v1.3.csv|rncp_blocs_competences.v1.3.csv|rncp_certificateurs.v1.3.csv"
 exception="$exception|codes_diplomes.v1.4.csv|rncp_blocs_competences.v1.4.csv|rncp_certificateurs.v1.4.csv|rncp_info.v1.4.csv|rncp_nsf.v1.4.csv|rncp_rome.v1.4.csv|rncp_voix_acces.v1.4.csv|rncp_blocs_competences.v1.4.csv|rncp_certificateurs.v1.4.csv"
 exception="$exception|referentielCodesIdccOpco.csv"
+exception="$exception|CFASousConvRegionale_latest.xlsx"
+exception="$exception|CFASousConvRegionale_latest-UAI.csv"
+exception="$exception|BaseDataDock-latest.csv"
 exception="$exception|sample.json"
 exception="$exception|tsconfig.base.json|tsconfig.json"
+exception="$exception|CodeDiplome_RNCP_latest_kit.csv"
 exception="$exception)$"
 
 files=$(git diff --cached --name-only | grep -v -E "$exception" | grep -E "$sensible_files_pattern")

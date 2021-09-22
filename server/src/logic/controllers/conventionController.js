@@ -52,7 +52,7 @@ class ConventionController {
 
     const info_depp = await this.findInfoDepp(uai);
     const info_dgefp = await this.findInfoDgefp(siret, siretSiegeSocial);
-    const info_datadock = await this.findInfoDatadock(siret, siretSiegeSocial);
+    const info_datadock = await this.findInfoDatadock(siret);
     const info_datagouv_ofs = await this.findInfoDataGouv(siret);
 
     const conventionnementInfos = this.conventionnement({
@@ -72,6 +72,7 @@ class ConventionController {
       info_datadock_info: info_datadock.info,
       info_qualiopi_info: info_datadock.qualiopi ? "OUI" : "NON",
       info_datagouv_ofs_info: info_datagouv_ofs.info,
+      nda: info_datagouv_ofs.data?.num_da || null,
       ...conventionnementInfos,
       computed_info_datadock: datadockValue[info_datadock.value],
     };
@@ -212,12 +213,10 @@ class ConventionController {
     return { info: "Ok siren", value: infosCodes.infoDGEFP.SirenMatch };
   }
 
-  async findInfoDatadock(siret, siret_siege_social) {
-    const siren = siret.substring(0, 9);
-
+  async findInfoDatadock(siret) {
     const result = await ConventionFile.findOne({
       type: "DATADOCK",
-      $or: [{ siren }, { siret }, { siret_siege_social }],
+      siret,
     }).lean();
     if (result) {
       return {
@@ -231,11 +230,11 @@ class ConventionController {
 
   async findInfoDataGouv(siret) {
     const siren = siret.substring(0, 9);
-    const result = await ConventionFile.findOne({ type: "DATAGOUV", siren, cfa: "Oui" });
+    const result = await ConventionFile.findOne({ type: "DATAGOUV", siren, cfa: "Oui" }).lean();
     if (!result) {
-      return { info: "Erreur: DataGouv Non trouvé", value: infosCodes.infoDATAGOUV.NotFound };
+      return { info: "Erreur: DataGouv Non trouvé", value: infosCodes.infoDATAGOUV.NotFound, data: null };
     }
-    return { info: "Ok", value: infosCodes.infoDATAGOUV.Found };
+    return { info: "Ok", value: infosCodes.infoDATAGOUV.Found, data: result };
   }
 }
 
