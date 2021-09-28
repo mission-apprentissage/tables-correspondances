@@ -1,7 +1,6 @@
 const logger = require("../../../common/logger");
 const { etablissementService } = require("../../../logic/services/etablissementService");
 // const { wait } = require("../../../common/utils/miscUtils");
-const { asyncForEach } = require("../../../common/utils/asyncUtils");
 const { Etablissement } = require("../../../common/model/index");
 
 const run = async (filter = {}, options = null) => {
@@ -18,11 +17,9 @@ const performUpdates = async (filter = {}, options = null) => {
     scope: { siret: true, geoloc: true, conventionnement: true, onisep: true },
   };
 
-  const etablissements = await Etablissement.find(filter);
-
-  logger.info(JSON.stringify(etablissementServiceOptions), etablissements.length);
   let count = 0;
-  await asyncForEach(etablissements, async (etablissement) => {
+  let cursor = Etablissement.find(filter).cursor();
+  for await (const etablissement of cursor) {
     try {
       const { updates, etablissement: updatedEtablissement, error } = await etablissementService(
         etablissement._doc,
@@ -46,7 +43,7 @@ const performUpdates = async (filter = {}, options = null) => {
     } catch (error) {
       logger.error(error);
     }
-  });
+  }
 
   // let offset = 0;
   // let limit = 1;
