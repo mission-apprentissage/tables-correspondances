@@ -52,8 +52,10 @@ class EntrepriseApiData {
       info_datagouv_ofs: info_datagouv_ofs.value,
     });
 
+    let code_dept = etablissementApiInfo.adresse.code_insee_localite.substring(0, 2);
+    code_dept = code_dept === "97" ? etablissementApiInfo.adresse.code_insee_localite.substring(0, 3) : code_dept;
     const { nom_dept, nom_region, code_region, nom_academie, num_academie } = geoController.findDataByDepartementNum(
-      etablissementApiInfo.adresse.code_insee_localite.substring(0, 2)
+      code_dept
     );
 
     return {
