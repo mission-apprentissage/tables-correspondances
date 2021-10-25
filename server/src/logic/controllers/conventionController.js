@@ -60,6 +60,7 @@ class ConventionController {
       info_dgefp: info_dgefp.value,
       info_datadock: info_datadock.value,
       info_datagouv_ofs: info_datagouv_ofs.value,
+      info_qualiopi: info_datadock.qualiopi ? "OUI" : "NON",
     });
 
     return {
@@ -113,12 +114,9 @@ class ConventionController {
 
     // Check if can be published
     if (
-      (result.computed_conventionne === computeCodes.conventionne.No &&
-        result.computed_declare_prefecture === computeCodes.declarePrefecture.No &&
-        filesInfos.info_datadock !== infosCodes.infoDATADOCK.Referencable) ||
-      (result.computed_conventionne === computeCodes.conventionne.No &&
-        result.computed_declare_prefecture === computeCodes.declarePrefecture.Yes &&
-        filesInfos.info_datadock !== infosCodes.infoDATADOCK.Referencable)
+      result.computed_conventionne === computeCodes.conventionne.No &&
+      filesInfos.info_datadock !== infosCodes.infoDATADOCK.Referencable &&
+      filesInfos.info_qualiopi !== "OUI"
     ) {
       // To Remove Trainings - Établissements can't be in EducNat SI
       result.catalogue_published = false;
