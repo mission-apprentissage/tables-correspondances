@@ -93,10 +93,11 @@ const getFichesRncp = async (cfdKitPath) => {
 // eslint-disable-next-line no-unused-vars
 module.exports = async (cfdKitPath = null) => {
   logger.info("Loading Kit Apprentissage FC - RNCP referentiel...");
-  const fichesRncp = await getFichesRncp(cfdKitPath);
-  logger.info("Add fiches to db...");
 
   try {
+    const fichesRncp = await getFichesRncp(cfdKitPath);
+    logger.info("Add fiches to db...");
+
     await asyncForEach(fichesRncp, async (fiche) => {
       try {
         const exist = await FicheRncp.findOne({ code_rncp: fiche.code_rncp });
