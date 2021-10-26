@@ -23,16 +23,14 @@ module.exports = () => {
     tryCatch(async (req, res) => {
       await requestSchema.validateAsync(req.body, { abortEarly: false });
 
-      const { scope: reqScope, ...item } = req.body;
-      const scope = reqScope || {
-        siret: true,
-        geoloc: true,
-        conventionnement: true,
-      };
+      const { options, ...item } = req.body;
 
-      logger.info("Generate all data from", item, scope);
-      const result = await etablissementService(item, { withHistoryUpdate: false, scope });
-      return res.json({ ...result.etablissement });
+      const scope = options.scope;
+      const withHistoryUpdate = options.withHistoryUpdate ?? false;
+
+      logger.info("Generate all data from", item, options);
+      const result = await etablissementService(item, { withHistoryUpdate, scope });
+      return res.json(result);
     })
   );
 
