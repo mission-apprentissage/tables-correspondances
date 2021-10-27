@@ -17,7 +17,7 @@ module.exports = () => {
   router.get(
     "/etablissements",
     tryCatch(async (req, res) => {
-      const stream = await axios.get(`${CATALOGUE_API_URL}/entity/etablissements`, { params: req.query });
+      const { data: stream } = await axios.get(`${CATALOGUE_API_URL}/entity/etablissements`, { params: req.query });
       return sendJsonStream(stream, res);
     })
   );
@@ -25,7 +25,9 @@ module.exports = () => {
   router.get(
     "/etablissements.ndjson",
     tryCatch(async (req, res) => {
-      const stream = await axios.get(`${CATALOGUE_API_URL}/entity/etablissements.ndjson`, { params: req.query });
+      const { data: stream } = await axios.get(`${CATALOGUE_API_URL}/entity/etablissements.ndjson`, {
+        params: req.query,
+      });
       return sendJsonStream(stream, res);
     })
   );
@@ -33,7 +35,7 @@ module.exports = () => {
   router.get(
     "/etablissements/count",
     tryCatch(async (req, res) => {
-      const data = await axios.get(`${CATALOGUE_API_URL}/entity/etablissements/count`, { params: req.query });
+      const { data } = await axios.get(`${CATALOGUE_API_URL}/entity/etablissements/count`, { params: req.query });
       return res.json(data);
     })
   );
@@ -41,7 +43,7 @@ module.exports = () => {
   router.get(
     "/etablissement",
     tryCatch(async (req, res) => {
-      const data = await axios.get(`${CATALOGUE_API_URL}/entity/etablissement`, { params: req.query });
+      const { data } = await axios.get(`${CATALOGUE_API_URL}/entity/etablissement`, { params: req.query });
       return res.json(data);
     })
   );
@@ -49,7 +51,7 @@ module.exports = () => {
   router.get(
     "/etablissement/:id",
     tryCatch(async (req, res) => {
-      const data = await axios.get(`${CATALOGUE_API_URL}/entity/etablissement/${req.params.id}`);
+      const { data } = await axios.get(`${CATALOGUE_API_URL}/entity/etablissement/${req.params.id}`);
       return res.json(data);
     })
   );
@@ -57,7 +59,7 @@ module.exports = () => {
   router.get(
     "/etablissements/siret-uai",
     tryCatch(async (req, res) => {
-      const data = await axios.get(`${CATALOGUE_API_URL}/entity/etablissements/siret-uai`, { params: req.query });
+      const { data } = await axios.get(`${CATALOGUE_API_URL}/entity/etablissements/siret-uai`, { params: req.query });
       return res.json(data);
     })
   );
