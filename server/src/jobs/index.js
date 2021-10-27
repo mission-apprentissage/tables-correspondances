@@ -6,6 +6,7 @@ const { conventionFilesImporter } = require("./convetionFilesImporter/index");
 const { onisepImporter } = require("./OnisepImporter/index");
 const { rncpImporter } = require("./rncpImporter/index");
 const { EtablissementsUpdater } = require("./EtablissementsUpdater/index");
+const { findAndUpdateSiegeSocial } = require("./EtablissementsUpdater/orphans");
 
 runScript(async ({ db }) => {
   try {
@@ -16,6 +17,7 @@ runScript(async ({ db }) => {
     await conventionFilesImporter(db);
     await rncpImporter();
     await EtablissementsUpdater();
+    await findAndUpdateSiegeSocial();
   } catch (error) {
     logger.error(error);
   }

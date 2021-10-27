@@ -32,6 +32,7 @@
     "convention:importer": "yarn job -- src/jobs/convetionFilesImporter/index.js",
     "onisep:importer": "yarn job -- src/jobs/OnisepImporter/index.js",
     "etablissements:updater": "yarn job -- src/jobs/EtablissementsUpdater/index.js",
+    "etablissements:orphans": "yarn job -- src/jobs/EtablissementsUpdater/orphans.js",
     "es:index": "yarn job -- src/jobs/esIndex/index.js",
     "generate:swaggerschema": "yarn job -- src/jobs/generateSwaggerSchema/index.js",
     "sdk:build": "tsc -b; yarn sdk:postbuild",
