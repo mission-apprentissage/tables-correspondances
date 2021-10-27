@@ -23,7 +23,7 @@ module.exports = () => {
     tryCatch(async (req, res) => {
       await requestSchema.validateAsync(req.body, { abortEarly: false });
 
-      const { options, ...item } = req.body;
+      const { options = {}, ...item } = req.body;
 
       const scope = options.scope;
       const withHistoryUpdate = options.withHistoryUpdate ?? false;
