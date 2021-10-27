@@ -1,7 +1,6 @@
 const express = require("express");
 const axios = require("axios");
 const tryCatch = require("../middlewares/tryCatchMiddleware");
-const { sendJsonStream } = require("../../common/utils/httpUtils");
 
 const CATALOGUE_API_URL =
   process.env.TABLES_CORRESPONDANCES_ENV === "production"
@@ -17,18 +16,18 @@ module.exports = () => {
   router.get(
     "/etablissements",
     tryCatch(async (req, res) => {
-      const { data: stream } = await axios.get(`${CATALOGUE_API_URL}/entity/etablissements`, { params: req.query });
-      return sendJsonStream(stream, res);
+      const { data } = await axios.get(`${CATALOGUE_API_URL}/entity/etablissements`, { params: req.query });
+      return res.json(data);
     })
   );
 
   router.get(
     "/etablissements.ndjson",
     tryCatch(async (req, res) => {
-      const { data: stream } = await axios.get(`${CATALOGUE_API_URL}/entity/etablissements.ndjson`, {
+      const { data } = await axios.get(`${CATALOGUE_API_URL}/entity/etablissements.ndjson`, {
         params: req.query,
       });
-      return sendJsonStream(stream, res);
+      return res.json(data);
     })
   );
 
