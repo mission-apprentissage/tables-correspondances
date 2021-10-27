@@ -2,7 +2,6 @@ const https = require("https");
 const logger = require("../logger");
 const { parse: parseUrl } = require("url"); // eslint-disable-line node/no-deprecated-api
 const { retry } = require("./asyncUtils");
-const { oleoduc } = require("oleoduc");
 
 module.exports = {
   getFileAsStream: async (url, httpOptions = {}) => {
@@ -28,9 +27,5 @@ module.exports = {
       },
       { delay: 250, maxRetries: 3 }
     );
-  },
-  sendJsonStream: (stream, res) => {
-    res.setHeader("Content-Type", "application/json");
-    oleoduc(stream, res);
   },
 };
