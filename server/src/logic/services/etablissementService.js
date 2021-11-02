@@ -59,6 +59,11 @@ const etablissementService = async (
       numero_voie: etablissement.numero_voie,
       type_voie: etablissement.type_voie,
       nom_voie: etablissement.nom_voie,
+
+      idcc: etablissement.idcc,
+      opco_nom: etablissement.opco_nom,
+      opco_siren: etablissement.opco_siren,
+
       geo_coordonnees: etablissement.geo_coordonnees,
     };
 
@@ -156,17 +161,18 @@ const etablissementService = async (
       }
     }
 
-    // Todo add scope
-    let resultsCfadock = {};
-    try {
-      resultsCfadock = await apiCfaDock.getOpcoData(updatedEtablissement.siren);
-    } catch (error) {
-      console.log(error);
+    // just fill it when it's empty
+    if (!current.idcc || !current.opco_nom || !current.opco_siren) {
+      try {
+        const resultsCfadock = await apiCfaDock.getOpcoData(updatedEtablissement.siren);
+        updatedEtablissement = {
+          ...updatedEtablissement,
+          ...resultsCfadock,
+        };
+      } catch (error) {
+        console.log(error);
+      }
     }
-    updatedEtablissement = {
-      ...updatedEtablissement,
-      ...resultsCfadock,
-    };
 
     if (Object.keys(updatedEtablissement).length > 0) {
       updatedEtablissement = {
