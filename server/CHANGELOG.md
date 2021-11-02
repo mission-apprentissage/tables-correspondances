@@ -1,3 +1,10 @@
+## [2.25.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.25.1...v2.25.2) (2021-11-02)
+
+
+### Bug Fixes
+
+* quick handle EDUFORM ([fa8e12d](https://github.com/mission-apprentissage/tables-correspondances/commit/fa8e12d6617ccc9e33ccc50e1598a0e2b441ce5b))
+
 ## [2.25.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.25.0...v2.25.1) (2021-11-02)
 
 
