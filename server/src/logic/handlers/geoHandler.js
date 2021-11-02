@@ -28,7 +28,9 @@ const getDataFromCP = async (providedCP, providedCodeInsee) => {
     return {
       result: {},
       messages: {
-        error: `Erreur: Le code postal fourni est introuvable ${providedCP}`,
+        error: `Erreur: Le code postal fourni est introuvable ${providedCP}${
+          providedCodeInsee ? ` (Code Insee : ${providedCodeInsee})` : ""
+        }`,
       },
     };
   }

@@ -18,7 +18,6 @@ const services = require("./routes/services");
 const cp = require("./routes/cp");
 const rncp = require("./routes/rncp");
 const uai = require("./routes/uai");
-const annuaire = require("./routes/annuaire");
 const siret = require("./routes/siret");
 const coordinate = require("./routes/coordinate");
 const entity = require("./routes/entity");
@@ -35,7 +34,6 @@ const opcos = require("./routes/opcos");
 const bcn = require("./routes/bcn");
 
 const etablissement = require("./routes/etablissement");
-const etablissementSecure = require("./routes/etablissementSecure");
 
 const swaggerSchema = require("../common/model/swaggerSchema");
 
@@ -85,7 +83,6 @@ module.exports = async (components) => {
 
   app.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecification));
   app.use("/api/v1/entity", etablissement());
-  app.use("/api/v1/entity", checkJwtToken, etablissementSecure());
   app.use("/api/v1/services", services());
   app.use("/api/v1/bcn", bcn());
   app.use("/api/v1/opcos", opcos());
@@ -97,7 +94,6 @@ module.exports = async (components) => {
   app.use("/api/v1/code-postal", cp());
   app.use("/api/v1/rncp", rncp());
   app.use("/api/v1/uai", uai());
-  app.use("/api/v1/annuaire", annuaire());
   app.use("/api/v1/siret", siret());
   app.use("/api/v1/coordinate", coordinate());
   app.use("/api/v1/entity", entity());
@@ -111,7 +107,6 @@ module.exports = async (components) => {
   /** DEPRECATED */
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecification));
   app.use("/api/entity", etablissement());
-  app.use("/api/entity", checkJwtToken, etablissementSecure());
   app.use("/api/services", services());
   app.use("/api/bcn", bcn());
   app.use("/api/opcos", opcos());

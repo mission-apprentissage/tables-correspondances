@@ -1,9 +1,7 @@
 const logger = require("../../common/logger");
-// const kitApprentissageController = require("./kitApprentissageController");
 const { asyncForEach } = require("../../common/utils/asyncUtils");
 const { FicheRncp } = require("../../common/model/index");
 const { getJsonFromCsvFile } = require("../../common/utils/fileUtils");
-// const { getFileFromS3 } = require("../../common/utils/awsUtils");
 const parseFichesFile = require("./parseFichesFile");
 const path = require("path");
 const config = require("config");
@@ -95,10 +93,11 @@ const getFichesRncp = async (cfdKitPath) => {
 // eslint-disable-next-line no-unused-vars
 module.exports = async (cfdKitPath = null) => {
   logger.info("Loading Kit Apprentissage FC - RNCP referentiel...");
-  const fichesRncp = await getFichesRncp(cfdKitPath);
-  logger.info("Add fiches to db...");
 
   try {
+    const fichesRncp = await getFichesRncp(cfdKitPath);
+    logger.info("Add fiches to db...");
+
     await asyncForEach(fichesRncp, async (fiche) => {
       try {
         const exist = await FicheRncp.findOne({ code_rncp: fiche.code_rncp });

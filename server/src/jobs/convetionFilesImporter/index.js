@@ -2,14 +2,16 @@ const logger = require("../../common/logger");
 const { runScript } = require("../scriptWrapper");
 const importConventionFiles = require("./importConventionFiles");
 const { downloadAndSaveFileFromS3 } = require("../../common/utils/awsUtils");
-const { getJsonFromCsvFile, readXLSXFile } = require("../../common/utils/fileUtils");
+const { getJsonFromCsvFile, readXLSXFile, downloadFile } = require("../../common/utils/fileUtils");
 const config = require("config");
 const path = require("path");
 const XLSX = require("xlsx");
 
-const downloadXlsxAndGetJson = async (filename) => {
+const downloadXlsxAndGetJson = async (filename, download = true) => {
   const local_path = path.join(__dirname, `./assets/${filename}`);
-  await downloadAndSaveFileFromS3(`${config.conventionFiles.path}/${filename}`, local_path);
+  if (download) {
+    await downloadAndSaveFileFromS3(`${config.conventionFiles.path}/${filename}`, local_path);
+  }
   const datadockWb = readXLSXFile(local_path);
   return XLSX.utils.sheet_to_json(datadockWb.workbook.Sheets[datadockWb.sheet_name_list[0]]);
 };
@@ -23,12 +25,16 @@ const conventionFilesImporter = async (db) => {
 
   // CSV import
   const PUBLIC_OFS_PATH = path.join(__dirname, "./assets/latest_public_ofs.csv");
-  await downloadAndSaveFileFromS3(`${config.conventionFiles.path}/latest_public_ofs.csv`, PUBLIC_OFS_PATH);
+  await downloadFile("https://www.data.gouv.fr/fr/datasets/r/745a5413-d2b5-4d61-b743-8b0ace68083b", PUBLIC_OFS_PATH); // latest_public_ofs.csv
   const publicOfs = getJsonFromCsvFile(PUBLIC_OFS_PATH);
 
+  const DEPP_PATH = path.join(__dirname, "./assets/CFASousConvRegionale_latest-UAI.csv");
+  const depp = getJsonFromCsvFile(DEPP_PATH);
+
+  const Datadock_PATH = path.join(__dirname, "./assets/BaseDataDock-latest.csv");
+  const datadock = getJsonFromCsvFile(Datadock_PATH, ",");
+
   // Xlsx import
-  const datadock = await downloadXlsxAndGetJson("BaseDataDock-latest.xlsx");
-  const depp = await downloadXlsxAndGetJson("CFASousConvRegionale_latest.xlsx");
   const dgefp = await downloadXlsxAndGetJson("DGEFP - Extraction au 10 01 2020.xlsx");
 
   // Push into Db

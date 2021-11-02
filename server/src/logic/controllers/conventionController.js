@@ -52,7 +52,7 @@ class ConventionController {
 
     const info_depp = await this.findInfoDepp(uai);
     const info_dgefp = await this.findInfoDgefp(siret, siretSiegeSocial);
-    const info_datadock = await this.findInfoDatadock(siret, siretSiegeSocial);
+    const info_datadock = await this.findInfoDatadock(siret);
     const info_datagouv_ofs = await this.findInfoDataGouv(siret);
 
     const conventionnementInfos = this.conventionnement({
@@ -60,6 +60,7 @@ class ConventionController {
       info_dgefp: info_dgefp.value,
       info_datadock: info_datadock.value,
       info_datagouv_ofs: info_datagouv_ofs.value,
+      info_qualiopi: info_datadock.qualiopi ? "OUI" : "NON",
     });
 
     return {
@@ -72,6 +73,7 @@ class ConventionController {
       info_datadock_info: info_datadock.info,
       info_qualiopi_info: info_datadock.qualiopi ? "OUI" : "NON",
       info_datagouv_ofs_info: info_datagouv_ofs.info,
+      nda: info_datagouv_ofs.data?.num_da || null,
       ...conventionnementInfos,
       computed_info_datadock: datadockValue[info_datadock.value],
     };
@@ -112,12 +114,9 @@ class ConventionController {
 
     // Check if can be published
     if (
-      (result.computed_conventionne === computeCodes.conventionne.No &&
-        result.computed_declare_prefecture === computeCodes.declarePrefecture.No &&
-        filesInfos.info_datadock !== infosCodes.infoDATADOCK.Referencable) ||
-      (result.computed_conventionne === computeCodes.conventionne.No &&
-        result.computed_declare_prefecture === computeCodes.declarePrefecture.Yes &&
-        filesInfos.info_datadock !== infosCodes.infoDATADOCK.Referencable)
+      result.computed_conventionne === computeCodes.conventionne.No &&
+      filesInfos.info_datadock !== infosCodes.infoDATADOCK.Referencable &&
+      filesInfos.info_qualiopi !== "OUI"
     ) {
       // To Remove Trainings - Établissements can't be in EducNat SI
       result.catalogue_published = false;
@@ -212,18 +211,16 @@ class ConventionController {
     return { info: "Ok siren", value: infosCodes.infoDGEFP.SirenMatch };
   }
 
-  async findInfoDatadock(siret, siret_siege_social) {
-    const siren = siret.substring(0, 9);
-
+  async findInfoDatadock(siret) {
     const result = await ConventionFile.findOne({
       type: "DATADOCK",
-      $or: [{ siren }, { siret }, { siret_siege_social }],
+      siret,
     }).lean();
     if (result) {
       return {
         info: "Ok",
         value: infosCodes.infoDATADOCK[result.REFERENCABLE === "OUI" ? "Referencable" : "NotReferencable"],
-        qualiopi: result.QUALIOPI === "QUALIOPI",
+        qualiopi: result.QUALIOPI && `${result.QUALIOPI}`.toUpperCase() === "QUALIOPI",
       };
     }
     return { info: "Erreur: Datadock Non trouvé", value: infosCodes.infoDATADOCK.NotFound, qualiopi: false };
@@ -231,11 +228,11 @@ class ConventionController {
 
   async findInfoDataGouv(siret) {
     const siren = siret.substring(0, 9);
-    const result = await ConventionFile.findOne({ type: "DATAGOUV", siren, cfa: "Oui" });
+    const result = await ConventionFile.findOne({ type: "DATAGOUV", siren, cfa: "Oui" }).lean();
     if (!result) {
-      return { info: "Erreur: DataGouv Non trouvé", value: infosCodes.infoDATAGOUV.NotFound };
+      return { info: "Erreur: DataGouv Non trouvé", value: infosCodes.infoDATAGOUV.NotFound, data: null };
     }
-    return { info: "Ok", value: infosCodes.infoDATAGOUV.Found };
+    return { info: "Ok", value: infosCodes.infoDATAGOUV.Found, data: result };
   }
 }
 

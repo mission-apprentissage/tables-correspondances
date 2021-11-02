@@ -5,8 +5,8 @@ const etablissementSchema = {
     description: "Cet établissement est le siége sociale",
   },
   etablissement_siege_id: {
-    type: Object,
-    default: {},
+    type: String,
+    default: null,
     description: "Identifiant établissement siége",
   },
   etablissement_siege_siret: {
@@ -23,6 +23,11 @@ const etablissementSchema = {
     type: String,
     default: null,
     description: "Numéro siren de l'entreprise",
+  },
+  nda: {
+    type: String,
+    default: null,
+    description: "Numéro Déclaration",
   },
   naf_code: {
     type: String,
@@ -406,7 +411,7 @@ const etablissementSchema = {
     description: "l'établissement a des formations",
   },
   formations_ids: {
-    type: [Object],
+    type: [String],
     default: [],
     description: "Id des formations rattachées",
   },

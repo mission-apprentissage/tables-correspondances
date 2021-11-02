@@ -4,7 +4,8 @@ const path = require("path");
 const fs = require("fs-extra");
 const axios = require("axios");
 
-const getJsonFromCsvFile = (localPath) => {
+const getJsonFromCsvFile = (localPath, delimiter = ";") => {
+  csvToJson.fieldDelimiter(delimiter);
   return csvToJson.getJsonFromCsv(localPath);
 };
 module.exports.getJsonFromCsvFile = getJsonFromCsvFile;
