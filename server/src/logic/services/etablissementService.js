@@ -76,7 +76,7 @@ const etablissementService = async (
       // don't retrieve geoloc if we already have it, since address never changes for a given siret
       if (current.geo_coordonnees) {
         withGeoloc = false;
-        updatedEtablissement = current.geo_coordonnees;
+        updatedEtablissement.geo_coordonnees = current.geo_coordonnees;
       }
 
       const { result: siretMapping, messages: siretMessages } = await getDataFromSiret(etablissement.siret, {
