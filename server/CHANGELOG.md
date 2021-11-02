@@ -1,3 +1,32 @@
+# [2.25.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.24.1...v2.25.0) (2021-11-02)
+
+
+### Bug Fixes
+
+* add cfd in mapping ([883fbf6](https://github.com/mission-apprentissage/tables-correspondances/commit/883fbf6e2e87dcfa3a19d208985573dddbdaad2c))
+* case insensitive qualiopi ([#181](https://github.com/mission-apprentissage/tables-correspondances/issues/181)) ([25e213e](https://github.com/mission-apprentissage/tables-correspondances/commit/25e213ebeeacc2e1c1064256d64b6dab1710ba93))
+* depp to csv ([efd122c](https://github.com/mission-apprentissage/tables-correspondances/commit/efd122c4c028e362c5aa96bbdb14afde44a17cc5))
+* etablissement schema mapping ([c6d41af](https://github.com/mission-apprentissage/tables-correspondances/commit/c6d41af71fd2087508d2fc6bfe167f50899e45fb))
+* fix academie outre mer ([#186](https://github.com/mission-apprentissage/tables-correspondances/issues/186)) ([b8bf8d5](https://github.com/mission-apprentissage/tables-correspondances/commit/b8bf8d5d20a37bf05c792e0b57c1dd28755d4b5f))
+* fix proxy ([4cbc200](https://github.com/mission-apprentissage/tables-correspondances/commit/4cbc200d12f292f527f96de37a1c39d92f252069))
+* proxy etablissement routes to catalogue ([1cac8ea](https://github.com/mission-apprentissage/tables-correspondances/commit/1cac8eaee490d3331d39fa3c2839180723a33bc1))
+* proxy etablissement routes to catalogue ([ac40569](https://github.com/mission-apprentissage/tables-correspondances/commit/ac40569f51966fe4224bce155226267ba55ec604))
+* right code to find academie in Corsica ([#179](https://github.com/mission-apprentissage/tables-correspondances/issues/179)) ([40fb8a8](https://github.com/mission-apprentissage/tables-correspondances/commit/40fb8a833141a89313d4597a7ecde93605ea99f2))
+* services/etablissement default value spread body ([14164f6](https://github.com/mission-apprentissage/tables-correspondances/commit/14164f62c643a2b0fedf7a6f528841c01270222f))
+* try/catch around RNCP import ([88e1ace](https://github.com/mission-apprentissage/tables-correspondances/commit/88e1aceab9e54bdc93ce5676aeb8279a5822cb32))
+* update git attribut ([54a6627](https://github.com/mission-apprentissage/tables-correspondances/commit/54a6627445611b74809074c8397ebc4b79b6fe2e))
+
+
+### Features
+
+* csv datadock ([421bcdb](https://github.com/mission-apprentissage/tables-correspondances/commit/421bcdb2097598a0dfa8c684c1c644186d726772))
+* find and update siege social ([#187](https://github.com/mission-apprentissage/tables-correspondances/issues/187)) ([b116583](https://github.com/mission-apprentissage/tables-correspondances/commit/b116583991bc1b84bb87951a72c40517a957b909))
+* kit apprentissage 2.0 ([#182](https://github.com/mission-apprentissage/tables-correspondances/issues/182)) ([a0e8487](https://github.com/mission-apprentissage/tables-correspondances/commit/a0e8487ff2595738ed79a567ac933d342fe29481))
+* kit apprentissage 2.0 bis ([#185](https://github.com/mission-apprentissage/tables-correspondances/issues/185)) ([4ef275c](https://github.com/mission-apprentissage/tables-correspondances/commit/4ef275cc99edd1f77c8a8802e3847fe2a195e817))
+* qualiopi or datadock to be published ([#188](https://github.com/mission-apprentissage/tables-correspondances/issues/188)) ([8ae5223](https://github.com/mission-apprentissage/tables-correspondances/commit/8ae522326793d74f0d5fa1968f938ba5b2a1fde0))
+* **convention:** change rule for datadock file ([2277cb3](https://github.com/mission-apprentissage/tables-correspondances/commit/2277cb36fb2f2dbba4be195134d40b1959d1af71))
+* **test:** use binary directly from source ([36cdfd5](https://github.com/mission-apprentissage/tables-correspondances/commit/36cdfd54e654937eaef7c8a7b88727aea85341dc))
+
 ## [2.24.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.24.0...v2.24.1) (2021-09-14)
 
 
