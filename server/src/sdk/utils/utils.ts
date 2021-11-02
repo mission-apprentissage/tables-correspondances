@@ -274,7 +274,35 @@ export async function getAddressFromCoordinates({
   }
 }
 
+type Etablissement = any; // TODO type or find a way to infer from mongoose schema
+
+type EtablissementScope = {
+  siret: boolean;
+  geoloc: boolean;
+  conventionnement: boolean;
+  onisep: boolean;
+};
+
+type EtablissementOptions = {
+  withHistoryUpdate?: boolean;
+  scope?: EtablissementScope;
+};
+
+type UpdatesResult = {
+  updates: object | null;
+  error?: string;
+  etablissement: Etablissement;
+};
+
+export async function getEtablissementUpdates(
+  etablissement: Etablissement,
+  options?: EtablissementOptions
+): Promise<UpdatesResult> {
+  isSdkReady();
+  let { etablissementService } = await import("../../logic/services/etablissementService");
+  return await etablissementService(etablissement, options);
+}
+
 // TODO
 // const conventionFilesImporter = require("./convetionFilesImporter/index");
 // await conventionFilesImporter(db);
-//await EtablissementsUpdater();
