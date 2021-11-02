@@ -59,14 +59,29 @@ const etablissementService = async (
       numero_voie: etablissement.numero_voie,
       type_voie: etablissement.type_voie,
       nom_voie: etablissement.nom_voie,
+
+      idcc: etablissement.idcc,
+      opco_nom: etablissement.opco_nom,
+      opco_siren: etablissement.opco_siren,
+
+      geo_coordonnees: etablissement.geo_coordonnees,
     };
 
     let updatedEtablissement = {};
 
     // ENTREPRISE DATA
     if (scope.siret) {
-      // console.log("Update siret info");
-      const { result: siretMapping, messages: siretMessages } = await getDataFromSiret(etablissement.siret);
+      let withGeoloc = true;
+
+      // don't retrieve geoloc if we already have it, since address never changes for a given siret
+      if (current.geo_coordonnees) {
+        withGeoloc = false;
+        updatedEtablissement = current.geo_coordonnees;
+      }
+
+      const { result: siretMapping, messages: siretMessages } = await getDataFromSiret(etablissement.siret, {
+        withGeoloc,
+      });
 
       let error = parseErrors(siretMessages);
       if (error) {
@@ -97,7 +112,6 @@ const etablissementService = async (
     if (scope.geoloc && !scope.siret) {
       // check scope.siret because geoloc is already retrieved by getDataFromSiret
 
-      // console.log("Update geoloc info");
       const { result: geoMapping, messages: geoMessages } = await getCoordinatesFromAddressData({
         numero_voie: current.numero_voie,
         type_voie: current.type_voie,
@@ -119,7 +133,6 @@ const etablissementService = async (
 
     // CONVENTIONNEMENNT DATA
     if (scope.conventionnement) {
-      // console.log("Update conventionnement info");
       const conventionData = await conventionController.getConventionData(
         current.siret,
         etablissement.uai,
@@ -148,17 +161,18 @@ const etablissementService = async (
       }
     }
 
-    // Todo add scope
-    let resultsCfadock = {};
-    try {
-      resultsCfadock = await apiCfaDock.getOpcoData(updatedEtablissement.siren);
-    } catch (error) {
-      console.log(error);
+    // just fill it when it's empty
+    if (!current.idcc || !current.opco_nom || !current.opco_siren) {
+      try {
+        const resultsCfadock = await apiCfaDock.getOpcoData(updatedEtablissement.siren);
+        updatedEtablissement = {
+          ...updatedEtablissement,
+          ...resultsCfadock,
+        };
+      } catch (error) {
+        console.log(error);
+      }
     }
-    updatedEtablissement = {
-      ...updatedEtablissement,
-      ...resultsCfadock,
-    };
 
     if (Object.keys(updatedEtablissement).length > 0) {
       updatedEtablissement = {
