@@ -1,4 +1,5 @@
 import { setMongooseInstance } from "../../common/mongodb";
+import { Connection } from "mongoose";
 
 let mongooseInstanceShared = false;
 const isSdkReady = () => {
@@ -67,7 +68,7 @@ export async function rncpImporter(localPath: string | null = null) {
   }
 }
 
-export async function onisepImporter(db: any) {
+export async function onisepImporter(db: Connection) {
   isSdkReady();
   try {
     let { onisepImporter: importer } = await import("../../jobs/OnisepImporter");
@@ -299,10 +300,16 @@ export async function getEtablissementUpdates(
   options?: EtablissementOptions
 ): Promise<UpdatesResult> {
   isSdkReady();
-  let { etablissementService } = await import("../../logic/services/etablissementService");
+  const { etablissementService } = await import("../../logic/services/etablissementService");
   return await etablissementService(etablissement, options);
 }
 
-// TODO
-// const conventionFilesImporter = require("./convetionFilesImporter/index");
-// await conventionFilesImporter(db);
+export async function conventionFilesImporter(db: Connection, assetsDir?: string) {
+  isSdkReady();
+  try {
+    const { conventionFilesImporter: importer } = await import("../../jobs/convetionFilesImporter/index");
+    await importer(db, assetsDir);
+  } catch (error) {
+    console.error(`conventionFilesImporter: something went wrong!`, error);
+  }
+}
