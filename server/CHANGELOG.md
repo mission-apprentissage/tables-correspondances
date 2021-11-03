@@ -1,3 +1,10 @@
+# [2.26.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.25.2...v2.26.0) (2021-11-03)
+
+
+### Features
+
+* add convention importer in sdk ([#192](https://github.com/mission-apprentissage/tables-correspondances/issues/192)) ([f62886d](https://github.com/mission-apprentissage/tables-correspondances/commit/f62886d6efd1cacb469a0cb080978cbe79db31e0))
+
 ## [2.25.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.25.1...v2.25.2) (2021-11-02)
 
 
