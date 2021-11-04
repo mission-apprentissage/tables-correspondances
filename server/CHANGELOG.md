@@ -1,3 +1,10 @@
+## [2.26.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.26.1...v2.26.2) (2021-11-04)
+
+
+### Bug Fixes
+
+* oups ([a6b5f7c](https://github.com/mission-apprentissage/tables-correspondances/commit/a6b5f7c6367f6952524f3b4e308616ca7c57aabb))
+
 ## [2.26.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.26.0...v2.26.1) (2021-11-04)
 
 
