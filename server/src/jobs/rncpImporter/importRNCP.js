@@ -62,7 +62,7 @@ const importerRncpCfdFile = async (filePath) => {
     const exist = await BcnFormationDiplome.findOne({ FORMATION_DIPLOME: `${cfd}`.padStart(8, "0") });
 
     if (exist) {
-      rncpCfdKit.push({ code_rncp, cfds: [cfd] });
+      rncpCfdKit.push({ code_rncp, cfds: [`${cfd}`.padStart(8, "0")] });
     } else {
       console.log(`${cfd} has been skipped because it does not exist in BCN`);
     }
