@@ -1,6 +1,6 @@
 const logger = require("../../common/logger");
 const { asyncForEach } = require("../../common/utils/asyncUtils");
-const { FicheRncp } = require("../../common/model/index");
+const { FicheRncp, BcnFormationDiplome } = require("../../common/model/index");
 const { getJsonFromCsvFile } = require("../../common/utils/fileUtils");
 const parseFichesFile = require("./parseFichesFile");
 const path = require("path");
@@ -44,13 +44,30 @@ const downloadFromFtp = async () => {
   }
 };
 
-const importerRncpCfdFile = (filePath) => {
-  return getJsonFromCsvFile(filePath)
+const importerRncpCfdFile = async (filePath) => {
+  const rncpCfdKit = [];
+  const tmp = getJsonFromCsvFile(filePath)
     .map((fk) => ({
       code_rncp: fk["Code RNCP"],
       cfds: [fk["Code Diplome"]],
     }))
     .filter((e) => e.code_rncp !== "NR");
+
+  for (let index = 0; index < tmp.length; index++) {
+    const {
+      code_rncp,
+      cfds: [cfd],
+    } = tmp[index];
+
+    const exist = await BcnFormationDiplome.findOne({ FORMATION_DIPLOME: `${cfd}`.padStart(8, "0") });
+
+    if (exist) {
+      rncpCfdKit.push({ code_rncp, cfds: [cfd] });
+    } else {
+      console.log(`${cfd} has been skipped because it does not exist in BCN`);
+    }
+  }
+  return rncpCfdKit;
 };
 
 const CFD_KIT_LOCAL_PATH = path.join(__dirname, "./assets", "CodeDiplome_RNCP_latest_kit.csv");
@@ -61,10 +78,9 @@ const getFichesRncp = async (cfdKitPath) => {
   let { fiches: fichesXML } = await parseFichesFile(fichesXMLInputStream);
   sftp.end();
 
-  const rncpCfdKit = importerRncpCfdFile(cfdKitPath ?? CFD_KIT_LOCAL_PATH);
-  const rncpCfdMna = importerRncpCfdFile(path.join(__dirname, "./assets/CodeDiplome_RNCP_latest_mna.csv"));
+  const rncpCfdKit = await importerRncpCfdFile(cfdKitPath ?? CFD_KIT_LOCAL_PATH);
 
-  const rncpCfd = [...rncpCfdKit, ...rncpCfdMna].reduce((acc, cur) => {
+  const rncpCfd = rncpCfdKit.reduce((acc, cur) => {
     const existType = acc.find((a) => a.code_rncp === cur.code_rncp);
     if (existType) {
       existType.cfds = [...existType.cfds, ...cur.cfds];
