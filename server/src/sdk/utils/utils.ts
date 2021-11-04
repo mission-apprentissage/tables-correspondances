@@ -1,4 +1,5 @@
 import { setMongooseInstance } from "../../common/mongodb";
+import { Connection } from "mongoose";
 
 let mongooseInstanceShared = false;
 const isSdkReady = () => {
@@ -67,7 +68,7 @@ export async function rncpImporter(localPath: string | null = null) {
   }
 }
 
-export async function onisepImporter(db: any) {
+export async function onisepImporter(db: Connection) {
   isSdkReady();
   try {
     let { onisepImporter: importer } = await import("../../jobs/OnisepImporter");
@@ -274,7 +275,41 @@ export async function getAddressFromCoordinates({
   }
 }
 
-// TODO
-// const conventionFilesImporter = require("./convetionFilesImporter/index");
-// await conventionFilesImporter(db);
-//await EtablissementsUpdater();
+type Etablissement = any; // TODO find a way to infer from mongoose schema
+
+type EtablissementScope = {
+  siret: boolean;
+  geoloc: boolean;
+  conventionnement: boolean;
+  onisep: boolean;
+};
+
+type EtablissementOptions = {
+  withHistoryUpdate?: boolean;
+  scope?: EtablissementScope;
+};
+
+type UpdatesResult = {
+  updates: object | null;
+  error?: string;
+  etablissement: Etablissement;
+};
+
+export async function getEtablissementUpdates(
+  etablissement: Etablissement,
+  options?: EtablissementOptions
+): Promise<UpdatesResult> {
+  isSdkReady();
+  const { etablissementService } = await import("../../logic/services/etablissementService");
+  return await etablissementService(etablissement, options);
+}
+
+export async function conventionFilesImporter(db: Connection, assetsDir?: string) {
+  isSdkReady();
+  try {
+    const { conventionFilesImporter: importer } = await import("../../jobs/convetionFilesImporter/index");
+    await importer(db, assetsDir);
+  } catch (error) {
+    console.error(`conventionFilesImporter: something went wrong!`, error);
+  }
+}

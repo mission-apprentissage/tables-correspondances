@@ -34,7 +34,6 @@ const opcos = require("./routes/opcos");
 const bcn = require("./routes/bcn");
 
 const etablissement = require("./routes/etablissement");
-const etablissementSecure = require("./routes/etablissementSecure");
 
 const swaggerSchema = require("../common/model/swaggerSchema");
 
@@ -84,7 +83,6 @@ module.exports = async (components) => {
 
   app.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecification));
   app.use("/api/v1/entity", etablissement());
-  app.use("/api/v1/entity", checkJwtToken, etablissementSecure());
   app.use("/api/v1/services", services());
   app.use("/api/v1/bcn", bcn());
   app.use("/api/v1/opcos", opcos());
@@ -109,7 +107,6 @@ module.exports = async (components) => {
   /** DEPRECATED */
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecification));
   app.use("/api/entity", etablissement());
-  app.use("/api/entity", checkJwtToken, etablissementSecure());
   app.use("/api/services", services());
   app.use("/api/bcn", bcn());
   app.use("/api/opcos", opcos());

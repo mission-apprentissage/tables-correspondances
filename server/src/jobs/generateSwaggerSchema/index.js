@@ -21,7 +21,7 @@ const replaceNullDefault = (schem) => {
 };
 
 Object.keys(schemas).forEach((schemaName) => {
-  if (schemaName !== "userSchema" && schemaName !== "logSchema" && schemaName !== "sampleSchema") {
+  if (!["userSchema", "logSchema", "sampleSchema", "etablissementSchema"].includes(schemaName)) {
     const schema = schemas[schemaName];
     const baseFilename = schemaName.replace("Schema", "");
     const eSchema = new Schema(replaceNullDefault(schema));
