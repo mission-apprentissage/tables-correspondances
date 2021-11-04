@@ -1,3 +1,10 @@
+## [2.26.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.26.0...v2.26.1) (2021-11-04)
+
+
+### Bug Fixes
+
+* cfd started by zero trimmed by excel ([#193](https://github.com/mission-apprentissage/tables-correspondances/issues/193)) ([67e3600](https://github.com/mission-apprentissage/tables-correspondances/commit/67e3600adff0e72faa8abba122d1c3fe16cba25c))
+
 # [2.26.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.25.2...v2.26.0) (2021-11-03)
 
 
