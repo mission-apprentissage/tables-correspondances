@@ -1,3 +1,10 @@
+## [2.26.3](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.26.2...v2.26.3) (2021-11-08)
+
+
+### Bug Fixes
+
+* convention try/catch & delete only when download is successful ([6af6885](https://github.com/mission-apprentissage/tables-correspondances/commit/6af6885521b789a3fb7c616587f936bf331b36dd))
+
 ## [2.26.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.26.1...v2.26.2) (2021-11-04)
 
 
