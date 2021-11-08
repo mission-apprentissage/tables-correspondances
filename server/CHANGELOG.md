@@ -1,3 +1,10 @@
+## [2.26.4](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.26.3...v2.26.4) (2021-11-08)
+
+
+### Bug Fixes
+
+* don't erase file if download fails ([346f0ba](https://github.com/mission-apprentissage/tables-correspondances/commit/346f0ba7e3e0c365863b91d1dc68504481a0d042))
+
 ## [2.26.3](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.26.2...v2.26.3) (2021-11-08)
 
 
