@@ -25,11 +25,7 @@ const conventionFilesImporter = async (db, assetsDir = path.join(__dirname, "./a
 
   // CSV import
   const PUBLIC_OFS_PATH = path.join(assetsDir, "latest_public_ofs.csv");
-  try {
-    await downloadFile("https://www.data.gouv.fr/fr/datasets/r/745a5413-d2b5-4d61-b743-8b0ace68083b", PUBLIC_OFS_PATH); // latest_public_ofs.csv
-  } catch (e) {
-    logger.error("unable to download ofs file", e);
-  }
+  await downloadFile("https://www.data.gouv.fr/fr/datasets/r/745a5413-d2b5-4d61-b743-8b0ace68083b", PUBLIC_OFS_PATH); // latest_public_ofs.csv
   const publicOfs = getJsonFromCsvFile(PUBLIC_OFS_PATH);
 
   const DEPP_PATH = path.join(assetsDir, "CFASousConvRegionale_latest-UAI.csv");
