@@ -3,6 +3,7 @@ const csvToJson = require("convert-csv-to-json-latin");
 const path = require("path");
 const fs = require("fs-extra");
 const axios = require("axios");
+const logger = require("../../common/logger");
 
 const getJsonFromCsvFile = (localPath, delimiter = ";") => {
   csvToJson.fieldDelimiter(delimiter);
@@ -59,19 +60,24 @@ const removeLine = (data, regex) => {
 module.exports.removeLine = removeLine;
 
 const downloadFile = async (url, to) => {
-  const writer = fs.createWriteStream(to);
+  try {
+    const response = await axios({
+      url,
+      method: "GET",
+      responseType: "stream",
+    });
 
-  const response = await axios({
-    url,
-    method: "GET",
-    responseType: "stream",
-  });
+    const writer = fs.createWriteStream(to);
+    response.data.pipe(writer);
 
-  response.data.pipe(writer);
-
-  return new Promise((resolve, reject) => {
-    writer.on("finish", resolve);
-    writer.on("error", reject);
-  });
+    return new Promise((resolve, reject) => {
+      writer.on("finish", resolve);
+      writer.on("error", reject);
+    });
+  } catch (e) {
+    logger.error(`unable to download file ${url}`);
+    return null;
+  }
 };
+
 module.exports.downloadFile = downloadFile;
