@@ -1,3 +1,10 @@
+## [2.27.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.27.0...v2.27.1) (2021-11-09)
+
+
+### Bug Fixes
+
+* ensure siren is defined before call to apiCfaDock ([2200c91](https://github.com/mission-apprentissage/tables-correspondances/commit/2200c9132cd31915dc0bc4392c89fe592c0a1e9a))
+
 # [2.27.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.26.4...v2.27.0) (2021-11-09)
 
 
