@@ -56,6 +56,22 @@ class ApiEntreprise {
       }
     });
   }
+  async getConventionCollective(siret) {
+    return executeWithRateLimiting(async (client) => {
+      try {
+        logger.debug(`[Entreprise API] Fetching etablissement ${siret}...`);
+        let response = await client.get(`conventions_collectives/${siret}`, {
+          params: apiParams,
+        });
+        if (!response?.data?.etablissement) {
+          throw new ApiError("Api Entreprise", "No etablissement data received");
+        }
+        return response.data.etablissement;
+      } catch (e) {
+        throw new ApiError("Api Entreprise", e.message, e.code || e.response.status);
+      }
+    });
+  }
 }
 
 const apiEntreprise = new ApiEntreprise();

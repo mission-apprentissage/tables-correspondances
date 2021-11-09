@@ -29,6 +29,19 @@ class EntrepriseApiData {
       };
     }
 
+    let conventionCollective;
+    try {
+      conventionCollective = await apiEntreprise.getConventionCollective(siret);
+      console.log(conventionCollective);
+    } catch (e) {
+      return {
+        result: {},
+        messages: {
+          error: "Siret non trouvé",
+        },
+      };
+    }
+
     const siren = siret.substring(0, 9);
     let entrepriseApiInfo;
     try {
