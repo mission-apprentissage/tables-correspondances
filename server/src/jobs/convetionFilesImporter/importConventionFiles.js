@@ -2,6 +2,15 @@ const logger = require("../../common/logger");
 const { asyncForEach } = require("../../common/utils/asyncUtils");
 const { chunk } = require("lodash");
 
+const cleanUpKeysAndValues = (obj) => {
+  return Object.entries(obj).reduce((acc, [key, value]) => {
+    return {
+      ...acc,
+      [key.trim()]: value.trim(),
+    };
+  }, {});
+};
+
 module.exports = async (db, publicOfsp, datadock, depp, dgefp) => {
   try {
     const publicOfs = publicOfsp.map((i) => {
@@ -29,9 +38,13 @@ module.exports = async (db, publicOfsp, datadock, depp, dgefp) => {
       }
     });
 
-    await db.collection("conventionfiles").insertMany(datadock.map((d) => ({ ...d, type: "DATADOCK" })));
-    await db.collection("conventionfiles").insertMany(depp.map((d) => ({ ...d, type: "DEPP" })));
-    await db.collection("conventionfiles").insertMany(dgefp.map((d) => ({ ...d, type: "DGEFP" })));
+    await db
+      .collection("conventionfiles")
+      .insertMany(datadock.map((d) => ({ ...cleanUpKeysAndValues(d), type: "DATADOCK" })));
+    await db.collection("conventionfiles").insertMany(depp.map((d) => ({ ...cleanUpKeysAndValues(d), type: "DEPP" })));
+    await db
+      .collection("conventionfiles")
+      .insertMany(dgefp.map((d) => ({ ...cleanUpKeysAndValues(d), type: "DGEFP" })));
 
     logger.info(`Importing Convention files Succeed`);
   } catch (error) {
