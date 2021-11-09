@@ -82,6 +82,13 @@ module.exports = async (components) => {
   app.use(logMiddleware());
 
   app.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecification));
+  app.get(
+    "/api/v1/schema.json",
+    tryCatch(async (req, res) => {
+      return res.json(swaggerSpecification);
+    })
+  );
+
   app.use("/api/v1/entity", etablissement());
   app.use("/api/v1/services", services());
   app.use("/api/v1/bcn", bcn());
