@@ -1,3 +1,15 @@
+# [2.27.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.26.4...v2.27.0) (2021-11-09)
+
+
+### Bug Fixes
+
+* trim data in convention files ([7db4231](https://github.com/mission-apprentissage/tables-correspondances/commit/7db4231205afa1367cb99de9d1b0630693d21ccb))
+
+
+### Features
+
+* add schema.json route ([0cb654e](https://github.com/mission-apprentissage/tables-correspondances/commit/0cb654e51b328d1f8e2cc87ac396359b985ac738))
+
 ## [2.26.4](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.26.3...v2.26.4) (2021-11-08)
 
 
