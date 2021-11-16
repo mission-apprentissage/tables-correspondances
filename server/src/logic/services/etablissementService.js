@@ -21,7 +21,7 @@ const buildUpdatesHistory = (etablissement, updates, keys) => {
     acc[key] = etablissement[key];
     return acc;
   }, {});
-  return [...etablissement.updates_history, { from, to: { ...updates }, updated_at: Date.now() }];
+  return [...(etablissement.updates_history ?? []), { from, to: { ...updates }, updated_at: Date.now() }];
 };
 
 const parseErrors = (messages) => {
@@ -162,7 +162,7 @@ const etablissementService = async (
     }
 
     // just fill it when it's empty
-    if (!current.idcc || !current.opco_nom || !current.opco_siren) {
+    if ((!current.idcc || !current.opco_nom || !current.opco_siren) && updatedEtablissement.siren) {
       try {
         const resultsCfadock = await apiCfaDock.getOpcoData(updatedEtablissement.siren);
         updatedEtablissement = {

@@ -22,7 +22,7 @@ class ApiCfaDock {
         logger.debug(`[CfaDock API] Search opco data ${siren}...`);
         let response = await client.get(`opcos/?siret=${siren}`);
         if (!response?.data?.searchStatus) {
-          throw new ApiError("Api CFAdock", "No data found");
+          throw new ApiError("Api CFAdock", `No data found for siren=${siren}`);
         }
         return {
           idcc: response.data.idcc,
@@ -30,7 +30,7 @@ class ApiCfaDock {
           opco_siren: response.data.opcoSiren,
         };
       } catch (e) {
-        throw new ApiError("Api CFAdock", e.message, e.code || e.response.status);
+        throw new ApiError("Api CFAdock", `${e.message} for siren=${siren}`, e.code || e.response.status);
       }
     });
   }
