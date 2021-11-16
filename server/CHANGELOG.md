@@ -1,3 +1,10 @@
+## [2.27.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.27.1...v2.27.2) (2021-11-16)
+
+
+### Bug Fixes
+
+* history iterable ([#195](https://github.com/mission-apprentissage/tables-correspondances/issues/195)) ([bedb7a0](https://github.com/mission-apprentissage/tables-correspondances/commit/bedb7a028b942fa8ac265279bf2bb69fecff36a6))
+
 ## [2.27.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.27.0...v2.27.1) (2021-11-09)
 
 
