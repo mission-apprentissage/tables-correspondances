@@ -21,7 +21,7 @@ const buildUpdatesHistory = (etablissement, updates, keys) => {
     acc[key] = etablissement[key];
     return acc;
   }, {});
-  return [...etablissement.updates_history, { from, to: { ...updates }, updated_at: Date.now() }];
+  return [...(etablissement.updates_history ?? []), { from, to: { ...updates }, updated_at: Date.now() }];
 };
 
 const parseErrors = (messages) => {
