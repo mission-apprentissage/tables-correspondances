@@ -64,9 +64,9 @@ class ApiEntreprise {
           params: apiParams,
         });
         if (!response?.data?.conventions[0]) {
-          throw new ApiError("Api Entreprise", "No etablissement data received");
+          throw new ApiError("Api Entreprise", "error getConventionCollective");
         }
-        return response?.data?.conventions[0];
+        return response.data.conventions[0];
       } catch (e) {
         throw new ApiError("Api Entreprise", e.message, e.code || e.response.status);
       }

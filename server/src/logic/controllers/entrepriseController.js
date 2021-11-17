@@ -24,22 +24,16 @@ class EntrepriseApiData {
       return {
         result: {},
         messages: {
-          error: "Siret non trouvé",
+          error: "getEtablissement: Siret non trouvé",
         },
       };
     }
 
-    let conventionCollective;
+    let conventionCollective = null;
     try {
       conventionCollective = await apiEntreprise.getConventionCollective(siret);
-      console.log(conventionCollective);
     } catch (e) {
-      return {
-        result: {},
-        messages: {
-          error: "Siret non trouvé",
-        },
-      };
+      console.log(e);
     }
 
     const siren = siret.substring(0, 9);
@@ -50,7 +44,7 @@ class EntrepriseApiData {
       return {
         result: {},
         messages: {
-          error: "Siren non trouvé",
+          error: "getEntreprise: Siren non trouvé",
         },
       };
     }
@@ -73,8 +67,6 @@ class EntrepriseApiData {
 
     return {
       result: {
-        numero_covention: conventionCollective.numero,
-
         siege_social: etablissementApiInfo.siege_social,
         etablissement_siege_siret: entrepriseApiInfo.siret_siege_social,
         siret: etablissementApiInfo.siret,
@@ -85,7 +77,6 @@ class EntrepriseApiData {
         date_creation: etablissementApiInfo.date_creation_etablissement,
         date_mise_a_jour: etablissementApiInfo.date_mise_a_jour,
         diffusable_commercialement: etablissementApiInfo.diffusable_commercialement,
-
         enseigne: etablissementApiInfo.enseigne ? etablissementApiInfo.enseigne : entrepriseApiInfo.enseigne,
         adresse: this.buildAdresse(etablissementApiInfo.adresse),
         numero_voie: etablissementApiInfo.adresse.numero_voie,
@@ -136,7 +127,7 @@ class EntrepriseApiData {
         entreprise_tranche_effectif_salarie: entrepriseApiInfo.tranche_effectif_salarie_entreprise,
 
         ...conventionnementInfos,
-
+        conventionCollective,
         api_entreprise_reference: true,
       },
       messages: {
