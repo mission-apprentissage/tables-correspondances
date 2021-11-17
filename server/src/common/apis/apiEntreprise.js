@@ -63,10 +63,10 @@ class ApiEntreprise {
         let response = await client.get(`conventions_collectives/${siret}`, {
           params: apiParams,
         });
-        if (!response?.data?.etablissement) {
+        if (!response?.data?.conventions[0]) {
           throw new ApiError("Api Entreprise", "No etablissement data received");
         }
-        return response.data.etablissement;
+        return response?.data?.conventions[0];
       } catch (e) {
         throw new ApiError("Api Entreprise", e.message, e.code || e.response.status);
       }

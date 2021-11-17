@@ -73,6 +73,8 @@ class EntrepriseApiData {
 
     return {
       result: {
+        numero_covention: conventionCollective.numero,
+
         siege_social: etablissementApiInfo.siege_social,
         etablissement_siege_siret: entrepriseApiInfo.siret_siege_social,
         siret: etablissementApiInfo.siret,
@@ -83,8 +85,8 @@ class EntrepriseApiData {
         date_creation: etablissementApiInfo.date_creation_etablissement,
         date_mise_a_jour: etablissementApiInfo.date_mise_a_jour,
         diffusable_commercialement: etablissementApiInfo.diffusable_commercialement,
-        enseigne: etablissementApiInfo.enseigne ? etablissementApiInfo.enseigne : entrepriseApiInfo.enseigne,
 
+        enseigne: etablissementApiInfo.enseigne ? etablissementApiInfo.enseigne : entrepriseApiInfo.enseigne,
         adresse: this.buildAdresse(etablissementApiInfo.adresse),
         numero_voie: etablissementApiInfo.adresse.numero_voie,
         type_voie: etablissementApiInfo.adresse.type_voie,
