@@ -44,6 +44,7 @@
   "conventionFiles": {
     "path": "TABLES_CORRESPONDANCE_CONVENTION_FILES_PATH"
   },
+  "ofsFile": "TABLES_CORRESPONDANCE_OFS_FILE",
   "apiEntreprise": "TABLES_CORRESPONDANCES_API_ENTREPRISE_KEY",
   "franceCompetences": {
     "host": "TABLES_CORRESPONDANCE_FRANCE_COMPETENCES_HOST",
