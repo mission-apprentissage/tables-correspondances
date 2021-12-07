@@ -1,15 +1,18 @@
 const ficheRncpSchema = {
   cfds: {
+    index: true,
     type: [String],
     default: null,
     description: "Codes formation dilpôme",
   },
   code_rncp: {
+    index: true,
     type: String,
     default: null,
     description: "Code rncp fiche",
   },
   intitule_diplome: {
+    index: true,
     type: String,
     default: null,
     description: "Intitulé diplôme",
@@ -20,6 +23,7 @@ const ficheRncpSchema = {
     description: "Date de validité de la fiche",
   },
   active_inactive: {
+    index: true,
     type: String,
     default: null,
     description: "fiche active ou non",

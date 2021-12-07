@@ -4,7 +4,7 @@ module.exports = {
     properties: {
       type: {
         type: "string",
-        description: "Type de fichier (datadock | DGEFP | DEPP | DATAGOUV)",
+        description: "Type de fichier (DGEFP | DEPP | DATAGOUV)",
       },
       _id: {
         type: "string",
