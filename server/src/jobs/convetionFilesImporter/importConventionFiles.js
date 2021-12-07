@@ -11,7 +11,7 @@ const cleanUpKeysAndValues = (obj) => {
   }, {});
 };
 
-module.exports = async (db, publicOfsp, datadock, depp, dgefp) => {
+module.exports = async (db, publicOfsp, depp, dgefp) => {
   try {
     const publicOfs = publicOfsp.map((i) => {
       const line = Object.entries(i).reduce(
@@ -38,9 +38,6 @@ module.exports = async (db, publicOfsp, datadock, depp, dgefp) => {
       }
     });
 
-    await db
-      .collection("conventionfiles")
-      .insertMany(datadock.map((d) => ({ ...cleanUpKeysAndValues(d), type: "DATADOCK" })));
     await db.collection("conventionfiles").insertMany(depp.map((d) => ({ ...cleanUpKeysAndValues(d), type: "DEPP" })));
     await db
       .collection("conventionfiles")
