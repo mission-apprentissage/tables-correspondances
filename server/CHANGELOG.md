@@ -1,3 +1,10 @@
+## [2.27.3](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.27.2...v2.27.3) (2021-12-07)
+
+
+### Bug Fixes
+
+* deploy sdk ([e2c4a42](https://github.com/mission-apprentissage/tables-correspondances/commit/e2c4a42ff76b7dbf2f9e49401b75602da7905a91))
+
 ## [2.27.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.27.1...v2.27.2) (2021-11-16)
 
 
