@@ -51,8 +51,7 @@ class ConventionController {
       info_depp: info_depp.value,
       info_dgefp: info_dgefp.value,
       info_datagouv_ofs: info_datagouv_ofs.value,
-
-      // info_qualiopi: info_datadock.qualiopi ? "OUI" : "NON", TODO
+      info_qualiopi: info_datagouv_ofs.qualiopi ? "OUI" : "NON",
     });
 
     return {
@@ -61,11 +60,9 @@ class ConventionController {
       info_datagouv_ofs: info_datagouv_ofs.value,
       info_depp_info: info_depp.info,
       info_dgefp_info: info_dgefp.info,
-
-      // info_qualiopi_info: info_datadock.qualiopi ? "OUI" : "NON", TODO
-
+      info_qualiopi_info: info_datagouv_ofs.qualiopi ? "OUI" : "NON",
       info_datagouv_ofs_info: info_datagouv_ofs.info,
-      nda: info_datagouv_ofs.data?.num_da || null, // TODO herer
+      nda: info_datagouv_ofs.data?.numerodeclarationactivite || null,
       ...conventionnementInfos,
     };
   }
@@ -75,7 +72,7 @@ class ConventionController {
       computed_type: computeCodes.type.ToCheck,
       computed_conventionne: computeCodes.conventionne.No,
       computed_declare_prefecture: computeCodes.declarePrefecture.No,
-      catalogue_published: true,
+      catalogue_published: filesInfos.info_qualiopi === "OUI",
     };
 
     // Check In DEPP
@@ -101,12 +98,6 @@ class ConventionController {
       if (result.computed_type !== computeCodes.type.CFA) {
         result.computed_type = computeCodes.type.OF;
       }
-    }
-
-    // Check if can be published
-    if (filesInfos.info_qualiopi !== "OUI") {
-      // To Remove Trainings - Établissements can't be in EducNat SI
-      result.catalogue_published = false;
     }
 
     return result;
@@ -202,9 +193,19 @@ class ConventionController {
     const siren = siret.substring(0, 9);
     const result = await ConventionFile.findOne({ type: "DATAGOUV", siren }).lean();
     if (!result) {
-      return { info: "Erreur: DataGouv Non trouvé", value: infosCodes.infoDATAGOUV.NotFound, data: null };
+      return {
+        info: "Erreur: DataGouv Non trouvé",
+        value: infosCodes.infoDATAGOUV.NotFound,
+        qualiopi: false,
+        data: null,
+      };
     }
-    return { info: "Ok", value: infosCodes.infoDATAGOUV.Found, data: result };
+    return {
+      info: "Ok",
+      value: infosCodes.infoDATAGOUV.Found,
+      data: result,
+      qualiopi: result.numerodeclarationactivite && result.certifications_actionsdeformationparapprentissage === "true",
+    };
   }
 }
 

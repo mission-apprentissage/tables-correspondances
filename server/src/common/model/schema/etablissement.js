@@ -219,12 +219,6 @@ const etablissementSchema = {
     default: 0,
     description: "L'établissement est présent ou pas dans le fichier datagouv",
   },
-  info_qualiopi: {
-    type: Number,
-    default: 0,
-    description: "L'établissement est référencé qualiopi",
-  },
-
   info_depp_info: {
     type: String,
     default: null,
@@ -261,11 +255,6 @@ const etablissementSchema = {
     default: null,
     description: "Etablissement est conventionné ou pas",
   },
-  // computed_info_qualiopi: {
-  //   type: String,
-  //   default: null,
-  //   description: "Etablissement est connu de qualiopi",
-  // },
   api_entreprise_reference: {
     type: Boolean,
     default: false,
