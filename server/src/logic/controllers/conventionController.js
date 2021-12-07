@@ -72,7 +72,7 @@ class ConventionController {
       computed_type: computeCodes.type.ToCheck,
       computed_conventionne: computeCodes.conventionne.No,
       computed_declare_prefecture: computeCodes.declarePrefecture.No,
-      catalogue_published: filesInfos.info_qualiopi === "OUI",
+      catalogue_published: filesInfos.info_qualiopi === "OUI", // TODO @EPT: here maybe also read a list of authorized sirets
     };
 
     // Check In DEPP
