@@ -1,3 +1,10 @@
+## [2.27.4](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.27.3...v2.27.4) (2021-12-08)
+
+
+### Bug Fixes
+
+* faster cfd data lookup ([#197](https://github.com/mission-apprentissage/tables-correspondances/issues/197)) ([c5b8dcc](https://github.com/mission-apprentissage/tables-correspondances/commit/c5b8dcc42ed031a7226e66ac53a8f6a697c0094d))
+
 ## [2.27.3](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.27.2...v2.27.3) (2021-12-07)
 
 
