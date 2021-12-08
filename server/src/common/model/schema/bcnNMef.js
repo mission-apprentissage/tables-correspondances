@@ -1,5 +1,6 @@
 const bcnNMefSchema = {
   MEF: {
+    index: true,
     type: String,
     default: null,
     description: "DESCRIPTION",
@@ -10,6 +11,7 @@ const bcnNMefSchema = {
     description: "DESCRIPTION",
   },
   FORMATION_DIPLOME: {
+    index: true,
     type: String,
     default: null,
     description: "DESCRIPTION",
@@ -85,6 +87,7 @@ const bcnNMefSchema = {
     description: "DESCRIPTION",
   },
   MEF_STAT_11: {
+    index: true,
     type: String,
     default: null,
     description: "DESCRIPTION",

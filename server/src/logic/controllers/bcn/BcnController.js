@@ -66,10 +66,12 @@ class BcnController {
     }
 
     const niveauUpdated = this.findNiveau(cfdUpdated.value);
-    const intituleLongUpdated = await this.findIntituleLong(cfdUpdated.value);
-    const intituleCourtUpdated = await this.findIntituleCourt(cfdUpdated.value);
-    const libCourtUpdated = await this.findLibCourt(cfdUpdated.value);
-    const niveauFormationUpdated = await this.findNiveauFormationDiplome(cfdUpdated.value);
+
+    const {
+      info: cfdDataInfo,
+      value: { intitule_court, intitule_long, libelle_court, niveau_formation_diplome },
+    } = await this.findCfdData(cfdUpdated.value);
+
     const diplomeUpdated = await this.findDiplome(cfdUpdated.value);
 
     return {
@@ -79,22 +81,22 @@ class BcnController {
         date_fermeture: cfdUpdated.date_fermeture,
         specialite: specialiteUpdated.value,
         niveau: niveauUpdated.value,
-        intitule_long: intituleLongUpdated.value,
-        intitule_court: intituleCourtUpdated.value,
+        intitule_long,
+        intitule_court,
         diplome: diplomeUpdated.value,
-        libelle_court: libCourtUpdated.value,
-        niveau_formation_diplome: niveauFormationUpdated.value,
+        libelle_court,
+        niveau_formation_diplome,
       },
       messages: {
         cfd: infoCfd,
         specialite: computeCodes.specialite[specialiteUpdated.info],
         niveau: computeCodes.niveau[niveauUpdated.info],
-        intitule_long: computeCodes.intitule[intituleLongUpdated.info],
-        intitule_court: computeCodes.intitule[intituleCourtUpdated.info],
+        intitule_long: computeCodes.intitule[cfdDataInfo],
+        intitule_court: computeCodes.intitule[cfdDataInfo],
         diplome: computeCodes.diplome[diplomeUpdated.info],
 
-        libelle_court: computeCodes.intitule[libCourtUpdated.info],
-        niveau_formation_diplome: computeCodes.intitule[niveauFormationUpdated.info],
+        libelle_court: computeCodes.intitule[cfdDataInfo],
+        niveau_formation_diplome: computeCodes.intitule[cfdDataInfo],
       },
     };
   }
@@ -193,9 +195,10 @@ class BcnController {
         const modalite = this.getModalities(mefTmp.value);
         const cfd = await this.findCfdFromMef10(mefTmp.value);
         const niveau = this.findNiveau(cfd.value);
-        const intitule_long = await this.findIntituleLong(cfd.value);
-        const libCourtUpdated = await this.findLibCourt(cfd.value);
-        const niveauFormationUpdated = await this.findNiveauFormationDiplome(cfd.value);
+
+        const {
+          value: { intitule_long, libelle_court, niveau_formation_diplome },
+        } = await this.findCfdData(cfd.value);
 
         const match = find(MefsAproximation.value, { cfd: cfd.value });
         if (!match) {
@@ -203,9 +206,9 @@ class BcnController {
             mef10: mefTmp.value,
             modalite,
             cfd: cfd.value,
-            intitule_long: intitule_long.value,
-            libelle_court: libCourtUpdated.value,
-            niveau_formation_diplome: niveauFormationUpdated.value,
+            intitule_long,
+            libelle_court,
+            niveau_formation_diplome,
             niveau: niveau.value,
           });
         }
@@ -240,7 +243,19 @@ class BcnController {
 
   async findCfd_bcn(codeEducNat, previousInfo = null) {
     try {
-      const match = await BcnFormationDiplome.findOne({ FORMATION_DIPLOME: codeEducNat });
+      const match = await BcnFormationDiplome.findOne(
+        { FORMATION_DIPLOME: codeEducNat },
+        {
+          DATE_FERMETURE: 1,
+          NOUVEAU_DIPLOME_1: 1,
+          NOUVEAU_DIPLOME_2: 1,
+          NOUVEAU_DIPLOME_3: 1,
+          NOUVEAU_DIPLOME_4: 1,
+          NOUVEAU_DIPLOME_5: 1,
+          NOUVEAU_DIPLOME_6: 1,
+          NOUVEAU_DIPLOME_7: 1,
+        }
+      ).lean();
       if (!match) {
         return { info: infosCodes.cfd.NotFound, value: null, date_fermeture: null };
       }
@@ -306,45 +321,41 @@ class BcnController {
     }
   }
 
-  async findIntituleLong(codeEducNat) {
-    const match = await BcnFormationDiplome.findOne({ FORMATION_DIPLOME: codeEducNat });
+  async findCfdData(codeEducNat) {
+    const match = await BcnFormationDiplome.findOne(
+      { FORMATION_DIPLOME: codeEducNat },
+      { LIBELLE_LONG_200: 1, LIBELLE_STAT_33: 1, NIVEAU_FORMATION_DIPLOME: 1, LIBELLE_COURT: 1 }
+    ).lean();
+
     if (!match) {
-      return { info: infosCodes.intitule.Error, value: null };
+      return {
+        info: infosCodes.intitule.Error,
+        value: {
+          intitule_long: null,
+          intitule_court: null,
+          niveau_formation_diplome: null,
+          libelle_court: null,
+        },
+      };
     }
 
-    return { info: infosCodes.intitule.NothingDoTo, value: match.LIBELLE_LONG_200 };
-  }
-
-  async findIntituleCourt(codeEducNat) {
-    const match = await BcnFormationDiplome.findOne({ FORMATION_DIPLOME: codeEducNat });
-    if (!match) {
-      return { info: infosCodes.intitule.Error, value: null };
-    }
-
-    return { info: infosCodes.intitule.NothingDoTo, value: match.LIBELLE_STAT_33 };
-  }
-
-  async findNiveauFormationDiplome(codeEducNat) {
-    const match = await BcnFormationDiplome.findOne({ FORMATION_DIPLOME: codeEducNat });
-    if (!match) {
-      return { info: infosCodes.intitule.Error, value: null };
-    }
-
-    return { info: infosCodes.intitule.NothingDoTo, value: match.NIVEAU_FORMATION_DIPLOME };
-  }
-
-  async findLibCourt(codeEducNat) {
-    const match = await BcnFormationDiplome.findOne({ FORMATION_DIPLOME: codeEducNat });
-    if (!match) {
-      return { info: infosCodes.intitule.Error, value: null };
-    }
-
-    return { info: infosCodes.intitule.NothingDoTo, value: match.LIBELLE_COURT };
+    return {
+      info: infosCodes.intitule.NothingDoTo,
+      value: {
+        intitule_long: match.LIBELLE_LONG_200,
+        intitule_court: match.LIBELLE_STAT_33,
+        niveau_formation_diplome: match.NIVEAU_FORMATION_DIPLOME,
+        libelle_court: match.LIBELLE_COURT,
+      },
+    };
   }
 
   async findDiplome(codeEducNat) {
     const tronc = codeEducNat.substring(0, 3);
-    const match = await BcnNNiveauFormationDiplome.findOne({ NIVEAU_FORMATION_DIPLOME: tronc });
+    const match = await BcnNNiveauFormationDiplome.findOne(
+      { NIVEAU_FORMATION_DIPLOME: tronc },
+      { LIBELLE_100: 1 }
+    ).lean();
     if (!match) {
       return { info: infosCodes.diplome.Error, value: null };
     }
@@ -353,24 +364,23 @@ class BcnController {
   }
 
   async findCfdFromMef10(mef10) {
-    const match = await BcnNMef.find({ MEF: mef10 });
-    if (!match.length) {
+    const cfds = await BcnNMef.distinct("FORMATION_DIPLOME", { MEF: mef10 });
+    if (!cfds.length) {
       return { info: infosCodes.mef.NotFound, value: null };
     }
 
-    const result = match.map((m) => `${m.FORMATION_DIPLOME}`);
-    if (result.length > 1) {
+    if (cfds.length > 1) {
       return { info: infosCodes.mef.Multiple, value: null };
     }
-    return { info: infosCodes.mef.NothingDoTo, value: result[0] };
+    return { info: infosCodes.mef.NothingDoTo, value: cfds[0] };
   }
 
   async findMefsFromCfd(codeEducNat) {
-    const match = await BcnNMef.find({ FORMATION_DIPLOME: codeEducNat });
-    if (!match.length) {
+    const mefs = await BcnNMef.distinct("MEF", { FORMATION_DIPLOME: codeEducNat });
+    if (!mefs.length) {
       return { info: infosCodes.mef.NotFound, value: [] };
     }
-    return { info: infosCodes.mef.NothingDoTo, value: match.map((m) => `${m.MEF}`) };
+    return { info: infosCodes.mef.NothingDoTo, value: mefs };
   }
 
   async findCfdFromMef11(mef11) {
@@ -383,7 +393,7 @@ class BcnController {
   }
 
   async findMefFromMef11(mef11) {
-    const match = await BcnNMef.findOne({ MEF_STAT_11: mef11 });
+    const match = await BcnNMef.findOne({ MEF_STAT_11: mef11 }, { MEF: 1 }).lean();
     if (!match) {
       return { info: infosCodes.mef.NotFound, value: null };
     }
@@ -392,15 +402,15 @@ class BcnController {
 
   async findMefs11(codeEducNat) {
     const tronc = codeEducNat.substring(3, 8);
-    const match = await BcnNMef.find({ MEF_STAT_11: { $regex: `${tronc}$` } });
-    if (!match.length) {
+    const mefs11 = await BcnNMef.distinct("MEF_STAT_11", { MEF_STAT_11: { $regex: `${tronc}$` } });
+    if (!mefs11.length) {
       return { info: infosCodes.mef.NotFound, value: [] };
     }
-    return { info: infosCodes.mef.NothingDoTo, value: match.map((m) => `${m.MEF_STAT_11}`) };
+    return { info: infosCodes.mef.NothingDoTo, value: mefs11 };
   }
 
   async findMefs8(codeEducNat) {
-    const match = await BcnNMef.find({ FORMATION_DIPLOME: codeEducNat });
+    const match = await BcnNMef.find({ FORMATION_DIPLOME: codeEducNat }, { DISPOSITIF_FORMATION: 1 }).lean();
     if (!match.length) {
       return { info: infosCodes.mef.NotFound, value: [] };
     }
@@ -420,7 +430,10 @@ class BcnController {
 
   async getSpeciality(specialityLetter) {
     try {
-      const specialityData = await BcnLettreSpecialite.findOne({ LETTRE_SPECIALITE: specialityLetter });
+      const specialityData = await BcnLettreSpecialite.findOne(
+        { LETTRE_SPECIALITE: specialityLetter },
+        { LIBELLE_LONG: 1, LIBELLE_COURT: 1 }
+      ).lean();
       return {
         info: infosCodes.specialite.NothingDoTo,
         value: {
