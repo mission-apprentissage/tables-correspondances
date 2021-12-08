@@ -1,5 +1,6 @@
 const bcnNNiveauFormationDiplomeSchema = {
   NIVEAU_FORMATION_DIPLOME: {
+    index: true,
     type: String,
     default: null,
     description: "DESCRIPTION",
