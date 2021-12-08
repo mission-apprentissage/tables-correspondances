@@ -1,5 +1,6 @@
 const bcnFormationDiplomesSchema = {
   FORMATION_DIPLOME: {
+    index: true,
     type: String,
     default: null,
     description: "DESCRIPTION",
@@ -35,6 +36,7 @@ const bcnFormationDiplomesSchema = {
     description: "DESCRIPTION",
   },
   LIBELLE_LONG_200: {
+    index: true,
     type: String,
     default: null,
     description: "DESCRIPTION",

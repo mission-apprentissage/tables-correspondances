@@ -1,5 +1,6 @@
 const bcnLettreSpecialiteSchema = {
   LETTRE_SPECIALITE: {
+    index: true,
     type: String,
     default: null,
     description: "DESCRIPTION",

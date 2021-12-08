@@ -43,12 +43,10 @@ class EntrepriseApiData {
     }
 
     const info_dgefp = await conventionController.findInfoDgefp(siret, siret);
-    const info_datadock = await conventionController.findInfoDatadock(siret, siret);
     const info_datagouv_ofs = await conventionController.findInfoDataGouv(siret);
 
     const conventionnementInfos = conventionController.conventionnement({
       info_dgefp: info_dgefp.value,
-      info_datadock: info_datadock.value,
       info_datagouv_ofs: info_datagouv_ofs.value,
     });
 
@@ -67,8 +65,8 @@ class EntrepriseApiData {
         naf_code: etablissementApiInfo.naf,
         naf_libelle: etablissementApiInfo.libelle_naf,
         tranche_effectif_salarie: etablissementApiInfo.tranche_effectif_salarie_etablissement,
-        date_creation: etablissementApiInfo.date_creation_etablissement,
-        date_mise_a_jour: etablissementApiInfo.date_mise_a_jour,
+        date_creation: new Date(etablissementApiInfo.date_creation_etablissement * 1000),
+        date_mise_a_jour: new Date(etablissementApiInfo.date_mise_a_jour * 1000),
         diffusable_commercialement: etablissementApiInfo.diffusable_commercialement,
         enseigne: etablissementApiInfo.enseigne ? etablissementApiInfo.enseigne : entrepriseApiInfo.enseigne,
 
@@ -108,7 +106,7 @@ class EntrepriseApiData {
         entreprise_raison_sociale: entrepriseApiInfo.raison_sociale,
         entreprise_nom_commercial: entrepriseApiInfo.nom_commercial,
         entreprise_capital_social: entrepriseApiInfo.capital_social,
-        entreprise_date_creation: entrepriseApiInfo.date_creation,
+        entreprise_date_creation: new Date(entrepriseApiInfo.date_creation * 1000),
         entreprise_date_radiation: entrepriseApiInfo.date_radiation,
         entreprise_naf_code: entrepriseApiInfo.naf_entreprise,
         entreprise_naf_libelle: entrepriseApiInfo.libelle_naf_entreprise,

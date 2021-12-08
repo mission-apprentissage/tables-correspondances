@@ -12,11 +12,6 @@ const infosCodes = {
     SiretMatch: 2,
     SiretSiegeSocialMatch: 3,
   },
-  infoDATADOCK: {
-    NotFound: 0,
-    NotReferencable: 1,
-    Referencable: 2,
-  },
   infoDATAGOUV: {
     NotFound: 0,
     Found: 1,
@@ -39,8 +34,6 @@ const computeCodes = {
   },
 };
 
-const datadockValue = ["inconnu par datadock", "pas datadocké", "datadocké"];
-
 class ConventionController {
   constructor() {}
 
@@ -52,30 +45,25 @@ class ConventionController {
 
     const info_depp = await this.findInfoDepp(uai);
     const info_dgefp = await this.findInfoDgefp(siret, siretSiegeSocial);
-    const info_datadock = await this.findInfoDatadock(siret);
     const info_datagouv_ofs = await this.findInfoDataGouv(siret);
 
     const conventionnementInfos = this.conventionnement({
       info_depp: info_depp.value,
       info_dgefp: info_dgefp.value,
-      info_datadock: info_datadock.value,
       info_datagouv_ofs: info_datagouv_ofs.value,
-      info_qualiopi: info_datadock.qualiopi ? "OUI" : "NON",
+      info_qualiopi: info_datagouv_ofs.qualiopi ? "OUI" : "NON",
     });
 
     return {
       info_depp: info_depp.value,
       info_dgefp: info_dgefp.value,
-      info_datadock: info_datadock.value,
       info_datagouv_ofs: info_datagouv_ofs.value,
       info_depp_info: info_depp.info,
       info_dgefp_info: info_dgefp.info,
-      info_datadock_info: info_datadock.info,
-      info_qualiopi_info: info_datadock.qualiopi ? "OUI" : "NON",
+      info_qualiopi_info: info_datagouv_ofs.qualiopi ? "OUI" : "NON",
       info_datagouv_ofs_info: info_datagouv_ofs.info,
-      nda: info_datagouv_ofs.data?.num_da || null,
+      nda: info_datagouv_ofs.data?.numerodeclarationactivite || null,
       ...conventionnementInfos,
-      computed_info_datadock: datadockValue[info_datadock.value],
     };
   }
 
@@ -84,7 +72,7 @@ class ConventionController {
       computed_type: computeCodes.type.ToCheck,
       computed_conventionne: computeCodes.conventionne.No,
       computed_declare_prefecture: computeCodes.declarePrefecture.No,
-      catalogue_published: true,
+      catalogue_published: filesInfos.info_qualiopi === "OUI", // TODO @EPT: here maybe also read a list of authorized sirets
     };
 
     // Check In DEPP
@@ -110,16 +98,6 @@ class ConventionController {
       if (result.computed_type !== computeCodes.type.CFA) {
         result.computed_type = computeCodes.type.OF;
       }
-    }
-
-    // Check if can be published
-    if (
-      result.computed_conventionne === computeCodes.conventionne.No &&
-      filesInfos.info_datadock !== infosCodes.infoDATADOCK.Referencable &&
-      filesInfos.info_qualiopi !== "OUI"
-    ) {
-      // To Remove Trainings - Établissements can't be in EducNat SI
-      result.catalogue_published = false;
     }
 
     return result;
@@ -211,30 +189,23 @@ class ConventionController {
     return { info: "Ok siren", value: infosCodes.infoDGEFP.SirenMatch };
   }
 
-  async findInfoDatadock(siret) {
-    const result = await ConventionFile.findOne({
-      type: "DATADOCK",
-      siret,
-    }).lean();
-    if (result) {
-      return {
-        info: "Ok",
-        value: infosCodes.infoDATADOCK[result.REFERENCABLE === "OUI" ? "Referencable" : "NotReferencable"],
-        qualiopi:
-          result.QUALIOPI &&
-          (`${result.QUALIOPI}`.toUpperCase() === "QUALIOPI" || `${result.QUALIOPI}`.toUpperCase() === "EDUFORM"),
-      };
-    }
-    return { info: "Erreur: Datadock Non trouvé", value: infosCodes.infoDATADOCK.NotFound, qualiopi: false };
-  }
-
   async findInfoDataGouv(siret) {
     const siren = siret.substring(0, 9);
-    const result = await ConventionFile.findOne({ type: "DATAGOUV", siren, cfa: "Oui" }).lean();
+    const result = await ConventionFile.findOne({ type: "DATAGOUV", siren }).lean();
     if (!result) {
-      return { info: "Erreur: DataGouv Non trouvé", value: infosCodes.infoDATAGOUV.NotFound, data: null };
+      return {
+        info: "Erreur: DataGouv Non trouvé",
+        value: infosCodes.infoDATAGOUV.NotFound,
+        qualiopi: false,
+        data: null,
+      };
     }
-    return { info: "Ok", value: infosCodes.infoDATAGOUV.Found, data: result };
+    return {
+      info: "Ok",
+      value: infosCodes.infoDATAGOUV.Found,
+      data: result,
+      qualiopi: result.numerodeclarationactivite && result.certifications_actionsdeformationparapprentissage === "true",
+    };
   }
 }
 
