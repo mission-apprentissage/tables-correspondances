@@ -1,3 +1,10 @@
+## [2.27.5](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.27.4...v2.27.5) (2021-12-15)
+
+
+### Bug Fixes
+
+* faster convention updater / etablissement service ([2883f31](https://github.com/mission-apprentissage/tables-correspondances/commit/2883f317e9e1201124151a88e75208ab09c12784))
+
 ## [2.27.4](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.27.3...v2.27.4) (2021-12-08)
 
 
