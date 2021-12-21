@@ -1,3 +1,10 @@
+## [2.27.6](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.27.5...v2.27.6) (2021-12-21)
+
+
+### Bug Fixes
+
+* add one CFD to level 4 ([7368774](https://github.com/mission-apprentissage/tables-correspondances/commit/73687748cd41d43b62f08fe8d210d32e0d4baf92))
+
 ## [2.27.5](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.27.4...v2.27.5) (2021-12-15)
 
 
