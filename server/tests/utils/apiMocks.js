@@ -228,10 +228,6 @@ module.exports = {
                 duree: null,
                 annee: null,
                 email: "contant@email.fr",
-                parcoursup_reference: false,
-                parcoursup_a_charger: true,
-                affelnet_reference: false,
-                affelnet_a_charger: false,
                 source: "WS RCO",
                 commentaires: null,
                 opcos: [
