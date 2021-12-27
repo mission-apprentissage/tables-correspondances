@@ -308,7 +308,7 @@ export async function conventionFilesImporter(db: Connection, assetsDir?: string
 }
 
 /**
- * One job to setup all TCO tables
+ * One job to setup all tables
  */
 export async function tcoJobs(db: Connection, conventionFilesDir: string, rncpKitPath: string) {
   isSdkReady();
