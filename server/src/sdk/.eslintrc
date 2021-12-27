@@ -1,4 +1,16 @@
 {
   "root": true,
-  "extends": ["sbs/base", "sbs/typescript"]
+  "extends": ["sbs/base", "sbs/typescript"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "parserOptions": {
+        "project": ["../../tsconfig.json"]
+      }
+    }
+  ],
+  "rules": {
+    "camelcase": "off",
+    "@typescript-eslint/no-unsafe-return": "off"
+  }
 }
