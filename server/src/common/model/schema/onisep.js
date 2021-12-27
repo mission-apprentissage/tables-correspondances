@@ -5,6 +5,16 @@ const onisepSchema = {
     description: "Type (etablissement | formation)",
     required: true,
   },
+  code_uai: {
+    index: true,
+    type: String,
+    description: "uai",
+  },
+  academie: {
+    index: true,
+    type: String,
+    description: "academie",
+  },
   code_mef: {
     index: true,
     type: String,
