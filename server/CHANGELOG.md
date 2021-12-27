@@ -1,3 +1,11 @@
+# [2.28.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.27.6...v2.28.0) (2021-12-27)
+
+
+### Features
+
+* add tcoJobs to sdk ([c8f9745](https://github.com/mission-apprentissage/tables-correspondances/commit/c8f97453542f0698ca4463fc933edb54b19af5de))
+* force sdk build ([2ce78d1](https://github.com/mission-apprentissage/tables-correspondances/commit/2ce78d1b0cc2e04a4a5636c84cb34acf15f3aeef))
+
 ## [2.27.6](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.27.5...v2.27.6) (2021-12-21)
 
 
