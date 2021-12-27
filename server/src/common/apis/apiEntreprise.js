@@ -33,7 +33,7 @@ class ApiEntreprise {
         if (!response?.data?.entreprise) {
           throw new ApiError("Api Entreprise", "No entreprise data received");
         }
-        return response.data.entreprise;
+        return response.data;
       } catch (e) {
         throw new ApiError("Api Entreprise", e.message, e.code || e.response.status);
       }
