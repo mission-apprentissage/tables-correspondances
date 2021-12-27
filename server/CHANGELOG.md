@@ -1,3 +1,11 @@
+# [2.29.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.28.0...v2.29.0) (2021-12-27)
+
+
+### Features
+
+* faster etablissementService ([1459b37](https://github.com/mission-apprentissage/tables-correspondances/commit/1459b37fd254aa50405475b6f192b9da048c0886))
+* force sdk build ([b7e2542](https://github.com/mission-apprentissage/tables-correspondances/commit/b7e25427a5280926427c020124b3b7a52055d4ef))
+
 # [2.28.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.27.6...v2.28.0) (2021-12-27)
 
 
