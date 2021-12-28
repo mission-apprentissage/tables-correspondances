@@ -1,3 +1,4 @@
+const logger = require("../../../common/logger");
 const ApiGeoAdresse = require("../../../common/apis/ApiGeoAdresse");
 
 class GeoAdresseData {
@@ -38,7 +39,7 @@ class GeoAdresseData {
     }
 
     if (!code_postal) {
-      console.info(
+      logger.error(
         `No postcode for establishment.\t${this.getAddress(
           numero_voie,
           type_voie,
@@ -61,34 +62,34 @@ class GeoAdresseData {
       try {
         responseApiAdresse = await this.apiGeoAdresse.search(query, { citycode: code_insee });
       } catch (error) {
-        console.error(`geo search error : ${query} ${code_insee} ${error}`);
+        logger.error(`geo search error : ${query} ${code_insee} ${error}`);
         responseApiAdresse = null;
       }
     }
 
     if (!responseApiAdresse || responseApiAdresse.features.length === 0) {
       if (code_insee) {
-        console.info(`Second geoloc call with postcode\t${code_postal}`);
+        logger.debug(`Second geoloc call with postcode\t${code_postal}`);
       }
       let postcode = this.refinePostcode(code_postal);
       try {
         responseApiAdresse = await this.apiGeoAdresse.search(query, { postcode });
       } catch (error) {
-        console.error(`geo search error : ${query} ${postcode} ${error}`);
+        logger.error(`geo search error : ${query} ${postcode} ${error}`);
         responseApiAdresse = null;
       }
     }
 
     // si pas de réponse troisième recherche sur ville et code postal
     if (!responseApiAdresse || responseApiAdresse.features.length === 0) {
-      console.info(`${code_insee ? "Third" : "Second"} geoloc call with postcode and city\t${localite} ${code_postal}`);
+      logger.debug(`${code_insee ? "Third" : "Second"} geoloc call with postcode and city\t${localite} ${code_postal}`);
       let query = `${localite ? localite : "a"}`; // hack si localite absente
       let postcode = this.refinePostcode(code_postal);
 
       try {
         responseApiAdresse = await this.apiGeoAdresse.search(query, { postcode });
       } catch (error) {
-        console.error(`geo search error : ${query} ${postcode} ${error}`);
+        logger.error(`geo search error : ${query} ${postcode} ${error}`);
         responseApiAdresse = null;
       }
     }
@@ -100,7 +101,7 @@ class GeoAdresseData {
       };
 
     if (responseApiAdresse.features.length === 0) {
-      console.info(
+      logger.error(
         `No geoloc result for establishment.\t${this.getAddress(
           numero_voie,
           type_voie,
@@ -118,7 +119,7 @@ class GeoAdresseData {
 
     // signalement des cas avec ambiguité
     if (responseApiAdresse.features.length > 1) {
-      console.info(
+      logger.debug(
         `Multiple geoloc results for establishment.\t${this.getAddress(
           numero_voie,
           type_voie,
@@ -174,7 +175,7 @@ class GeoAdresseData {
           return this.formatMunicipalityResponse(data);
         }
       } catch (e) {
-        console.error("geo search municipality error", e);
+        logger.error(`geo search municipality error ${code},${codeInsee}: ${e}`);
       }
     }
 
@@ -185,7 +186,7 @@ class GeoAdresseData {
         return this.formatMunicipalityResponse(data);
       }
     } catch (e) {
-      console.error("geo search municipality error", e);
+      logger.error(`geo search municipality error ${code},${codeInsee}: ${e}`);
     }
 
     try {
@@ -195,7 +196,7 @@ class GeoAdresseData {
         return this.formatMunicipalityResponse(data);
       }
     } catch (e) {
-      console.error("geo search municipality error", e);
+      logger.error(`geo search municipality error ${code},${codeInsee}: ${e}`);
     }
 
     return {};
@@ -213,7 +214,7 @@ class GeoAdresseData {
       }
 
       if (data.features.length > 1) {
-        console.info("Multiple results for lat,lon: ", latitude, longitude);
+        logger.debug("Multiple results for lat,lon: ", latitude, longitude);
       }
 
       const { properties } = data.features[0];
@@ -236,7 +237,7 @@ class GeoAdresseData {
         results_count: data.features.length,
       };
     } catch (e) {
-      console.error("geo reverse error", e);
+      logger.error(`geo reverse error ${latitude},${longitude}: ${e}`);
     }
 
     return {
