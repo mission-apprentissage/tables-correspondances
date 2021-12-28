@@ -17,7 +17,7 @@ const createModel = (modelName, descriptor, options = {}) => {
     return mongoose.model(modelName, schema, options.collectionName);
   } catch (error) {
     if (error.name === "OverwriteModelError") {
-      console.log(`Model ${modelName} seems to be already declared`);
+      // console.log(`Model ${modelName} seems to be already declared`);
       return mongoose.models[modelName];
     } else {
       console.log(error);
