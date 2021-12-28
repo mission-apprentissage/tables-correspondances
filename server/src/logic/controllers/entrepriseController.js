@@ -17,27 +17,33 @@ class EntrepriseApiData {
 
     let siret = `${providedSiret}`.trim();
 
-    let etablissementApiInfo;
-    try {
-      etablissementApiInfo = await apiEntreprise.getEtablissement(siret);
-    } catch (e) {
-      return {
-        result: {},
-        messages: {
-          error: "Siret non trouvé",
-        },
-      };
-    }
-
     const siren = siret.substring(0, 9);
     let entrepriseApiInfo;
+    let entrepriseData;
     try {
-      entrepriseApiInfo = await apiEntreprise.getEntreprise(siren);
+      entrepriseData = await apiEntreprise.getEntreprise(siren);
+      entrepriseApiInfo = entrepriseData.entreprise;
     } catch (e) {
       return {
         result: {},
         messages: {
           error: "Siren non trouvé",
+        },
+      };
+    }
+
+    let etablissementApiInfo;
+    try {
+      if (entrepriseData.etablissement_siege.siret === siret) {
+        etablissementApiInfo = entrepriseData.etablissement_siege;
+      } else {
+        etablissementApiInfo = await apiEntreprise.getEtablissement(siret);
+      }
+    } catch (e) {
+      return {
+        result: {},
+        messages: {
+          error: "Siret non trouvé",
         },
       };
     }

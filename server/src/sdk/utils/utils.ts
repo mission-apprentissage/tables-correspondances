@@ -1,5 +1,5 @@
+import type { Connection } from "mongoose";
 import { setMongooseInstance } from "../../common/mongodb";
-import { Connection } from "mongoose";
 
 let mongooseInstanceShared = false;
 const isSdkReady = () => {
@@ -26,6 +26,7 @@ export async function getModels() {
   isSdkReady();
   try {
     if (!Models) {
+      // eslint-disable-next-line require-atomic-updates
       Models = await import("../../common/model");
     }
 
@@ -36,20 +37,10 @@ export async function getModels() {
   }
 }
 
-// export async function tcoJobs(): Promise<any> {
-//   isSdkReady();
-//   try {
-//     // TODO
-//   } catch (error) {
-//     console.error(`tcoJobs: something went wrong!`);
-//     return null;
-//   }
-// }
-
 export async function getCpInfo(codePostal: string, codeInsee?: string) {
   isSdkReady();
   try {
-    let { getDataFromCP } = await import("../../logic/handlers/geoHandler");
+    const { getDataFromCP } = await import("../../logic/handlers/geoHandler");
     const result = await getDataFromCP(codePostal, codeInsee);
     return result;
   } catch (error) {
@@ -61,7 +52,7 @@ export async function getCpInfo(codePostal: string, codeInsee?: string) {
 export async function rncpImporter(localPath: string | null = null) {
   isSdkReady();
   try {
-    let { rncpImporter: importer } = await import("../../jobs/rncpImporter");
+    const { rncpImporter: importer } = await import("../../jobs/rncpImporter");
     await importer(localPath);
   } catch (error) {
     console.error(`rncpImporter: something went wrong!`, error);
@@ -71,7 +62,7 @@ export async function rncpImporter(localPath: string | null = null) {
 export async function onisepImporter(db: Connection) {
   isSdkReady();
   try {
-    let { onisepImporter: importer } = await import("../../jobs/OnisepImporter");
+    const { onisepImporter: importer } = await import("../../jobs/OnisepImporter");
     await importer(db);
   } catch (error) {
     console.error(`onisepImporter: something went wrong!`, error);
@@ -81,7 +72,7 @@ export async function onisepImporter(db: Connection) {
 export async function getRncpInfo(codeRncp: string) {
   isSdkReady();
   try {
-    let { getDataFromRncp } = await import("../../logic/handlers/rncpHandler");
+    const { getDataFromRncp } = await import("../../logic/handlers/rncpHandler");
     const result = await getDataFromRncp(codeRncp); // TODO si aucun documents TypeError: Cannot read property '_doc' of null
     return result;
   } catch (error) {
@@ -93,8 +84,8 @@ export async function getRncpInfo(codeRncp: string) {
 export async function bcnImporter() {
   isSdkReady();
   try {
-    let { downloadBcnTables } = await import("../../jobs/bcnDownloader");
-    let { importBcnTables } = await import("../../jobs/bcnImporter");
+    const { downloadBcnTables } = await import("../../jobs/bcnDownloader");
+    const { importBcnTables } = await import("../../jobs/bcnImporter");
 
     await downloadBcnTables();
     await importBcnTables();
@@ -110,7 +101,7 @@ export interface cfdOptions {
 export async function getCfdInfo(cfd: string, options: cfdOptions = { onisep: true }) {
   isSdkReady();
   try {
-    let { getDataFromCfd } = await import("../../logic/handlers/cfdHandler");
+    const { getDataFromCfd } = await import("../../logic/handlers/cfdHandler");
     const result = await getDataFromCfd(cfd, options);
     return result;
   } catch (error) {
@@ -122,7 +113,7 @@ export async function getCfdInfo(cfd: string, options: cfdOptions = { onisep: tr
 export async function getMef10Info(mef10: string) {
   isSdkReady();
   try {
-    let { getDataFromMef10 } = await import("../../logic/handlers/mefHandler");
+    const { getDataFromMef10 } = await import("../../logic/handlers/mefHandler");
     const result = await getDataFromMef10(mef10);
     return result;
   } catch (error) {
@@ -134,7 +125,7 @@ export async function getMef10Info(mef10: string) {
 export async function getSiretInfo(siret: string) {
   isSdkReady();
   try {
-    let { getDataFromSiret } = await import("../../logic/handlers/siretHandler");
+    const { getDataFromSiret } = await import("../../logic/handlers/siretHandler");
     const result = await getDataFromSiret(siret);
     return result;
   } catch (error) {
@@ -145,7 +136,8 @@ export async function getSiretInfo(siret: string) {
 
 export async function isValideUAI(uai: string) {
   try {
-    let { validateUAI } = await import("../../common/utils/uaiUtils");
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    const { validateUAI } = await import("../../common/utils/uaiUtils");
     return validateUAI(uai);
   } catch (error) {
     console.error(`getSiretInfo: something went wrong!`, error);
@@ -194,8 +186,8 @@ export async function getCoordinatesFromAddressData({
 }: AddressData) {
   isSdkReady();
   try {
-    let { getCoordinatesFromAddressData } = await import("../../logic/handlers/geoHandler");
-    return await getCoordinatesFromAddressData({
+    const { getCoordinatesFromAddressData: getCoords } = await import("../../logic/handlers/geoHandler");
+    return await getCoords({
       numero_voie,
       type_voie,
       nom_voie,
@@ -220,7 +212,7 @@ export async function getNiveauxDiplomesTree(): Promise<Tree> {
 
   return Object.entries(mappingCodesEnNiveau).reduce(async (acc, [niveau, value]) => {
     const accSync: Tree = await acc;
-    let regex = new RegExp(`^(${value.join("|")})`);
+    const regex = new RegExp(`^(${value.join("|")})`);
 
     // @ts-ignore
     const niveauxFormationDiplome = await BcnFormationDiplome.distinct("NIVEAU_FORMATION_DIPLOME", {
@@ -266,7 +258,7 @@ export async function getAddressFromCoordinates({
 }): Promise<AdressResult | null> {
   isSdkReady();
   try {
-    let { getAddressDataFromCoordinates } = await import("../../logic/handlers/geoHandler");
+    const { getAddressDataFromCoordinates } = await import("../../logic/handlers/geoHandler");
     const result = getAddressDataFromCoordinates({ latitude, longitude });
     return result;
   } catch (error) {
@@ -290,7 +282,7 @@ type EtablissementOptions = {
 };
 
 type UpdatesResult = {
-  updates: object | null;
+  updates: any;
   error?: string;
   etablissement: Etablissement;
 };
@@ -301,6 +293,7 @@ export async function getEtablissementUpdates(
 ): Promise<UpdatesResult> {
   isSdkReady();
   const { etablissementService } = await import("../../logic/services/etablissementService");
+  // eslint-disable-next-line no-return-await
   return await etablissementService(etablissement, options);
 }
 
@@ -311,5 +304,20 @@ export async function conventionFilesImporter(db: Connection, assetsDir?: string
     await importer(db, assetsDir);
   } catch (error) {
     console.error(`conventionFilesImporter: something went wrong!`, error);
+  }
+}
+
+/**
+ * One job to setup all tables
+ */
+export async function tcoJobs(db: Connection, conventionFilesDir: string, rncpKitPath: string) {
+  isSdkReady();
+  try {
+    await bcnImporter();
+    await onisepImporter(db);
+    await conventionFilesImporter(db, conventionFilesDir);
+    await rncpImporter(rncpKitPath);
+  } catch (error) {
+    console.error(`tcoJobs: something went wrong!`);
   }
 }
