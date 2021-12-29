@@ -14,20 +14,19 @@ const downloadBcnTable = async (table) => {
     await downloadFile(buildUrl(table), toFile);
     logger.info(`download ${table} Succeed`);
   } catch (error) {
-    logger.error(`download ${table} failed`);
-    logger.error(error);
+    logger.error(`download ${table} failed ${error}`);
   }
 };
 
 const downloadBcnTables = async () => {
-  logger.warn(`[BCN tables] Downloading`);
+  logger.info(`[BCN tables] Downloading`);
   await downloadBcnTable("N_FORMATION_DIPLOME");
   await downloadBcnTable("V_FORMATION_DIPLOME");
   await downloadBcnTable("N_NIVEAU_FORMATION_DIPLOME");
   await downloadBcnTable("N_MEF");
   await downloadBcnTable("N_LETTRE_SPECIALITE");
   await downloadBcnTable("N_DISPOSITIF_FORMATION");
-  logger.warn(`[BCN tables] Download completed`);
+  logger.info(`[BCN tables] Download completed`);
 };
 
 module.exports.downloadBcnTables = downloadBcnTables;
