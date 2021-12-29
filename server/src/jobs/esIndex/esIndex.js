@@ -1,6 +1,5 @@
 const { rebuildIndex } = require("../../common/utils/esUtils");
 const {
-  Etablissement,
   DomainesMetiers,
   BcnNMef,
   BcnNDispositifFormation,
@@ -11,9 +10,6 @@ const {
 
 const rebuildEsIndex = async (index, skipNotFound = false) => {
   switch (index) {
-    case "etablissements":
-      await rebuildIndex(Etablissement, { skipNotFound });
-      break;
     case "domainesmetiers":
       await rebuildIndex(DomainesMetiers, { skipNotFound });
       break;
