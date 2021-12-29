@@ -1,3 +1,10 @@
+## [2.29.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.29.1...v2.29.2) (2021-12-29)
+
+
+### Bug Fixes
+
+* better logs ([2d012f8](https://github.com/mission-apprentissage/tables-correspondances/commit/2d012f8e6ba0dc5cb1706867e48852e6744dd9cb))
+
 ## [2.29.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.29.0...v2.29.1) (2021-12-28)
 
 
