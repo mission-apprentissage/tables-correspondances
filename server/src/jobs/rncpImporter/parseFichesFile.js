@@ -192,7 +192,7 @@ module.exports = async (inputStream) => {
         stats.total++;
         return json;
       } catch (e) {
-        logger.warn(`Unable to load fiche from xml due to ${e.message}`);
+        logger.error(`Unable to load fiche from xml due to ${e.message}`);
         stats.errors++;
         return {};
       }

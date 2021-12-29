@@ -21,7 +21,7 @@ const downloadXlsxAndGetJson = async (assetsDir, filename, download = true) => {
 };
 
 const conventionFilesImporter = async (db, assetsDir = path.join(__dirname, "./assets")) => {
-  logger.warn(`[Convention files importer] Starting`);
+  logger.info(`[Convention files importer] Starting`);
 
   // CSV import
   const PUBLIC_OFS_PATH = path.join(assetsDir, "latest_public_ofs.csv");
@@ -41,7 +41,7 @@ const conventionFilesImporter = async (db, assetsDir = path.join(__dirname, "./a
   // Push into Db
   await importConventionFiles(db, publicOfs, depp, dgefp);
 
-  logger.warn(`[Convention files importer] Ended`);
+  logger.info(`[Convention files importer] Ended`);
 };
 
 module.exports.conventionFilesImporter = conventionFilesImporter;
