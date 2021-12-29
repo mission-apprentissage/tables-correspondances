@@ -1,3 +1,10 @@
+# [2.30.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.29.2...v2.30.0) (2021-12-29)
+
+
+### Features
+
+* remove etablissements ([#198](https://github.com/mission-apprentissage/tables-correspondances/issues/198)) ([be0af46](https://github.com/mission-apprentissage/tables-correspondances/commit/be0af46ffd997e2731ae814b3b390e8f9b8d57ce))
+
 ## [2.29.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.29.1...v2.29.2) (2021-12-29)
 
 
