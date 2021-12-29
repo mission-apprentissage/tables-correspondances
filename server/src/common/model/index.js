@@ -51,10 +51,4 @@ module.exports = {
   DomainesMetiers: createModel("domainesmetiers", schema.domainesMetiersSchema, {
     esIndexName: "domainesmetiers",
   }),
-  Etablissement: createModel("etablissement", schema.etablissementSchema, {
-    esIndexName: "etablissements",
-    createMongoDBIndexes: (schema) => {
-      schema.index({ adresse: "text" });
-    },
-  }),
 };

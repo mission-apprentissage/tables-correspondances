@@ -1,5 +1,4 @@
 const logger = require("../../common/logger");
-//const Joi = require("joi");
 const { getDataFromSiret } = require("../handlers/siretHandler");
 const { getCoordinatesFromAddressData } = require("../handlers/geoHandler");
 const conventionController = require("../controllers/conventionController");
@@ -7,11 +6,6 @@ const { findOnisepInfosEtablissementFromUAI } = require("../controllers/onisep/o
 const { diffEtablissement } = require("../../common/utils/diffUtils");
 
 const apiCfaDock = require("../../common/apis/apiCfaDock");
-
-// const etablissementSchema = Joi.object({
-//   siret: Joi.string().required(),
-//   uai: Joi.string().allow(null).required(),
-// }).unknown();
 
 /*
  * Build updates history
@@ -38,7 +32,6 @@ const etablissementService = async (
   { withHistoryUpdate = true, scope = { siret: true, geoloc: true, conventionnement: true, onisep: true } } = {}
 ) => {
   try {
-    // await etablissementSchema.validateAsync(etablissement, { abortEarly: false });
     let error = null;
 
     let current = {

@@ -267,7 +267,7 @@ export async function getAddressFromCoordinates({
   }
 }
 
-type Etablissement = any; // TODO find a way to infer from mongoose schema
+type Etablissement = any;
 
 type EtablissementScope = {
   siret: boolean;
