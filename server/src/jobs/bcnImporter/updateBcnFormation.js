@@ -8,7 +8,7 @@ module.exports = async (db, id, bcnFormation) => {
       { ...bcnFormation, last_update_at: Date.now() },
       { new: true }
     );
-    logger.info(`BCN Formation '${bcnFormation.FORMATION_DIPLOME}' successfully updated in db ${db.name}`);
+    logger.debug(`BCN Formation '${bcnFormation.FORMATION_DIPLOME}' successfully updated in db ${db.name}`);
   } catch (err) {
     logger.error({ err });
   }

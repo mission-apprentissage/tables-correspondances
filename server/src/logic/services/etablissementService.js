@@ -170,7 +170,7 @@ const etablissementService = async (
           ...resultsCfadock,
         };
       } catch (error) {
-        console.log(error);
+        logger.error(`Unable to get opco data : ${error}`);
       }
     }
 
