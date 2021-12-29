@@ -119,20 +119,19 @@ module.exports = async (cfdKitPath = null) => {
         const exist = await FicheRncp.findOne({ code_rncp: fiche.code_rncp });
         if (exist) {
           await FicheRncp.findOneAndUpdate({ _id: exist._id }, { ...fiche, last_update_at: Date.now() }, { new: true });
-          logger.info(`RNCP fiche '${fiche.code_rncp}' successfully updated in db`);
+          logger.debug(`RNCP fiche '${fiche.code_rncp}' successfully updated in db`);
         } else {
-          logger.info(`RNCP fiche '${fiche.code_rncp}' not found`);
+          logger.debug(`RNCP fiche '${fiche.code_rncp}' not found`);
           const ficheRncpToAdd = new FicheRncp(fiche);
           await ficheRncpToAdd.save();
-          logger.info(`Fiche Rncp '${ficheRncpToAdd.id}' successfully added`);
+          logger.debug(`Fiche Rncp '${ficheRncpToAdd.id}' successfully added`);
         }
       } catch (error) {
-        console.log(error);
+        logger.error(error);
       }
     });
     logger.info(`Importing RNCP fiches into db Succeed`);
   } catch (error) {
-    logger.error(error);
-    logger.error(`Importing RNCP fiches into db Failed`);
+    logger.error(`Importing RNCP fiches into db Failed ${error}`);
   }
 };
