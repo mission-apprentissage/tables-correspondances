@@ -3,11 +3,11 @@ const { runScript } = require("../scriptWrapper");
 const importRNCP = require("./importRNCP");
 
 const rncpImporter = async (localPath = null) => {
-  logger.warn(`[RCNP importer] Starting`);
+  logger.info(`[RCNP importer] Starting`);
 
   await importRNCP(localPath);
 
-  logger.warn(`[RCNP importer] Ended`);
+  logger.info(`[RCNP importer] Ended`);
 };
 
 module.exports.rncpImporter = rncpImporter;
