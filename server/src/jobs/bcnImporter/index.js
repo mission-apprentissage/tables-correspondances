@@ -34,12 +34,12 @@ const dbOperations = async (base, db, Entity, description = "") => {
       const exist = await Entity.findOne({ ID: item.ID });
       if (exist) {
         await Entity.findOneAndUpdate({ _id: item._id }, { ...item, last_update_at: Date.now() }, { new: true });
-        logger.info(`BCN ${description} '${item.ID}' successfully updated in db ${db.name}`);
+        logger.debug(`BCN ${description} '${item.ID}' successfully updated in db ${db.name}`);
       } else {
-        logger.info(`BCN ${description}  '${item.ID}' not found`);
+        logger.debug(`BCN ${description}  '${item.ID}' not found`);
         const bcnToAdd = new Entity(item);
         await bcnToAdd.save();
-        logger.info(`BCN ${description} '${bcnToAdd._id}' successfully added in db ${db.name}`);
+        logger.debug(`BCN ${description} '${bcnToAdd._id}' successfully added in db ${db.name}`);
       }
     });
     logger.info(`Importing BCN ${description}  table Succeed`);
@@ -49,7 +49,7 @@ const dbOperations = async (base, db, Entity, description = "") => {
 };
 
 const importBcnTables = async (db = { name: "" }) => {
-  logger.warn(`[BCN tables] Importer`);
+  logger.info(`[BCN tables] Importer`);
   const bases = fileManager.loadBases();
 
   const bcnFormations = mergeNformationVformation(bases.N_FORMATION_DIPLOME, bases.V_FORMATION_DIPLOME);
@@ -60,7 +60,7 @@ const importBcnTables = async (db = { name: "" }) => {
       if (exist) {
         await updateBcnFormation(db, exist._id, formation);
       } else {
-        logger.info(`BCN Formation '${formation.FORMATION_DIPLOME}' not found`);
+        logger.debug(`BCN Formation '${formation.FORMATION_DIPLOME}' not found`);
         await createBcnFormation(db, formation);
       }
     });
@@ -81,7 +81,7 @@ const importBcnTables = async (db = { name: "" }) => {
   // N_DISPOSITIF_FORMATION
   await dbOperations(bases.N_DISPOSITIF_FORMATION, db, BcnNDispositifFormation, "N Dispositif");
 
-  logger.warn(`[BCN tables] Importer completed`);
+  logger.info(`[BCN tables] Importer completed`);
 };
 
 module.exports.importBcnTables = importBcnTables;
