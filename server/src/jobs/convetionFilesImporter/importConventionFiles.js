@@ -32,7 +32,7 @@ module.exports = async (db, publicOfsp, depp, dgefp) => {
     await asyncForEach(chunks, async (chunkpart, i) => {
       try {
         await db.collection("conventionfiles").insertMany(chunkpart);
-        logger.info(`Inserted ${200 * (i + 1)}`);
+        logger.debug(`Inserted ${200 * (i + 1)}`);
       } catch (error) {
         console.error(error);
       }
