@@ -1,3 +1,10 @@
+## [2.30.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.30.1...v2.30.2) (2022-01-03)
+
+
+### Bug Fixes
+
+* rate limits for apis ([1fe2866](https://github.com/mission-apprentissage/tables-correspondances/commit/1fe2866bd68a0f14c13693f858293d6d60a7a7bf))
+
 ## [2.30.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.30.0...v2.30.1) (2022-01-03)
 
 
