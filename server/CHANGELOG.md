@@ -1,3 +1,10 @@
+## [2.30.3](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.30.2...v2.30.3) (2022-01-03)
+
+
+### Bug Fixes
+
+* force sdk publish ([8972c42](https://github.com/mission-apprentissage/tables-correspondances/commit/8972c4210ed32a6d6d1ad234279f8c6ad288dbb1))
+
 ## [2.30.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.30.1...v2.30.2) (2022-01-03)
 
 
