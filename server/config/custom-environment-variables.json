@@ -5,9 +5,6 @@
   "mongodb": {
     "uri": "TABLES_CORRESPONDANCES_MONGODB_URI"
   },
-  "elasticSearch": {
-    "node": "TABLES_CORRESPONDANCES_ELASTICSEARCH_NODE"
-  },
   "apiKey": "TABLES_CORRESPONDANCES_API_KEY",
   "aws": {
     "accessKeyId": "TABLES_CORRESPONDANCE_ACCESS_KEY_ID",

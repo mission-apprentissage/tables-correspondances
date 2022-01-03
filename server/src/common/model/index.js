@@ -1,5 +1,4 @@
 const { getMongooseInstance } = require("../mongodb");
-const { mongoosastic, getElasticInstance } = require("../esClient");
 const schema = require("../model/schema");
 
 const mongoose = getMongooseInstance();
@@ -8,9 +7,6 @@ const createModel = (modelName, descriptor, options = {}) => {
   try {
     const schema = new mongoose.Schema(descriptor, options.schemaOptions || {});
     schema.plugin(require("mongoose-paginate"));
-    if (options.esIndexName && !mongoose.isElasticDisabled) {
-      schema.plugin(mongoosastic, { esClient: getElasticInstance(), index: options.esIndexName });
-    }
     if (options.createMongoDBIndexes) {
       options.createMongoDBIndexes(schema);
     }
@@ -33,22 +29,10 @@ module.exports = {
   Onisep: createModel("onisep", schema.onisepSchema),
   CodeIdccOpco: createModel("codeIdccOpco", schema.codeIdccOpcoSchema),
   CodeEnCodesIdcc: createModel("codeEnCodesIdcc", schema.codeEnCodesIdccSchema),
-  BcnFormationDiplome: createModel("bcnformationdiplome", schema.bcnFormationDiplomesSchema, {
-    esIndexName: "bcnformationdiplomes",
-  }),
-  BcnLettreSpecialite: createModel("bcnlettrespecialite", schema.bcnLettreSpecialiteSchema, {
-    esIndexName: "bcnlettrespecialites",
-  }),
-  BcnNNiveauFormationDiplome: createModel("bcnnniveauformationdiplome", schema.bcnNNiveauFormationDiplomeSchema, {
-    esIndexName: "bcnnniveauformationdiplomes",
-  }),
-  BcnNMef: createModel("bcnnmef", schema.bcnNMefSchema, {
-    esIndexName: "bcnnmefs",
-  }),
-  BcnNDispositifFormation: createModel("bcnndispositifformation", schema.bcnNDispositifFormationSchema, {
-    esIndexName: "bcnndispositifformations",
-  }),
-  DomainesMetiers: createModel("domainesmetiers", schema.domainesMetiersSchema, {
-    esIndexName: "domainesmetiers",
-  }),
+  BcnFormationDiplome: createModel("bcnformationdiplome", schema.bcnFormationDiplomesSchema),
+  BcnLettreSpecialite: createModel("bcnlettrespecialite", schema.bcnLettreSpecialiteSchema),
+  BcnNNiveauFormationDiplome: createModel("bcnnniveauformationdiplome", schema.bcnNNiveauFormationDiplomeSchema),
+  BcnNMef: createModel("bcnnmef", schema.bcnNMefSchema),
+  BcnNDispositifFormation: createModel("bcnndispositifformation", schema.bcnNDispositifFormationSchema),
+  DomainesMetiers: createModel("domainesmetiers", schema.domainesMetiersSchema),
 };
