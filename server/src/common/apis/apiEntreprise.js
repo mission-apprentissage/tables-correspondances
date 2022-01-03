@@ -6,9 +6,9 @@ const apiRateLimiter = require("./apiRateLimiter");
 
 // Cf Documentation : https://doc.entreprise.api.gouv.fr/#param-tres-obligatoires
 const executeWithRateLimiting = apiRateLimiter("apiEntreprise", {
-  //2 requests per second
-  nbRequests: 2,
-  durationInSeconds: 1,
+  //250 requests per minute
+  nbRequests: 250,
+  durationInSeconds: 60,
   client: axios.create({
     baseURL: "https://entreprise.api.gouv.fr/v2",
     timeout: 5000,
@@ -23,7 +23,7 @@ const apiParams = {
 };
 
 class ApiEntreprise {
-  getEntreprise(siren) {
+  async getEntreprise(siren) {
     return executeWithRateLimiting(async (client) => {
       try {
         logger.debug(`[Entreprise API] Fetching entreprise ${siren}...`);
