@@ -3,7 +3,6 @@ const fs = require("fs");
 const XLSX = require("xlsx");
 const logger = require("../../common/logger");
 const { DomainesMetiers } = require("../../common/model");
-const { getElasticInstance } = require("../../common/esClient");
 const { getFileFromS3 } = require("../../common/utils/awsUtils");
 
 const FILE_LOCAL_PATH = path.join(__dirname, "./assets/domainesMetiers_S3.xlsx");
@@ -11,22 +10,6 @@ const FILE_LOCAL_PATH = path.join(__dirname, "./assets/domainesMetiers_S3.xlsx")
 const emptyMongo = async () => {
   logger.info(`Clearing domainesmetiers db...`);
   await DomainesMetiers.deleteMany({});
-};
-
-const clearIndex = async () => {
-  try {
-    let client = getElasticInstance();
-    logger.info(`Removing domainesmetiers index...`);
-    await client.indices.delete({ index: "domainesmetiers" });
-  } catch (err) {
-    logger.info(`Error emptying es index : ${err.message}`);
-  }
-};
-
-const createIndex = async () => {
-  let requireAsciiFolding = true;
-  logger.info(`Creating domainesmetiers index...`);
-  await DomainesMetiers.createMapping(requireAsciiFolding);
 };
 
 const downloadAndSaveFile = () => {
@@ -51,8 +34,6 @@ module.exports = async () => {
     logger.info(" -- Start of DomainesMetiers initializer -- ");
 
     await emptyMongo();
-    await clearIndex();
-    await createIndex();
 
     await downloadAndSaveFile();
 

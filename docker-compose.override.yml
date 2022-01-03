@@ -14,7 +14,7 @@ services:
       - ./ui:/app
 
   server:
-    command: [ "yarn", "debug" ]
+    command: ["yarn", "debug"]
     ports:
       - "127.0.0.1:9229:9229" # Allows remote debugging
     volumes:
@@ -31,20 +31,7 @@ services:
     volumes:
       - tables_correspondances_mongodb_data:/data:z
 
-  elasticsearch:
-    ports:
-      - "127.0.0.1:9200:9200"
-    volumes:
-      - tables_correspondances_data_elasticsearch:/usr/share/elasticsearch/data:z
-
-  kibana:
-    ports:
-      - "127.0.0.1:5601:5601"
-
 volumes:
-  tables_correspondances_data_elasticsearch:
-    driver: local
-    name: tables_correspondances_data_elasticsearch
   tables_correspondances_mongodb_data:
     driver: local
     name: tables_correspondances_mongodb_data

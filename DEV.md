@@ -41,8 +41,6 @@ Ensuite dans la définition des conteneurs Docker ces variables d'environnements
 - Un serveur Web Nginx jouant le role de reverse proxy, _défini dans le service `reverse_proxy` du docker-compose_.
 - Un serveur Node Express, _défini dans le service `server` du docker-compose_.
 - Une base de donnée mongoDb _défini dans le service `mongodb` du docker-compose_.
-- Un moteur de recherche elasticsearch _défini dans le service `elasticsearch` du docker-compose_.
-- Un portail kibana pour elasticsearch _défini dans le service `kibana` du docker-compose_.
 
 ### Serveur Nodes & Nginx - Reverse Proxy
 
@@ -52,26 +50,10 @@ Le serveur Web Node Express utilise le port 5000.
 
 Dans la configuration de nginx, on fait référence au fichier `/reverse_proxy/app/nginx/conf.d/locations/api.inc` qui définir la gestion de l'API Node Express.
 Dans la configuration de nginx, on fait référence au fichier `/reverse_proxy/app/nginx/conf.d/locations/ui.inc` qui définir la gestion de l'UI React.
-Dans la configuration de nginx, on fait référence au fichier `/reverse_proxy/app/nginx/conf.d/locations/es.inc` qui définir la gestion d'Elasticsearch.
-Dans la configuration de nginx, on fait référence au fichier `/reverse_proxy/app/nginx/conf.d/locations/kibana.inc` qui définir la gestion de Kibana.
 
 ### Base de données MongoDb
 
 Le base de données est une MongoDb et utilise le port par défaut 27017.
-
-### Elasticsearch & Kibana
-
-Elasticsearch est accessible à l'adresse :
-
-```bash
-http://localhost/es
-```
-
-Kibana est accessible à l'adresse :
-
-```bash
-http://localhost/kibana
-```
 
 ### Démarrage de la stack
 
