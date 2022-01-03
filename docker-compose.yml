@@ -39,7 +39,6 @@ services:
       - mongodb
     environment:
       - TABLES_CORRESPONDANCES_MONGODB_URI=mongodb://mongodb:27017/tables-correspondances?retryWrites=true&w=majority
-      - TABLES_CORRESPONDANCES_ELASTICSEARCH_NODE=http://elasticsearch:9200
 
   mongodb:
     image: mongo:5.0.2-focal
@@ -49,29 +48,6 @@ services:
     restart: unless-stopped
     networks:
       - tables_correspondances_network
-
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.1.1
-    container_name: tables_correspondances_elasticsearch
-    environment:
-      - ES_JAVA_OPTS=-Xmx512m -Xms512m -Dlog4j2.formatMsgNoLookups=true
-      - cluster.name=docker-cluster
-      - discovery.zen.minimum_master_nodes=1
-      - network.host=0.0.0.0
-      - discovery.type=single-node
-    mem_limit: 1g
-    networks:
-      - tables_correspondances_network
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana-oss:7.1.1
-    container_name: tables_correspondances_kibana
-    depends_on:
-      - elasticsearch
-    networks:
-      - tables_correspondances_network
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
 
 networks:
   tables_correspondances_network:

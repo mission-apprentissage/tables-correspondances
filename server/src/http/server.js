@@ -27,9 +27,6 @@ const authentified = require("./routes/authentified");
 const admin = require("./routes/admin");
 const password = require("./routes/password");
 const stats = require("./routes/stats");
-const esSearch = require("./routes/esSearch");
-const esMultiSearchNoIndex = require("./routes/esMultiSearchNoIndex");
-const domainesMetiers = require("./routes/domainesMetiers");
 const opcos = require("./routes/opcos");
 const bcn = require("./routes/bcn");
 
@@ -93,9 +90,6 @@ module.exports = async (components) => {
   app.use("/api/v1/services", services());
   app.use("/api/v1/bcn", bcn());
   app.use("/api/v1/opcos", opcos());
-  app.use("/api/v1/domainesMetiers", domainesMetiers());
-  app.use("/api/v1/es/search", esSearch());
-  app.use("/api/v1/search", esMultiSearchNoIndex());
   app.use("/api/v1/cfd", cfd());
   app.use("/api/v1/mef", mef());
   app.use("/api/v1/code-postal", cp());
@@ -117,9 +111,6 @@ module.exports = async (components) => {
   app.use("/api/services", services());
   app.use("/api/bcn", bcn());
   app.use("/api/opcos", opcos());
-  app.use("/api/domainesMetiers", domainesMetiers());
-  app.use("/api/es/search", esSearch());
-  app.use("/api/search", esMultiSearchNoIndex());
   app.use("/api/cfd", cfd());
   app.use("/api/mef", mef());
   app.use("/api/code-postal", cp());
