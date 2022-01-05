@@ -6,9 +6,9 @@ const apiRateLimiter = require("./apiRateLimiter");
 // Cf Documentation : https://www.cfadock.fr/Home/ApiDescription
 
 const executeWithRateLimiting = apiRateLimiter("apiCfaDock", {
-  //2 requests per second
-  nbRequests: 2,
-  durationInSeconds: 1,
+  // 30 requests per minute
+  nbRequests: 30,
+  durationInSeconds: 60,
   client: axios.create({
     baseURL: "https://www.cfadock.fr/api",
     timeout: 5000,
