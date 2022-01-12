@@ -7,17 +7,6 @@ const { diffEtablissement } = require("../../common/utils/diffUtils");
 
 const apiCfaDock = require("../../common/apis/apiCfaDock");
 
-/*
- * Build updates history
- */
-const buildUpdatesHistory = (etablissement, updates, keys) => {
-  const from = keys.reduce((acc, key) => {
-    acc[key] = etablissement[key];
-    return acc;
-  }, {});
-  return [...(etablissement.updates_history ?? []), { from, to: { ...updates }, updated_at: Date.now() }];
-};
-
 const parseErrors = (messages) => {
   if (!messages) {
     return "";
@@ -29,7 +18,7 @@ const parseErrors = (messages) => {
 
 const etablissementService = async (
   etablissement,
-  { withHistoryUpdate = true, scope = { siret: true, geoloc: true, conventionnement: true, onisep: true } } = {}
+  { scope = { siret: true, geoloc: true, conventionnement: true, onisep: true } } = {}
 ) => {
   try {
     let error = null;
@@ -173,14 +162,10 @@ const etablissementService = async (
         ...updatedEtablissement,
       };
 
-      const published = !updatedEtablissement.ferme && updatedEtablissement.api_entreprise_reference;
-      updatedEtablissement.published = published;
+      updatedEtablissement.published = !updatedEtablissement.ferme && updatedEtablissement.api_entreprise_reference;
 
-      const { updates, keys } = diffEtablissement(etablissement, updatedEtablissement);
+      const { updates } = diffEtablissement(etablissement, updatedEtablissement);
       if (updates) {
-        if (withHistoryUpdate) {
-          updatedEtablissement.updates_history = buildUpdatesHistory(etablissement, updates, keys);
-        }
         return { updates, etablissement: updatedEtablissement };
       }
     }
