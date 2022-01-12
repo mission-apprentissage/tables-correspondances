@@ -55,13 +55,5 @@ module.exports = () => {
     })
   );
 
-  router.get(
-    "/etablissements/siret-uai",
-    tryCatch(async (req, res) => {
-      const { data } = await axios.get(`${CATALOGUE_API_URL}/entity/etablissements/siret-uai`, { params: req.query });
-      return res.json(data);
-    })
-  );
-
   return router;
 };
