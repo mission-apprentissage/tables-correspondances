@@ -1,3 +1,10 @@
+# [2.31.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.30.4...v2.31.0) (2022-01-18)
+
+
+### Features
+
+* find by siret in ofs file ([f6dcce2](https://github.com/mission-apprentissage/tables-correspondances/commit/f6dcce2f481183740d1e58e0d30760c176a98cfa))
+
 ## [2.30.4](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.30.3...v2.30.4) (2022-01-12)
 
 
