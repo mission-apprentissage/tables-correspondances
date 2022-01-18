@@ -191,7 +191,21 @@ class ConventionController {
 
   async findInfoDataGouv(siret) {
     const siren = siret.substring(0, 9);
-    const result = await ConventionFile.findOne({ type: "DATAGOUV", siren }).lean();
+
+    // find by siret, then by siren if not found
+    let result = await ConventionFile.findOne({ type: "DATAGOUV", siretetablissementdeclarant: siret }).lean();
+
+    if (result) {
+      return {
+        info: "Ok",
+        value: infosCodes.infoDATAGOUV.Found,
+        data: result,
+        qualiopi:
+          result.numerodeclarationactivite && result.certifications_actionsdeformationparapprentissage === "true",
+      };
+    }
+
+    result = await ConventionFile.findOne({ type: "DATAGOUV", siren }).lean();
     if (!result) {
       return {
         info: "Erreur: DataGouv Non trouvé",
