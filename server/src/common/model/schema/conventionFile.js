@@ -21,5 +21,9 @@ const conventionFileSchema = {
     index: true,
     type: String,
   },
+  siretetablissementdeclarant: {
+    index: true,
+    type: String,
+  },
 };
 module.exports = conventionFileSchema;
