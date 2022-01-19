@@ -162,8 +162,7 @@ const etablissementService = async (
         ...updatedEtablissement,
       };
 
-      const published = !updatedEtablissement.ferme && updatedEtablissement.api_entreprise_reference;
-      updatedEtablissement.published = published;
+      updatedEtablissement.published = !updatedEtablissement.ferme && updatedEtablissement.api_entreprise_reference;
 
       const { updates } = diffEtablissement(etablissement, updatedEtablissement);
       if (updates) {
