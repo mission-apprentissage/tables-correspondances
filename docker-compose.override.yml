@@ -14,12 +14,13 @@ services:
       - ./ui:/app
 
   server:
-    command: ["yarn", "debug"]
+    build:
+      context: server
+      dockerfile: Dockerfile.dev
     ports:
       - "127.0.0.1:9229:9229" # Allows remote debugging
     volumes:
-      - ./server/src:/app/src:z # Allows source folders to be watched
-      - ./server/config:/app/config:z
+      - ./server:/app:z # Allows source folders to be watched
       - tables_correspondances_server_data:/data:z
     environment:
       - TABLES_CORRESPONDANCES_ENV=dev
