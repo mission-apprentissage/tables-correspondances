@@ -2,16 +2,16 @@ const logger = require("../../common/logger");
 const { asyncForEach } = require("../../common/utils/asyncUtils");
 const { chunk } = require("lodash");
 
-const cleanUpKeysAndValues = (obj) => {
-  return Object.entries(obj).reduce((acc, [key, value]) => {
-    return {
-      ...acc,
-      [key.trim()]: value.trim(),
-    };
-  }, {});
-};
+// const cleanUpKeysAndValues = (obj) => {
+//   return Object.entries(obj).reduce((acc, [key, value]) => {
+//     return {
+//       ...acc,
+//       [key.trim()]: value.trim(),
+//     };
+//   }, {});
+// };
 
-module.exports = async (db, publicOfsp, depp, dgefp) => {
+module.exports = async (db, publicOfsp) => {
   try {
     const publicOfs = publicOfsp.map((i) => {
       const line = Object.entries(i).reduce(
@@ -37,11 +37,6 @@ module.exports = async (db, publicOfsp, depp, dgefp) => {
         console.error(error);
       }
     });
-
-    await db.collection("conventionfiles").insertMany(depp.map((d) => ({ ...cleanUpKeysAndValues(d), type: "DEPP" })));
-    await db
-      .collection("conventionfiles")
-      .insertMany(dgefp.map((d) => ({ ...cleanUpKeysAndValues(d), type: "DGEFP" })));
 
     logger.info(`Importing Convention files Succeed`);
   } catch (error) {
