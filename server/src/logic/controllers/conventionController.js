@@ -17,23 +17,6 @@ const infosCodes = {
     Found: 1,
   },
 };
-
-const computeCodes = {
-  type: {
-    ToCheck: "À vérifier",
-    OF: "OF",
-    CFA: "CFA",
-  },
-  conventionne: {
-    No: "NON",
-    Yes: "OUI",
-  },
-  declarePrefecture: {
-    No: "NON",
-    Yes: "OUI",
-  },
-};
-
 class ConventionController {
   constructor() {}
 
@@ -47,13 +30,6 @@ class ConventionController {
     const info_dgefp = await this.findInfoDgefp(siret, siretSiegeSocial);
     const info_datagouv_ofs = await this.findInfoDataGouv(siret);
 
-    const conventionnementInfos = this.conventionnement({
-      info_depp: info_depp.value,
-      info_dgefp: info_dgefp.value,
-      info_datagouv_ofs: info_datagouv_ofs.value,
-      info_qualiopi: info_datagouv_ofs.qualiopi ? "OUI" : "NON",
-    });
-
     return {
       info_depp: info_depp.value,
       info_dgefp: info_dgefp.value,
@@ -63,44 +39,8 @@ class ConventionController {
       info_qualiopi_info: info_datagouv_ofs.qualiopi ? "OUI" : "NON",
       info_datagouv_ofs_info: info_datagouv_ofs.info,
       nda: info_datagouv_ofs.data?.numerodeclarationactivite || null,
-      ...conventionnementInfos,
+      catalogue_published: filesInfos.info_qualiopi === "OUI",
     };
-  }
-
-  conventionnement(filesInfos) {
-    const result = {
-      computed_type: computeCodes.type.ToCheck,
-      computed_conventionne: computeCodes.conventionne.No,
-      computed_declare_prefecture: computeCodes.declarePrefecture.No,
-      catalogue_published: filesInfos.info_qualiopi === "OUI", // TODO @EPT: here maybe also read a list of authorized sirets
-    };
-
-    // Check In DEPP
-    if (filesInfos.info_depp === infosCodes.infoDEPP.Found) {
-      // Case in DEPP -> CFA + Conventionne
-      result.computed_type = computeCodes.type.CFA;
-      result.computed_conventionne = computeCodes.conventionne.Yes;
-    }
-
-    // Check DGEFP Siret / Siren
-    if (
-      filesInfos.info_dgefp === infosCodes.infoDGEFP.SirenMatch ||
-      filesInfos.info_dgefp === infosCodes.infoDGEFP.SiretMatch ||
-      filesInfos.info_dgefp === infosCodes.infoDGEFP.SiretSiegeSocialMatch ||
-      filesInfos.info_datagouv_ofs === infosCodes.infoDATAGOUV.Found
-    ) {
-      // Case in DGEFP or DataGouv -> CFA + Declare Prefecture
-      result.computed_type = computeCodes.type.CFA;
-      result.computed_declare_prefecture = computeCodes.declarePrefecture.Yes;
-    } else {
-      result.computed_declare_prefecture = computeCodes.declarePrefecture.No;
-
-      if (result.computed_type !== computeCodes.type.CFA) {
-        result.computed_type = computeCodes.type.OF;
-      }
-    }
-
-    return result;
   }
 
   validateFormat(providedSiret, providedUai, providedSiretSiegeSocial) {

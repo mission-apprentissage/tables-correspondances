@@ -1,0 +1,7 @@
+FROM node:14.15.1-stretch
+
+WORKDIR /app
+
+VOLUME /data
+EXPOSE 5000
+CMD yarn install && yarn debug
