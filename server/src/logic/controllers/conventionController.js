@@ -39,7 +39,7 @@ class ConventionController {
       info_qualiopi_info: info_datagouv_ofs.qualiopi ? "OUI" : "NON",
       info_datagouv_ofs_info: info_datagouv_ofs.info,
       nda: info_datagouv_ofs.data?.numerodeclarationactivite || null,
-      catalogue_published: (info_datagouv_ofs.qualiopi ? "OUI" : "NON") === "OUI",
+      catalogue_published: info_datagouv_ofs.qualiopi,
     };
   }
 
