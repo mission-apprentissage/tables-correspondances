@@ -2,15 +2,6 @@ const logger = require("../../common/logger");
 const { asyncForEach } = require("../../common/utils/asyncUtils");
 const { chunk } = require("lodash");
 
-// const cleanUpKeysAndValues = (obj) => {
-//   return Object.entries(obj).reduce((acc, [key, value]) => {
-//     return {
-//       ...acc,
-//       [key.trim()]: value.trim(),
-//     };
-//   }, {});
-// };
-
 module.exports = async (db, publicOfsp) => {
   try {
     const publicOfs = publicOfsp.map((i) => {
