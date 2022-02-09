@@ -48,13 +48,7 @@ class EntrepriseApiData {
       };
     }
 
-    const info_dgefp = await conventionController.findInfoDgefp(siret, siret);
     const info_datagouv_ofs = await conventionController.findInfoDataGouv(siret);
-
-    const conventionnementInfos = conventionController.conventionnement({
-      info_dgefp: info_dgefp.value,
-      info_datagouv_ofs: info_datagouv_ofs.value,
-    });
 
     let code_dept = etablissementApiInfo.adresse.code_insee_localite.substring(0, 2);
     code_dept = code_dept === "97" ? etablissementApiInfo.adresse.code_insee_localite.substring(0, 3) : code_dept;
@@ -124,8 +118,7 @@ class EntrepriseApiData {
         entreprise_categorie: entrepriseApiInfo.categorie_entreprise,
         entreprise_tranche_effectif_salarie: entrepriseApiInfo.tranche_effectif_salarie_entreprise,
 
-        ...conventionnementInfos,
-
+        catalogue_published: info_datagouv_ofs.qualiopi,
         api_entreprise_reference: true,
       },
       messages: {

@@ -1,12 +1,35 @@
-const trimObjValues = (data) => {
-  data.forEach(function (o) {
-    Object.keys(o).forEach(function (key) {
-      o[key] = typeof o[key] === "string" ? o[key].trim() : o[key];
-    });
-  });
-  return data;
+const trimObjKeys = (obj) => {
+  return Object.entries(obj).reduce((acc, [key, value]) => {
+    return {
+      ...acc,
+      [typeof key === "string" ? key.trim() : key]: value,
+    };
+  }, {});
 };
+
+module.exports.trimObjKeys = trimObjKeys;
+
+const trimObjValues = (obj) => {
+  return Object.entries(obj).reduce((acc, [key, value]) => {
+    return {
+      ...acc,
+      [key]: typeof value === "string" ? value.trim() : value,
+    };
+  }, {});
+};
+
 module.exports.trimObjValues = trimObjValues;
+
+const trimObjEntries = (obj) => {
+  return Object.entries(obj).reduce((acc, [key, value]) => {
+    return {
+      ...acc,
+      [typeof key === "string" ? key.trim() : key]: typeof value === "string" ? value.trim() : value,
+    };
+  }, {});
+};
+
+module.exports.trimObjEntries = trimObjEntries;
 
 const getDuplicates = (arr) => {
   const seen = new Set();

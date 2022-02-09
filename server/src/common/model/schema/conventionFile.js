@@ -2,7 +2,7 @@ const conventionFileSchema = {
   type: {
     index: true,
     type: String,
-    description: "Type de fichier (DGEFP | DEPP | DATAGOUV)",
+    description: "Type de fichier (DATAGOUV)",
     required: true,
   },
   siren: {
