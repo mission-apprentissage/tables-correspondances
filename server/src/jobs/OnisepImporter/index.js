@@ -6,7 +6,7 @@ const onisepImporter = async (db) => {
   logger.info(`[Onisep importer] Starting`);
 
   logger.info(`[Onisep importer] removing onisep documents`);
-  await db.collection("onisep").deleteMany({});
+  await db.collection("oniseps").deleteMany({});
   logger.info(`[Onisep importer] Removing successfull`);
 
   const etablissements = await apiOnisep.getAllEtablissements();
