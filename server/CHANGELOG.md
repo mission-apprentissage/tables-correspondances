@@ -1,3 +1,10 @@
+# [2.32.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.31.0...v2.32.0) (2022-02-09)
+
+
+### Features
+
+* upload kit 2.3 ([#202](https://github.com/mission-apprentissage/tables-correspondances/issues/202)) ([9495c66](https://github.com/mission-apprentissage/tables-correspondances/commit/9495c669de1a00504e2e5ee007986912ed0c3cac))
+
 # [2.31.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.30.4...v2.31.0) (2022-01-18)
 
 
