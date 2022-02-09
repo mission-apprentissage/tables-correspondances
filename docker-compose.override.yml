@@ -6,9 +6,11 @@ services:
       - tables_correspondances_nginx_data:/data:z
 
   ui:
-    command: yarn start
     mem_limit: 1g
     stdin_open: true
+    build:
+      context: ui
+      dockerfile: Dockerfile.dev
     volumes:
       # Allows source folders to be watched
       - ./ui:/app
