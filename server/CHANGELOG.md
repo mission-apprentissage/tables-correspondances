@@ -1,3 +1,10 @@
+## [2.32.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.32.0...v2.32.1) (2022-02-09)
+
+
+### Bug Fixes
+
+* remove call to deleted method ([cb3bad7](https://github.com/mission-apprentissage/tables-correspondances/commit/cb3bad77ec932d16103ae8ccdf23ed9ff6653a99))
+
 # [2.32.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.31.0...v2.32.0) (2022-02-09)
 
 
