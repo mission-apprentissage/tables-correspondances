@@ -48,11 +48,9 @@ class EntrepriseApiData {
       };
     }
 
-    const info_dgefp = await conventionController.findInfoDgefp(siret, siret);
     const info_datagouv_ofs = await conventionController.findInfoDataGouv(siret);
 
     const conventionnementInfos = conventionController.conventionnement({
-      info_dgefp: info_dgefp.value,
       info_datagouv_ofs: info_datagouv_ofs.value,
     });
 
