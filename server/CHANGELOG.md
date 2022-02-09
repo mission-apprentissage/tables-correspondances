@@ -1,3 +1,11 @@
+## [2.32.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.32.1...v2.32.2) (2022-02-09)
+
+
+### Bug Fixes
+
+* .gitignore assets/bcnTables ([8816f1c](https://github.com/mission-apprentissage/tables-correspondances/commit/8816f1c09bfd2166c10251ad3423db298edbc0c8))
+* oniseps table not clean + remove downloadable assets ([48fd203](https://github.com/mission-apprentissage/tables-correspondances/commit/48fd203ac70481e3656dfd3f827d04f8b1337068))
+
 ## [2.32.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.32.0...v2.32.1) (2022-02-09)
 
 
