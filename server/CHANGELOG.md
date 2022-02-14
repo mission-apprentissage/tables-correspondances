@@ -1,3 +1,10 @@
+## [2.33.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.33.0...v2.33.1) (2022-02-14)
+
+
+### Bug Fixes
+
+* copy gitkeep for sdk use ([c8b9b83](https://github.com/mission-apprentissage/tables-correspondances/commit/c8b9b839d1e62ca6b291eee7869d4d5d3e7ea215))
+
 # [2.33.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.32.2...v2.33.0) (2022-02-14)
 
 
