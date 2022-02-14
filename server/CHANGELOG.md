@@ -1,3 +1,10 @@
+# [2.33.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.32.2...v2.33.0) (2022-02-14)
+
+
+### Features
+
+* add opening date to cfd api ([#204](https://github.com/mission-apprentissage/tables-correspondances/issues/204)) ([6ceedf3](https://github.com/mission-apprentissage/tables-correspondances/commit/6ceedf3962b791664feeb776b7845bf477158801))
+
 ## [2.32.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.32.1...v2.32.2) (2022-02-09)
 
 
