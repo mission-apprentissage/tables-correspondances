@@ -32,7 +32,7 @@
     "onisep:importer": "yarn job -- src/jobs/OnisepImporter/index.js",
     "generate:swaggerschema": "yarn job -- src/jobs/generateSwaggerSchema/index.js",
     "sdk:build": "tsc -b; yarn sdk:postbuild",
-    "sdk:postbuild": "cpy --cwd=src --parents '**/*.json' '**/*.csv' ../lib/",
+    "sdk:postbuild": "cpy '**/*.json' '**/*.csv' '**/*.gitkeep' ../lib/ --cwd=src --parents --dot",
     "sdk:clean": "tsc -b --clean && rm -rf lib",
     "sdk:prepublishOnly": "yarn build",
     "npm:release": "semantic-release",
