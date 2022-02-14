@@ -47,6 +47,7 @@ class BcnController {
           cfd: cfd,
           cfd_outdated,
           date_fermeture: cfdUpdated.date_fermeture,
+          date_ouverture: cfdUpdated.date_ouverture,
           specialite: null,
           niveau: null,
           intitule_long: null,
@@ -79,6 +80,7 @@ class BcnController {
         cfd: cfdUpdated.value,
         cfd_outdated,
         date_fermeture: cfdUpdated.date_fermeture,
+        date_ouverture: cfdUpdated.date_ouverture,
         specialite: specialiteUpdated.value,
         niveau: niveauUpdated.value,
         intitule_long,
@@ -246,6 +248,7 @@ class BcnController {
       const match = await BcnFormationDiplome.findOne(
         { FORMATION_DIPLOME: codeEducNat },
         {
+          DATE_OUVERTURE: 1,
           DATE_FERMETURE: 1,
           NOUVEAU_DIPLOME_1: 1,
           NOUVEAU_DIPLOME_2: 1,
@@ -257,8 +260,10 @@ class BcnController {
         }
       ).lean();
       if (!match) {
-        return { info: infosCodes.cfd.NotFound, value: null, date_fermeture: null };
+        return { info: infosCodes.cfd.NotFound, value: null, date_fermeture: null, date_ouverture: null };
       }
+
+      const date_ouverture = moment(match.DATE_OUVERTURE, "DD/MM/YYYY").valueOf();
 
       if (match.DATE_FERMETURE === "") {
         // Valide codeEn
@@ -266,6 +271,7 @@ class BcnController {
           info: previousInfo ? previousInfo : infosCodes.cfd.Found,
           value: codeEducNat,
           date_fermeture: null,
+          date_ouverture,
         };
       }
 
@@ -277,6 +283,7 @@ class BcnController {
           info: previousInfo ? previousInfo : infosCodes.cfd.Found,
           value: codeEducNat,
           date_fermeture: closingDate.valueOf(),
+          date_ouverture,
         };
       }
 
@@ -302,10 +309,15 @@ class BcnController {
         return await this.findCfd_bcn(match.NOUVEAU_DIPLOME_1, infosCodes.cfd.Updated);
       }
 
-      return { info: infosCodes.cfd.OutDated, value: codeEducNat, date_fermeture: closingDate.valueOf() };
+      return {
+        info: infosCodes.cfd.OutDated,
+        value: codeEducNat,
+        date_fermeture: closingDate.valueOf(),
+        date_ouverture,
+      };
     } catch (err) {
       logger.error(err);
-      return { info: infosCodes.cfd.NotFound, value: null, date_fermeture: null };
+      return { info: infosCodes.cfd.NotFound, value: null, date_fermeture: null, date_ouverture: null };
     }
   }
 
