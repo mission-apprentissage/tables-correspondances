@@ -35,7 +35,10 @@
     "sdk:clean": "tsc -b --clean && rm -rf lib",
     "sdk:prepublishOnly": "yarn build",
     "npm:release": "semantic-release",
-    "npm:release:local": "CI=true LOCAL_RELEASE=true semantic-release"
+    "npm:release:local": "CI=true LOCAL_RELEASE=true semantic-release",
+    "migration:create": "migrate-mongo create",
+    "migration:up": "migrate-mongo up",
+    "migration:down": "migrate-mongo down"
   },
   "dependencies": {
     "@azure/storage-blob": "12.3.0",
@@ -70,6 +73,7 @@
     "json2csv": "5.0.1",
     "jsonwebtoken": "8.5.1",
     "lodash": "4.17.15",
+    "migrate-mongo": "8.2.3",
     "moment": "2.26.0",
     "mongoose": "5.13.7",
     "mongoose-paginate": "5.0.3",
