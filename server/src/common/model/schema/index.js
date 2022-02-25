@@ -10,9 +10,6 @@ const bcnNDispositifFormationSchema = require("./bcnNDispositifFormation");
 const conventionFileSchema = require("./conventionFile");
 const onisepSchema = require("./onisep");
 
-const codeIdccOpcoSchema = require("./codeIdccOpco");
-const codeEnCodesIdccSchema = require("./codeEnCodesIdcc");
-
 module.exports = {
   bcnFormationDiplomesSchema,
   bcnLettreSpecialiteSchema,
@@ -23,7 +20,5 @@ module.exports = {
   userSchema,
   ficheRncpSchema,
   conventionFileSchema,
-  codeIdccOpcoSchema,
-  codeEnCodesIdccSchema,
   onisepSchema,
 };

@@ -2,7 +2,6 @@ const { runScript } = require("../../jobs/scriptWrapper");
 const bcnController = require("../controllers/bcn/BcnController");
 const fcController = require("../controllers/rncp/rncpController");
 const { findOnisepInfos } = require("../controllers/onisep/onisepController");
-const { findOpcosFromCfd } = require("./opcoHandler");
 
 const getDataFromCfd = async (providedCfd, options = { onisep: true }) => {
   const bcnData = await bcnController.getDataFromCfd(providedCfd);
@@ -51,8 +50,6 @@ const getDataFromCfd = async (providedCfd, options = { onisep: true }) => {
     };
   }
 
-  const opcosData = await findOpcosFromCfd(bcnData.result.cfd);
-
   return {
     result: {
       ...bcnData.result,
@@ -64,7 +61,6 @@ const getDataFromCfd = async (providedCfd, options = { onisep: true }) => {
       onisep: {
         ...onisepData.result,
       },
-      opcos: opcosData,
     },
     messages: {
       ...bcnData.messages,

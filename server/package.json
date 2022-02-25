@@ -41,7 +41,6 @@
     "migration:down": "migrate-mongo down"
   },
   "dependencies": {
-    "@azure/storage-blob": "12.3.0",
     "aws-sdk": "2.785.0",
     "axios": "0.21.1",
     "body-parser": "1.19.0",
