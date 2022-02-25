@@ -34,5 +34,4 @@ module.exports = {
   BcnNNiveauFormationDiplome: createModel("bcnnniveauformationdiplome", schema.bcnNNiveauFormationDiplomeSchema),
   BcnNMef: createModel("bcnnmef", schema.bcnNMefSchema),
   BcnNDispositifFormation: createModel("bcnndispositifformation", schema.bcnNDispositifFormationSchema),
-  DomainesMetiers: createModel("domainesmetiers", schema.domainesMetiersSchema),
 };

@@ -24,7 +24,6 @@
     "clear": "yarn job -- src/jobs/clear/index.js",
     "stats": "yarn job -- src/jobs/stats/index.js",
     "cfdHander": "yarn job -- src/logic/handlers/cfdHandler.js",
-    "domainesMetiers": "yarn job -- src/jobs/domaines-metiers/index.js",
     "bcn:downloader": "yarn job -- src/jobs/bcnDownloader/index.js",
     "bcn:importer": "yarn job -- src/jobs/bcnImporter/index.js",
     "rncp:importer": "yarn job -- src/jobs/rncpImporter/index.js",
@@ -90,7 +89,6 @@
     "swagger-ui-express": "4.1.6",
     "title-case": "3.0.2",
     "uuid": "8.3.2",
-    "xlsx": "0.16.1",
     "xml2js": "0.4.23"
   },
   "engines": {

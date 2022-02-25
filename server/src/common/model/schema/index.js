@@ -1,7 +1,6 @@
 const logSchema = require("./log");
 const bcnFormationDiplomesSchema = require("./bcnFormationDiplomes");
 const userSchema = require("./user");
-const domainesMetiersSchema = require("./domainesmetiers");
 const ficheRncpSchema = require("./ficheRncp");
 
 const bcnLettreSpecialiteSchema = require("./bcnLettreSpecialite");
@@ -22,7 +21,6 @@ module.exports = {
   bcnNDispositifFormationSchema,
   logSchema,
   userSchema,
-  domainesMetiersSchema,
   ficheRncpSchema,
   conventionFileSchema,
   codeIdccOpcoSchema,
