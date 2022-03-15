@@ -1,7 +1,11 @@
 const { FicheRncp } = require("../../../common/model/index");
+const moment = require("moment");
 
 class RncpController {
-  constructor() {}
+  constructor() {
+    const yearLimit = new Date().getFullYear();
+    this.validLimiteDate = moment(`31/08/${yearLimit}`, "DD/MM/YYYY");
+  }
 
   async getDataFromRncp(providedRncp) {
     if (!providedRncp || !/^(RNCP)?[0-9]{2,5}$/g.test(providedRncp.trim())) {
@@ -15,10 +19,10 @@ class RncpController {
       };
     }
 
-    let rncp = `${providedRncp}`.trim();
-    if (rncp.length === 5) rncp = `RNCP${rncp}`;
+    let code_rncp = `${providedRncp}`.trim();
+    if (code_rncp.length === 5) code_rncp = `RNCP${code_rncp}`;
 
-    const fiche = await FicheRncp.findOne({ code_rncp: providedRncp });
+    const fiche = await FicheRncp.findOne({ code_rncp }).lean();
 
     if (!fiche) {
       return {
@@ -29,9 +33,14 @@ class RncpController {
       };
     }
 
+    const closingDate = fiche?.date_fin_validite_enregistrement
+      ? moment(fiche.date_fin_validite_enregistrement, "DD/MM/YYYY")
+      : null;
+
     return {
       result: {
-        ...fiche._doc,
+        ...fiche,
+        rncp_outdated: closingDate && closingDate.isBefore(this.validLimiteDate),
       },
       messages: {
         code_rncp: "Ok",
