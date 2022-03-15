@@ -1,3 +1,10 @@
+# [2.35.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.34.0...v2.35.0) (2022-03-15)
+
+
+### Features
+
+* add rncp_outdated data to api & lib ([#206](https://github.com/mission-apprentissage/tables-correspondances/issues/206)) ([616fb15](https://github.com/mission-apprentissage/tables-correspondances/commit/616fb153a9c9e0ccb8da685c187dc629c7b2789a))
+
 # [2.34.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.33.1...v2.34.0) (2022-02-25)
 
 
