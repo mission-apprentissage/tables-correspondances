@@ -1,3 +1,10 @@
+## [2.35.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.0...v2.35.1) (2022-03-22)
+
+
+### Bug Fixes
+
+* async/await for Node 16 ([e88b7b7](https://github.com/mission-apprentissage/tables-correspondances/commit/e88b7b7efdcfdfbe69205ed2a6f8fa8d6934ec7d))
+
 # [2.35.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.34.0...v2.35.0) (2022-03-15)
 
 
