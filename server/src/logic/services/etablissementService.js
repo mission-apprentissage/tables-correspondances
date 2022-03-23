@@ -18,7 +18,7 @@ const parseErrors = (messages) => {
 
 const etablissementService = async (
   etablissement,
-  { scope = { siret: true, geoloc: true, conventionnement: true, onisep: true } } = {}
+  { scope = { siret: true, geoloc: true, conventionnement: true, onisep: true, cfadock: true } } = {}
 ) => {
   try {
     let error = null;
@@ -144,15 +144,17 @@ const etablissementService = async (
     }
 
     // just fill it when it's empty
-    if ((!current.idcc || !current.opco_nom || !current.opco_siren) && updatedEtablissement.siren) {
-      try {
-        const resultsCfadock = await apiCfaDock.getOpcoData(updatedEtablissement.siren);
-        updatedEtablissement = {
-          ...updatedEtablissement,
-          ...resultsCfadock,
-        };
-      } catch (error) {
-        logger.error(`Unable to get opco data : ${error}`);
+    if (scope.cfadock) {
+      if ((!current.idcc || !current.opco_nom || !current.opco_siren) && updatedEtablissement.siren) {
+        try {
+          const resultsCfadock = await apiCfaDock.getOpcoData(updatedEtablissement.siren);
+          updatedEtablissement = {
+            ...updatedEtablissement,
+            ...resultsCfadock,
+          };
+        } catch (error) {
+          logger.error(`Unable to get opco data : ${error}`);
+        }
       }
     }
 
