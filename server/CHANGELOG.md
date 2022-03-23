@@ -1,3 +1,10 @@
+## [2.35.3](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.2...v2.35.3) (2022-03-23)
+
+
+### Bug Fixes
+
+* prevent 429 calls from api cfadock ([dab3ee5](https://github.com/mission-apprentissage/tables-correspondances/commit/dab3ee573ea67db4ac306d4aab5bc708dfaa30a5))
+
 ## [2.35.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.1...v2.35.2) (2022-03-23)
 
 
