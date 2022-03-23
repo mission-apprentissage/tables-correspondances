@@ -1,3 +1,10 @@
+## [2.35.4](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.3...v2.35.4) (2022-03-23)
+
+
+### Bug Fixes
+
+* scope ([348eac1](https://github.com/mission-apprentissage/tables-correspondances/commit/348eac18d46be2e525a28ddfb35c18095643eaf0))
+
 ## [2.35.3](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.2...v2.35.3) (2022-03-23)
 
 
