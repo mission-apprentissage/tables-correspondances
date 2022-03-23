@@ -1,3 +1,10 @@
+## [2.35.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.1...v2.35.2) (2022-03-23)
+
+
+### Bug Fixes
+
+* add optionnal cfadock for etablissement update ([4a7abe8](https://github.com/mission-apprentissage/tables-correspondances/commit/4a7abe8d564c647c3b987a749cda809372b3337b))
+
 ## [2.35.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.0...v2.35.1) (2022-03-22)
 
 
