@@ -2140,10 +2140,10 @@ conventional-commits-parser@^3.0.0, conventional-commits-parser@^3.0.7:
     through2 "^4.0.0"
     trim-off-newlines "^1.0.0"
 
-convert-csv-to-json-latin@1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/convert-csv-to-json-latin/-/convert-csv-to-json-latin-1.0.6.tgz#7b2295c38cb2db2de0a9a77a0cba54adbe4c7a6d"
-  integrity sha512-Tg9/Lwgf4awRqDAVJiF4YrTh+v76cmgZVXHd5pOb130uifohP2cjAANVONMy5nK8/vQs0Jr5sSDxpEHAFNsJcQ==
+convert-csv-to-json@1.3.3:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/convert-csv-to-json/-/convert-csv-to-json-1.3.3.tgz#0351a75dac840e1b9c690d193a8c9f87ab2f5199"
+  integrity sha512-lIQrCmEw0GCywtVWeJ/AGv5hhSTPsMFdqOf9GcMtActqO2Gt8z1RZgfw9NBOll479cIPM6BqDOFC8R3W7bSwtA==
 
 convert-source-map@^1.7.0:
   version "1.7.0"
