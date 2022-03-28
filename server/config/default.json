@@ -6,18 +6,9 @@
     "uri": "mongodb://127.0.0.1:27017/tables-correspondances?retryWrites=true&w=majority"
   },
   "apiKey": "12345",
-  "aws": {
-    "accessKeyId": "TABLES_CORRESPONDANCE_ACCESS_KEY_ID",
-    "secretAccessKey": "TABLES_CORRESPONDANCE_SECRET_ACCESS_KEY"
-  },
   "onisepCredential": {
     "email": "TABLES_CORRESPONDANCE_ONISEP_EMAIL",
     "password": "TABLES_CORRESPONDANCE_ONISEP_PASSWORD"
-  },
-  "ovh": {
-    "storage": {
-      "uri": null
-    }
   },
   "auth": {
     "passwordHashRounds": 1001,
@@ -40,10 +31,6 @@
   },
   "slackWebhookUrl": null,
   "outputDir": ".local/output",
-  "onisep": "TABLES_CORRESPONDANCE_ONISEP_FILE",
-  "conventionFiles": {
-    "path": "TABLES_CORRESPONDANCE_CONVENTION_FILES_PATH"
-  },
   "ofsFile": "TABLES_CORRESPONDANCE_OFS_FILE",
   "apiEntreprise": "TABLES_CORRESPONDANCES_API_ENTREPRISE_KEY",
   "franceCompetences": {
