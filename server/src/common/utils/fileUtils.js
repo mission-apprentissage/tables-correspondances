@@ -1,4 +1,4 @@
-const csvToJson = require("convert-csv-to-json-latin");
+const csvToJson = require("convert-csv-to-json");
 const fs = require("fs-extra");
 const axios = require("axios");
 const logger = require("../../common/logger");

@@ -48,8 +48,8 @@ const importerRncpCfdFile = async (filePath) => {
   const rncpCfdKit = [];
   const tmp = getJsonFromCsvFile(filePath)
     .map((fk) => ({
-      code_rncp: fk["Code RNCP"],
-      cfds: [fk["Code Diplome"]],
+      code_rncp: fk["Code_RNCP"],
+      cfds: [fk["Code_Diplome"]],
     }))
     .filter((e) => e.code_rncp !== "NR");
 
