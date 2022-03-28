@@ -64,7 +64,7 @@
     "lodash": "4.17.15",
     "migrate-mongo": "8.2.3",
     "moment": "2.26.0",
-    "mongoose": "5.13.7",
+    "mongoose": "5.13.14",
     "mongoose-paginate": "5.0.3",
     "mongoose-schema-jsonschema": "1.4.7",
     "multipipe": "4.0.0",
