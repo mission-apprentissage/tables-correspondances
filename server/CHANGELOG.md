@@ -1,3 +1,10 @@
+## [2.35.5](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.4...v2.35.5) (2022-03-28)
+
+
+### Bug Fixes
+
+* clean deps & unused files ([b00c890](https://github.com/mission-apprentissage/tables-correspondances/commit/b00c890eee2d1a951d48e7bfc1d20238ab410fed))
+
 ## [2.35.4](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.3...v2.35.4) (2022-03-23)
 
 
