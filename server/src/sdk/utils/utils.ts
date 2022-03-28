@@ -271,6 +271,7 @@ type EtablissementScope = {
   geoloc: boolean;
   conventionnement: boolean;
   onisep: boolean;
+  cfadock:boolean;
 };
 
 type EtablissementOptions = {

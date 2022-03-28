@@ -48,8 +48,8 @@ const importerRncpCfdFile = async (filePath) => {
   const rncpCfdKit = [];
   const tmp = getJsonFromCsvFile(filePath)
     .map((fk) => ({
-      code_rncp: fk["Code RNCP"],
-      cfds: [fk["Code Diplome"]],
+      code_rncp: fk["Code_RNCP"],
+      cfds: [fk["Code_Diplome"]],
     }))
     .filter((e) => e.code_rncp !== "NR");
 
@@ -73,7 +73,7 @@ const importerRncpCfdFile = async (filePath) => {
 const CFD_KIT_LOCAL_PATH = path.join(__dirname, "./assets", "CodeDiplome_RNCP_latest_kit.csv");
 
 const getFichesRncp = async (cfdKitPath) => {
-  const fichesXMLInputStream = await downloadFromFtp(); // getFileFromS3("mna-services/features/rncp/export_fiches_RNCP_V2_0_latest.xml");
+  const fichesXMLInputStream = await downloadFromFtp();
   logger.info("Parsing Fiches XML");
   let { fiches: fichesXML } = await parseFichesFile(fichesXMLInputStream);
   sftp.end();

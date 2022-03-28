@@ -1,4 +1,4 @@
-const csvToJson = require("convert-csv-to-json-latin");
+const csvToJson = require("convert-csv-to-json");
 const path = require("path");
 const logger = require("../../common/logger");
 
