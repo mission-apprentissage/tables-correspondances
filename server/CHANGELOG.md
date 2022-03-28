@@ -1,3 +1,10 @@
+## [2.35.8](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.7...v2.35.8) (2022-03-28)
+
+
+### Bug Fixes
+
+* mongoose deps ([d35354e](https://github.com/mission-apprentissage/tables-correspondances/commit/d35354e7c9844fca0aab60b02cd66c11d91dfa68))
+
 ## [2.35.7](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.6...v2.35.7) (2022-03-28)
 
 
