@@ -1,3 +1,10 @@
+## [2.35.7](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.6...v2.35.7) (2022-03-28)
+
+
+### Bug Fixes
+
+* convert csv deps ([9d099b1](https://github.com/mission-apprentissage/tables-correspondances/commit/9d099b1ea02ee6e32434f1f852117b8ebbbecb57))
+
 ## [2.35.6](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.5...v2.35.6) (2022-03-28)
 
 
