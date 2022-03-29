@@ -75,7 +75,7 @@
     "rate-limiter-flexible": "2.2.1",
     "require-all": "3.0.0",
     "sha512crypt-node": "0.1.0",
-    "ssh2-sftp-client": "6.0.1",
+    "ssh2-sftp-client": "7.2.3",
     "swagger-jsdoc": "6.0.1",
     "swagger-ui-express": "4.1.6",
     "title-case": "3.0.2",
