@@ -1,3 +1,10 @@
+## [2.35.9](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.8...v2.35.9) (2022-03-29)
+
+
+### Bug Fixes
+
+* axios deps ([978aebe](https://github.com/mission-apprentissage/tables-correspondances/commit/978aebe821533e62939aacae9a00329237bd4087))
+
 ## [2.35.8](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.7...v2.35.8) (2022-03-28)
 
 
