@@ -1,3 +1,10 @@
+## [2.35.10](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.9...v2.35.10) (2022-03-29)
+
+
+### Bug Fixes
+
+* bump sftp deps ([f9203e8](https://github.com/mission-apprentissage/tables-correspondances/commit/f9203e82a0dd87d878182ef903d133f636c5c3ec))
+
 ## [2.35.9](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.8...v2.35.9) (2022-03-29)
 
 
