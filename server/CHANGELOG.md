@@ -1,3 +1,10 @@
+## [2.35.11](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.10...v2.35.11) (2022-04-07)
+
+
+### Bug Fixes
+
+* bump deps ([60d7c9c](https://github.com/mission-apprentissage/tables-correspondances/commit/60d7c9ca554422bad0c7703c96b874fd52b569aa))
+
 ## [2.35.10](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.9...v2.35.10) (2022-03-29)
 
 
