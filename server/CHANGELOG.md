@@ -1,3 +1,10 @@
+## [2.35.12](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.11...v2.35.12) (2022-04-11)
+
+
+### Bug Fixes
+
+* bump moment deps ([25b2c1f](https://github.com/mission-apprentissage/tables-correspondances/commit/25b2c1f6f1a744b36d7b2ba508cc4d78277fbf8b))
+
 ## [2.35.11](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.10...v2.35.11) (2022-04-07)
 
 
