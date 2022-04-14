@@ -1,3 +1,10 @@
+## [2.35.14](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.13...v2.35.14) (2022-04-14)
+
+
+### Bug Fixes
+
+* bump swagger deps ([f58fad3](https://github.com/mission-apprentissage/tables-correspondances/commit/f58fad35fef2f0a56e2ef0d54b5ef6d0c60323a4))
+
 ## [2.35.13](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.12...v2.35.13) (2022-04-14)
 
 
