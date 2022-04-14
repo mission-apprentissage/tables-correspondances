@@ -1,3 +1,10 @@
+## [2.35.13](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.12...v2.35.13) (2022-04-14)
+
+
+### Bug Fixes
+
+* rm unused stream lib ([c421001](https://github.com/mission-apprentissage/tables-correspondances/commit/c421001ec1cec1e791954ddd462727ae70c325ae))
+
 ## [2.35.12](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.11...v2.35.12) (2022-04-11)
 
 
