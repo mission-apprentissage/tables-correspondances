@@ -75,8 +75,8 @@
     "require-all": "3.0.0",
     "sha512crypt-node": "0.1.0",
     "ssh2-sftp-client": "7.2.3",
-    "swagger-jsdoc": "6.0.1",
-    "swagger-ui-express": "4.1.6",
+    "swagger-jsdoc": "6.2.0",
+    "swagger-ui-express": "4.3.0",
     "title-case": "3.0.2",
     "xml2js": "0.4.23"
   },
