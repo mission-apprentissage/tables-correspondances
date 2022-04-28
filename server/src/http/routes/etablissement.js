@@ -22,9 +22,9 @@ module.exports = () => {
   );
 
   router.get(
-    "/etablissements.ndjson",
+    "/etablissements.json",
     tryCatch(async (req, res) => {
-      const { data } = await axios.get(`${CATALOGUE_API_URL}/entity/etablissements.ndjson`, {
+      const { data } = await axios.get(`${CATALOGUE_API_URL}/entity/etablissements.json`, {
         params: req.query,
       });
       return res.json(data);
