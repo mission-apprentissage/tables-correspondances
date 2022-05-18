@@ -95,7 +95,40 @@ export async function bcnImporter() {
 export interface cfdOptions {
   onisep: boolean;
 }
-export async function getCfdInfo(cfd: string, options: cfdOptions = { onisep: true }) {
+
+// TODO add the generateTypes script from catalogue to get proper types from mongoose schemas
+type CfdResult = {
+  result: {
+    cfd?: string;
+    cfd_outdated?: boolean;
+    date_fermeture?: number;
+    date_ouverture?: number;
+    specialite?: { lettre: string; libelle: string | null; libelle_court: string | null } | null;
+    niveau?: string | null;
+    intitule_long?: string | null;
+    intitule_court?: string | null;
+    diplome?: string | null;
+    libelle_court?: string;
+    niveau_formation_diplome?: string;
+    rncp: {
+      date_fin_validite_enregistrement?: string;
+      romes?: Array<{ rome: string }>;
+      [key: string]: unknown;
+    };
+    mefs: { modalite?: { duree?: string; annee?: string }; [key: string]: unknown };
+    onisep?: { [key: string]: unknown };
+  };
+  messages: {
+    error?: string;
+    rncp: {
+      [key: string]: string;
+    };
+    mefs: { [key: string]: string };
+    onisep?: { [key: string]: string };
+  };
+};
+
+export async function getCfdInfo(cfd: string, options: cfdOptions = { onisep: true }): Promise<CfdResult | null> {
   isSdkReady();
   try {
     const { getDataFromCfd } = await import("../../logic/handlers/cfdHandler");
@@ -271,7 +304,7 @@ type EtablissementScope = {
   geoloc: boolean;
   conventionnement: boolean;
   onisep: boolean;
-  cfadock:boolean;
+  cfadock: boolean;
 };
 
 type EtablissementOptions = {

@@ -2,8 +2,7 @@ const { isEmpty: _isEmpty } = require("lodash");
 const util = require("util");
 const { Transform, Writable } = require("stream");
 const pipeline = util.promisify(require("stream").pipeline);
-const { encodeStream, decodeStream } = require("iconv-lite");
-const mergeStreams = require("multipipe");
+const { decodeStream } = require("iconv-lite");
 
 let transformObject = (transform, options = {}) => {
   let lines = 0;
@@ -80,11 +79,9 @@ let writeObject = (write, options = {}) => {
 };
 module.exports = {
   pipeline,
-  encodeStream,
   decodeStream,
   transformObject,
   writeObject,
-  mergeStreams,
   ignoreEmpty: () => transformObject((data) => data, { ignoreEmpty: true }),
   ignoreFirstLine: () => transformObject((data) => data, { ignoreFirstLine: true }),
   accumulate: (acc) => writeObject((data) => acc.push(data)),
