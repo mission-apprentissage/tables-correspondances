@@ -111,9 +111,11 @@ type CfdResult = {
     libelle_court?: string;
     niveau_formation_diplome?: string;
     rncp: {
+      date_fin_validite_enregistrement?: string;
+      romes?: Array<{ rome: string }>;
       [key: string]: unknown;
     };
-    mefs: { [key: string]: unknown };
+    mefs: { modalite?: { duree?: string; annee?: string }; [key: string]: unknown };
     onisep?: { [key: string]: unknown };
   };
   messages: {
