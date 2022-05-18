@@ -1,3 +1,10 @@
+## [2.37.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.37.0...v2.37.1) (2022-05-18)
+
+
+### Bug Fixes
+
+* mefs11 types ([c91ea5a](https://github.com/mission-apprentissage/tables-correspondances/commit/c91ea5ac8f998f9c33cf2701f5c42f83944e97ac))
+
 # [2.37.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.36.1...v2.37.0) (2022-05-18)
 
 
