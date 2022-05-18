@@ -1,3 +1,10 @@
+## [2.36.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.36.0...v2.36.1) (2022-05-18)
+
+
+### Bug Fixes
+
+* better types for sdk ([#211](https://github.com/mission-apprentissage/tables-correspondances/issues/211)) ([47188d8](https://github.com/mission-apprentissage/tables-correspondances/commit/47188d8075fb531c49b5044d825c3ca1685f3a84))
+
 # [2.36.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.14...v2.36.0) (2022-05-18)
 
 
