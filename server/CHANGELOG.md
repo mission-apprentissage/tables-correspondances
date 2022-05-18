@@ -1,3 +1,10 @@
+# [2.37.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.36.1...v2.37.0) (2022-05-18)
+
+
+### Features
+
+* add mefs11 to cfd data ([#212](https://github.com/mission-apprentissage/tables-correspondances/issues/212)) ([cb07773](https://github.com/mission-apprentissage/tables-correspondances/commit/cb0777304aa5976f3c65ca354408d3c59185debc))
+
 ## [2.36.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.36.0...v2.36.1) (2022-05-18)
 
 
