@@ -1,3 +1,10 @@
+# [2.36.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.14...v2.36.0) (2022-05-18)
+
+
+### Features
+
+* improve types ([#210](https://github.com/mission-apprentissage/tables-correspondances/issues/210)) ([a9cc1c6](https://github.com/mission-apprentissage/tables-correspondances/commit/a9cc1c605e0c5d9928e5c4159e0cf86c9df93725))
+
 ## [2.35.14](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.35.13...v2.35.14) (2022-04-14)
 
 
