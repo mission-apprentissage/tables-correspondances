@@ -1,10 +1,11 @@
-/**
- * Example of unit testing a logic module
- */
 const assert = require("assert");
 const geoController = require("./geoController");
 
 describe(__filename, () => {
+  it("the file builds", () => {
+    assert.strictEqual(!!geoController, true);
+  });
+
   it("isValidCodePostal", () => {
     assert.strictEqual(geoController.isValidCodePostal(24000), true);
     assert.strictEqual(geoController.isValidCodePostal(44000), true);
