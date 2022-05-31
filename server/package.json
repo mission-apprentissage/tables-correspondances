@@ -15,8 +15,8 @@
   "scripts": {
     "start": "node src/index.js",
     "debug": "nodemon --inspect=0.0.0.0 --signal SIGINT --ignore tests/ src/index.js",
-    "test": "mocha --recursive --exit --timeout 5000 tests/",
-    "coverage": "nyc --reporter=html --temp-dir .coverage/.nyc_output --report-dir .coverage mocha --recursive --exit --timeout 500 tests/",
+    "test": "mocha --recursive --exit --timeout 5000 tests/ src/**/*.test.js",
+    "coverage": "nyc --reporter=html --temp-dir .coverage/.nyc_output --report-dir .coverage mocha --recursive --exit --timeout 500 tests/ src/**/*.test.js",
     "lint": "eslint src/ tests/",
     "jobs": "node -r dotenv/config src/jobs/index.js",
     "job": "TABLES_CORRESPONDANCES_LOG_TYPE=stderr run=true node -r dotenv/config",
