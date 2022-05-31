@@ -1,3 +1,10 @@
+## [2.37.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.37.1...v2.37.2) (2022-05-31)
+
+
+### Bug Fixes
+
+* Add test file for geoAdresseData ([e3e574b](https://github.com/mission-apprentissage/tables-correspondances/commit/e3e574b51cfd2070f1c7042b7f8d4dd238c82e84))
+
 ## [2.37.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.37.0...v2.37.1) (2022-05-18)
 
 
