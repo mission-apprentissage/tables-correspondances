@@ -118,7 +118,7 @@ class EntrepriseApiData {
         entreprise_categorie: entrepriseApiInfo.categorie_entreprise,
         entreprise_tranche_effectif_salarie: entrepriseApiInfo.tranche_effectif_salarie_entreprise,
 
-        catalogue_published: info_datagouv_ofs.qualiopi,
+        certifie_qualite: info_datagouv_ofs.qualiopi,
         api_entreprise_reference: true,
       },
       messages: {
