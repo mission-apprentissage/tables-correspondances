@@ -1,3 +1,10 @@
+## [2.37.3](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.37.2...v2.37.3) (2022-06-06)
+
+
+### Bug Fixes
+
+* Correction d'un problème avec le num_departement dans le cas de la Corse (2A, 2B) et des DOM (97X) ([5adf671](https://github.com/mission-apprentissage/tables-correspondances/commit/5adf6716fe563a657e5b0abc7e16e20f57587fd5))
+
 ## [2.37.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.37.1...v2.37.2) (2022-05-31)
 
 
