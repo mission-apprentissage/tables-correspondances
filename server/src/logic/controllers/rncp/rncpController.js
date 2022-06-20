@@ -48,12 +48,12 @@ class RncpController {
     };
   }
 
-  async findRncpFromCfd(cfd) {
-    const result = await FicheRncp.findOne({ cfds: { $in: [cfd] } });
+  async findRncpListFromCfd(cfd) {
+    const result = await FicheRncp.find({ cfds: { $in: [cfd] } }).lean();
     if (!result) {
       return { info: "Erreur: Non trouvé", value: null };
     }
-    return { info: !result.code_rncp ? "Erreur: Non trouvé" : "Ok", value: result.code_rncp };
+    return { info: result.length > 0 ? "Ok" : "Erreur: Non trouvé", value: result.map((item) => item.code_rncp) };
   }
 }
 
