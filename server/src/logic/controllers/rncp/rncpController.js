@@ -49,11 +49,11 @@ class RncpController {
   }
 
   async findRncpListFromCfd(cfd) {
-    const result = await FicheRncp.find({ cfds: { $in: [cfd] } }).lean();
+    const result = await FicheRncp.distinct("code_rncp", { cfds: { $in: [cfd] } }).lean();
     if (!result) {
       return { info: "Erreur: Non trouvé", value: null };
     }
-    return { info: result.length > 0 ? "Ok" : "Erreur: Non trouvé", value: result.map((item) => item.code_rncp) };
+    return { info: result.length > 0 ? "Ok" : "Erreur: Non trouvé", value: result };
   }
 }
 
