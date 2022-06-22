@@ -115,7 +115,7 @@ type CfdResult = {
       romes?: Array<{ rome: string }>;
       [key: string]: unknown;
     };
-    mefs: { modalite?: { duree?: string; annee?: string }; [key: string]: unknown };
+    mefs: { modalite?: { duree?: string; annee?: string }; mefs11?: string[]; [key: string]: unknown };
     onisep?: { [key: string]: unknown };
   };
   messages: {

@@ -197,7 +197,7 @@ const siretStubResult = {
       date_reference: "2018",
       intitule: "250 à 499 salariés",
     },
-    catalogue_published: false,
+    certifie_qualite: false,
     api_entreprise_reference: true,
     geo_coordonnees: "43.638208,3.83241",
     results_count: 1,

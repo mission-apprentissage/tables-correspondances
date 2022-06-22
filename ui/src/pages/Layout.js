@@ -8,7 +8,7 @@ export default (props) => {
   let [auth, setAuth] = useAuth();
   let history = useHistory();
   let logout = () => {
-    setAuth(null);
+    setAuth(anonymous);
     history.push("/login");
   };
 
