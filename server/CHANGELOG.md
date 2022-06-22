@@ -1,3 +1,15 @@
+# [2.38.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.37.3...v2.38.0) (2022-06-22)
+
+
+### Bug Fixes
+
+* **server:** handle multiple rncps ([a7bd834](https://github.com/mission-apprentissage/tables-correspondances/commit/a7bd8341a1c1b061f637afd708326035fa0d33b2))
+
+
+### Features
+
+* **server:** update findRncpFromCfd to findRncpListFromCfd ([47d587a](https://github.com/mission-apprentissage/tables-correspondances/commit/47d587adac082e5f5b962b57f6c90a795f2d7609))
+
 ## [2.37.3](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.37.2...v2.37.3) (2022-06-06)
 
 
