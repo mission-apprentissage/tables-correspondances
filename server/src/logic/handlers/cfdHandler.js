@@ -2,6 +2,15 @@ const { runScript } = require("../../jobs/scriptWrapper");
 const bcnController = require("../controllers/bcn/BcnController");
 const fcController = require("../controllers/rncp/rncpController");
 const { findOnisepInfos } = require("../controllers/onisep/onisepController");
+const { asyncForEach } = require("../../common/utils/asyncUtils");
+
+const getDataFromRncpAndBcnHandlingTypeCertif = async (rncpValue, bcnData) => {
+  const rncpData = await fcController.getDataFromRncp(rncpValue);
+  if (!rncpData.result.code_type_certif && bcnData.result.libelle_court?.startsWith("TH")) {
+    rncpData.result.code_type_certif = "TP";
+  }
+  return rncpData;
+};
 
 const getDataFromCfd = async (providedCfd, options = { onisep: true }) => {
   const bcnData = await bcnController.getDataFromCfd(providedCfd);
@@ -31,29 +40,27 @@ const getDataFromCfd = async (providedCfd, options = { onisep: true }) => {
         messages: {},
       };
 
-  let rncpData = {
-    result: {},
-    messages: {},
-  };
-  const codeRncpUpdated = await fcController.findRncpFromCfd(bcnData.result.cfd);
-  if (codeRncpUpdated.value) {
-    rncpData = await fcController.getDataFromRncp(codeRncpUpdated.value);
-    if (!rncpData.result.code_type_certif && bcnData.result.libelle_court?.startsWith("TH")) {
-      rncpData.result.code_type_certif = "TP";
-    }
+  let rncps = [];
+  let rncps_messages = [];
+
+  const codesRncpUpdated = await fcController.findRncpListFromCfd(bcnData.result.cfd);
+
+  if (codesRncpUpdated.value.length > 0) {
+    await asyncForEach(codesRncpUpdated.value, async (currentRncp) => {
+      const rncpData = await getDataFromRncpAndBcnHandlingTypeCertif(currentRncp, bcnData);
+      if (rncpData) {
+        rncps.push(rncpData.result);
+        rncps_messages.push({ rncp: currentRncp, messages: rncpData.messages?.code_rncp });
+      }
+    });
   } else {
-    rncpData = {
-      result: {},
-      messages: {
-        error: codeRncpUpdated.info,
-      },
-    };
+    rncps_messages.push({ error: codesRncpUpdated.info });
   }
 
   return {
     result: {
       ...bcnData.result,
-      rncp: { ...rncpData.result },
+      rncps,
       mefs: {
         ...mefs.result,
         ...mef.result,
@@ -65,7 +72,7 @@ const getDataFromCfd = async (providedCfd, options = { onisep: true }) => {
     messages: {
       ...bcnData.messages,
 
-      rncp: { ...rncpData.messages },
+      rncps: rncps_messages,
       mefs: {
         ...mefs.messages,
         ...mef.messages,

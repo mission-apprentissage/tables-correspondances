@@ -175,24 +175,19 @@ class BcnController {
     };
   }
 
-  async getMefsFromCfd(codeEducNat) {
-    const Mefs10List = await this.findMefsFromCfd(codeEducNat);
+  async getMefsFromCfd(cfd) {
+    const mefs10List = await this.findMefsFromCfd(cfd);
 
-    const MefsUpdated = [];
-    for (let i = 0; i < Mefs10List.value.length; i++) {
-      const mef10 = Mefs10List.value[i];
-      const modalite = this.getModalities(mef10);
-      MefsUpdated.push({
-        mef10,
-        modalite,
-      });
-    }
+    const mefs10 = mefs10List.value.map((mef10) => ({
+      mef10,
+      modalite: this.getModalities(mef10),
+    }));
 
-    const MefsAproximation = { info: "", value: [] };
-    if (MefsUpdated.length === 0) {
-      const Mefs11List = await this.findMefs11(codeEducNat);
-      for (let i = 0; i < Mefs11List.value.length; i++) {
-        const mef11 = Mefs11List.value[i];
+    const mefsAproximation = { info: "", value: [] };
+    if (mefs10.length === 0) {
+      const mefs11List = await this.findMefs11(cfd);
+      for (let i = 0; i < mefs11List.value.length; i++) {
+        const mef11 = mefs11List.value[i];
         const mefTmp = await this.findMefFromMef11(mef11);
         const modalite = this.getModalities(mefTmp.value);
         const cfd = await this.findCfdFromMef10(mefTmp.value);
@@ -202,9 +197,9 @@ class BcnController {
           value: { intitule_long, libelle_court, niveau_formation_diplome },
         } = await this.findCfdData(cfd.value);
 
-        const match = find(MefsAproximation.value, { cfd: cfd.value });
+        const match = find(mefsAproximation.value, { cfd: cfd.value });
         if (!match) {
-          MefsAproximation.value.push({
+          mefsAproximation.value.push({
             mef10: mefTmp.value,
             modalite,
             cfd: cfd.value,
@@ -215,21 +210,25 @@ class BcnController {
           });
         }
       }
-      MefsAproximation.info = "Codes Mef trouvés les plus proches du code CFD fournit";
+      mefsAproximation.info = "Codes Mef trouvés les plus proches du code CFD fournit";
     }
 
-    const Mefs8Updated = await this.findMefs8(codeEducNat);
+    const mefs8 = await this.findMefs8(cfd);
+
+    const mefs11 = await this.findMefs11FromCfd(cfd);
 
     return {
       result: {
-        mefs10: MefsUpdated,
-        mefs8: Mefs8Updated.value,
-        mefs_aproximation: MefsAproximation.value,
+        mefs10,
+        mefs8: mefs8.value,
+        mefs_aproximation: mefsAproximation.value,
+        mefs11: mefs11.value,
       },
       messages: {
-        mefs10: computeCodes.mef[Mefs10List.info],
-        mefs8: computeCodes.mef[Mefs8Updated.info],
-        mefs_aproximation: MefsAproximation.info,
+        mefs10: computeCodes.mef[mefs10List.info],
+        mefs8: computeCodes.mef[mefs8.info],
+        mefs_aproximation: mefsAproximation.info,
+        mefs11: computeCodes.mef[mefs11.info],
       },
     };
   }
@@ -415,6 +414,14 @@ class BcnController {
   async findMefs11(codeEducNat) {
     const tronc = codeEducNat.substring(3, 8);
     const mefs11 = await BcnNMef.distinct("MEF_STAT_11", { MEF_STAT_11: { $regex: `${tronc}$` } });
+    if (!mefs11.length) {
+      return { info: infosCodes.mef.NotFound, value: [] };
+    }
+    return { info: infosCodes.mef.NothingDoTo, value: mefs11 };
+  }
+
+  async findMefs11FromCfd(cfd) {
+    const mefs11 = await BcnNMef.distinct("MEF_STAT_11", { FORMATION_DIPLOME: cfd });
     if (!mefs11.length) {
       return { info: infosCodes.mef.NotFound, value: [] };
     }
