@@ -1,3 +1,10 @@
+## [2.38.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.38.0...v2.38.1) (2022-07-04)
+
+
+### Bug Fixes
+
+* bcnImporter not updating existing entries ([bd48180](https://github.com/mission-apprentissage/tables-correspondances/commit/bd481802adab75c5e7b6c25f0f0e8170c24b7d8d))
+
 # [2.38.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.37.3...v2.38.0) (2022-06-22)
 
 
