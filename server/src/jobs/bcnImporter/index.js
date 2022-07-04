@@ -28,18 +28,18 @@ const mergeNformationVformation = (N_FORMATION_DIPLOME, V_FORMATION_DIPLOME) => 
   return Array.from(bcnFormations.values());
 };
 
-const dbOperations = async (base, db, Entity, description = "") => {
+const dbOperations = async (base, db, Entity, description = "", identity) => {
   try {
     await asyncForEach(base, async (item) => {
-      const exist = await Entity.findOne({ ID: item.ID });
+      const exist = await Entity.findOne({ [identity]: item[identity] });
       if (exist) {
         await Entity.findOneAndUpdate({ _id: item._id }, { ...item, last_update_at: Date.now() }, { new: true });
-        logger.debug(`BCN ${description} '${item.ID}' successfully updated in db ${db.name}`);
+        logger.debug(`BCN ${description} '${item[identity]}' successfully updated in db ${db.name}`);
       } else {
-        logger.debug(`BCN ${description}  '${item.ID}' not found`);
+        logger.debug(`BCN ${description}  '${item[identity]}' not found`);
         const bcnToAdd = new Entity(item);
         await bcnToAdd.save();
-        logger.debug(`BCN ${description} '${bcnToAdd._id}' successfully added in db ${db.name}`);
+        logger.debug(`BCN ${description} '${item[identity]}' successfully added in db ${db.name}`);
       }
     });
     logger.info(`Importing BCN ${description}  table Succeed`);
@@ -70,16 +70,22 @@ const importBcnTables = async (db = { name: "" }) => {
   }
 
   // N_LETTRE_SPECIALITE
-  await dbOperations(bases.N_LETTRE_SPECIALITE, db, BcnLettreSpecialite, "Lettre specialite");
+  await dbOperations(bases.N_LETTRE_SPECIALITE, db, BcnLettreSpecialite, "Lettre specialite", "LETTRE_SPECIALITE");
 
   // N_NIVEAU_FORMATION_DIPLOME
-  await dbOperations(bases.N_NIVEAU_FORMATION_DIPLOME, db, BcnNNiveauFormationDiplome, "N Niveau formation");
+  await dbOperations(
+    bases.N_NIVEAU_FORMATION_DIPLOME,
+    db,
+    BcnNNiveauFormationDiplome,
+    "N Niveau formation",
+    "NIVEAU_FORMATION_DIPLOME"
+  );
 
   // N_MEF
-  await dbOperations(bases.N_MEF, db, BcnNMef, "N Mef");
+  await dbOperations(bases.N_MEF, db, BcnNMef, "N Mef", "MEF");
 
   // N_DISPOSITIF_FORMATION
-  await dbOperations(bases.N_DISPOSITIF_FORMATION, db, BcnNDispositifFormation, "N Dispositif");
+  await dbOperations(bases.N_DISPOSITIF_FORMATION, db, BcnNDispositifFormation, "N Dispositif", "DISPOSITIF_FORMATION");
 
   logger.info(`[BCN tables] Importer completed`);
 };
