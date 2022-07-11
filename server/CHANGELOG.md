@@ -1,3 +1,10 @@
+## [2.38.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.38.1...v2.38.2) (2022-07-11)
+
+
+### Bug Fixes
+
+* Correction d'une vulnérabilité dans moment.js ([5f8922c](https://github.com/mission-apprentissage/tables-correspondances/commit/5f8922ca3537823c9487caa3b246a3f2835c2f44))
+
 ## [2.38.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.38.0...v2.38.1) (2022-07-04)
 
 
