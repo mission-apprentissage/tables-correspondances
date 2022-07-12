@@ -19,12 +19,12 @@ const getDataFromCfd = async (providedCfd, options = { onisep: true }) => {
     return {
       result: {
         ...bcnData.result,
-        rncp: {},
+        rncps: [],
         mefs: {},
       },
       messages: {
         ...bcnData.messages,
-        rncp: {},
+        rncps: [],
         mefs: {},
       },
     };
