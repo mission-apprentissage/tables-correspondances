@@ -1,3 +1,10 @@
+## [2.38.3](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.38.2...v2.38.3) (2022-07-12)
+
+
+### Bug Fixes
+
+* Always return array for rncps in cfdHandler ([b858da2](https://github.com/mission-apprentissage/tables-correspondances/commit/b858da283102eeafab34eaeae13c45928882f659))
+
 ## [2.38.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.38.1...v2.38.2) (2022-07-11)
 
 
