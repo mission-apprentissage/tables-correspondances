@@ -14,17 +14,19 @@ const getDataFromRncpAndBcnHandlingTypeCertif = async (rncpValue, bcnData) => {
 
 const getDataFromCfd = async (providedCfd, options = { onisep: true }) => {
   const bcnData = await bcnController.getDataFromCfd(providedCfd);
+  let rncps = [];
+  let rncps_messages = [];
 
   if (!bcnData.result.cfd) {
     return {
       result: {
         ...bcnData.result,
-        rncps: [],
+        rncps,
         mefs: {},
       },
       messages: {
         ...bcnData.messages,
-        rncps: [],
+        rncps: rncps_messages,
         mefs: {},
       },
     };
@@ -39,9 +41,6 @@ const getDataFromCfd = async (providedCfd, options = { onisep: true }) => {
         result: {},
         messages: {},
       };
-
-  let rncps = [];
-  let rncps_messages = [];
 
   const codesRncpUpdated = await fcController.findRncpListFromCfd(bcnData.result.cfd);
 

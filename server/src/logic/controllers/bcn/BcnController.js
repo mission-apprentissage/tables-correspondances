@@ -24,7 +24,7 @@ class BcnController {
       return {
         result: {},
         messages: {
-          error: "Le code formation diplôme doit être définit et au format 8 caractères ou 9 avec la lettre specialité",
+          error: "Le code formation diplôme doit être définit et au format 8 caractères ou 9 avec la lettre spécialité",
         },
       };
     }
