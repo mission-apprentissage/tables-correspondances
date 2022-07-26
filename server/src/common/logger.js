@@ -7,8 +7,8 @@ const BunyanMongodbStream = require("bunyan-mongodb-stream");
 const { Log } = require("./model/index");
 
 const createStreams = () => {
-  const { type, level } = config.log;
-  const envName = config.env;
+  const { type = "stdout", level = "info" } = config?.log ?? {};
+  const envName = config?.env ?? "production";
 
   const jsonStream = () => {
     return {
@@ -66,14 +66,14 @@ const createStreams = () => {
   };
 
   const streams = [type === "json" ? jsonStream() : consoleStream(type), mongoDBStream()];
-  if (config.slackWebhookUrl) {
+  if (config?.slackWebhookUrl) {
     streams.push(slackStream());
   }
   return streams;
 };
 
 module.exports = bunyan.createLogger({
-  name: config.appName,
+  name: config?.appName ?? "Tables de correspondances",
   serializers: bunyan.stdSerializers,
   streams: createStreams(),
 });
