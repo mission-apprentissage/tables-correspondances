@@ -1,3 +1,28 @@
+# [2.40.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.39.0...v2.40.0) (2022-07-26)
+
+
+### Bug Fixes
+
+* case insensitive qualiopi ([cca05f2](https://github.com/mission-apprentissage/tables-correspondances/commit/cca05f2cbb68cf8b1ac82c014136d3218540bb46))
+* decrease chunk size ([bcc13b2](https://github.com/mission-apprentissage/tables-correspondances/commit/bcc13b25354eea9c80273913ca60e74b405926ba))
+* fix geo result destructurate ([88d9bd1](https://github.com/mission-apprentissage/tables-correspondances/commit/88d9bd13dfd3dbcb4ded4bd07086444492ae45b0))
+* handle bcn exception ([496d44a](https://github.com/mission-apprentissage/tables-correspondances/commit/496d44a1c20217d20001e08f98aab5b2782fbdd9))
+* increase container mem limit server ([1b1eb08](https://github.com/mission-apprentissage/tables-correspondances/commit/1b1eb08fa59d39c0864f2aba1eda8782bd4b26d6))
+* quick fix to handle api adresse edge case ([a0214bb](https://github.com/mission-apprentissage/tables-correspondances/commit/a0214bb39a4c9209e3bcb4cc6298730663cd9172))
+* quick handle EDUFORM ([0ae0ae2](https://github.com/mission-apprentissage/tables-correspondances/commit/0ae0ae2d35091cc7bf1484544a84caece4da75a5))
+* right code to find academie in Corsica ([#179](https://github.com/mission-apprentissage/tables-correspondances/issues/179)) ([f66e34e](https://github.com/mission-apprentissage/tables-correspondances/commit/f66e34e41efdae58ef342bb9eb355d4b7a91c566))
+* rm unused import ([b6be3a1](https://github.com/mission-apprentissage/tables-correspondances/commit/b6be3a11f0e8a58c758f9444e775edc0e8f8990e))
+* swagger ([f9af728](https://github.com/mission-apprentissage/tables-correspondances/commit/f9af7282984c5a7ac4a6940dbeb6d2a7b700e08c))
+
+
+### Features
+
+* add API route /gps ([7e15483](https://github.com/mission-apprentissage/tables-correspondances/commit/7e1548360229eb22a1eb3ec0fa5d3f22e92ca636))
+* Get address data from geoloc ([#163](https://github.com/mission-apprentissage/tables-correspondances/issues/163)) ([0247890](https://github.com/mission-apprentissage/tables-correspondances/commit/02478901251a9bcb9d6d5dffc610be72b3f0a8f9))
+* **geoloc:** Search with code insee ([#162](https://github.com/mission-apprentissage/tables-correspondances/issues/162)) ([5670c90](https://github.com/mission-apprentissage/tables-correspondances/commit/5670c90c4c0bd19eadb3f2702835f26f8fdb3860))
+* change file name ([e68c74f](https://github.com/mission-apprentissage/tables-correspondances/commit/e68c74f1893eb64cd00f2b206bad5251a98dcf2e))
+* **opcos:** add opcos data to cfd handler ([4f8d0dc](https://github.com/mission-apprentissage/tables-correspondances/commit/4f8d0dc4e8dd5910bd16a89ea8dc6f659f310778))
+
 # [2.39.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.38.3...v2.39.0) (2022-07-26)
 
 
