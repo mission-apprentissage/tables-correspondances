@@ -1,3 +1,15 @@
+# [2.39.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.38.3...v2.39.0) (2022-07-26)
+
+
+### Bug Fixes
+
+* Always return array for rncps in cfdHandler ([29a4e3b](https://github.com/mission-apprentissage/tables-correspondances/commit/29a4e3b9bcd8045a6208295a6ef0949ea6f9edfc))
+
+
+### Features
+
+* add tests for cfdHandler.js ([65265ed](https://github.com/mission-apprentissage/tables-correspondances/commit/65265ed9f28f876c9e66b8224e3f70549f081cd2))
+
 ## [2.38.3](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.38.2...v2.38.3) (2022-07-12)
 
 
