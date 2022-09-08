@@ -2,6 +2,7 @@ install: install-server install-ui
 
 install-server:
 	yarn --cwd server install --frozen-lockfile
+	touch -a server/.env
 
 install-ui:
 	yarn --cwd ui install --frozen-lockfile
