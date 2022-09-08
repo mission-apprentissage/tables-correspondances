@@ -1,3 +1,10 @@
+## [2.41.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.41.0...v2.41.1) (2022-09-08)
+
+
+### Bug Fixes
+
+* Create .env if missing ([c0b43b7](https://github.com/mission-apprentissage/tables-correspondances/commit/c0b43b7ae37b643d93b6377bdbe4e9710c96e797))
+
 # [2.41.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.40.0...v2.41.0) (2022-09-08)
 
 
