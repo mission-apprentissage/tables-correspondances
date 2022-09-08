@@ -27,6 +27,8 @@ services:
     environment:
       - TABLES_CORRESPONDANCES_ENV=dev
       - TABLES_CORRESPONDANCES_LOG_LEVEL=debug
+    env_file:
+      - ./server/.env
 
   mongodb:
     ports:

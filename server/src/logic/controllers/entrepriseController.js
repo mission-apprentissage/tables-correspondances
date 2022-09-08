@@ -24,6 +24,7 @@ class EntrepriseApiData {
       entrepriseData = await apiEntreprise.getEntreprise(siren);
       entrepriseApiInfo = entrepriseData.entreprise;
     } catch (e) {
+      console.error(e);
       return {
         result: {},
         messages: {
@@ -40,6 +41,7 @@ class EntrepriseApiData {
         etablissementApiInfo = await apiEntreprise.getEtablissement(siret);
       }
     } catch (e) {
+      console.error(e);
       return {
         result: {},
         messages: {
