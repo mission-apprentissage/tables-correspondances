@@ -1,3 +1,10 @@
+# [2.41.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.40.0...v2.41.0) (2022-09-08)
+
+
+### Features
+
+* Add .env to docker-compose.overrides.yml to get local config working ([1541e1e](https://github.com/mission-apprentissage/tables-correspondances/commit/1541e1e4db82e49c0379c285b7e4014918dba4f7))
+
 # [2.40.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.39.0...v2.40.0) (2022-07-26)
 
 
