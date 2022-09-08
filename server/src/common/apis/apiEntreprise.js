@@ -35,6 +35,7 @@ class ApiEntreprise {
         }
         return response.data;
       } catch (e) {
+        console.error(e);
         throw new ApiError("Api Entreprise", e.message, e.code || e.response.status);
       }
     });
@@ -52,6 +53,7 @@ class ApiEntreprise {
         }
         return response.data.etablissement;
       } catch (e) {
+        console.error(e);
         throw new ApiError("Api Entreprise", e.message, e.code || e.response.status);
       }
     });
