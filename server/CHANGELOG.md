@@ -1,3 +1,10 @@
+# [2.42.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.41.1...v2.42.0) (2022-09-16)
+
+
+### Features
+
+* MAJ du kit apprentissage ([d971679](https://github.com/mission-apprentissage/tables-correspondances/commit/d971679f49bae4f50602542ad3130f6b17dcb1a9))
+
 ## [2.41.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.41.0...v2.41.1) (2022-09-08)
 
 
