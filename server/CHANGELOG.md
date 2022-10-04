@@ -1,3 +1,10 @@
+## [2.42.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.42.0...v2.42.1) (2022-10-04)
+
+
+### Bug Fixes
+
+* Remove check for isSdkReady for functions that doesnt require it ([902851f](https://github.com/mission-apprentissage/tables-correspondances/commit/902851f27134e1fee8667dd68da14d6f8fa88108))
+
 # [2.42.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.41.1...v2.42.0) (2022-09-16)
 
 
