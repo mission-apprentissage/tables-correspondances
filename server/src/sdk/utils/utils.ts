@@ -212,7 +212,6 @@ export async function getCoordinatesFromAddressData({
   code_postal,
   code_insee,
 }: AddressData) {
-  isSdkReady();
   try {
     const { getCoordinatesFromAddressData: getCoords } = await import("../../logic/handlers/geoHandler");
     return await getCoords({
@@ -284,7 +283,6 @@ export async function getAddressFromCoordinates({
   latitude: number;
   longitude: number;
 }): Promise<AdressResult | null> {
-  isSdkReady();
   try {
     const { getAddressDataFromCoordinates } = await import("../../logic/handlers/geoHandler");
     const result = getAddressDataFromCoordinates({ latitude, longitude });
