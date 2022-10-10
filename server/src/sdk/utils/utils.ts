@@ -60,7 +60,7 @@ export async function onisepImporter(db: Connection) {
   isSdkReady();
   try {
     const { onisepImporter: importer } = await import("../../jobs/OnisepImporter");
-    await importer(db);
+    await importer();
   } catch (error) {
     console.error(`onisepImporter: something went wrong!`, error);
   }
