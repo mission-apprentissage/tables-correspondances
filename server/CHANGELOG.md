@@ -1,3 +1,10 @@
+## [2.42.5](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.42.4...v2.42.5) (2022-10-10)
+
+
+### Bug Fixes
+
+* Correction du build sdk ([e6de60c](https://github.com/mission-apprentissage/tables-correspondances/commit/e6de60cb47526643c3489c8093432fce34ba6007))
+
 ## [2.42.4](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.42.3...v2.42.4) (2022-10-10)
 
 
