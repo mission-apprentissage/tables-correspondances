@@ -1,3 +1,10 @@
+## [2.42.4](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.42.3...v2.42.4) (2022-10-10)
+
+
+### Bug Fixes
+
+* Correction de l'import des fichiers de convention ([7b3efb7](https://github.com/mission-apprentissage/tables-correspondances/commit/7b3efb76fbf05f178a87f388bf20d675b09a3014))
+
 ## [2.42.3](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.42.2...v2.42.3) (2022-10-10)
 
 
