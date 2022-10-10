@@ -27,7 +27,7 @@
     "bcn:downloader": "yarn job -- src/jobs/bcnDownloader/index.js",
     "bcn:importer": "yarn job -- src/jobs/bcnImporter/index.js",
     "rncp:importer": "yarn job -- src/jobs/rncpImporter/index.js",
-    "convention:importer": "yarn job -- src/jobs/convetionFilesImporter/index.js",
+    "convention:importer": "yarn job -- src/jobs/conventionFilesImporter/index.js",
     "onisep:importer": "yarn job -- src/jobs/OnisepImporter/index.js",
     "generate:swaggerschema": "yarn job -- src/jobs/generateSwaggerSchema/index.js",
     "sdk:build": "tsc -b; yarn sdk:postbuild",

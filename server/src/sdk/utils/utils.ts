@@ -327,7 +327,7 @@ export async function getEtablissementUpdates(
 export async function conventionFilesImporter(db: Connection, assetsDir?: string) {
   isSdkReady();
   try {
-    const { conventionFilesImporter: importer } = await import("../../jobs/convetionFilesImporter/index");
+    const { conventionFilesImporter: importer } = await import("../../jobs/conventionFilesImporter/index");
     await importer(db, assetsDir);
   } catch (error) {
     console.error(`conventionFilesImporter: something went wrong!`, error);
