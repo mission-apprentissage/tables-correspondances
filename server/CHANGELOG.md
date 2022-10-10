@@ -1,3 +1,10 @@
+## [2.42.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.42.1...v2.42.2) (2022-10-10)
+
+
+### Bug Fixes
+
+* Onisep importer ([6013905](https://github.com/mission-apprentissage/tables-correspondances/commit/6013905fc350d95d6b4a182e0afa42100465507b))
+
 ## [2.42.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.42.0...v2.42.1) (2022-10-04)
 
 
