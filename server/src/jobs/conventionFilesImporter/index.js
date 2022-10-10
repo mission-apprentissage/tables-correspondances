@@ -1,11 +1,12 @@
-const logger = require("../../common/logger");
-const { runScript } = require("../scriptWrapper");
-const importConventionFiles = require("./importConventionFiles");
-const { getJsonFromCsvFile, downloadFile } = require("../../common/utils/fileUtils");
 const config = require("config");
 const path = require("path");
+const logger = require("../../common/logger");
+const { runScript } = require("../scriptWrapper");
+const { getJsonFromCsvFile, downloadFile } = require("../../common/utils/fileUtils");
+const { ConventionFile } = require("../../common/model");
+const importConventionFiles = require("./importConventionFiles");
 
-const conventionFilesImporter = async (db, assetsDir = path.join(__dirname, "./assets")) => {
+const conventionFilesImporter = async (assetsDir = path.join(__dirname, "./assets")) => {
   logger.info(`[Convention files importer] Starting`);
 
   // CSV import
@@ -15,10 +16,10 @@ const conventionFilesImporter = async (db, assetsDir = path.join(__dirname, "./a
   const publicOfs = getJsonFromCsvFile(PUBLIC_OFS_PATH);
 
   logger.info(`[Convention files importer] removing conventionfiles documents`);
-  await db.collection("conventionfiles").deleteMany({});
+  await ConventionFile.deleteMany({});
   logger.info(`[Convention files importer] Removing successfull`);
   // Push into Db
-  await importConventionFiles(db, publicOfs);
+  await importConventionFiles(publicOfs);
 
   logger.info(`[Convention files importer] Ended`);
 };
@@ -26,7 +27,7 @@ const conventionFilesImporter = async (db, assetsDir = path.join(__dirname, "./a
 module.exports.conventionFilesImporter = conventionFilesImporter;
 
 if (process.env.run) {
-  runScript(async ({ db }) => {
-    await conventionFilesImporter(db);
+  runScript(async () => {
+    await conventionFilesImporter();
   });
 }

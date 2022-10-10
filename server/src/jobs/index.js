@@ -1,10 +1,10 @@
 const { runScript } = require("./scriptWrapper");
 const logger = require("../common/logger");
-const { downloadBcnTables } = require("./bcnDownloader/index");
-const { importBcnTables } = require("./bcnImporter/index");
-const { conventionFilesImporter } = require("./convetionFilesImporter/index");
-const { onisepImporter } = require("./OnisepImporter/index");
-const { rncpImporter } = require("./rncpImporter/index");
+const { downloadBcnTables } = require("./bcnDownloader");
+const { importBcnTables } = require("./bcnImporter");
+const { conventionFilesImporter } = require("./conventionFilesImporter");
+const { onisepImporter } = require("./OnisepImporter");
+const { rncpImporter } = require("./rncpImporter");
 
 runScript(async ({ db }) => {
   try {
