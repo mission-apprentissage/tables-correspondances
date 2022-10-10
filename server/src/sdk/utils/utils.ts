@@ -56,7 +56,7 @@ export async function rncpImporter(localPath: string | null = null) {
   }
 }
 
-export async function onisepImporter(db: Connection) {
+export async function onisepImporter() {
   isSdkReady();
   try {
     const { onisepImporter: importer } = await import("../../jobs/OnisepImporter");
@@ -324,11 +324,11 @@ export async function getEtablissementUpdates(
   return await etablissementService(etablissement, options);
 }
 
-export async function conventionFilesImporter(db: Connection, assetsDir?: string) {
+export async function conventionFilesImporter(assetsDir?: string) {
   isSdkReady();
   try {
     const { conventionFilesImporter: importer } = await import("../../jobs/conventionFilesImporter/index");
-    await importer(db, assetsDir);
+    await importer(assetsDir);
   } catch (error) {
     console.error(`conventionFilesImporter: something went wrong!`, error);
   }
@@ -341,8 +341,8 @@ export async function tcoJobs(db: Connection, conventionFilesDir: string, rncpKi
   isSdkReady();
   try {
     await bcnImporter();
-    await onisepImporter(db);
-    await conventionFilesImporter(db, conventionFilesDir);
+    await onisepImporter();
+    await conventionFilesImporter(conventionFilesDir);
     await rncpImporter(rncpKitPath);
   } catch (error) {
     console.error(`tcoJobs: something went wrong!`);
