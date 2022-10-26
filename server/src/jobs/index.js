@@ -12,7 +12,7 @@ runScript(async ({ db }) => {
     await downloadBcnTables();
     await importBcnTables(db);
     await onisepImporter(db);
-    await conventionFilesImporter(db);
+    await conventionFilesImporter();
     await rncpImporter();
   } catch (error) {
     logger.error(error);

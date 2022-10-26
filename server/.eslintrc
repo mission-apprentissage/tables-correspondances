@@ -1,15 +1,9 @@
 {
   "root": true,
-  "extends": [
-    "eslint:recommended",
-    "plugin:node/recommended",
-    "plugin:prettier/recommended"
-  ],
-  "plugins": [
-    "mocha"
-  ],
+  "extends": ["eslint:recommended", "plugin:node/recommended", "plugin:prettier/recommended"],
+  "plugins": ["mocha"],
   "rules": {
-    "mocha/no-skipped-tests": "error",
+    "mocha/no-skipped-tests": "warn",
     "mocha/no-exclusive-tests": "error"
   },
   "env": {

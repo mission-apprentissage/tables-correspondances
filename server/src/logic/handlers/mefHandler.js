@@ -10,9 +10,9 @@ const getDataFromMef10 = async (providedMef) => {
     result: {},
     messages: {},
   };
-  const codeRncpUpdated = await fcController.findRncpFromCfd(cfdData.result.cfd);
-  if (codeRncpUpdated.value) {
-    rncpData = await fcController.getDataFromRncp(codeRncpUpdated.value);
+  const codeRncpUpdated = await fcController.findRncpListFromCfd(cfdData.result.cfd);
+  if (codeRncpUpdated.value?.length) {
+    rncpData = await fcController.getDataFromRncp(codeRncpUpdated.value[0]);
   } else {
     rncpData = {
       result: {},

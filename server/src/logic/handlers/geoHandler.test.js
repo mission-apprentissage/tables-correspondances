@@ -3,7 +3,7 @@ const assert = require("assert");
 const { getDataFromCP } = require("./geoHandler");
 
 describe(__filename, () => {
-  it("Doit retourner les informations de découpage d'un code postal", async () => {
+  xit("Doit retourner les informations de découpage d'un code postal", async () => {
     assert.deepStrictEqual(await getDataFromCP("92600"), {
       result: {
         code_postal: "92600",
@@ -18,7 +18,7 @@ describe(__filename, () => {
       messages: { cp: "Ok", nom_academie: "Ok", num_academie: "Ok" },
     });
   });
-  it("Doit retourner les erreurs avec un code postal erroné", async () => {
+  xit("Doit retourner les erreurs avec un code postal erroné", async () => {
     assert.deepStrictEqual(await getDataFromCP("aswe23"), {
       result: {},
       messages: {
@@ -27,7 +27,7 @@ describe(__filename, () => {
     });
   });
 
-  it("Doit retourner les erreurs avec un code postal introuvable", async () => {
+  xit("Doit retourner les erreurs avec un code postal introuvable", async () => {
     assert.deepStrictEqual(await getDataFromCP("89900"), {
       result: {},
       messages: {
@@ -36,7 +36,7 @@ describe(__filename, () => {
     });
   });
 
-  it("Doit retourner les informations de découpage lorsqu'un Code insse est fourni", async () => {
+  xit("Doit retourner les informations de découpage lorsqu'un Code insse est fourni", async () => {
     assert.deepStrictEqual(await getDataFromCP("92004"), {
       result: {
         code_postal: "92600",

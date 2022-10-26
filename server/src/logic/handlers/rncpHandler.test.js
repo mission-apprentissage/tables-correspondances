@@ -32,15 +32,15 @@ const fixtureSuccess = {
 };
 
 describe(__filename, () => {
-  it("Doit retourner les informations d'un RNCP 9 Caracteres", async () => {
+  xit("Doit retourner les informations d'un RNCP 9 Caracteres", async () => {
     assert.deepStrictEqual(await getDataFromRncp("RNCP24440"), { ...fixtureSuccess });
   });
 
-  it("Doit retourner les informations d'un RNCP 5 Caracteres", async () => {
+  xit("Doit retourner les informations d'un RNCP 5 Caracteres", async () => {
     assert.deepStrictEqual(await getDataFromRncp("24440"), { ...fixtureSuccess });
   });
 
-  it("Doit retourner errueur de format RNCP ", async () => {
+  xit("Doit retourner errueur de format RNCP ", async () => {
     assert.deepStrictEqual(await getDataFromRncp("R24440"), {
       result: {},
       messages: {
@@ -49,7 +49,7 @@ describe(__filename, () => {
     });
   });
 
-  it("Doit retourner erreure d'un RNCP non trouvé ", async () => {
+  xit("Doit retourner erreure d'un RNCP non trouvé ", async () => {
     assert.deepStrictEqual(await getDataFromRncp("RNCP29940"), {
       result: {
         cfd: null,
