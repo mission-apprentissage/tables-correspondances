@@ -1,3 +1,10 @@
+## [2.42.6](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.42.5...v2.42.6) (2022-10-26)
+
+
+### Bug Fixes
+
+* getDataFromMef10 failing ([66ac62f](https://github.com/mission-apprentissage/tables-correspondances/commit/66ac62f36caa42ff735adef07cbbf170256d2bde))
+
 ## [2.42.5](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.42.4...v2.42.5) (2022-10-10)
 
 
