@@ -33,7 +33,7 @@ const dbOperations = async (base, db, Entity, description = "", identity) => {
     await asyncForEach(base, async (item) => {
       const exist = await Entity.findOne({ [identity]: item[identity] });
       if (exist) {
-        await Entity.findOneAndUpdate({ _id: item._id }, { ...item, last_update_at: Date.now() }, { new: true });
+        await Entity.updateOne({ [identity]: item[identity] }, { ...item, last_update_at: Date.now() });
         logger.debug(`BCN ${description} '${item[identity]}' successfully updated in db ${db.name}`);
       } else {
         logger.debug(`BCN ${description}  '${item[identity]}' not found`);
