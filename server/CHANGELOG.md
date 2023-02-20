@@ -1,3 +1,10 @@
+## [2.42.7](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.42.6...v2.42.7) (2023-02-20)
+
+
+### Bug Fixes
+
+* Update not working for bcn tables ([4632852](https://github.com/mission-apprentissage/tables-correspondances/commit/4632852d846775599bbad8fd417df13dd6734345))
+
 ## [2.42.6](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.42.5...v2.42.6) (2022-10-26)
 
 
