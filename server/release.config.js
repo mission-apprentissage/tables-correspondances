@@ -57,7 +57,7 @@ const localConfig = {
       prerelease: channel,
     },
   ],
-  repositoryUrl: "https://github.com/mission-apprentissage/tables-correspondances.git",
+  repositoryUrl: "git@github.com:mission-apprentissage/tables-correspondances.git",
   plugins: ["@semantic-release/commit-analyzer", "@semantic-release/npm"],
 };
 
