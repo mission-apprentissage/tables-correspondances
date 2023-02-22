@@ -1,6 +1,6 @@
 {
   "name": "@mission-apprentissage/tco-service-node",
-  "version": "2.43.0-a19ea622182c63ddc19bb22cde982b82.1",
+  "version": "2.43.0-a19ea622182c63ddc19bb22cde982b82.2",
   "description": "[MNA] Tables de correspondances",
   "license": "SEE LICENSE IN LICENSE.md",
   "repository": "https://github.com/mission-apprentissage/tables-correspondances.git",
