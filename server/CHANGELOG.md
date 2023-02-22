@@ -1,3 +1,10 @@
+## [2.43.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.43.1...v2.43.2) (2023-02-22)
+
+
+### Bug Fixes
+
+* Bump version ([f4af7df](https://github.com/mission-apprentissage/tables-correspondances/commit/f4af7df2c9719feb388a278df63df0ddcc1a86db))
+
 ## [2.43.1](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.43.0...v2.43.1) (2023-02-22)
 
 
