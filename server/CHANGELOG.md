@@ -1,3 +1,16 @@
+# [2.43.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.42.7...v2.43.0) (2023-02-22)
+
+
+### Bug Fixes
+
+* Bump npm version ([68747d7](https://github.com/mission-apprentissage/tables-correspondances/commit/68747d76157c4b08811effffdd45b669524fb23a))
+* Bump version ([c42a500](https://github.com/mission-apprentissage/tables-correspondances/commit/c42a500b173c03dfeafcf70054bd9b0347bd2065))
+
+
+### Features
+
+* Allow publication of tag from local with git: since https: auth is deprecated ([473efbb](https://github.com/mission-apprentissage/tables-correspondances/commit/473efbb2f95e950467abf0f08975c5661b31094a))
+
 ## [2.42.7](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.42.6...v2.42.7) (2023-02-20)
 
 
