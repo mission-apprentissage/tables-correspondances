@@ -8,13 +8,13 @@ install-ui:
 	yarn --cwd ui install --frozen-lockfile
 
 start:
-	docker-compose up --build --force-recreate
+	docker compose up --build --force-recreate
 
 start-mongodb:
-	docker-compose up -d mongodb
+	docker compose up -d mongodb
 
 stop:
-	docker-compose stop
+	docker compose stop
 
 test:
 	yarn --cwd server test
@@ -23,6 +23,6 @@ lint:
 	yarn --cwd server lint
 
 clean:
-	docker-compose down
+	docker compose down
 
 ci: install-server lint start-mongodb test clean
