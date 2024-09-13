@@ -10,7 +10,11 @@ const getDataFromCP = async (providedCP, providedCodeInsee) => {
     };
   }
 
-  if (providedCP && (!geoController.isValidCodePostal(providedCP.trim()) && !geoController.isValidCodeInsee(providedCP.trim()))) {
+  if (
+    providedCP &&
+    !geoController.isValidCodePostal(providedCP.trim()) &&
+    !geoController.isValidCodeInsee(providedCP.trim())
+  ) {
     return {
       result: {},
       messages: {
