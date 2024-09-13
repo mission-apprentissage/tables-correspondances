@@ -14,7 +14,7 @@ exception="$exception|CodeDiplome_RNCP_latest_mna.csv"
 exception="$exception|BaseDataDock-latest.csv"
 exception="$exception|sample.json"
 exception="$exception|tsconfig.base.json|tsconfig.json"
-exception="$exception|CodeDiplome_RNCP_latest_kit.csv"
+exception="$exception|CodeDiplome_RNCP_latest_kit.csv|CodeDiplome_RNCP_2.9.csv|Kit_apprentissage_20231218.csv"
 exception="$exception)$"
 
 files=$(git diff --cached --name-only | grep -v -E "$exception" | grep -E "$sensible_files_pattern")
