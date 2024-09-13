@@ -1,3 +1,20 @@
+# [2.44.0](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.43.2...v2.44.0) (2024-09-13)
+
+
+### Bug Fixes
+
+* code-postal route can be call with insee or cp code ([367f4f5](https://github.com/mission-apprentissage/tables-correspondances/commit/367f4f5c9598f39be280cad2bca337283c7b7d9b))
+* Lint ([6e87624](https://github.com/mission-apprentissage/tables-correspondances/commit/6e8762473be092aa80cf290f9773924a979a9e83))
+* Mise à jour des dpendances pour résoudre des vulnérabilités critiques ([c566567](https://github.com/mission-apprentissage/tables-correspondances/commit/c566567ef8165bb708196f40c3e260b82d3d2e80))
+* Utilisation de docker compose au lieu de docker-compose ([bbbd116](https://github.com/mission-apprentissage/tables-correspondances/commit/bbbd1166bd04e29072560b03ea5136b4edd04ca9))
+
+
+### Features
+
+* maj code diplome rncp ([d6f0309](https://github.com/mission-apprentissage/tables-correspondances/commit/d6f0309cc85a89309a47537e1300591bd9266c84))
+* Passage à node 18 ([5d8ad67](https://github.com/mission-apprentissage/tables-correspondances/commit/5d8ad67b41d7c32b542dd222aef00b9b6589c026))
+* update kit apprentissage ([5cb4497](https://github.com/mission-apprentissage/tables-correspondances/commit/5cb4497165c9ed3e0433ef2f9fd52c38e98d606c))
+
 ## [2.43.2](https://github.com/mission-apprentissage/tables-correspondances/compare/v2.43.1...v2.43.2) (2023-02-22)
 
 
